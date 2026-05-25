@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+    <head>
+
+    </head>
+    <body>
+        <h1>Request Access</h1>
+        <form action="php/req_access.php" method="post">
+            <fieldset>  <!--Adds a boundary, encapsulating elements-->
+                <legend>Contact Info</legend>
+                <p>First Name: <input type="text" name="firstName"/></p>
+                <p>Last Name: <input type="text" name="lastName"/></p>
+                
+                <legend>Occupation</legend>
+                <!--radio elements with matching names are selected exclusively-->
+                <label><input type="radio" name="fac_or_student" value="faculty"/>Faculty <br></label>
+                <label><input type="radio" name="fac_or_student" value="student"/>Student <br></label>
+                <input type="date"/>
+
+
+                <p>Currently, I am ... (select all that applies</p>
+                <!--Label allows to click text and still select the checkbox-->
+                <label><input type="checkbox" name="involvement" value="None"/>Nobody</label><br>
+                <label><input type="checkbox" name="involvement" value="Instructor"/> Instructor </label><br>
+                <label><input type="checkbox" name="involvement" value="Boss"/> Boss </label><br>
+                <label><input type="checkbox" name="involvement" value="Investor"/> Investor </label><br>
+
+                <p>Do you drive a car?
+                    <select name="drives_car">
+                        <option value="no_answer" selected>Prefer not to say</option>
+                        <option value="true">Yes</option>
+                        <option value="false">No</option>
+                    </select>
+                </p>
+            
+            </fieldset>
+
+            <p>Tell us about yourself</p>
+            <textarea>
+                Other details
+            </textarea> <br>
+
+            <input type="submit" value="Submit Request"/>
+        </form>
+    </body>
+</html>
