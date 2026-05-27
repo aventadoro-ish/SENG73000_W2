@@ -10,13 +10,11 @@ This is a template for a daily logbook entry. This page should be duplicated
 by each team member when they work on the project. Each team member is 
 responsible for linking their logbook entries to their personal logbook cover 
 page. See ./logbook_person_template.html for more info.
-Template useage checklist:
+Template usage checklist:
 - [x] replace "Matvey Regentov" with your name
 - [x] replace "yyyy-mm-dd" with the date of the logbook entry
-
-General checklist:
-- [ ] add icon as ../media/icons/favicon.ico
-- [ ] add common style for logbook cover as ../css/logbook_person.css
+- [x] write log in section with id "log"
+- [x] add link to personal logbook cover by replacing "../html/logbook_person_template.html" with actual path
 -->
 
 <html lang="en">
@@ -24,9 +22,7 @@ General checklist:
         <title>xx's Logbook</title>
 		<meta charset="UTF-8">
         <meta name="description">
-		<!--TODO: add styles-->
 		<link rel="stylesheet" href="../css/logbook_person.css">
-		<!--TODO: add icon-->
 		<link rel="icon" href="../media/icons/favicon.ico" type="image/x-icon">
 		
 		<meta name="author" content="Matvey Regentov">
@@ -38,8 +34,9 @@ General checklist:
     <body>
 		<section id="page_top">
 			<h1>Logbook Entry, 2026-05-26 by Matvey Regentov</h1>
-			<h2>HTML Logbook templates for the team.</h2>
-			<p class="logbook_summary">Summary</p>
+			<h2>Summary of work performed</h2>
+			<p class="logbook_summary">HTML Logbook templates for the team.</p>
+            <a href="../logbook_MR.html">My logbook cover page</a>
 		</section>
 		
 		<section>

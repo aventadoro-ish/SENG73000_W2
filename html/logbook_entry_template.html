@@ -13,6 +13,8 @@ page. See ./logbook_person_template.html for more info.
 Template usage checklist:
 - [ ] replace "Person Name Here" with your name
 - [ ] replace "yyyy-mm-dd" with the date of the logbook entry
+- [ ] write log in section with id "log"
+- [ ] add link to personal logbook cover by replacing "../html/logbook_person_template.html" with actual path
 
 General checklist:
 - [ ] add icon as ../media/icons/favicon.ico
@@ -40,9 +42,10 @@ General checklist:
 			<h1>Logbook Entry, yyyy-mm-dd by Person Name Here</h1>
 			<h2>Summary of work performed</h2>
 			<p class="logbook_summary">Summary</p>
+            <a href="../html/logbook_person_template.html">My logbook cover page</a>
 		</section>
 		
-		<section>
+		<section id="log">
 			<h2>Some Task I did</h2>
 			<p>Write about that you did here</p>
 			
