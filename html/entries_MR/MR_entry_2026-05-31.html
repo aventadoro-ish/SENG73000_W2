@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+
+<!--
+Author: Matvey Regentov
+Contributors to this page:
+ - Matvey Regentov
+
+About:
+This is a template for a daily logbook entry. This page should be duplicated 
+by each team member when they work on the project. Each team member is 
+responsible for linking their logbook entries to their personal logbook cover 
+page. See ./logbook_person_template.html for more info.
+Template usage checklist:
+- [x] replace "Matvey Regentov" with your name
+- [x] replace "yyyy-mm-dd" with the date of the logbook entry
+- [ ] write log in section with id "log"
+- [ ] add link to personal logbook cover by replacing "../html/logbook_person_template.html" with actual path
+- [ ] replace xx in head/title tag with your initials
+
+General checklist:
+- [ ] add icon as ../media/icons/favicon.ico
+- [ ] add common style for logbook cover as ../css/logbook_person.css
+-->
+
+<html lang="en">
+    <head>
+        <title>MR's Logbook</title>
+		<meta charset="UTF-8">
+        <meta name="description">
+		<link rel="stylesheet" href="../../css/master.css">
+		<link rel="stylesheet" href="../../css/logbook_person.css">
+		<!--TODO: add icon-->
+		<link rel="icon" href="../../media/icons/LiF_icon.ico" type="image/x-icon">
+		
+		<meta name="author" content="Matvey Regentov">
+		<meta name="description" content="This is a daily logbook entry page for Matvey Regentov as part of Engineering Project VI, ESE at Conestoga College.">
+		<meta name="robots" content="index, follow">
+		<meta http-equiv="Pragma" content="no-cache">
+    </head>
+
+    <body>
+        <aside><iframe src="../links.html" title="Navigation"></iframe></aside>
+		<section id="page_top">
+			<h1>Logbook Entry, 2026-05-31 by Matvey Regentov</h1>
+			<h2>Summary of work performed</h2>
+			<p class="logbook_summary">CAD model of the elevator and BOM</p>
+            <a href="../logbook_MR.html">My logbook cover page</a>
+		</section>
+		
+		<section id="log">
+			<h2>CAD Model of the Elevator</h2>
+			<p>
+				I drafted an initial CAD model of the elevator. The construction 
+				uses 2020 T- and V-slot aluminum extrusions. This way was chosen 
+				to make the platfrom easy to assemble in a short amount of time. 
+				Linear motion of the elevator will be supported by a roller 
+				gantry assembly, similar to those used in construction of 3D 
+				printers. 2 gantries will provide mounting points for elevator 
+				car and its counterweight. The gantries are mounted to 2 V-slot 
+				extrusions at the center of the assembly. Additional 4 corner 
+				T-slot extrusions will provide means of mounting electronics and 
+				decorative elements to the assembly.
+			</p>
+			<figure>
+				<img class="img_med" src="../../media/images/CAD_master_asm_rev1.png" alt="Master Assembly Render in CAD">
+				<figcaption>LiF CAD Master Assembly Draft, rev. 1</figcaption>
+			</figure>
+			
+			<h2>BOM for initial assembly</h2>
+			<p>
+				Using the draft CAD model, I created a bill of materials to 
+				request from the tool room staff.
+			</p>
+			<table>
+				<thead>
+					<tr>
+						<th>Description</th>
+						<th>Cost [CAD]</th>
+						<th>Arrival</th>
+						<th>pcs count</th>
+						<th>need pcs</th>
+						<th>Link</th>
+						<th>purchase qty</th>
+						<th>Total</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td>4pcs Side-mounted leg</td>
+						<td>29</td>
+						<td>June 22</td>
+						<td>4</td>
+						<td>4</td>
+						<td><a href="https://a.co/d/0g12GrqB">https://a.co/d/0g12GrqB</a></td>
+						<td>1</td>
+						<td>29</td>
+					</tr>
+					<tr>
+						<td>4pcs Gantry Plate</td>
+						<td>39.99</td>
+						<td>Overnight</td>
+						<td>4</td>
+						<td>2</td>
+						<td><a href="https://a.co/d/025jk1WM">https://a.co/d/025jk1WM</a></td>
+						<td>1</td>
+						<td>39.99</td>
+					</tr>
+					<tr>
+						<td>8pcs T-Shape Plate</td>
+						<td>23.99</td>
+						<td>Overnight</td>
+						<td>8</td>
+						<td>10</td>
+						<td><a href="https://a.co/d/0jkGVb00">https://a.co/d/0jkGVb00</a></td>
+						<td>2</td>
+						<td>47.98</td>
+					</tr>
+					<tr>
+						<td>10pcs Corner Bracket</td>
+						<td>18.99</td>
+						<td>Overnight</td>
+						<td>10</td>
+						<td>8</td>
+						<td><a href="https://a.co/d/0bGaINXj">https://a.co/d/0bGaINXj</a></td>
+						<td>2</td>
+						<td>37.98</td>
+					</tr>
+					<tr>
+						<td>2020 T-Slot 1000mm</td>
+						<td>122.99</td>
+						<td>Overnight</td>
+						<td>10</td>
+						<td>6</td>
+						<td><a href="https://a.co/d/0cecT4Ef">https://a.co/d/0cecT4Ef</a></td>
+						<td>1</td>
+						<td>122.99</td>
+					</tr>
+					<tr>
+						<td>2020 V-Slot 1000mm</td>
+						<td>115.99</td>
+						<td>Overnight</td>
+						<td>10</td>
+						<td>2</td>
+						<td><a href="https://a.co/d/05BdiUdV">https://a.co/d/05BdiUdV</a></td>
+						<td>1</td>
+						<td>115.99</td>
+					</tr>
+					<tr>
+						<td>6pcs L-Shape Plate</td>
+						<td>26.99</td>
+						<td>Overnight</td>
+						<td>6</td>
+						<td>4</td>
+						<td><a href="https://a.co/d/0gFFPSBT">https://a.co/d/0gFFPSBT</a></td>
+						<td>2</td>
+						<td>53.98</td>
+					</tr>
+				</tbody>
+			</table>
+			
+		</section>
+		
+		<footer>
+			<p><a href="#page_top">Go to the top of this page</a></p>
+			<p>Copyright &copy Matvey Regentov</p>
+		</footer>
+		
+    </body>
+</html>
