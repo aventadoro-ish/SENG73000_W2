@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+
+<!--
+Author: Matvey Regentov
+Contributors to this page:
+ - Matvey Regentov
+
+About:
+This is a template for a daily logbook entry. This page should be duplicated 
+by each team member when they work on the project. Each team member is 
+responsible for linking their logbook entries to their personal logbook cover 
+page. See ./logbook_person_template.html for more info.
+Template usage checklist:
+- [x] replace "Matvey Regentov" with your name
+- [x] replace "2026-06-04" with the date of the logbook entry
+- [ ] write log in section with id "log"
+- [ ] add link to personal logbook cover by replacing "../html/logbook_person_template.html" with actual path
+- [ ] replace xx in head/title tag with your initials
+-->
+
+<html lang="en">
+    <head>
+        <title>MR's Logbook</title>
+		<meta charset="UTF-8">
+		<link rel="stylesheet" href="../../css/logbook_person.css">
+		<link rel="stylesheet" href="../../css/master.css">
+		<link rel="icon" href="../../media/icons/LiF_icon.ico" type="image/x-icon">
+		
+		<meta name="author" content="Matvey Regentov">
+		<meta name="description" content="This is a daily logbook entry page for Matvey Regentov as part of Engineering Project VI, ESE at Conestoga College.">
+		<meta name="robots" content="index, follow">
+		<meta http-equiv="Pragma" content="no-cache">
+    </head>
+
+    <body>
+        <aside><iframe src="../links.html" title="Navigation"></iframe></aside>
+		<section id="page_top">
+			<h1>Logbook Entry, 2026-06-04 by Matvey Regentov</h1>
+			<h2>Performed test assembly of the motor mount and further developed the platform CAD model</h2>
+			<p class="logbook_summary">Summary</p>
+            <a href="../logbook_MR.html">My logbook cover page</a>
+		</section>
+		
+		<section id="log">
+            <h2>Motor Subassembly Test</h2>
+            <p>
+                Nick printed the parts requested on <a href="./MR_entry_2026-06-02.html">2026-06-02</a> and brought them to campus. I used the parts to test fit the motor, pulleys, and plates.
+            </p>
+            <figure>
+                <img class="img_med" src="../../media/images/Motor_Subassembly.jpg" alt="fit test assembly of motor mount">
+                <figcaption>Fit-test assembly of motor mount</figcaption>
+            </figure>
+
+			<h2>CAD Model Development</h2>
+			<p>
+                I designed limit switch mounts, which will prevent the elevator 
+                overextension/overretraction. The limit switches are installed 
+                on the central V-slot extrusions.
+            </p>
+            <p>
+                I designed traveller car subassembly. The central part of the 
+                subassembly is a roller gantry plate, which rigidly attaches 
+                the car/counterweight to the platfrom while allowing linear 
+                motion up and down. Since the gantry is difficult to remove, an 
+                adapter plate is attached to it. The adapter plate has a grid 
+                of M3 mounting holes with 5mm pitch. This allows us to modify 
+                the car subassembly without removing the gantry from the 
+                platform. The mounting hole grid also leave room for expansion 
+                later.
+            </p>
+            <p>
+                A mount for STM32 Nucleo board and Floor Controller Shiled PCB 
+                was designed. Nucleo board reference manual was used to 
+                dimension the mounting holes of the development board. The 
+                mount is attached to the adpater plate with 4x M3 screws.
+            </p>
+
+            <figure>
+                <img class="img_med" src="../../media/images/CAD_Traveller_Car_Subasm.png" alt="CAD render of traveller subassembly">
+                <figcaption>CAD render of traveller subassembly</figcaption>
+            </figure>
+            
+            <p>
+                There is one potential problem with the desing. The cable 
+                attachment part does not properly align with the pulley system. 
+                This results in the cable being angled slightly. And the angle 
+                changes based on the elevation of the traveller subassembly. 
+                This results in a non-linear relationship between motor position 
+                and traveller car height. This problem can be alliviated by 
+                revising the pulley plates or accounting for the non-lineariy 
+                in code for the motor controller.
+            </p>
+
+            <figure>
+                <img class="img_med" src="../../media/images/CAD_cable_angle_diagram.png" alt="Diagram showing cable angle relative to vertical">
+                <figcaption>Diagram showing cable angle relative to vertical</figcaption>
+            </figure>
+			
+		</section>
+		
+		<footer>
+			<p><a href="#page_top">Go to the top of this page</a></p>
+			<p>Copyright &copy Matvey Regentov</p>
+		</footer>
+		
+    </body>
+</html>
