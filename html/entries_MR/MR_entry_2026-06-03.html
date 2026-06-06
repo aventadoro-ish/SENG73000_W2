@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+
+<!--
+Author: Matvey Regentov
+Contributors to this page:
+ - Matvey Regentov
+
+About:
+This is a template for a daily logbook entry. This page should be duplicated 
+by each team member when they work on the project. Each team member is 
+responsible for linking their logbook entries to their personal logbook cover 
+page. See ./logbook_person_template.html for more info.
+Template usage checklist:
+- [x] replace "Matvey Regentov" with your name
+- [x] replace "2026-06-03" with the date of the logbook entry
+- [x] write log in section with id "log"
+- [x] add link to personal logbook cover by replacing "../html/logbook_person_template.html" with actual path
+- [x] replace xx in head/title tag with your initials
+-->
+
+<html lang="en">
+    <head>
+        <title>MR's Logbook</title>
+		<meta charset="UTF-8">
+		<link rel="stylesheet" href="../../css/logbook_person.css">
+		<link rel="stylesheet" href="../../css/master.css">
+		<link rel="icon" href="../../media/icons/LiF_icon.ico" type="image/x-icon">
+		
+		<meta name="author" content="Matvey Regentov">
+		<meta name="description" content="This is a daily logbook entry page for Matvey Regentov as part of Engineering Project VI, ESE at Conestoga College.">
+		<meta name="robots" content="index, follow">
+		<meta http-equiv="Pragma" content="no-cache">
+    </head>
+
+    <body>
+        <aside><iframe src="../links.html" title="Navigation"></iframe></aside>
+		<section id="page_top">
+			<h1>Logbook Entry, 2026-06-03 by Matvey Regentov</h1>
+			<h2>Summary of work performed</h2>
+			<p class="logbook_summary">Floor Controller PCB solder test and CAD model development</p>
+            <a href="../logbook_MR.html">My logbook cover page</a>
+		</section>
+		
+		<section id="log">
+			<h2>STM32 Nucleo Shield Boards</h2>
+			<p>
+                I communicated with the tool room technician, Sam Butella, to 
+                sign out materials to make 4 Nucleo shields which are used for 
+                floor controllers. However, there was no stencil for solder 
+                paste application. 1 board was assembled to see the result of 
+                baking a PCB without a stencil. The soldering quality is 
+                rather poor, however, the PCB can be touched up manually with a 
+                soldering iron to fix this.
+            </p>
+            <figure>
+                <img class="img_med" src="../../media/images/FC_PCB_1.jpg" alt="Baked Floor Controller PCB - stencilless test">
+                <figcaption>Baked Floor Controller PCB - stencilless test</figcaption>
+            </figure>
+			
+            <p>
+                Additionally, some components were missing from the FC PCB parts 
+                kit. I reached out to the tool room technician to find 
+                substitute components.
+            </p>
+			
+		</section>
+		
+		<footer>
+			<p><a href="#page_top">Go to the top of this page</a></p>
+			<p>Copyright &copy Matvey Regentov</p>
+		</footer>
+		
+    </body>
+</html>
