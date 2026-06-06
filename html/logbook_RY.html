@@ -1,73 +1,120 @@
-<!-- Author: Rita Yevtushenko -->
+<!DOCTYPE html>
+
+<!--
+Author: Rita Yevtushenko
+Contributors to this template page:
+ - Matvey Regentov
+
+About:
+This is a template for a personal logbook "cover". This page should be duplicated 
+by each team member. Each team member is responsible for linking their logbook 
+entries to this "cover" page. See ./logbook_entry_template.html for more info.
+Template useage checklist:
+- [x] add your image as ../media/images/person_protrait.jpg 
+	- [x] change this path in the document to link to your own picture
+- [x] replace "Matvey Regentov" with your name
+- [x] add some text about yourself under "About me" header
+- [x] update your links
+- [x] make a directory for your logbook entries html files in ./entries_MR/ where 
+    xx are your initials
+	- [x] replace "./entries_MR/" with the actual path
+
+General checklist:
+- [ ] add icon as ../media/icons/favicon.ico
+- [ ] add common style for logbook cover as ../css/logbook_person.css
+-->
+
 <html lang="en">
     <head>
         <title>RY's Logbook</title>
         <meta charset="UTF-8">
-        <meta name="author" content="Rita Yevtushenko">
-        <meta name="description" content="Personal logbook cover page for Rita Yevtushenko">
         <link rel="stylesheet" href="../css/logbook_person.css">
-        <link rel="icon" href="../media/icons/favicon.ico" type="image/x-icon">
+        <link rel="stylesheet" href="../css/master.css">
+        <link rel="icon" href="../media/icons/LiF_icon.ico" type="image/x-icon">
+        <meta name="author" content="Rita Yevtushenko">
+        <meta name="description" content="Personal logbook cover page for Rita Yevtushenko as part of Engineering Project VI, ESE at Conestoga College">
+        <meta name="robots" content="index, follow">
+        <meta http-equiv="Pragma" content="no-cache">
     </head>
+
     <body>
+        <aside><iframe src="links.html" title="Navigation"></iframe></aside>
+
         <section id="page_top">
-            <h1>Logbook — Rita Yevtushenko</h1>
+            <h1>Logbook — Rita Yevtushenko's Logbook Cover Page</h1>
+
+            <figure>
+\               <img class="img_med" src="../media/images/portrait_RY.jpg" alt="Rita Yevtushenko portrait">
+				<figcaption><b>Rita Yevtushenko</b> - ESE student, member of <i>Lithium Firefly</i> group</figcaption>
+			</figure>
 
             <h2>About me</h2>
-            <p><!-- write a short blurb about yourself here --></p>
+            <p>I am a Electrical Engineering student at Conestoga College, passionate about embedded systems incorporated in biomedical applications.
+            </p>
 
             <h2>My links</h2>
             <ul>
-                <li><a href="#">GitHub</a></li>
-                <!-- add any other links -->
+                <li><a href="https://github.com/YevtushenkoRita">GitHub</a></li>
+                <li><a href="https://www.linkedin.com/in/margalit-yevtushenko-959348259">LinkedIn</a></li>
+                <li><a href="https://www.linkedin.com/in/margalit-yevtushenko-959348259">Personal Website</a></li>
             </ul>
         </section>
 
         <section>
             <h2>Logbook entries</h2>
-			            
-			<h3>Week 1</h3>
+
+            <h3>Week 1</h3>
             <ol>
+                <li>
+                    <a href="./entries_RY/RY_entry_2026-05-25.html">2026-05-25</a>
                     <ul>
-                        <li>Not relavent</li>
+                        <li>Met with the team and the professor to discuss the project goals, expectations, and deliverables.</li>
+                        <li>Assigned roles for the next few weeks</li>
+                        <li>Matvey and Nick proposed to make our own hardware, instead of using the provided Conestoga elevator</li>
+                        <li>Used Matvey's logbook template to fill out my own.</li>
                     </ul>
                 </li>
-            </ol>   		            
-			<h3>Week 2</h3>
+            </ol>
+
+            <h3>Week 2</h3>
             <ol>
+                <li>
+                    <a href="./entries_RY/RY_entry_2026-05-26.html">2026-05-26</a>
                     <ul>
-                        <li>Not relavent</li>
+                        <li>Finished organizing the logbook entries for the next weeks.</li>
                     </ul>
                 </li>
-            </ol>          
+            </ol>
+
             <h3>Week 3</h3>
             <ol>
                 <li>
                     <a href="./entries_RY/RY_entry_2026-05-29.html">2026-05-29</a>
                     <ul>
-                        <li>Group photos link (ask Matvey to share)</li>
-                    </ul>
-                </li>
-            </ol>       
-			<h3>Week 4</h3>
-            <ol>
-                <li>
-                    <a href="./entries_RY/RY_entry_2026-06-01.html">2026-06-01</a>
-                    <ul>
+                        <li>Started About Page for the website</li>
+                        <li>Connected to the RPi5 server</li>
+                        <li>Group photos in the books</li>
                     </ul>
                 </li>
             </ol>
+
+            <h3>Week 4</h3>
             <ol>
                 <li>
-                    <a href="./entries_RY/RY_entry_2026-06-02.html">2026-06-02</a>
+                    <a href="./entries_RY/RY_entry_2026-06-05.html">2026-06-01</a>
                     <ul>
+                        <li>Finished About Page for the website</li>
+                        <li>Connected to the RPi4 server (modified for the new hardware model)</li>
+                        <li>New photo with hardware 1.0</li>
                     </ul>
                 </li>
             </ol>
+
         </section>
 
         <footer>
             <p><a href="#page_top">Go to the top of this page</a></p>
-            <p>Copyright &copy; 2026 Rita Yevtushenko</p>
+            <p>Copyright &copy 2026 Rita Yevtushenko</p>
         </footer>
     </body>
 </html>
