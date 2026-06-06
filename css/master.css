@@ -29,3 +29,7 @@ aside {
 aside iframe {
   height: 100%;
 }
+
+#Gantt td:not(:empty) {
+    background-color: #cfe8d5;
+}
