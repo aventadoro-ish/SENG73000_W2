@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+
+<!--
+Author: Matvey Regentov
+Contributors to this page:
+ - Matvey Regentov
+
+About:
+This is a template for a daily logbook entry. This page should be duplicated 
+by each team member when they work on the project. Each team member is 
+responsible for linking their logbook entries to their personal logbook cover 
+page. See ./logbook_person_template.html for more info.
+Template usage checklist:
+- [x] replace "Matvey Regentov" with your name
+- [x] replace "2026-06-02" with the date of the logbook entry
+- [x] write log in section with id "log"
+- [x] add link to personal logbook cover by replacing "../html/logbook_person_template.html" with actual path
+- [x] replace xx in head/title tag with your initials
+-->
+
+<html lang="en">
+    <head>
+        <title>MR's Logbook</title>
+		<meta charset="UTF-8">
+		<link rel="stylesheet" href="../../css/logbook_person.css">
+		<link rel="stylesheet" href="../../css/master.css">
+		<link rel="icon" href="../../media/icons/LiF_icon.ico" type="image/x-icon">
+		
+		<meta name="author" content="Matvey Regentov">
+		<meta name="description" content="This is a daily logbook entry page for Matvey Regentov as part of Engineering Project VI, ESE at Conestoga College.">
+		<meta name="robots" content="index, follow">
+		<meta http-equiv="Pragma" content="no-cache">
+    </head>
+
+    <body>
+        <aside><iframe src="../links.html" title="Navigation"></iframe></aside>
+		
+        <section id="page_top">
+			<h1>Logbook Entry, 2026-06-02 by Matvey Regentov</h1>
+			<h2>Summary of work performed</h2>
+			<p class="logbook_summary">Continued development of elevator CAD model and parts 3D print request</p>
+            <a href="../logbook_MR.html">My logbook cover page</a>
+		</section>
+		
+		<section id="log">
+			<h2>Designing elevator motor mount subassembly</h2>
+			<p>Designed parts to mount main elevator motor and a pulley system to route cable holding elevator car and counterwight.</p>
+            <figure>
+                <img class="img_med" src="../../media/images/CAD_Motor_Mount_Subasm.png" alt="CAD render of motor mount in the context of the master assembly">
+                <figcaption>CAD render of motor mount in the context of the master assembly</figcaption>
+			</figure>
+            <p>
+                The subassembly consists of 2 plates that are attached to the 
+                top 2020 extrusions. Right plate mounts a stepper motor. Left 
+                plate has mounting holes for a drag chain mount which will be 
+                used to run the CAN bus cable to the elevator car. The plates 
+                use 5mm ID, 11mm OD, 4mm thickness ball bearings to provide 
+                low-friction rotation for the pulleys and offload motor shaft.
+            </p>
+            <p>
+                The pulley system consists of 3 wheels. One pulley is 50mm in diameter 
+                and is attached to the stepper motor shaft. 2 additional 
+                25mm-diamter pulleys are used to route the cable such that it 
+                runs vertically to the car and counterwieght without collision 
+                with other parts for the platform.
+            </p>
+
+			<h2>Created an internal 3D print request spreadsheet.</h2>
+			<p>
+                In order to track printed parts in our group, I created a 
+                spreadsheet which lists parts than need to be 3D printed. 
+                The sheet includes both internally-designed parts as well as 
+                external designs. As such, drag chain system was found on 
+                <a href="https://www.printables.com/model/385282-bambu-lab-p1p-printable-cable-drag-chain/files">printables.com</a> 
+                (designed by <i>Brody_499227</i>).
+            </p>
+            <p>
+                An excerpt of the table is shown below. To see full table, visit <a href="https://docs.google.com/spreadsheets/d/1wElGvGsELNJJKny1h0gUXWanmt96HE071Pdj3i7UrMA/edit?usp=sharing">Google Sheets</a> and request access with your gmail account.
+            </p>
+            <table>
+                <tbody>
+                    <tr>
+                        <th>Filename</th>
+                        <th>Part Number</th>
+                        <th>Variant</th>
+                        <th>Link</th>
+                        <th>Qty</th>
+                    </tr>
+                    <tr>
+                        <td>LiF-002-001-01-Motor Pulley Mount-Motor Mount.STL</td>
+                        <td>LiF-002-001-01</td>
+                        <td>Motor Mount</td>
+                        <td></td>
+                        <td>1</td>
+                    </tr>
+                    <tr>
+                        <td>LiF-002-001-01-Motor Pulley Mount-Plain.STL</td>
+                        <td>LiF-002-001-01</td>
+                        <td>Plain</td>
+                        <td></td>
+                        <td>1</td>
+                    </tr>
+                    <tr>
+                        <td>LiF-002-002-01-Pulley Shaft.STL</td>
+                        <td>LiF-002-002-01</td>
+                        <td>N/A</td>
+                        <td></td>
+                        <td>2</td>
+                    </tr>
+                    <tr>
+                        <td>LiF-002-003-01-Pulley-25mm.STL</td>
+                        <td>LiF-002-003-01</td>
+                        <td>25mm</td>
+                        <td></td>
+                        <td>2</td>
+                    </tr>
+                    <tr>
+                        <td>LiF-002-003-01-Pulley-50mm.STL</td>
+                        <td>LiF-002-003-01</td>
+                        <td>50mm</td>
+                        <td></td>
+                        <td>1</td>
+                    </tr>
+                    <tr>
+                        <td>Chain Link 0.0.STL</td>
+                        <td></td>
+                        <td>N/A</td>
+                        <td><a href="https://www.printables.com/model/385282-bambu-lab-p1p-printable-cable-drag-chain/files">printables link</a></td>
+                        <td>66</td>
+                    </tr>
+                    <tr>
+                        <td>Chain Link Frame Mount.STL</td>
+                        <td></td>
+                        <td>N/A</td>
+                        <td><a href="https://www.printables.com/model/385282-bambu-lab-p1p-printable-cable-drag-chain/files">printables link</a></td>
+                        <td>1</td>
+                    </tr>
+                </tbody>
+            </table>
+			
+		</section>
+		
+		<footer>
+			<p><a href="#page_top">Go to the top of this page</a></p>
+			<p>Copyright &copy Matvey Regentov</p>
+		</footer>
+		
+    </body>
+</html>
