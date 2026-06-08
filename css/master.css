@@ -6,6 +6,24 @@
     height: auto;
 }
 
+.img_lrg {
+    display: block;
+    max-width:800px;
+    max-height:800px;
+    width: auto;
+    height: auto;
+}
+
+figure { 
+  display: table; 
+}
+
+figcaption { 
+  text-align: center;
+  display: table-caption; /* aligns size to the table of the figure */
+  caption-side: bottom /* makes the caption appear underneath the image/figure */
+}
+
 
 table, th, td {
     border: 1px solid black;
