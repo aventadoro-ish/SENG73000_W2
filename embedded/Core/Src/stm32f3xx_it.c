@@ -226,6 +226,23 @@ void USB_LP_CAN_RX0_IRQHandler(void)
   /* USER CODE END USB_LP_CAN_RX0_IRQn 1 */
 }
 
+/**
+  * @brief This function handles EXTI line[15:10] interrupts.
+  */
+void EXTI15_10_IRQHandler(void)
+{
+  /* USER CODE BEGIN EXTI15_10_IRQn 0 */
+
+  /* USER CODE END EXTI15_10_IRQn 0 */
+  HAL_GPIO_EXTI_IRQHandler(PushButton_1_Pin);
+  HAL_GPIO_EXTI_IRQHandler(Blue_Button_Pin);
+  HAL_GPIO_EXTI_IRQHandler(PushButton_2_Pin);
+  HAL_GPIO_EXTI_IRQHandler(PushButton_3_Pin);
+  /* USER CODE BEGIN EXTI15_10_IRQn 1 */
+
+  /* USER CODE END EXTI15_10_IRQn 1 */
+}
+
 /* USER CODE BEGIN 1 */
 
 /* USER CODE END 1 */

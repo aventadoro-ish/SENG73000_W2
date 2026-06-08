@@ -3,6 +3,7 @@
   ******************************************************************************
   * @file           : main.c
   * @brief          : Main program body
+  * @author			: Nick Kapuka
   ******************************************************************************
   * @attention
   *
@@ -31,6 +32,29 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+// ------------- NK UPDATE -------------:
+// begin setting up CAN IDs per boards (SC, EC, CC, and Fx)
+#define SC_ID				0x100
+#define EC_ID				0x101
+#define CC_ID				0x200
+#define F1_ID				0x201
+#define F2_ID				0x202
+#define F3_ID				0x203
+
+// for this specific board, I'll do CC first, so
+// this WILL have to be changed per board
+#define MY_ID				CC_ID
+
+// variable names for each floor
+#define FLOOR_1				1
+#define FLOOR_2				2
+#define FLOOR_3				3
+
+#define	NO_BUTTON_PRESSED	0		// default value for button status
+#define BLUE_BUTTON_PRESS	5		// value of blue Button when pressed; 5 just avoids conflicts with other PB
+#define	F1_BUTTON_PRESS		1		// req to go to floor 1 PB pressed
+#define F2_BUTTON_PRESS		2		// req to go to floor 2 PB pressed
+#define F3_BUTTON_PRESS		3		// req to go to floor 3 PB pressed
 
 /* USER CODE END PD */
 
@@ -45,6 +69,16 @@ CAN_HandleTypeDef hcan;
 UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
+// ------------- NK UPDATE -------------:
+CAN_TxHeaderTypeDef		TxHeader;						// variable of type CAN_TxHeaderTypeDef
+CAN_RxHeaderTypeDef		RxHeader;						// variable of type CAN_RxHeaderTypeDef
+uint8_t					TxData[8];						// 8 bytes of data per frame
+uint8_t					RxData[8];						// 8 bytes of data per frame
+uint32_t				TxMailbox;
+// uint8_t					msg = GO_TO_FLOOR_1;			// initial message is GO_TO_FLOOR_1
+volatile uint8_t		BUTTON = NO_BUTTON_PRESSED;		// initial value is that no button has been pressed
+uint8_t					i;								// for loop variable
+
 
 /* USER CODE END PV */
 
@@ -59,6 +93,30 @@ static void MX_USART2_UART_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+// ------------- NK UPDATE -------------:
+
+// make a new function for transmitting CAN message:
+// note, this setup is almost the same as the MX_CAN_Init
+void CAN_ByteTransmit(uint32_t std_id, uint8_t data0){
+	// set the TxHeader's stdID to std_id that you can pass into the function (who you're sending to)
+	TxHeader.StdId = std_id;
+	TxHeader.IDE = CAN_ID_STD;				// same as MX_CAN
+	TxHeader.RTR = CAN_RTR_DATA;			// same as MX_CAN
+	TxHeader.DLC = 1;						// same as MX_CAN
+	TxHeader.TransmitGlobalTime = DISABLE;	// same as MX_CAN
+
+	TxData[0] = data0;						// in the first byte of TxData, put the data you want to send
+
+	// handle error
+    if (HAL_CAN_AddTxMessage(&hcan, &TxHeader, TxData, &TxMailbox) != HAL_OK)
+    {
+        Error_Handler();
+    }
+
+    // note, the goal is to use this function as:
+    // CAN_ByteTransmit(MY_ID, FLOOR_X);
+}
+
 
 /* USER CODE END 0 */
 
@@ -101,11 +159,85 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
-	  HAL_Delay(500);
+	  //HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
+	  //HAL_Delay(1000);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+
+	  // Receive messages
+	  /*
+	  	 if (RxData[0] == GO_TO_FLOOR_1){
+	  		// turn on green LED when message received for 2 s
+	  		 HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
+	  		 HAL_Delay(2000);
+
+	  		 // reset the RxData buffer (flag?)
+	  		 for(i = 0; i < 8; i++){
+	  			 RxData[i] = 0x00;
+	  		 }
+
+	  		 // turn LED off and add small toggle delay
+	  		 HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
+	  		 HAL_Delay(100);
+	  	 }
+
+	  	  */
+	  	 // transmit messages
+	  	 /* CLASS EXAMPLE CODE:
+	  	 if(BUTTON != 0)
+	  	 {
+
+	  		 // blue button pressed enables the green LED for 2 sec
+	  		 if(BUTTON == BLUE_BUTTON_PRESS)
+	  		 {
+	  			 HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
+	  			 HAL_Delay(2000);
+
+	  			 // store the 1-character message
+	  			 TxData[0] = msg;
+
+	  			 // transmit the message
+	  			 if(HAL_CAN_AddTxMessage(&hcan, &TxHeader, TxData, &TxMailbox) != HAL_OK)
+	  			 {
+	  				 Error_Handler();			// transmission error
+	  			 }
+
+	  			 // turn the LED off and reset button flag
+	  			 HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
+	  			 BUTTON = NO_BUTTON_PRESSED;
+	  		 }
+	  	 }
+	  	 */
+
+	  	 // custom transmit code:
+	  	 // check if a button was pressed and handle logic:
+	  	 if (BUTTON != NO_BUTTON_PRESSED)
+	  	 {
+	  		 // call the transmit function based on what floor button was pressed
+	  		 if(BUTTON == F1_BUTTON_PRESS)
+	  		 {
+	  			 CAN_ByteTransmit(MY_ID, FLOOR_1);
+	  		 }
+	  		 else if(BUTTON == F2_BUTTON_PRESS)
+	  		 {
+	  			 CAN_ByteTransmit(MY_ID, FLOOR_2);
+	  		 }
+	  		 else if(BUTTON == F3_BUTTON_PRESS)
+	  		 {
+	  			 CAN_ByteTransmit(MY_ID, FLOOR_3);
+	  		 }
+
+	  		 // blink LED briefly
+	  		HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
+	  		HAL_Delay(200);
+	  		HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
+
+	  		// keep button in off state
+	  		BUTTON = NO_BUTTON_PRESSED;
+	  	 }
+
+
   }
   /* USER CODE END 3 */
 }
@@ -183,11 +315,53 @@ static void MX_CAN_Init(void)
   hcan.Init.AutoRetransmission = DISABLE;
   hcan.Init.ReceiveFifoLocked = DISABLE;
   hcan.Init.TransmitFifoPriority = DISABLE;
+
   if (HAL_CAN_Init(&hcan) != HAL_OK)
   {
     Error_Handler();
   }
   /* USER CODE BEGIN CAN_Init 2 */
+
+  // ------------- NK UPDATE -------------:
+  CAN_FilterTypeDef filter;		// this is one of the 13 filters; can create more filters but this will be #0
+
+  // configure filter 0 to direct everything to FIFO 0
+  filter.FilterBank = 0;				// this will filter number 0
+  filter.FilterIdHigh = 0x0100 << 5;	// Set FilterIdHigh bits by choosing an ID and aligning the bits in the filter register with the receive register by shifting << 5
+  filter.FilterIdLow = 0x0000;			// not using FilterIdLow bits (sets as dc/low)
+  filter.FilterMaskIdHigh = 0xFFC << 5;	// Same as example in lecture (this gives a range of ID's that will be accept between 0x100 and 0x103). Must also align bits?
+  filter.FilterMaskIdLow = 0x0000;		// not using FilterMaskIdLow bits (set as dc/low)
+  filter.FilterFIFOAssignment = CAN_FILTER_FIFO0;
+  filter.FilterMode = CAN_FILTERMODE_IDMASK;	// uses Mask Mode (so cans et range of IDs)
+  filter.FilterScale = CAN_FILTERSCALE_32BIT;	//use 32 bit filters
+  filter.FilterActivation = ENABLE;				// by default the filters are disabled so enable
+  filter.SlaveStartFilterBank = 0;
+
+  if(HAL_CAN_ConfigFilter(&hcan, &filter) != HAL_OK){ // set above values for filter 0?
+	  Error_Handler();
+  }
+
+  // start CAN peripheral
+  if(HAL_CAN_Start(&hcan) != HAL_OK){
+	  Error_Handler();
+  }
+
+  // Activate CAN Rx notification interrupt
+  if(HAL_CAN_ActivateNotification(&hcan, CAN_IT_RX_FIFO0_MSG_PENDING) != HAL_OK){
+	  Error_Handler();
+  }
+
+  // prepare header fields for standard mode CAN transmission
+  TxHeader.IDE = CAN_ID_STD; 			// using std mode. Note this CAN_ID_EXT for extended mode?
+  TxHeader.ExtId = 0x00;				// extended id is not used?
+  // ------------------------------------------------------------------------------------------
+  TxHeader.StdId = MY_ID;				// standard mode ID is NODE specific. Currently using 0x200 for CC  controller on THIS board!
+  // ------------------------------------------------------------------------------------------
+  TxHeader.RTR = CAN_RTR_DATA;			// send a data frame not an RTR?
+  TxHeader.DLC = 1;						// data length code = 1 (only send 1 byte)
+  TxHeader.TransmitGlobalTime = DISABLE;
+
+
 
   /* USER CODE END CAN_Init 2 */
 
@@ -241,17 +415,55 @@ static void MX_GPIO_Init(void)
   /* USER CODE END MX_GPIO_Init_1 */
 
   /* GPIO Ports Clock Enable */
+  __HAL_RCC_GPIOC_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
+  __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOA, PB1_LED_Pin|Green_LED_Pin|PB2_LED_Pin|PB3_LED_Pin, GPIO_PIN_RESET);
 
-  /*Configure GPIO pin : PA5 */
-  GPIO_InitStruct.Pin = GPIO_PIN_5;
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(F1_Indicator_LED_GPIO_Port, F1_Indicator_LED_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOB, F2_Indicator_LED_Pin|F3_Indicator_LED_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin : Blue_Button_Pin */
+  GPIO_InitStruct.Pin = Blue_Button_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(Blue_Button_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : PB1_LED_Pin Green_LED_Pin PB2_LED_Pin PB3_LED_Pin */
+  GPIO_InitStruct.Pin = PB1_LED_Pin|Green_LED_Pin|PB2_LED_Pin|PB3_LED_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : F1_Indicator_LED_Pin */
+  GPIO_InitStruct.Pin = F1_Indicator_LED_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(F1_Indicator_LED_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : F2_Indicator_LED_Pin F3_Indicator_LED_Pin */
+  GPIO_InitStruct.Pin = F2_Indicator_LED_Pin|F3_Indicator_LED_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : PushButton_1_Pin PushButton_2_Pin PushButton_3_Pin */
+  GPIO_InitStruct.Pin = PushButton_1_Pin|PushButton_2_Pin|PushButton_3_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+  /* EXTI interrupt init*/
+  HAL_NVIC_SetPriority(EXTI15_10_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
 
   /* USER CODE BEGIN MX_GPIO_Init_2 */
 
@@ -259,6 +471,40 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+// ------------- NK CHANGE -------------:
+// Override the HAL_CAN_RxFifo0MsgPending_Callback function
+// this is called when the interrupt for FIFO0 is triggered
+
+void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan){
+	// get Rx Msg and store in RxData buffer
+	if(HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &RxHeader, RxData) != HAL_OK){
+		// reception error
+		Error_Handler();
+	}
+}
+
+// override the HAL_GPIO Callback
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
+	//set the button flag to indicate which button was pressed
+	// GPIO pin 13 is the 'blue' button, or BLUE_BUTTON_PRESS in my program
+	if(GPIO_Pin == Blue_Button_Pin){
+		// blue button pressed
+		BUTTON = BLUE_BUTTON_PRESS;
+	}
+
+	// check to see if the other elevator PBs have been pressed and associate the physical pin
+	// with the defined value
+	// note, the naming scheme for these seems to be "[customNameInMX]_Pin"
+	if(GPIO_Pin == PushButton_1_Pin){
+		BUTTON = F1_BUTTON_PRESS;
+	} else if(GPIO_Pin == PushButton_2_Pin){
+		BUTTON = F2_BUTTON_PRESS;
+	}else if(GPIO_Pin == PushButton_3_Pin){
+		BUTTON = F3_BUTTON_PRESS;
+	}
+}
+
+
 
 /* USER CODE END 4 */
 
