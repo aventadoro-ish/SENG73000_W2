@@ -1,6 +1,14 @@
 #include <Arduino.h>
 #include <Stepper.h>
 
+#if defined(STM32_ENV)
+#include "STM32_CAN.h"
+
+#else
+#error "Please, define an embedded platform to be used.Either ESP32_ENV or STM32_ENV flags"
+#endif
+
+
 constexpr int STEPS_PER_REVOLUTION = 360 / 1.8;  // 200 steps/revolution
 
 #if defined(ESP32_ENV)
@@ -15,17 +23,43 @@ constexpr int IN2 = PC0; // A2
 constexpr int IN3 = PC2; // B1
 constexpr int IN4 = PC3; // B2
 
+constexpr int CAN_Tx = PB9;
+constexpr int CAN_Rx = PB8;
+constexpr int CAN_stb = PC8;
+
 
 #else
-
-
+#error "Please, define an embedded platform to be used.Either ESP32_ENV or STM32_ENV flags"
 #endif
+
+
+
+// CAN message parameters and other definitions
+constexpr int TxID = 0x101;
+constexpr int DLC = 1;
+constexpr int Floor1 = 0x05;
+constexpr int Floor2 = 0x06;
+constexpr int Floor3 = 0x07;
+
+// Sets the care/don't care bits in the ID (11 bits long for Standard CAN) [first 4 nibbles] and first two bytes of data [last four nibbles]. Using this mask we care about all ID bits so that ID of a message must match a filter below.    
+constexpr int MASK = 0x07FF0000;                    // Mask0 == MASK1 == MASK --> Issue with Hardware used - MASK0 and MASK1 must both be set and be the same in order to filter properly.
+constexpr int FILTER_SC = 0x01000000;                // Acceptance filter for ID 0x100 (Supervisory Controller - Raspberry Pi)
+constexpr int FILTER_EC = 0x01010000;                // Acceptance filter for ID 0x101 (Elevator Controller) -- comment out if only want to accept commands from Supervisory controller
+constexpr int FILTER_CC = 0x02000000;                // Acceptance filter for ID 0x200 (Car Controller)      -- comment out if only want to accept commands from Supervisory controller
+constexpr int FILTER_F1 = 0x02010000;                // Acceptance filter for ID 0x201 (Floor 1 Controller)  -- comment out if only want to accept commands from Supervisory controller
+constexpr int FILTER_F2 = 0x02020000;                // Acceptance filter for ID 0x202 (Floor 2 Controller)  -- comment out if only want to accept commands from Supervisory controller
+constexpr int FILTER_F3 = 0x02030000;                // Acceptance filter for ID 0x203 (Floor 3 Controller)  -- comment out if only want to accept commands from Supervisory controller
+
 
 
 constexpr long SWEEP_MIN_STEP = 0;
 constexpr long SWEEP_MAX_STEP = 1000;
 
 Stepper myStepper(STEPS_PER_REVOLUTION, IN1, IN2, IN3, IN4);
+
+STM32_CAN CAN_bus(CAN_Rx, CAN_Tx);
+
+
 
 enum class Direction : int8_t {
     CLOCKWISE = 1,
@@ -359,6 +393,64 @@ void runSweepMode()
 }
 
 
+
+
+// -----------------------------------------------------------------------------
+// CAN Bus setup and helper functions
+// -----------------------------------------------------------------------------
+void setup_CAN_bus() {
+    // CAN_bus.setIRQPriority(uint32_t preemptPriority, uint32_t subPriority); // default: lowest prio, 0
+    // CAN_bus.setAutoRetransmission(bool enabled);  //default: true
+    // CAN_bus.setRxFIFOLock(bool fifo0locked);      //default: false
+    // CAN_bus.setTxBufferMode(TX_BUFFER_MODE mode); //default: FIFO
+    // CAN_bus.setTimestampCounter(false);    // should be set false as per lib documentation
+    // CAN_bus.setMode(MODE mode);                   //default: NORMAL
+    // CAN_bus.setAutoBusOffRecovery(bool enabled);  //default: false
+    pinMode(CAN_stb, OUTPUT);
+    digitalWrite(CAN_stb, LOW);
+    CAN_bus.setBaudRate(125000);
+
+    // Exact-match standard ID filters
+    CAN_bus.setFilterSingleMask(0, 0x100, 0x7FF, STD); // Supervisory Controller
+    CAN_bus.setFilterSingleMask(1, 0x101, 0x7FF, STD); // Elevator Controller
+    CAN_bus.setFilterSingleMask(2, 0x200, 0x7FF, STD); // Car Controller
+    CAN_bus.setFilterSingleMask(3, 0x201, 0x7FF, STD); // Floor 1
+    CAN_bus.setFilterSingleMask(4, 0x202, 0x7FF, STD); // Floor 2
+    CAN_bus.setFilterSingleMask(5, 0x203, 0x7FF, STD); // Floor 3
+
+    CAN_bus.begin();
+}
+
+
+bool transmitCAN(uint8_t floorByte) {
+    CAN_message_t msg;
+
+    msg.id = TxID;
+    msg.flags.extended = false;
+    msg.flags.remote = false;
+    msg.len = DLC;
+    msg.buf[0] = floorByte;
+
+    return CAN_bus.write(msg);
+}
+
+bool receiveCAN(uint32_t &rxId, uint8_t &rxLen, uint8_t rxData[8]) {
+    CAN_message_t msg;
+
+    if (!CAN_bus.read(msg)) {
+        return false;
+    }
+
+    rxId = msg.id;
+    rxLen = msg.len;
+
+    for (uint8_t i = 0; i < msg.len && i < 8; i++) {
+        rxData[i] = msg.buf[i];
+    }
+
+    return true;
+}
+
 // -----------------------------------------------------------------------------
 // Arduino setup and loop
 // -----------------------------------------------------------------------------
@@ -377,6 +469,14 @@ void setup()
     Serial.println();
     Serial.println("ESP32 stepper debug interface");
     Serial.println("Enter 'help' for available commands.");
+
+    setup_CAN_bus();
+
+    int floor_counter = 0;
+    for (;;) {
+        transmitCAN(floor_counter++ % 3);
+        delay(1);
+    }
 
     printStatus();
 }

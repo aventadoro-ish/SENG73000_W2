@@ -10,6 +10,7 @@
             "includePath": [
                 "C:/Users/Matve/Projects/LithiumFirefly/SENG73000_W2/embedded/LiF_EC/include",
                 "C:/Users/Matve/Projects/LithiumFirefly/SENG73000_W2/embedded/LiF_EC/src",
+                "C:/Users/Matve/Projects/LithiumFirefly/SENG73000_W2/embedded/LiF_EC/.pio/libdeps/nucleo_f303re/STM32_CAN/src",
                 "C:/Users/Matve/Projects/LithiumFirefly/SENG73000_W2/embedded/LiF_EC/.pio/libdeps/nucleo_f303re/Stepper/src",
                 "C:/Users/Matve/.platformio/packages/framework-arduinoststm32/cores/arduino/avr",
                 "C:/Users/Matve/.platformio/packages/framework-arduinoststm32/cores/arduino/stm32",
@@ -54,6 +55,7 @@
                 "path": [
                     "C:/Users/Matve/Projects/LithiumFirefly/SENG73000_W2/embedded/LiF_EC/include",
                     "C:/Users/Matve/Projects/LithiumFirefly/SENG73000_W2/embedded/LiF_EC/src",
+                    "C:/Users/Matve/Projects/LithiumFirefly/SENG73000_W2/embedded/LiF_EC/.pio/libdeps/nucleo_f303re/STM32_CAN/src",
                     "C:/Users/Matve/Projects/LithiumFirefly/SENG73000_W2/embedded/LiF_EC/.pio/libdeps/nucleo_f303re/Stepper/src",
                     "C:/Users/Matve/.platformio/packages/framework-arduinoststm32/cores/arduino/avr",
                     "C:/Users/Matve/.platformio/packages/framework-arduinoststm32/cores/arduino/stm32",
@@ -99,6 +101,7 @@
                 "STM32F3",
                 "STM32F303xE",
                 "STM32_ENV",
+                "HAL_CAN_MODULE_ENABLED",
                 "STM32F3xx",
                 "ARDUINO=10808",
                 "ARDUINO_ARCH_STM32",
