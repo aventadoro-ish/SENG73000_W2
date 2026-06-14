@@ -77,12 +77,12 @@ void Error_Handler(void);
 #define PushButton_1_Pin GPIO_PIN_12
 #define PushButton_1_GPIO_Port GPIOB
 #define PushButton_1_EXTI_IRQn EXTI15_10_IRQn
-#define PushButton_2_Pin GPIO_PIN_14
-#define PushButton_2_GPIO_Port GPIOB
-#define PushButton_2_EXTI_IRQn EXTI15_10_IRQn
-#define PushButton_3_Pin GPIO_PIN_15
+#define PushButton_3_Pin GPIO_PIN_14
 #define PushButton_3_GPIO_Port GPIOB
 #define PushButton_3_EXTI_IRQn EXTI15_10_IRQn
+#define PushButton_2_Pin GPIO_PIN_15
+#define PushButton_2_GPIO_Port GPIOB
+#define PushButton_2_EXTI_IRQn EXTI15_10_IRQn
 
 /* USER CODE BEGIN Private defines */
 

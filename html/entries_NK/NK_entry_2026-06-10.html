@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+
+<!--
+Author: Nick Kapuka
+-->
+
+<html lang="en">
+    <head>
+        <title>NK's Logbook</title>
+		<meta charset="UTF-8">
+        <meta name="description">
+		<link rel="stylesheet" href="../css/logbook_person.css">
+		<link rel="icon" href="../../media/icons/LiF_icon.ico" type="image/x-icon">
+        <link rel="stylesheet" href="../../css/master.css">
+		
+		<meta name="author" content="Nick Kapuka">
+		<meta name="description" content="This is a daily logbook entry page for Nick Kapuka as part of Engineering Project VI, ESE at Conestoga College.">
+		<meta name="robots" content="index, follow">
+		<meta http-equiv="Pragma" content="no-cache">
+    </head>
+
+    <body>
+		<section id="page_top">
+			<h1>Logbook Entry, 2026-06-10 and 2026-06-11 by Nick Kapuka</h1>
+			<h3>(Worked overnight so hard to tell what was done exactly on the same day.)</h3>
+			<h2>Summary of work performed</h2>
+			<p class="logbook_summary">Programmed the STM shield buttons and LEDs, finished STM32 CAN communication code (transmit and receive); awaiting testing for CAN and LED/PBs via the STM shields</p>
+            <a href="../logbook_NK.html">My logbook cover page</a>
+		</section>
+		
+		<section id="log">
+			<h2>STM transmit logic improved</h2>
+			<p>- utilized a wrapper function to cleanly call the transmit logic in the main loop</p>
+            <p>- if button pressed, process the button within the function and call CAN_ByteTransmit() within button-handling function</p>
+            <p>- see the updated version of the transmit logic below:</p>
+
+            <figure>
+				<img class="img_med" src="../../media/images/NK_CodeSnippet_CANTransmitMain.png" alt="Pulleys and Plates">
+				<figcaption><b>Displays functionality of the CAN transmit function - allows the user to enter their ID and the message they'd like to send.</b></figcaption>
+			</figure>
+
+			<h2>STM LED logic</h2>
+			<p>- as the STM PCBs have 6 LEDs, wrote code to utilize them</p>
+			<p>- one function, blinkLED() takes GPIO register, GPIO pin, and the delay into it and passes these variables into HAL_GPIO_WritePin() to blink an LED for a specific pin with a specific delay</p>
+            <p>- the purpose of it is to be general blink LED use-case, but specifically to briefly blink the LEDs near the STM shield buttons as a visual showcase of input processing</p>
+            <p>- another function, showFloor() calls the same HAL_GPIO_WritePin() and updates the 3 other LEDs to actively show the floor the elevator is currently on</p>
+            <p>- this will sync across all STM32 shields and continiously show what floor the elevator is on - kind of how real elevators have the 7-segment displays that show what floor the elevator is on</p>
+            <p>- would like to ideally test this logic, and if functional, will make it update based on the current floor so that if the elevator is moving from floor 3 to 1, the floor 3 LED will glow, then floor 2, and finally floor 1 once the elevator arrives</p>
+            <p>- see both blinkLED() and showFloor() below:</p>
+            
+			<figure>
+				<img class="img_med" src="../../media/images/NK_CodeSnippet_ShowFloor.png" alt="Pulleys and Plates">
+				<figcaption><b>The show floor function implementation</b></figcaption>
+			</figure>
+
+            <figure>
+				<img class="img_med" src="../../media/images/NK_CodeSnippet_BlinkLED.png" alt="Pulleys and Plates">
+				<figcaption><b>Blinking LED logic</b></figcaption>
+			</figure>
+
+			<h2>STM CAN receive logic implemented</h2>
+			<p>- simple function to receive and process the message from the EC to the STM32s (as only the EC sends TO the STMs; the STMs send to the R-Pi)</p>
+            <p>- basically, reads the four bits that the EC sends and stores them into local variables to keep track of what's going on (utilized by showFloor())</p>
+            <p>- see the function below:</p>
+
+            <figure>
+				<img class="img_med" src="../../media/images/NK_CodeSnippet_CANReceiveFunction.png" alt="Pulleys and Plates">
+				<figcaption><b>CAN receive function - accept messages from EC and grab the current floor and the enable bit via bit shifting</b></figcaption>
+			</figure>
+        
+        </section>
+		
+		<footer>
+			<p><a href="#page_top">Go to the top of this page</a></p>
+			<p>Copyright &copy Nick Kapuka</p>
+		</footer>
+		
+    </body>
+</html>
