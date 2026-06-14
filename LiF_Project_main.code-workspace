@@ -1,7 +1,14 @@
 {
-    "folders": [
-        {
-            "path": "."
-        }
-    ]
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"name": "LiF_EC",
+			"path": "embedded/LiF_EC"
+		}
+	],
+	"settings": {
+		"stm32cube-ide-clangd.path": "cube"
+	}
 }
