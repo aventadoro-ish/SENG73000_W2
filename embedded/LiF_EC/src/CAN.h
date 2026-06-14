@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Arduino.h>
+#include "pin_definition.h"
 
 #if defined(STM32_ENV)
 #include "STM32_CAN.h"
@@ -27,12 +28,12 @@ namespace LiF_CAN {
     constexpr int FILTER_F3 = 0x0203;
 
 
-    STM32_CAN bus(CAN_Rx, CAN_Tx);
+    extern STM32_CAN bus;
 
     void setup();
 
-    bool LiF_CAN::transmit(uint8_t floorByte);
-    bool LiF_CAN::receive(uint32_t &rxId, uint8_t &rxLen, uint8_t rxData[8]);
+    bool transmit(uint8_t floorByte);
+    bool receive(uint32_t &rxId, uint8_t &rxLen, uint8_t rxData[8]);
     
 
 }

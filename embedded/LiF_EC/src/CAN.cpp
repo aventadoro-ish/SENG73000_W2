@@ -1,9 +1,13 @@
 #include "CAN.h"
 #include "pin_definition.h"
 
-using namespace LiF_CAN;
 
-void LiF_CAN::setup() {
+namespace LiF_CAN {
+    
+STM32_CAN bus(CAN_Rx, CAN_Tx);
+
+
+void setup() {
     // bus.setIRQPriority(uint32_t preemptPriority, uint32_t subPriority); // default: lowest prio, 0
     // bus.setAutoRetransmission(bool enabled);  //default: true
     // bus.setRxFIFOLock(bool fifo0locked);      //default: false
@@ -11,6 +15,7 @@ void LiF_CAN::setup() {
     // bus.setTimestampCounter(false);    // should be set false as per lib documentation
     // bus.setMode(MODE mode);                   //default: NORMAL
     // bus.setAutoBusOffRecovery(bool enabled);  //default: false
+    
     pinMode(CAN_stb, OUTPUT);
     digitalWrite(CAN_stb, LOW);
     bus.setBaudRate(125000);
@@ -26,7 +31,7 @@ void LiF_CAN::setup() {
     bus.begin();
 }
 
-bool LiF_CAN::transmit(uint8_t floorByte) {
+bool transmit(uint8_t floorByte) {
     CAN_message_t msg;
 
     msg.id = TxID;
@@ -38,7 +43,7 @@ bool LiF_CAN::transmit(uint8_t floorByte) {
     return bus.write(msg);
 }
 
-bool LiF_CAN::receive(uint32_t &rxId, uint8_t &rxLen, uint8_t rxData[8]) {
+bool receive(uint32_t &rxId, uint8_t &rxLen, uint8_t rxData[8]) {
     CAN_message_t msg;
 
     if (!bus.read(msg)) {
@@ -54,3 +59,5 @@ bool LiF_CAN::receive(uint32_t &rxId, uint8_t &rxLen, uint8_t rxData[8]) {
 
     return true;
 }
+
+} // namespace LiF_CAN

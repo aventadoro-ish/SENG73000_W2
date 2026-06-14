@@ -1,3 +1,4 @@
+#pragma once
 #include <Arduino.h>
 
 #if defined(ESP32_ENV)
