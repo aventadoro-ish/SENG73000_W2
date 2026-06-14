@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+
+<!--
+Author: Rita Yevtushenko
+-->
+
+<html lang="en">
+    <head>
+        <title>RY's Logbook</title>
+        <meta charset="UTF-8">
+        <meta name="description">
+        <link rel="stylesheet" href="../css/logbook_person.css">
+        <link rel="stylesheet" href="../../css/master.css">
+        <link rel="icon" href="../../media/icons/LiF_icon.ico" type="image/x-icon">
+        
+        <meta name="author" content="Rita Yevtushenko">
+        <meta name="description" content="This is a daily logbook entry page for Rita Yevtushenko as part of Engineering Project VI, ESE at Conestoga College.">
+        <meta name="robots" content="index, follow">
+        <meta http-equiv="Pragma" content="no-cache">
+    </head>
+    <body>
+        <aside><iframe src="../links.html" title="Navigation"></iframe></aside>
+        <section id="page_top">
+            <h1>Logbook Entry, 2026-06-08 by Rita Yevtushenko</h1>
+            <h2>Summary of work performed</h2>
+            <p class="logbook_summary">Connected to RPi5 server, worked on about page, and completed group photos.</p>
+            <a href="../logbook_RY.html">My logbook cover page</a>
+        </section>
+        
+        <section id="log">
+            <h2>RPi4 Logic Overview</h2>
+            <p>Started working on the about page for the website that included summarizing the project's goals and objectives.</p>
+            
+            <h2>CAN Transceiver</h2>
+            <p>Researched the CAN transceiver specifications and began integrating it with the RPi4. MCP2515 datasheet:
+                <a href="https://ww1.microchip.com/downloads/en/DeviceDoc/MCP2515-Stand-Alone-CAN-Controller-with-SPI-20001801J.pdf" target="_blank">Link to the datasheet</a>.
+            </p>
+
+            <h2>Rita's Notes Before the Meeting</h2>
+            <p>Differences between our elevator and the class one:</p>
+            <ul>
+                <li>The STM32 communicates with the RPi through CAN protocol</li>
+                <li>Need to tell Sam to get an SD card for the RPi4</li>
+            </ul>
+
+            <h2>Debriefing Notes</h2>
+
+            <h3>Questions from the Group</h3>
+            <ul>
+                <li>Mentioned our lack of USB to CAN adapter</li>
+                <li>Using the MCP2515 (controller and transceiver) CAN transceiver between the RPi4 and STM32</li>
+                <li>Switching from stepper to DC motor</li>
+                <li>Mentioned the status on the STM32 CAN communication</li>
+                <li>RPi4 acting as the code dispatcher; changing the PCAN to SPI</li>
+                <li>Copy settings from the elevator control SPI to CAN since it already has it</li>
+                <li>CAD files and prints that we have to complete</li>
+                <li>Using a pulley system with similar functionality to 3D printer rollers for the moving elevator</li>
+                <li>Making our own platform; shields are our own — will be finished by end of this week</li>
+                <li>DB9 cables instead of connectors (from the toolroom)</li>
+                <li>This week: STM logic when shields are finished, dispatcher code by Friday, combination of the code during the weekend or before that</li>
+                <li>If there is time, we can replace the stepper with a BLDC motor</li>
+            </ul>
+
+            <h3>Professor's Advice</h3>
+            <ul>
+                <li>No need for the position sensor since the SPI sensor is precise</li>
+                <li>Submit the video of STM32 CAN communication</li>
+                <li>Wants to see traffic of messages; all controllers should see the message from one sent message (serial monitor)</li>
+                <li>Think about cart request, floor request, and remote request of elevator movement — consider priority ordering</li>
+                <li>Each level should have a queue for when multiple buttons are pressed</li>
+                <li>Need to track if someone is inside the elevator; disable doors when someone is inside or when moving</li>
+                <li>Matvey: simulate someone inside using a toggle switch inside the elevator — should be part of the code</li>
+                <li>Matvey: for future phases, additional features include door opening and sensing for someone inside</li>
+                <li>Safety: timeout protection — if the controller does not receive a message within 10 seconds, trigger a fault condition and stop the elevator. Multiply timeout by 2 for travel between floors 1 and 3</li>
+                <li>E-stop should be connected to the Cart Controller — software only, no dedicated hardware E-stop required</li>
+                <li>Motor selection: NEMA 17, 23, and 34 — select the correct current for the motor driver</li>
+                <li>Some drivers support microsteps; using bipolar configuration could allow for very precise positioning</li>
+            </ul>
+        </section>
+        
+        <footer>
+            <p><a href="#page_top">Go to the top of this page</a></p>
+            <p>Copyright &copy; 2026 Rita Yevtushenko</p>
+        </footer>
+        
+    </body>
+</html>

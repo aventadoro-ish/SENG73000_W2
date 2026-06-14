@@ -1,3 +1,31 @@
+--> Added here
+body{
+    font-family: Georgia, serif;
+    font-size: 100%;
+}
+h1 {
+    font-size: 160%;
+}
+
+h2 {
+    font-size: 125%;
+}
+
+p, li {
+    line-height: 20px;
+    text-align: justify;
+}
+
+p {
+    text-indent: 15px;
+}
+
+figcaption {
+    font-style: italic;
+    text-align: center;
+    font-size: 90%;
+}
+-->
 .img_med {
     display: block;
     max-width:400px;

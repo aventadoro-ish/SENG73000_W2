@@ -1,4 +1,4 @@
-	body { font-family: sans-serif;}
+	body { font-family: Georgia, serif;}
 
 	p,ul,ol { font-size: 100%;
 		line-height: 20px;
@@ -8,12 +8,12 @@
 	
 	p {text-indent: 15px;}
 	
-	h1 {font-size: 160%;}
+	h1 {font-size: 160%;} 
 	
 	h2 {font-size: 125%}
 	
-	img {height: 300px;
-		 }
+	img {height: 300px;}
+    
 	figcaption {font-style: italic;
 				text-align: center;
 				font-size: 90%;
