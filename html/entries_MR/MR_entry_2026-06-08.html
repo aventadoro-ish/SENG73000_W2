@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+
+<!--
+Author: Matvey Regentov
+Contributors to this page:
+ - Matvey Regentov
+
+About:
+This is a template for a daily logbook entry. This page should be duplicated 
+by each team member when they work on the project. Each team member is 
+responsible for linking their logbook entries to their personal logbook cover 
+page. See ./logbook_person_template.html for more info.
+Template usage checklist:
+- [x] replace "Matvey Regentov" with your name
+- [x] replace "2026-06-08" with the date of the logbook entry
+- [ ] write log in section with id "log"
+- [ ] add link to personal logbook cover by replacing "../html/logbook_person_template.html" with actual path
+- [ ] replace xx in head/title tag with your initials
+-->
+
+<html lang="en">
+    <head>
+        <title>MR's Logbook</title>
+		<meta charset="UTF-8">
+		<link rel="stylesheet" href="../../css/logbook_person.css">
+		<link rel="stylesheet" href="../../css/master.css">
+		<link rel="icon" href="../../media/icons/LiF_icon.ico" type="image/x-icon">
+		
+		<meta name="author" content="Matvey Regentov">
+		<meta name="description" content="This is a daily logbook entry page for Matvey Regentov as part of Engineering Project VI, ESE at Conestoga College.">
+		<meta name="robots" content="index, follow">
+		<meta http-equiv="Pragma" content="no-cache">
+    </head>
+
+    <body>
+        <aside><iframe src="../links.html" title="Navigation"></iframe></aside>
+		<section id="page_top">
+			<h1>Logbook Entry, 2026-06-08 by Matvey Regentov</h1>
+			<h2>Summary of work performed</h2>
+			<p class="logbook_summary">Summary</p>
+            <a href="../logbook_MR.html">My logbook cover page</a>
+		</section>
+		
+		<section id="log">
+			<h2>Team Meeting</h2>
+            <p>
+                LiF Team had a meeting to coordinate tasks and activites to 
+                perform before the end of phase 1. Additionally, we prepared 
+                for the debried with our project course professor.
+            </p>
+            <ul>
+                <li>
+                    <b>Accomplished so far:</b>
+                    <ul>
+                        <li>STM32 logic implementation (63% done)</li>
+                        <li>Raspberry Pi - demo code installed and working</li>
+                        <li>Platform construction, CAD, 3D printing - on track. Minor additional parts are needed.</li>
+                        <li>Nucleo shield soldering test performed</li>
+                    </ul>
+                </li>
+                <li>
+                    <b>Plans for this week:</b>
+                    <ul>
+                        <li>Finish Nucleo Shield soldering</li>
+                        <li>DB9 Can bus cable soldering</li>
+                        <li>STM32 logic test</li>
+                        <li>
+                            RPi (assume to be done by Friday)
+                            <ul>
+                                <li>PCAN substitute code (SPI to CAN module)</li>
+                                <li>Dispatcher (SC) logic code</li>
+                            </ul>
+                        </li>
+                        <li>Integration - Friday/weekend</li>
+                    </ul>
+                </li>
+                <li>
+                    <b>Ask professor during the debrief</b>
+                    <ul>
+                        <li>Exact end of phase 1 deadline</li>
+                        <li>Is it ok that we're building our own elevator platform?</li>
+                    </ul>
+                </li>
+            </ul>
+			<h2>Debrief notes</h2>
+            <ul>
+                <li>
+                    Key deliverables for Phase 1:
+                    <ul>
+                        <li>traffic of CAN messages</li>
+                        <li>3 priority levels</li>
+                        <li>command queue for each controller</li>
+                        <li>
+                            door feedback
+                            <ul>
+                                <li>emulate a door with a switch</li>
+                                <li>don't move while the door is open</li>
+                                <li>use a toggle switch attached to CC</li>
+                            </ul>
+                        </li>
+                        <li>
+                            safety and timeouts
+                            <ul>
+                                <li>trigger fault conditions based on timeouts for tasks not being finished in time</li>
+                                <li>E-Stop can be made in software -> triggers the same fault state</li>
+                            </ul>
+                        </li>
+                        <li>
+                            Test full operation sequence
+                            <ul>
+                                <li>call the elevator using FC</li>
+                                <li>elevator comes, the door "opens"</li>
+                                <li>elevator does not move until the door is "closed"</li>
+                                <li>elevator stops along the way if other FCs called it</li>
+                                <li>etc...</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+
+
+			
+		</section>
+		
+		<footer>
+			<p><a href="#page_top">Go to the top of this page</a></p>
+			<p>Copyright &copy Matvey Regentov</p>
+		</footer>
+		
+    </body>
+</html>

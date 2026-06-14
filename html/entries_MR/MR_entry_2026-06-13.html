@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+
+<!--
+Author: Matvey Regentov
+Contributors to this page:
+ - Matvey Regentov
+
+About:
+This is a template for a daily logbook entry. This page should be duplicated 
+by each team member when they work on the project. Each team member is 
+responsible for linking their logbook entries to their personal logbook cover 
+page. See ./logbook_person_template.html for more info.
+Template usage checklist:
+- [x] replace "Matvey Regentov" with your name
+- [x] replace "2026-06-13" with the date of the logbook entry
+- [ ] write log in section with id "log"
+- [ ] add link to personal logbook cover by replacing "../html/logbook_person_template.html" with actual path
+- [ ] replace xx in head/title tag with your initials
+-->
+
+<html lang="en">
+    <head>
+        <title>MR's Logbook</title>
+		<meta charset="UTF-8">
+		<link rel="stylesheet" href="../../css/logbook_person.css">
+		<link rel="stylesheet" href="../../css/master.css">
+		<link rel="icon" href="../../media/icons/LiF_icon.ico" type="image/x-icon">
+		
+		<meta name="author" content="Matvey Regentov">
+		<meta name="description" content="This is a daily logbook entry page for Matvey Regentov as part of Engineering Project VI, ESE at Conestoga College.">
+		<meta name="robots" content="index, follow">
+		<meta http-equiv="Pragma" content="no-cache">
+        <script>
+            window.MathJax = {
+                tex: {
+                    inlineMath: [['\\(', '\\)'], ['$', '$']],
+                    displayMath: [['\\[', '\\]'], ['$$', '$$']]
+                },
+                svg: {
+                    fontCache: 'global'
+                }
+            };
+        </script>
+
+        <script
+            id="MathJax-script"
+            async
+            src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js">
+        </script>
+    </head>
+
+    <body>
+        <aside><iframe src="../links.html" title="Navigation"></iframe></aside>
+		<section id="page_top">
+			<h1>Logbook Entry, 2026-06-13 by Matvey Regentov</h1>
+			<h2>Summary of work performed</h2>
+			<p class="logbook_summary">Working on EC module</p>
+            <a href="../logbook_MR.html">My logbook cover page</a>
+		</section>
+		
+        <section id="log">
+            <p>
+                <i>Note: this entry was converted from my own Obsidian Markdown 
+                logbook notes to HTML using ChatGPT. All the contents were 
+                preserved - only formatting was adjusted.</i>
+            </p>
+            <h2>ESP32 PlatformIO Environment</h2>
+            <p>
+                I created a PlatformIO environment in Visual Studio Code for the
+                ESP32-WROVER development board:
+            </p>
+
+            <pre><code class="language-ini">[env:esp-wrover-kit]
+    platform = espressif32
+    board = esp-wrover-kit
+    framework = arduino</code></pre>
+
+            <p>
+                The initial stepper-motor code was adapted from the
+                <a href="https://randomnerdtutorials.com/esp32-stepper-motor-28byj-48-uln2003/"
+                target="_blank" rel="noopener noreferrer">
+                    Random Nerd Tutorials ESP32 stepper-motor example
+                </a>.
+            </p>
+
+            <h2>ULN2003AN Module Evaluation</h2>
+
+            <!-- Export the Excalidraw drawing as PNG or SVG and adjust this path if needed. -->
+            <figure>
+                <img class="img_med"
+                    src="../../media/images/ULN2003AN_Module_Schematic.png"
+                    alt="ULN2003AN stepper-motor driver module schematic">
+                <figcaption>
+                    ULN2003AN stepper-motor driver module schematic
+                </figcaption>
+            </figure>
+
+            <p>The measured motor-coil resistance was:</p>
+
+            \[
+                R_{\mathrm{coil}} = 35\,\Omega
+            \]
+
+            <p>The approximate coil current can be calculated as:</p>
+
+            \[
+                I_{\mathrm{coil}} =
+                \frac{V_{\mathrm{SUP}} - V_{\mathrm{CE(sat)}}}
+                    {R_{\mathrm{coil}}}
+            \]
+
+            <p>
+                The stated \(V_{\mathrm{CE(sat)}}\) range is approximately
+                \(0.9\,\mathrm{V}\) to \(1.6\,\mathrm{V}\). The datasheet also
+                specifies a maximum single-channel output current of
+                \(500\,\mathrm{mA}\).
+            </p>
+
+            <p>
+                Using \(V_{\mathrm{CE(sat)}} \approx 1\,\mathrm{V}\), the supply
+                voltage corresponding to a \(500\,\mathrm{mA}\) coil current is:
+            </p>
+
+            \[
+                \begin{aligned}
+                    V_{\mathrm{SUP}} &=
+                        I_{\mathrm{coil}}R_{\mathrm{coil}}
+                        + V_{\mathrm{CE(sat)}} \\
+                    V_{\mathrm{SUP,max}} &=
+                        0.5(35) + 1
+                        = 18.5\,\mathrm{V}
+                \end{aligned}
+            \]
+
+            <p>For a \(12\,\mathrm{V}\) supply:</p>
+
+            \[
+                I_{\mathrm{coil}} =
+                \frac{12 - 1}{35}
+                = 0.314\,\mathrm{A}
+            \]
+
+            <p>
+                However, the ULN2003AN module is intended for a unipolar stepper
+                motor with a common wire, such as the
+                <em>28BYJ-48 5 V stepper motor</em><sup><a href="#ref-1">[1]</a></sup>.
+                It therefore cannot directly drive the available four-wire bipolar
+                NEMA17 motor.
+            </p>
+
+            <h2>NEMA17 Driver and Initial Test</h2>
+            <p>
+                Project Molybdenum Penguin (Project MoP) provided a suitable
+                alternative. I used the stepper-driver circuit from its power PCB,
+                which is based on a DRV8251DDAR integrated circuit.
+            </p>
+            <p> 
+                Initial motion of the elevator mechanism was poor due to 
+                excessive friction in the roller gantry system. The friction 
+                prevented the carriages from moving smoothly under gravity and 
+                also caused the rope to slip on the pulleys. To improve 
+                traction, I added a rubber band to the main pulley to increase 
+                friction between the pulley and the rope. Additional weight was 
+                also added to the carriages to increase rope tension. However, 
+                the increased load caused the stepper motor to skip steps, 
+                while removing the extra weight resulted in rope slipping again. 
+                After manually cycling both carriages up and down for 
+                approximately 10 minutes, enough wear occurred on the rollers 
+                to significantly reduce friction. As a result, only a small 
+                amount of additional weight was required, and the elevator 
+                platform began moving smoothly and reliably. 
+            </p>
+
+            <p>
+                A 15-minute continuous-motion test was performed with the elevator
+                repeatedly travelling up and down. During testing, the maximum stable
+                motor speed was determined to be 30 RPM. The following operating
+                parameters and measurements were observed:
+            </p>
+
+            <ul>
+                <li>Stepper motor speed: 30 RPM</li>
+                <li>Motion profile: continuous up/down cycling</li>
+                <li>Test duration: 15 minutes</li>
+                <li>Movement: 1004 steps</li>
+                <li>Ambient temperature: 23&nbsp;&deg;C</li>
+                <li>Motor temperature: 50&nbsp;&deg;C</li>
+                <li>Motor current: 430&nbsp;mA</li>
+            </ul>
+
+            <p>
+                During extended testing, the main pulley experienced a mechanical
+                failure. The pulley had been manufactured from PLA, and the elevated
+                temperature of the stepper motor likely softened the material enough
+                to reduce its structural strength. Replacement pulley components are
+                currently being printed using PETG, which should provide improved
+                temperature resistance and durability.
+            </p>
+
+            <figure>
+                <video class="img_lrg" controls>
+                    <source src="../../media/video/InitialMotionTest.MOV" alt="Video demonstration of elevator cabin moving">
+                </video>
+                <figcaption>Video demonstration of elevator cabin moving</figcaption>
+            </figure>
+
+            <h2>Reference</h2>
+            <ol>
+                <li id="ref-1">
+                    Random Nerd Tutorials,
+                    <a href="https://randomnerdtutorials.com/esp32-stepper-motor-28byj-48-uln2003/"
+                    target="_blank" rel="noopener noreferrer">
+                        “ESP32 with Stepper Motor (28BYJ-48 and ULN2003 Motor Driver)”
+                    </a>.
+                </li>
+            </ol>
+        </section>
+
+		
+		<footer>
+			<p><a href="#page_top">Go to the top of this page</a></p>
+			<p>Copyright &copy Matvey Regentov</p>
+		</footer>
+		
+    </body>
+</html>

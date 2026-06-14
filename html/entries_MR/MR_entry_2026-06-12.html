@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+
+<!--
+Author: Matvey Regentov
+Contributors to this page:
+ - Matvey Regentov
+
+About:
+This is a template for a daily logbook entry. This page should be duplicated 
+by each team member when they work on the project. Each team member is 
+responsible for linking their logbook entries to their personal logbook cover 
+page. See ./logbook_person_template.html for more info.
+Template usage checklist:
+- [x] replace "Matvey Regentov" with your name
+- [x] replace "2026-06-12" with the date of the logbook entry
+- [ ] write log in section with id "log"
+- [ ] add link to personal logbook cover by replacing "../html/logbook_person_template.html" with actual path
+- [ ] replace xx in head/title tag with your initials
+-->
+
+<html lang="en">
+    <head>
+        <title>MR's Logbook</title>
+		<meta charset="UTF-8">
+		<link rel="stylesheet" href="../../css/logbook_person.css">
+		<link rel="stylesheet" href="../../css/master.css">
+		<link rel="icon" href="../../media/icons/LiF_icon.ico" type="image/x-icon">
+		
+		<meta name="author" content="Matvey Regentov">
+		<meta name="description" content="This is a daily logbook entry page for Matvey Regentov as part of Engineering Project VI, ESE at Conestoga College.">
+		<meta name="robots" content="index, follow">
+		<meta http-equiv="Pragma" content="no-cache">
+    </head>
+
+    <body>
+        <aside><iframe src="../links.html" title="Navigation"></iframe></aside>
+		<section id="page_top">
+			<h1>Logbook Entry, 2026-06-12 by Matvey Regentov</h1>
+			<h2>Summary of work performed</h2>
+			<p class="logbook_summary">Summary</p>
+            <a href="../logbook_MR.html">My logbook cover page</a>
+		</section>
+		
+		<section id="log">
+			<h2>Nucleo Shield Soldering</h2>
+            <p>
+                I finished soldering the Nucleo Shields for FC/CC modules. NK 
+                tested each board using an oscilloscope. For more info, see his 
+                logbook.
+            </p>
+            <p>
+                One of the shields that was missing C3 was tested and 
+                determined to be fully functional.
+            </p>
+            <figure>
+                <img class="img_med" src="../../media/images/NucleoShieldsFinished.jpg" alt="3 out of 4 Nucleo Shield PCBs fully soldered">
+                <figcaption>3 out of 4 Nucleo Shield PCBs fully soldered</figcaption>
+            </figure>
+
+            <h2>CAN Bus Cable Planning</h2>
+            <p>
+                NK and I planned how to solder the CAN bus cable using DB9 cables we got from the Tool Room.
+            </p>
+            <figure>
+                <img class="img_med" src="../../media/images/CAN_Bus_Cable_Diagram.png" alt="Diagram showing CAN bus cable, segment lengths, and connector genders">
+                <figcaption>Diagram showing CAN bus cable, segment lengths, and connector genders</figcaption>
+            </figure>
+            <p>
+                An approach on how to split cables was devised. This approach 
+                attempts to balance finished cable quality, electrical 
+                insulation, and labour. The procedure is:
+                <ol>
+                    <li>Strip a segment of the insulation on the main bus cable and cut 3 conductors which connect to CANH, CANL, and Gnd lines</li>
+                    <li>Cut a small 20cm-long end of a cable that will branch off from the main bus</li>
+                    <li>Make 3 short wire segments, strip insulation from both ends and the middle</li>
+                    <li>Solder the wires from the short cable to the middle of the 3 wire segments as a T-joint</li>
+                    <li>Cover the T-joint with insulation</li>
+                    <li>Add thick heat-shrink insulation around the branching off cable to act as the strain relief on all 3 T-Joints, add short insulation to both ends of each of 3 wire segments</li>
+                    <li>Solder both ends of the 3 wires to the 2 cut wires from the main bus, such that the short segment joins the broken wires of the main cable</li>
+                    <li>Shrink the heat-shrink insulation</li>
+                </ol>
+                <p>
+                    NK took over this task from me to let me develop the EC module during the weekend.
+                </p>
+            </p>
+			
+		</section>
+		
+		<footer>
+			<p><a href="#page_top">Go to the top of this page</a></p>
+			<p>Copyright &copy Matvey Regentov</p>
+		</footer>
+		
+    </body>
+</html>

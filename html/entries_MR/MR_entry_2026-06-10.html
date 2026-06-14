@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+
+<!--
+Author: Matvey Regentov
+Contributors to this page:
+ - Matvey Regentov
+
+About:
+This is a template for a daily logbook entry. This page should be duplicated 
+by each team member when they work on the project. Each team member is 
+responsible for linking their logbook entries to their personal logbook cover 
+page. See ./logbook_person_template.html for more info.
+Template usage checklist:
+- [x] replace "Matvey Regentov" with your name
+- [x] replace "2026-06-10" with the date of the logbook entry
+- [ ] write log in section with id "log"
+- [ ] add link to personal logbook cover by replacing "../html/logbook_person_template.html" with actual path
+- [ ] replace xx in head/title tag with your initials
+-->
+
+<html lang="en">
+    <head>
+        <title>MR's Logbook</title>
+		<meta charset="UTF-8">
+		<link rel="stylesheet" href="../../css/logbook_person.css">
+		<link rel="stylesheet" href="../../css/master.css">
+		<link rel="icon" href="../../media/icons/LiF_icon.ico" type="image/x-icon">
+		
+		<meta name="author" content="Matvey Regentov">
+		<meta name="description" content="This is a daily logbook entry page for Matvey Regentov as part of Engineering Project VI, ESE at Conestoga College.">
+		<meta name="robots" content="index, follow">
+		<meta http-equiv="Pragma" content="no-cache">
+    </head>
+
+    <body>
+        <aside><iframe src="../links.html" title="Navigation"></iframe></aside>
+		<section id="page_top">
+			<h1>Logbook Entry, 2026-06-10 by Matvey Regentov</h1>
+			<h2>Summary of work performed</h2>
+			<p class="logbook_summary">Nucleo Shield Soldering</p>
+            <a href="../logbook_MR.html">My logbook cover page</a>
+		</section>
+		
+		<section id="log">
+			<h2>Nucleo Shield Soldering</h2>
+			<p>
+				I started soldering 3 remaining Nucleo Shields by hand, as the 
+				results from the test board baked w/o a stencil were quite poor. 
+				It was estimated that soldering by hand would take less time 
+				than baking and touching up boards manually afterwards.
+			</p>
+			<p>
+				Soldering went smoothly, although 0201 capacitors C3 and C4 
+				were time-consuming to solder. Additionally, 1x C3 cap is 
+				missing, as all the spares were lost during the soldering 
+				process. For the time being, it was deemed unnecessary, as the 
+				15pF C3 simply adds capacitance to the Rx line. Further testing 
+				is needed.
+			</p>
+			<h2>Missing PCAN adapter found</h2>
+			<p>
+				Sam Butella, the Tool Room Technician, found the missing PCAN 
+				adapter, so now the RPi does not need to use MCP module 
+				(SPI-CAN adapter).
+			</p>
+			
+		</section>
+		
+		<footer>
+			<p><a href="#page_top">Go to the top of this page</a></p>
+			<p>Copyright &copy Matvey Regentov</p>
+		</footer>
+		
+    </body>
+</html>
