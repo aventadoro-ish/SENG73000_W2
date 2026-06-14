@@ -33,25 +33,59 @@
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
 // ------------- NK UPDATE -------------:
-// begin setting up CAN IDs per boards (SC, EC, CC, and Fx)
-#define SC_ID				0x100
-#define EC_ID				0x101
-#define CC_ID				0x200
-#define F1_ID				0x201
-#define F2_ID				0x202
-#define F3_ID				0x203
 
-// for this specific board, I'll do CC first, so
-// this WILL have to be changed per board
-#define MY_ID				CC_ID
+// alternate between the different boards; used to setup faster FLASHING
+#define CC_BOARD	0					// Cab STM32
+#define F1_BOARD	1					// Floor 1 STM32
+#define F2_BOARD	2					// Floor 2 STM32
+#define F3_BOARD	3					// Floor 3 STM32
+
+// ********************************* CHANGE PER BOARD *********************************
+#define SELECTED_BOARD	CC_BOARD		// currently selected board; change when flashing
+// ************************************************************************************
+
+// CAN IDs:
+#define SC_ID				0x100		// Supervisor Controller; R-Pi
+#define EC_ID				0x101		// Elevator Controller; arduino
+#define CC_ID				0x200		// Cab Controller; STM32
+#define F1_ID				0x201		// Floor 1 controller; STM32
+#define F2_ID				0x202		// Floor 2 controller; STM32
+#define F3_ID				0x203		// Floor 3 controller; STM32
 
 // variable names for each floor
+#define NO_FLOOR			0			// no floor; used for Cab
 #define FLOOR_1				1
 #define FLOOR_2				2
 #define FLOOR_3				3
 
+// pre-comp code block for configuring STM32 FLASHING
+#if SELECTED_BOARD == CC_BOARD
+	#define MY_ID		CC_ID
+	#define MY_FLOOR	NO_FLOOR
+
+// if floor 1 board
+#elif SELECTED_BOARD == F1_BOARD
+	#define MY_ID		F1_ID
+	#define MY_FLOOR	FLOOR_1
+
+// if floor 2 board
+#elif	SELECTED_BOARD == F2_BOARD
+	#define MY_ID		F2_ID
+	#define MY_FLOOR	FLOOR_2
+
+// if floor 3 board
+#elif	SELECTED_BOARD == F3_BOARD
+	#define MY_ID		F3_ID
+	#define MY_FLOOR	FLOOR_3
+
+// error check
+#else
+	#error "Invalid SELECTED_BOARD"
+
+#endif
+
 #define	NO_BUTTON_PRESSED	0		// default value for button status
-#define BLUE_BUTTON_PRESS	5		// value of blue Button when pressed; 5 just avoids conflicts with other PB
+#define BLUE_BUTTON_PRESS	1		// blue button will act as a 'homing' and send elv down to F1
 #define	F1_BUTTON_PRESS		1		// req to go to floor 1 PB pressed
 #define F2_BUTTON_PRESS		2		// req to go to floor 2 PB pressed
 #define F3_BUTTON_PRESS		3		// req to go to floor 3 PB pressed
@@ -75,9 +109,15 @@ CAN_RxHeaderTypeDef		RxHeader;						// variable of type CAN_RxHeaderTypeDef
 uint8_t					TxData[8];						// 8 bytes of data per frame
 uint8_t					RxData[8];						// 8 bytes of data per frame
 uint32_t				TxMailbox;
-// uint8_t					msg = GO_TO_FLOOR_1;			// initial message is GO_TO_FLOOR_1
 volatile uint8_t		BUTTON = NO_BUTTON_PRESSED;		// initial value is that no button has been pressed
-uint8_t					i;								// for loop variable
+
+// receive initializations
+volatile uint8_t CAN_MsgPending	= 0;		// flag for a pending message
+volatile uint32_t rx_ID 	 	= 0;		// received message ID (only listen to EC's 0x101 ID)
+volatile uint8_t rx_Byte0 		= 0;		// used to store numbers from first byte
+uint8_t	 elevator_en 	= 0;				// elevator enabled flag (part of the message that EC sends)
+uint8_t	 current_floor 	= 0;				// current floor value (part of the message that EC sends)
+											// note: these are used in RxCallback function
 
 
 /* USER CODE END PV */
@@ -88,7 +128,11 @@ static void MX_GPIO_Init(void);
 static void MX_CAN_Init(void);
 static void MX_USART2_UART_Init(void);
 /* USER CODE BEGIN PFP */
-
+void CAN_ByteTransmit(uint32_t std_id, uint8_t data0);
+void blinkLED(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin, uint32_t delay_ms);
+void CAN_ProcessReceive(void);
+void PB_Process(uint8_t button);
+void showFloor(void);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -98,8 +142,9 @@ static void MX_USART2_UART_Init(void);
 // make a new function for transmitting CAN message:
 // note, this setup is almost the same as the MX_CAN_Init
 void CAN_ByteTransmit(uint32_t std_id, uint8_t data0){
-	// set the TxHeader's stdID to std_id that you can pass into the function (who you're sending to)
-	TxHeader.StdId = std_id;
+	// set the TxHeader's stdID to std_id that you can pass into the function (message type and message data)
+	// config:
+	TxHeader.StdId = std_id;				// same as MX_CAN
 	TxHeader.IDE = CAN_ID_STD;				// same as MX_CAN
 	TxHeader.RTR = CAN_RTR_DATA;			// same as MX_CAN
 	TxHeader.DLC = 1;						// same as MX_CAN
@@ -113,9 +158,112 @@ void CAN_ByteTransmit(uint32_t std_id, uint8_t data0){
         Error_Handler();
     }
 
+
     // note, the goal is to use this function as:
     // CAN_ByteTransmit(MY_ID, FLOOR_X);
 }
+
+void blinkLED(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin, uint32_t delay_ms){
+	 // blink LED briefly
+		HAL_GPIO_WritePin(GPIOx, GPIO_Pin, GPIO_PIN_SET);
+		HAL_Delay(delay_ms);
+		HAL_GPIO_WritePin(GPIOx, GPIO_Pin, GPIO_PIN_RESET);
+}
+
+
+// to show what floor elevator is on:
+void showFloor(void)
+{
+    // turn all floor indicator LEDs off first
+    HAL_GPIO_WritePin(F1_Indicator_LED_GPIO_Port, F1_Indicator_LED_Pin, GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(F2_Indicator_LED_GPIO_Port, F2_Indicator_LED_Pin, GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(F3_Indicator_LED_GPIO_Port, F3_Indicator_LED_Pin, GPIO_PIN_RESET);
+
+    if(current_floor == FLOOR_1)
+    {
+        HAL_GPIO_WritePin(F1_Indicator_LED_GPIO_Port, F1_Indicator_LED_Pin, GPIO_PIN_SET);
+    }
+    else if(current_floor == FLOOR_2)
+    {
+        HAL_GPIO_WritePin(F2_Indicator_LED_GPIO_Port, F2_Indicator_LED_Pin, GPIO_PIN_SET);
+    }
+    else if(current_floor == FLOOR_3)
+    {
+        HAL_GPIO_WritePin(F3_Indicator_LED_GPIO_Port, F3_Indicator_LED_Pin, GPIO_PIN_SET);
+    }
+}
+
+
+void CAN_ProcessReceive(void){
+	// check if received ID is the ID of the EC
+	if (rx_ID == EC_ID)
+	{
+		// shift the 3rd bit (the actual EC en bit; >> 2) down to bit 1 and keep that (& 0x01)
+		elevator_en = (rx_Byte0 >> 2) & 0x01;
+
+		// only read the first two bits
+		current_floor = rx_Byte0 & 0x03;
+	}
+}
+
+
+void PB_Process(uint8_t button){
+// CC exclusive code; won't run unless CC is selected using SELECTED_BOARD
+#if SELECTED_BOARD == CC_BOARD
+
+	// PB1/2/3 means go to floor 1/2/3
+	if(button == F1_BUTTON_PRESS)
+	{
+		CAN_ByteTransmit(MY_ID, FLOOR_1);
+		// illuminate PB LED for visual confirmation
+		blinkLED(PB1_LED_GPIO_Port, PB1_LED_Pin, 200);
+		current_floor = 1;
+
+	}
+	else if(button == F2_BUTTON_PRESS)
+	{
+		CAN_ByteTransmit(MY_ID, FLOOR_2);
+		// illuminate PB LED for visual confirmation
+		blinkLED(PB2_LED_GPIO_Port, PB2_LED_Pin, 200);
+		current_floor = 2;
+
+	}
+	else if(button == F3_BUTTON_PRESS)
+	{
+		CAN_ByteTransmit(MY_ID, FLOOR_3);
+		// illuminate PB LED for visual confirmation
+		blinkLED(PB3_LED_GPIO_Port, PB3_LED_Pin, 200);
+		current_floor = 3;
+
+	}
+
+// process button input differently based on what STM32 is used (car vs floor controllers):
+#elif SELECTED_BOARD == F1_BOARD
+	if(button == F1_BUTTON_PRESS){
+		CAN_ByteTransmit(MY_ID, 0x01);
+		// illuminate PB LED for visual confirmation
+		blinkLED(PB1_LED_GPIO_Port, PB1_LED_Pin, 200);
+	}
+
+#elif SELECTED_BOARD == F2_BOARD
+	if(button == F2_BUTTON_PRESS){
+		CAN_ByteTransmit(MY_ID, 0x01);
+		// illuminate PB LED for visual confirmation
+		blinkLED(PB2_LED_GPIO_Port, PB2_LED_Pin, 200);
+	}
+
+#elif SELECTED_BOARD == F3_BOARD
+	if(button == F3_BUTTON_PRESS){
+		CAN_ByteTransmit(MY_ID, 0x01);
+		// illuminate PB LED for visual confirmation
+		blinkLED(PB3_LED_GPIO_Port, PB3_LED_Pin, 200);
+	}
+#endif
+}
+
+
+
+
 
 
 /* USER CODE END 0 */
@@ -157,87 +305,39 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+
   while (1)
   {
-	  //HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
-	  //HAL_Delay(1000);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-
-	  // Receive messages
-	  /*
-	  	 if (RxData[0] == GO_TO_FLOOR_1){
-	  		// turn on green LED when message received for 2 s
-	  		 HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
-	  		 HAL_Delay(2000);
-
-	  		 // reset the RxData buffer (flag?)
-	  		 for(i = 0; i < 8; i++){
-	  			 RxData[i] = 0x00;
-	  		 }
-
-	  		 // turn LED off and add small toggle delay
-	  		 HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
-	  		 HAL_Delay(100);
-	  	 }
-
-	  	  */
-	  	 // transmit messages
-	  	 /* CLASS EXAMPLE CODE:
-	  	 if(BUTTON != 0)
+	  	  // always display current floor on floor PCBs and car cab PCB
+	  	  showFloor();
+	  	  // Receive messages
+	  	  // check if msgpending (if msg received)
+	  	 if (CAN_MsgPending)
 	  	 {
-
-	  		 // blue button pressed enables the green LED for 2 sec
-	  		 if(BUTTON == BLUE_BUTTON_PRESS)
-	  		 {
-	  			 HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
-	  			 HAL_Delay(2000);
-
-	  			 // store the 1-character message
-	  			 TxData[0] = msg;
-
-	  			 // transmit the message
-	  			 if(HAL_CAN_AddTxMessage(&hcan, &TxHeader, TxData, &TxMailbox) != HAL_OK)
-	  			 {
-	  				 Error_Handler();			// transmission error
-	  			 }
-
-	  			 // turn the LED off and reset button flag
-	  			 HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
-	  			 BUTTON = NO_BUTTON_PRESSED;
-	  		 }
+	  		 // flag msg as read by reseting MsgPending
+	  		 CAN_MsgPending = 0;
+	  		 // process msg; grab the two values from EC regarding position (floor #) and status (en or !en)
+	  		 CAN_ProcessReceive();
 	  	 }
-	  	 */
 
-	  	 // custom transmit code:
-	  	 // check if a button was pressed and handle logic:
-	  	 if (BUTTON != NO_BUTTON_PRESSED)
+	  	 // Transmit messages
+	  	 // check if input present
+	  	 if(BUTTON != NO_BUTTON_PRESSED)
 	  	 {
-	  		 // call the transmit function based on what floor button was pressed
-	  		 if(BUTTON == F1_BUTTON_PRESS)
-	  		 {
-	  			 CAN_ByteTransmit(MY_ID, FLOOR_1);
-	  		 }
-	  		 else if(BUTTON == F2_BUTTON_PRESS)
-	  		 {
-	  			 CAN_ByteTransmit(MY_ID, FLOOR_2);
-	  		 }
-	  		 else if(BUTTON == F3_BUTTON_PRESS)
-	  		 {
-	  			 CAN_ByteTransmit(MY_ID, FLOOR_3);
-	  		 }
+	  		 // temporarily store before processing
+	  		 // avoids weird interrupt flags (like if BUTTON is updated before msg read)
+	  		 uint8_t pressed_button = BUTTON;
+	  		 // reset BUTTON since it's input has been captured
+	  		 BUTTON = NO_BUTTON_PRESSED;
+	  		 // process button
+	  		 PB_Process(pressed_button);
+	  		 // blink green LED briefly for transmit successful
+	  		 blinkLED(GPIOA, Green_LED_Pin, 500);
 
-	  		 // blink LED briefly
-	  		HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
-	  		HAL_Delay(200);
-	  		HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
-
-	  		// keep button in off state
-	  		BUTTON = NO_BUTTON_PRESSED;
 	  	 }
-
-
   }
   /* USER CODE END 3 */
 }
@@ -315,7 +415,6 @@ static void MX_CAN_Init(void)
   hcan.Init.AutoRetransmission = DISABLE;
   hcan.Init.ReceiveFifoLocked = DISABLE;
   hcan.Init.TransmitFifoPriority = DISABLE;
-
   if (HAL_CAN_Init(&hcan) != HAL_OK)
   {
     Error_Handler();
@@ -455,8 +554,8 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : PushButton_1_Pin PushButton_2_Pin PushButton_3_Pin */
-  GPIO_InitStruct.Pin = PushButton_1_Pin|PushButton_2_Pin|PushButton_3_Pin;
+  /*Configure GPIO pins : PushButton_1_Pin PushButton_3_Pin PushButton_2_Pin */
+  GPIO_InitStruct.Pin = PushButton_1_Pin|PushButton_3_Pin|PushButton_2_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
@@ -476,11 +575,21 @@ static void MX_GPIO_Init(void)
 // this is called when the interrupt for FIFO0 is triggered
 
 void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan){
+
 	// get Rx Msg and store in RxData buffer
-	if(HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &RxHeader, RxData) != HAL_OK){
+	if(HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &RxHeader, RxData) != HAL_OK)
+	{
 		// reception error
 		Error_Handler();
 	}
+
+	rx_ID = RxHeader.StdId;		// grab the ID of the message and store it locally
+	rx_Byte0 = RxData[0];		// read and store first byte locally
+	CAN_MsgPending = 1;			// message received and set high for process in main
+
+	// goal: store these read values in main and process them there
+	// use-case: 'msg receive (msgPending) with rx_ID, of size 1 byte (first byte)'
+
 }
 
 // override the HAL_GPIO Callback

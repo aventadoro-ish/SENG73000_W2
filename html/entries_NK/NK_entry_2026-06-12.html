@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+
+<!--
+Author: Nick Kapuka
+-->
+
+<html lang="en">
+    <head>
+        <title>NK's Logbook</title>
+		<meta charset="UTF-8">
+        <meta name="description">
+		<link rel="stylesheet" href="../css/logbook_person.css">
+		<link rel="icon" href="../../media/icons/LiF_icon.ico" type="image/x-icon">
+        <link rel="stylesheet" href="../../css/master.css">
+		
+		<meta name="author" content="Nick Kapuka">
+		<meta name="description" content="This is a daily logbook entry page for Nick Kapuka as part of Engineering Project VI, ESE at Conestoga College.">
+		<meta name="robots" content="index, follow">
+		<meta http-equiv="Pragma" content="no-cache">
+    </head>
+
+    <body>
+		<section id="page_top">
+			<h1>Logbook Entry, 2026-06-12 by Nick Kapuka</h1>
+			<h2>Summary of work performed</h2>
+			<p class="logbook_summary">Tested all STM shield PBs and LEDs - functional; tested CAN transmit on all STM shields via scope - functional;</p>
+            <a href="../logbook_NK.html">My logbook cover page</a>
+		</section>
+		
+		<section id="log">
+            <h2>Received finished STM shields from Matvey and tested them</h2>
+            <p>- ensured all the pushbuttons (PBs) were functional, and that the LED logic worked as well</p>
+			<p>- next, CAN transmit had to be tested on all shields, and for this, the code was modified to support fast flashing; see below:</p>
+
+		<section id="log">
+            <h2>STM fast-flashing implemented</h2>
+            <p>- wrote a set of #ifdefs to be able to quickly flash STM32s</p>
+            <p>- at the top of the file, only SELECTED_BOARD has to be changed, and the code will include/exclude parts</p>
+            <p>- implemented because the floor controller code will vary slightly, and the cab controller varies from the floor controllers</p>
+            <p>- see the implementation below:</p>
+        
+            <figure>
+				<img class="img_med" src="../../media/images/NK_CodeSnippet_STM_FastFlash_01.png" alt="Pulleys and Plates">
+				<figcaption><b>STM Fast Flashing example - only "SELECTED_BOARD" has to be changed when flashing between STMs</b></figcaption>
+			</figure>
+
+            <figure>
+				<img class="img_med" src="../../media/images/NK_CodeSnippet_STM_FastFlash_02.png" alt="Pulleys and Plates">
+				<figcaption><b>Same as above</b></figcaption>
+			</figure>
+
+			<h2>STM CAN transmit tested on the scope - fully functional; awaiting Arduino code to test receive</h2>
+			<p>- all four STM shields were tested and can successfuly transmit CAN messages</p>
+			<p>- oscilloscope screenshot provided below:</p>
+			
+ 			<figure>
+				<img class="img_med" src="../../media/images/STMShield_CAN_Tx_Verify_OscShot.png" alt="Pulleys and Plates">
+				<figcaption><b>Car controller sending a message out (ID: 0x200) to request the elevator to come to the second floor (02)</b></figcaption>
+			</figure>
+
+        </section>
+		
+		<footer>
+			<p><a href="#page_top">Go to the top of this page</a></p>
+			<p>Copyright &copy Nick Kapuka</p>
+		</footer>
+		
+    </body>
+</html>
