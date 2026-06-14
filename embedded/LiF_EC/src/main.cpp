@@ -3,21 +3,29 @@
 
 constexpr int STEPS_PER_REVOLUTION = 360 / 1.8;  // 200 steps/revolution
 
+#if defined(ESP32_ENV)
 constexpr int IN1 = 23;
 constexpr int IN2 = 19;
 constexpr int IN3 = 22;
 constexpr int IN4 = 18;
 
+#elif defined(STM32_ENV)
+constexpr int IN1 = PC1; // A1
+constexpr int IN2 = PC0; // A2
+constexpr int IN3 = PC2; // B1
+constexpr int IN4 = PC3; // B2
+
+
+#else
+
+
+#endif
+
+
 constexpr long SWEEP_MIN_STEP = 0;
 constexpr long SWEEP_MAX_STEP = 1000;
 
-Stepper myStepper(
-    STEPS_PER_REVOLUTION,
-    IN1,
-    IN3,
-    IN2,
-    IN4
-);
+Stepper myStepper(STEPS_PER_REVOLUTION, IN1, IN2, IN3, IN4);
 
 enum class Direction : int8_t {
     CLOCKWISE = 1,
