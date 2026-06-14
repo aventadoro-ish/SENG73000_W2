@@ -1,9 +1,55 @@
+--> Added here
+body{
+    font-family: Georgia, serif;
+    font-size: 100%;
+}
+h1 {
+    font-size: 160%;
+}
+
+h2 {
+    font-size: 125%;
+}
+
+p, li {
+    line-height: 20px;
+    text-align: justify;
+}
+
+p {
+    text-indent: 15px;
+}
+
+figcaption {
+    font-style: italic;
+    text-align: center;
+    font-size: 90%;
+}
+-->
 .img_med {
     display: block;
     max-width:400px;
     max-height:400px;
     width: auto;
     height: auto;
+}
+
+.img_lrg {
+    display: block;
+    max-width:800px;
+    max-height:800px;
+    width: auto;
+    height: auto;
+}
+
+figure { 
+  display: table; 
+}
+
+figcaption { 
+  text-align: center;
+  display: table-caption; /* aligns size to the table of the figure */
+  caption-side: bottom /* makes the caption appear underneath the image/figure */
 }
 
 
