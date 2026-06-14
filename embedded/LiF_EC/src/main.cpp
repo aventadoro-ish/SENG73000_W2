@@ -1,14 +1,16 @@
 #include <Arduino.h>
 #include <Stepper.h>
 
-constexpr int STEPS_PER_REVOLUTION = 360 / 1.8;  // 200 full steps/revolution
+constexpr int STEPS_PER_REVOLUTION = 360 / 1.8;  // 200 steps/revolution
 
-#define IN1 23
-#define IN2 19
-#define IN3 22
-#define IN4 18
+constexpr int IN1 = 23;
+constexpr int IN2 = 19;
+constexpr int IN3 = 22;
+constexpr int IN4 = 18;
 
-// Preserve the phase order from your original program.
+constexpr long SWEEP_MIN_STEP = 0;
+constexpr long SWEEP_MAX_STEP = 1000;
+
 Stepper myStepper(
     STEPS_PER_REVOLUTION,
     IN1,
@@ -22,11 +24,18 @@ enum class Direction : int8_t {
     COUNTERCLOCKWISE = -1
 };
 
+enum class MotionMode {
+    STOPPED,
+    MANUAL,
+    SWEEP
+};
+
 long selectedRPM = 10;
 long currentStep = 0;
+long sweepTarget = SWEEP_MAX_STEP;
 
 Direction direction = Direction::CLOCKWISE;
-bool motorRunning = false;
+MotionMode motionMode = MotionMode::STOPPED;
 
 String serialLine;
 
@@ -37,7 +46,26 @@ String serialLine;
 
 const char *directionName()
 {
-    return direction == Direction::CLOCKWISE ? "clockwise" : "counterclockwise";
+    return direction == Direction::CLOCKWISE
+               ? "clockwise"
+               : "counterclockwise";
+}
+
+const char *motionModeName()
+{
+    switch (motionMode) {
+        case MotionMode::STOPPED:
+            return "stopped";
+
+        case MotionMode::MANUAL:
+            return "manual continuous";
+
+        case MotionMode::SWEEP:
+            return "0-1000 sweep";
+
+        default:
+            return "unknown";
+    }
 }
 
 void printPosition()
@@ -51,19 +79,25 @@ void printStatus()
     Serial.println();
     Serial.println("--- Motor status ---");
 
-    Serial.print("State:     ");
-    Serial.println(motorRunning ? "running" : "stopped");
+    Serial.print("Mode:       ");
+    Serial.println(motionModeName());
 
-    Serial.print("Direction: ");
+    Serial.print("Direction:  ");
     Serial.println(directionName());
 
-    Serial.print("Speed:     ");
+    Serial.print("Speed:      ");
     Serial.print(selectedRPM);
     Serial.println(" RPM");
 
-    Serial.print("Position:  ");
+    Serial.print("Position:   ");
     Serial.print(currentStep);
     Serial.println(" steps");
+
+    if (motionMode == MotionMode::SWEEP) {
+        Serial.print("Target:     ");
+        Serial.print(sweepTarget);
+        Serial.println(" steps");
+    }
 
     Serial.println("--------------------");
 }
@@ -72,13 +106,14 @@ void printHelp()
 {
     Serial.println();
     Serial.println("Available commands:");
-    Serial.println("  speed <rpm>        Set rotation speed");
-    Serial.println("  start              Start using current direction");
+    Serial.println("  speed <rpm>        Set motor speed");
+    Serial.println("  start              Start in selected direction");
     Serial.println("  start cw           Start clockwise");
     Serial.println("  start ccw          Start counterclockwise");
     Serial.println("  dir cw             Select clockwise direction");
     Serial.println("  dir ccw            Select counterclockwise direction");
-    Serial.println("  stop               Stop stepping; retain holding torque");
+    Serial.println("  sweep              Cycle between steps 0 and 1000");
+    Serial.println("  stop               Stop motor; retain holding torque");
     Serial.println("  release            Stop and de-energize motor coils");
     Serial.println("  zero               Set current step counter to zero");
     Serial.println("  pos                 Print current step counter");
@@ -89,9 +124,8 @@ void printHelp()
 
 void releaseMotor()
 {
-    motorRunning = false;
+    motionMode = MotionMode::STOPPED;
 
-    // Remove the drive signal from all phases.
     digitalWrite(IN1, LOW);
     digitalWrite(IN2, LOW);
     digitalWrite(IN3, LOW);
@@ -131,7 +165,6 @@ void handleCommand(String line)
         return;
     }
 
-    // Separate the command from its argument.
     int separator = line.indexOf(' ');
 
     String command;
@@ -172,7 +205,7 @@ void handleCommand(String line)
             return;
         }
 
-        motorRunning = true;
+        motionMode = MotionMode::MANUAL;
 
         Serial.print("Motor started ");
         Serial.print(directionName());
@@ -181,8 +214,28 @@ void handleCommand(String line)
         Serial.println(" RPM.");
     }
 
+    else if (command == "sweep" || command == "cycle") {
+        motionMode = MotionMode::SWEEP;
+
+        /*
+         * If the motor is not currently at logical position zero,
+         * return to zero before beginning the 0-to-1000 cycle.
+         */
+        if (currentStep != SWEEP_MIN_STEP) {
+            sweepTarget = SWEEP_MIN_STEP;
+            Serial.println(
+                "Sweep enabled. Returning to step 0 before cycling."
+            );
+        } else {
+            sweepTarget = SWEEP_MAX_STEP;
+            Serial.println(
+                "Sweep enabled: cycling between steps 0 and 1000."
+            );
+        }
+    }
+
     else if (command == "stop") {
-        motorRunning = false;
+        motionMode = MotionMode::STOPPED;
         Serial.println("Motor stopped. Coils remain energized.");
     }
 
@@ -214,6 +267,11 @@ void handleCommand(String line)
     else if (command == "zero") {
         currentStep = 0;
         Serial.println("Step counter set to zero.");
+
+        if (motionMode == MotionMode::SWEEP) {
+            sweepTarget = SWEEP_MAX_STEP;
+            Serial.println("Sweep target reset to 1000.");
+        }
     }
 
     else if (command == "pos" || command == "position") {
@@ -243,13 +301,53 @@ void readSerialCommands()
         if (received == '\n') {
             handleCommand(serialLine);
             serialLine = "";
-        } else if (serialLine.length() < 80) {
+        }
+        else if (serialLine.length() < 80) {
             serialLine += received;
-        } else {
+        }
+        else {
             serialLine = "";
             Serial.println("Error: command was too long.");
         }
     }
+}
+
+
+// -----------------------------------------------------------------------------
+// Motor operation
+// -----------------------------------------------------------------------------
+
+void runManualMode()
+{
+    int stepDirection = static_cast<int>(direction);
+
+    myStepper.step(stepDirection);
+    currentStep += stepDirection;
+}
+
+void runSweepMode()
+{
+    /*
+     * Change direction whenever the current target is reached.
+     */
+    if (currentStep == sweepTarget) {
+        if (sweepTarget == SWEEP_MAX_STEP) {
+            sweepTarget = SWEEP_MIN_STEP;
+        } else {
+            sweepTarget = SWEEP_MAX_STEP;
+        }
+    }
+
+    int stepDirection;
+
+    if (currentStep < sweepTarget) {
+        stepDirection = 1;
+    } else {
+        stepDirection = -1;
+    }
+
+    myStepper.step(stepDirection);
+    currentStep += stepDirection;
 }
 
 
@@ -271,6 +369,7 @@ void setup()
     Serial.println();
     Serial.println("ESP32 stepper debug interface");
     Serial.println("Enter 'help' for available commands.");
+
     printStatus();
 }
 
@@ -278,13 +377,17 @@ void loop()
 {
     readSerialCommands();
 
-    if (motorRunning) {
-        int stepDirection = static_cast<int>(direction);
+    switch (motionMode) {
+        case MotionMode::MANUAL:
+            runManualMode();
+            break;
 
-        // Stepper.step() is blocking, but only for one step here.
-        myStepper.step(stepDirection);
+        case MotionMode::SWEEP:
+            runSweepMode();
+            break;
 
-        // This is commanded position, not encoder-measured position.
-        currentStep += stepDirection;
+        case MotionMode::STOPPED:
+        default:
+            break;
     }
 }
