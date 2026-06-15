@@ -30,6 +30,8 @@ namespace LiF_CAN {
 
     extern STM32_CAN bus;
 
+    extern CAN_message_t rxMsg;
+
     void setup();
 
     bool transmit(uint8_t floorByte);

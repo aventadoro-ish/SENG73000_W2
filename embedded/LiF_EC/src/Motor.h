@@ -206,4 +206,27 @@ const char *motionModeName(MotionMode mode);
 const char *homingStateName(HomingState state);
 const char *homingErrorName(HomingError error);
 
+
+extern HardwareTimer motorControlTimer;
+void motorControlTimerISR();
+void setupMotorControlTimer();
+
+
 } // namespace LiF_Motor
+
+
+namespace LiF_Motor_Test {
+
+// Non-blocking Serial command parser implemented near the bottom of this file.
+// Call it continuously from loop().
+void motorSerialTest();
+
+bool parseFloat(const char *text, float &value);
+bool parseInt32(const char *text, int32_t &value);
+void printResult(bool accepted);
+void printMotorStatus();
+void printMotorTestHelp();
+void executeMotorCommand(char *line);
+
+
+} // namespace LiF_Motor_Test

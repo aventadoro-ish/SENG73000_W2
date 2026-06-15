@@ -18,6 +18,8 @@ void setup() {
     
     pinMode(CAN_stb, OUTPUT);
     digitalWrite(CAN_stb, LOW);
+    bus.begin();
+    
     bus.setBaudRate(125000);
 
     // Exact-match standard ID filters
@@ -27,8 +29,7 @@ void setup() {
     bus.setFilterSingleMask(3, FILTER_F1, MASK, STD); // Floor 1
     bus.setFilterSingleMask(4, FILTER_F2, MASK, STD); // Floor 2
     bus.setFilterSingleMask(5, FILTER_F3, MASK, STD); // Floor 3
-
-    bus.begin();
+    bus.enableMBInterrupts();
 }
 
 bool transmit(uint8_t floorByte) {
