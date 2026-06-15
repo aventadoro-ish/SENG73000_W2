@@ -17,8 +17,8 @@ constexpr int CAN_Tx = PB9;
 constexpr int CAN_Rx = PB8;
 constexpr int CAN_stb = PC8;
 
-constexpr int LimSw_1 = PC5;
-constexpr int LimSw_2 = PC6;
+constexpr int LimSw_1 = PC6;
+constexpr int LimSw_2 = PC5;
 
 
 #else

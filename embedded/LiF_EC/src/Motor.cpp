@@ -37,9 +37,11 @@ volatile HomingState g_homingState = HomingState::NOT_HOMED;
 volatile HomingError g_homingError = HomingError::NONE;
 volatile bool g_homed = false;
 
-volatile int32_t g_positionSteps = 0;
-volatile int32_t g_targetPositionSteps = 0;
-volatile int32_t g_travelRangeSteps = 0;
+volatile StepMode g_stepMode = StepMode::FULL_STEP;
+// Internal position unit is always one electrical half-step.
+volatile int32_t g_positionHalfSteps = 0;
+volatile int32_t g_targetPositionHalfSteps = 0;
+volatile int32_t g_travelRangeHalfSteps = 0;
 
 // Q16.16 steps/second. Positive is upward.
 volatile int32_t g_currentSpeedQ16 = 0;
@@ -48,8 +50,8 @@ volatile int32_t g_positionMaxSpeedQ16 = 0;
 
 uint64_t g_stepAccumulator = 0;
 uint8_t g_phaseIndex = 0;
-int32_t g_homingLegStartPosition = 0;
-int32_t g_upperHitPosition = 0;
+int32_t g_homingLegStartHalfSteps = 0;
+int32_t g_upperHitHalfSteps = 0;
 
 volatile bool g_tofValid = false;
 volatile int32_t g_tofPositionMicrometres = 0;
@@ -120,39 +122,73 @@ void updateDebouncer(LimitDebouncer &debouncer, bool rawActive) {
     }
 }
 
-void driveBridge(bool aPositive, bool bPositive) {
-    digitalWrite(IN1, aPositive ? HIGH : LOW);
-    digitalWrite(IN2, aPositive ? LOW : HIGH);
-    digitalWrite(IN3, bPositive ? HIGH : LOW);
-    digitalWrite(IN4, bPositive ? LOW : HIGH);
+enum class WindingState : int8_t {
+    NEGATIVE = -1,
+    OFF = 0,
+    POSITIVE = 1
+};
+
+void driveWinding(uint32_t positivePin,
+                  uint32_t negativePin,
+                  WindingState state) {
+    switch (state) {
+        case WindingState::POSITIVE:
+            digitalWrite(positivePin, HIGH);
+            digitalWrite(negativePin, LOW);
+            break;
+        case WindingState::NEGATIVE:
+            digitalWrite(positivePin, LOW);
+            digitalWrite(negativePin, HIGH);
+            break;
+        case WindingState::OFF:
+        default:
+            // Both bridge inputs LOW removes differential winding voltage.
+            digitalWrite(positivePin, LOW);
+            digitalWrite(negativePin, LOW);
+            break;
+    }
+}
+
+void driveBridge(WindingState windingA, WindingState windingB) {
+    driveWinding(IN1, IN2, windingA);
+    driveWinding(IN3, IN4, windingB);
 }
 
 void applyCurrentPhase() {
     if (!g_coilsEnergized) {
-        digitalWrite(IN1, LOW);
-        digitalWrite(IN2, LOW);
-        digitalWrite(IN3, LOW);
-        digitalWrite(IN4, LOW);
+        driveBridge(WindingState::OFF, WindingState::OFF);
         return;
     }
 
-    // Bipolar full-step sequence with both windings energized:
-    // phase 0: A+, B+
-    // phase 1: A-, B+
-    // phase 2: A-, B-
-    // phase 3: A+, B-
-    switch (g_phaseIndex & 0x03U) {
+    // Eight-state bipolar half-step sequence. Even indices energize both
+    // windings and are also used by FULL_STEP mode:
+    // 0 A+ B+   1 A0 B+   2 A- B+   3 A- B0
+    // 4 A- B-   5 A0 B-   6 A+ B-   7 A+ B0
+    switch (g_phaseIndex & 0x07U) {
         case 0:
-            driveBridge(true, true);
+            driveBridge(WindingState::POSITIVE, WindingState::POSITIVE);
             break;
         case 1:
-            driveBridge(false, true);
+            driveBridge(WindingState::OFF, WindingState::POSITIVE);
             break;
         case 2:
-            driveBridge(false, false);
+            driveBridge(WindingState::NEGATIVE, WindingState::POSITIVE);
             break;
+        case 3:
+            driveBridge(WindingState::NEGATIVE, WindingState::OFF);
+            break;
+        case 4:
+            driveBridge(WindingState::NEGATIVE, WindingState::NEGATIVE);
+            break;
+        case 5:
+            driveBridge(WindingState::OFF, WindingState::NEGATIVE);
+            break;
+        case 6:
+            driveBridge(WindingState::POSITIVE, WindingState::NEGATIVE);
+            break;
+        case 7:
         default:
-            driveBridge(true, false);
+            driveBridge(WindingState::POSITIVE, WindingState::OFF);
             break;
     }
 }
@@ -227,21 +263,23 @@ uint32_t integerSqrt64(uint64_t value) {
 }
 
 int32_t positionPlannerSpeedQ16() {
-    const int32_t remainingSteps =
-        g_targetPositionSteps - g_positionSteps;
+    const int32_t remainingHalfSteps =
+        g_targetPositionHalfSteps - g_positionHalfSteps;
 
-    if (remainingSteps == 0) {
+    if (remainingHalfSteps == 0) {
         return 0;
     }
 
-    const int32_t desiredDirection = signOf(remainingSteps);
+    const int32_t desiredDirection = signOf(remainingHalfSteps);
+    // Convert half-step distance to Q16.16 physical full-step distance.
     const uint64_t remainingDistanceQ16 =
-        static_cast<uint64_t>(std::abs(remainingSteps)) * Q16_ONE;
+        static_cast<uint64_t>(std::abs(remainingHalfSteps)) *
+        static_cast<uint64_t>(Q16_ONE) / 2ULL;
     const uint64_t accelerationQ16 =
         static_cast<uint64_t>(floatToQ16(MAX_ACCEL_STEPS_S2));
 
-    // Velocity envelope v = sqrt(2*a*d). Because a and d are both Q16.16,
-    // the square root is also Q16.16 steps/s.
+    // Velocity envelope v = sqrt(2*a*d). a is full-steps/s^2 and d is
+    // physical full steps, so the result is full-steps/s in Q16.16.
     const uint64_t radicand =
         2ULL * accelerationQ16 * remainingDistanceQ16;
     const int32_t brakingEnvelopeQ16 = static_cast<int32_t>(
@@ -252,13 +290,19 @@ int32_t positionPlannerSpeedQ16() {
     return desiredDirection * allowedSpeedQ16;
 }
 
+int32_t halfStepIncrementForMode() {
+    return (g_stepMode == StepMode::HALF_STEP) ? 1 : 2;
+}
+
 bool stepWouldCrossPositionTarget(int32_t direction) {
     if (g_motionMode != MotionMode::POSITION) {
         return false;
     }
 
-    return (direction > 0 && g_positionSteps >= g_targetPositionSteps) ||
-           (direction < 0 && g_positionSteps <= g_targetPositionSteps);
+    const int32_t nextPosition =
+        g_positionHalfSteps + direction * halfStepIncrementForMode();
+    return (direction > 0 && nextPosition > g_targetPositionHalfSteps) ||
+           (direction < 0 && nextPosition < g_targetPositionHalfSteps);
 }
 
 bool takeOneStep(int32_t direction) {
@@ -279,19 +323,24 @@ bool takeOneStep(int32_t direction) {
     }
 
     const int32_t electricalDirection = direction * UP_PHASE_DIRECTION;
+    const uint8_t phaseIncrement =
+        (g_stepMode == StepMode::HALF_STEP) ? 1U : 2U;
+
     if (electricalDirection > 0) {
-        g_phaseIndex = static_cast<uint8_t>((g_phaseIndex + 1U) & 0x03U);
+        g_phaseIndex = static_cast<uint8_t>(
+            (g_phaseIndex + phaseIncrement) & 0x07U);
     } else {
-        g_phaseIndex = static_cast<uint8_t>((g_phaseIndex + 3U) & 0x03U);
+        g_phaseIndex = static_cast<uint8_t>(
+            (g_phaseIndex + 8U - phaseIncrement) & 0x07U);
     }
 
     // Position always follows the public convention: positive is upward.
-    g_positionSteps += direction;
+    g_positionHalfSteps += direction * halfStepIncrementForMode();
 
     applyCurrentPhase();
 
     if (g_motionMode == MotionMode::POSITION &&
-        g_positionSteps == g_targetPositionSteps) {
+        g_positionHalfSteps == g_targetPositionHalfSteps) {
         forceStopped(MotionMode::IDLE);
     }
 
@@ -317,14 +366,14 @@ void processHomingState() {
         }
 
         if (g_upperDebouncer.stableActive) {
-            g_upperHitPosition = g_positionSteps;
-            g_homingLegStartPosition = g_positionSteps;
+            g_upperHitHalfSteps = g_positionHalfSteps;
+            g_homingLegStartHalfSteps = g_positionHalfSteps;
             g_homingState = HomingState::SEEKING_LOWER;
             return;
         }
 
-        if (std::abs(g_positionSteps - g_homingLegStartPosition) >
-            HOMING_MAX_LEG_STEPS) {
+        if (std::abs(g_positionHalfSteps - g_homingLegStartHalfSteps) >
+            (2 * HOMING_MAX_LEG_STEPS)) {
             failHoming(HomingError::UPPER_NOT_FOUND);
         }
         return;
@@ -336,17 +385,17 @@ void processHomingState() {
     }
 
     if (g_lowerDebouncer.stableActive) {
-        const int32_t measuredRange =
-            g_upperHitPosition - g_positionSteps;
+        const int32_t measuredRangeHalfSteps =
+            g_upperHitHalfSteps - g_positionHalfSteps;
 
-        if (measuredRange <= 0) {
+        if (measuredRangeHalfSteps <= 0) {
             failHoming(HomingError::BOTH_LIMITS_ACTIVE);
             return;
         }
 
-        g_travelRangeSteps = measuredRange;
-        g_positionSteps = 0;
-        g_targetPositionSteps = 0;
+        g_travelRangeHalfSteps = measuredRangeHalfSteps;
+        g_positionHalfSteps = 0;
+        g_targetPositionHalfSteps = 0;
         g_homed = true;
         g_homingState = HomingState::COMPLETE;
         g_homingError = HomingError::NONE;
@@ -354,8 +403,8 @@ void processHomingState() {
         return;
     }
 
-    if (std::abs(g_positionSteps - g_homingLegStartPosition) >
-        HOMING_MAX_LEG_STEPS) {
+    if (std::abs(g_positionHalfSteps - g_homingLegStartHalfSteps) >
+        (2 * HOMING_MAX_LEG_STEPS)) {
         failHoming(HomingError::LOWER_NOT_FOUND);
     }
 }
@@ -443,9 +492,10 @@ void setup() {
     g_upperDebouncer.mismatchTicks = 0;
 
     g_phaseIndex = 0;
-    g_positionSteps = 0;
-    g_targetPositionSteps = 0;
-    g_travelRangeSteps = 0;
+    g_stepMode = StepMode::FULL_STEP;
+    g_positionHalfSteps = 0;
+    g_targetPositionHalfSteps = 0;
+    g_travelRangeHalfSteps = 0;
     g_currentSpeedQ16 = 0;
     g_commandSpeedQ16 = 0;
     g_positionMaxSpeedQ16 = floatToQ16(DEFAULT_MOVE_SPEED_STEPS_S);
@@ -492,7 +542,7 @@ void tickISR() {
     }
 
     if (g_motionMode == MotionMode::POSITION &&
-        g_positionSteps == g_targetPositionSteps &&
+        g_positionHalfSteps == g_targetPositionHalfSteps &&
         g_currentSpeedQ16 == 0) {
         g_motionMode = MotionMode::IDLE;
     }
@@ -501,12 +551,51 @@ void tickISR() {
         return;
     }
 
-    g_stepAccumulator += static_cast<uint32_t>(absQ16(g_currentSpeedQ16));
+    const uint32_t eventRateMultiplier =
+        (g_stepMode == StepMode::HALF_STEP) ? 2U : 1U;
+    g_stepAccumulator +=
+        static_cast<uint64_t>(absQ16(g_currentSpeedQ16)) *
+        eventRateMultiplier;
 
     if (g_stepAccumulator >= STEP_ACCUMULATOR_THRESHOLD) {
         g_stepAccumulator -= STEP_ACCUMULATOR_THRESHOLD;
         takeOneStep(signOf(g_currentSpeedQ16));
     }
+}
+
+bool setStepMode(StepMode mode) {
+    InterruptLock lock;
+    if (g_motionMode != MotionMode::IDLE ||
+        g_currentSpeedQ16 != 0 ||
+        g_coilsEnergized) {
+        return false;
+    }
+
+    if (g_stepMode == mode) {
+        return true;
+    }
+
+    g_stepMode = mode;
+    g_phaseIndex = 0;
+
+    // FULL_STEP cannot represent an odd half-step coordinate. With the coils
+    // released, normalize the software coordinate to the nearest full-step
+    // boundary toward zero before the rotor is energized again.
+    if (mode == StepMode::FULL_STEP) {
+        g_positionHalfSteps = (g_positionHalfSteps / 2) * 2;
+    }
+    g_targetPositionHalfSteps = g_positionHalfSteps;
+
+    g_homed = false;
+    g_homingState = HomingState::NOT_HOMED;
+    g_homingError = HomingError::NONE;
+    g_travelRangeHalfSteps = 0;
+    return true;
+}
+
+StepMode getStepMode() {
+    InterruptLock lock;
+    return g_stepMode;
 }
 
 void energizeCoils() {
@@ -578,28 +667,47 @@ float getCurrentSpeedMm() {
     return getCurrentSpeedSteps() * MM_PER_STEP;
 }
 
-bool moveToSteps(int32_t targetSteps, float maxSpeedStepsPerSecond) {
-    if (!std::isfinite(maxSpeedStepsPerSecond) ||
-        maxSpeedStepsPerSecond <= 0.0f ||
-        maxSpeedStepsPerSecond > MAX_COMMAND_SPEED_STEPS_S) {
+bool moveToSteps(int32_t targetFullSteps,
+                 float maxSpeedFullStepsPerSecond) {
+    const int64_t targetHalfSteps =
+        static_cast<int64_t>(targetFullSteps) * 2LL;
+    if (targetHalfSteps > std::numeric_limits<int32_t>::max() ||
+        targetHalfSteps < std::numeric_limits<int32_t>::min()) {
+        return false;
+    }
+    return moveToHalfSteps(static_cast<int32_t>(targetHalfSteps),
+                           maxSpeedFullStepsPerSecond);
+}
+
+bool moveToHalfSteps(int32_t targetHalfSteps,
+                     float maxSpeedFullStepsPerSecond) {
+    if (!std::isfinite(maxSpeedFullStepsPerSecond) ||
+        maxSpeedFullStepsPerSecond <= 0.0f ||
+        maxSpeedFullStepsPerSecond > MAX_COMMAND_SPEED_STEPS_S) {
         return false;
     }
 
     InterruptLock lock;
-    if (g_homed &&
-        (targetSteps < 0 || targetSteps > g_travelRangeSteps)) {
+    if (g_stepMode == StepMode::FULL_STEP &&
+        (targetHalfSteps & 0x01) != 0) {
         return false;
     }
 
-    if ((targetSteps > g_positionSteps && g_upperRawActive) ||
-        (targetSteps < g_positionSteps && g_lowerRawActive)) {
+    if (g_homed &&
+        (targetHalfSteps < 0 ||
+         targetHalfSteps > g_travelRangeHalfSteps)) {
+        return false;
+    }
+
+    if ((targetHalfSteps > g_positionHalfSteps && g_upperRawActive) ||
+        (targetHalfSteps < g_positionHalfSteps && g_lowerRawActive)) {
         return false;
     }
 
     g_commandSpeedQ16 = 0;
-    g_targetPositionSteps = targetSteps;
-    g_positionMaxSpeedQ16 = floatToQ16(maxSpeedStepsPerSecond);
-    g_motionMode = (targetSteps == g_positionSteps)
+    g_targetPositionHalfSteps = targetHalfSteps;
+    g_positionMaxSpeedQ16 = floatToQ16(maxSpeedFullStepsPerSecond);
+    g_motionMode = (targetHalfSteps == g_positionHalfSteps)
                        ? MotionMode::STOPPING
                        : MotionMode::POSITION;
     return true;
@@ -611,10 +719,17 @@ bool moveToMm(float targetMm, float maxSpeedMmPerSecond) {
         return false;
     }
 
-    const int32_t targetSteps =
-        static_cast<int32_t>(std::lround(targetMm / MM_PER_STEP));
-    return moveToSteps(targetSteps,
-                       maxSpeedMmPerSecond / MM_PER_STEP);
+    const double targetHalfSteps =
+        static_cast<double>(targetMm) * 2.0 /
+        static_cast<double>(MM_PER_STEP);
+    if (targetHalfSteps > std::numeric_limits<int32_t>::max() ||
+        targetHalfSteps < std::numeric_limits<int32_t>::min()) {
+        return false;
+    }
+
+    return moveToHalfSteps(
+        static_cast<int32_t>(std::lround(targetHalfSteps)),
+        maxSpeedMmPerSecond / MM_PER_STEP);
 }
 
 void stop() {
@@ -643,31 +758,59 @@ void emergencyStop() {
 }
 
 int32_t getPositionSteps() {
+    return getPositionHalfSteps() / 2;
+}
+
+int32_t getPositionHalfSteps() {
     InterruptLock lock;
-    return g_positionSteps;
+    return g_positionHalfSteps;
+}
+
+float getPositionStepsExact() {
+    return static_cast<float>(getPositionHalfSteps()) * 0.5f;
 }
 
 float getPositionMm() {
-    return static_cast<float>(getPositionSteps()) * MM_PER_STEP;
+    return getPositionStepsExact() * MM_PER_STEP;
 }
 
 int32_t getTargetPositionSteps() {
+    return getTargetPositionHalfSteps() / 2;
+}
+
+int32_t getTargetPositionHalfSteps() {
     InterruptLock lock;
-    return g_targetPositionSteps;
+    return g_targetPositionHalfSteps;
 }
 
 float getTargetPositionMm() {
-    return static_cast<float>(getTargetPositionSteps()) * MM_PER_STEP;
+    return static_cast<float>(getTargetPositionHalfSteps()) *
+           (MM_PER_STEP * 0.5f);
 }
 
-bool setCurrentPositionSteps(int32_t positionSteps) {
+bool setCurrentPositionSteps(int32_t positionFullSteps) {
+    const int64_t positionHalfSteps =
+        static_cast<int64_t>(positionFullSteps) * 2LL;
+    if (positionHalfSteps > std::numeric_limits<int32_t>::max() ||
+        positionHalfSteps < std::numeric_limits<int32_t>::min()) {
+        return false;
+    }
+    return setCurrentPositionHalfSteps(
+        static_cast<int32_t>(positionHalfSteps));
+}
+
+bool setCurrentPositionHalfSteps(int32_t positionHalfSteps) {
     InterruptLock lock;
     if (g_currentSpeedQ16 != 0 || g_motionMode != MotionMode::IDLE) {
         return false;
     }
+    if (g_stepMode == StepMode::FULL_STEP &&
+        (positionHalfSteps & 0x01) != 0) {
+        return false;
+    }
 
-    g_positionSteps = positionSteps;
-    g_targetPositionSteps = positionSteps;
+    g_positionHalfSteps = positionHalfSteps;
+    g_targetPositionHalfSteps = positionHalfSteps;
     return true;
 }
 
@@ -675,8 +818,17 @@ bool setCurrentPositionMm(float positionMm) {
     if (!std::isfinite(positionMm) || MM_PER_STEP <= 0.0f) {
         return false;
     }
-    return setCurrentPositionSteps(
-        static_cast<int32_t>(std::lround(positionMm / MM_PER_STEP)));
+
+    const double positionHalfSteps =
+        static_cast<double>(positionMm) * 2.0 /
+        static_cast<double>(MM_PER_STEP);
+    if (positionHalfSteps > std::numeric_limits<int32_t>::max() ||
+        positionHalfSteps < std::numeric_limits<int32_t>::min()) {
+        return false;
+    }
+
+    return setCurrentPositionHalfSteps(
+        static_cast<int32_t>(std::lround(positionHalfSteps)));
 }
 
 bool startHoming() {
@@ -699,10 +851,10 @@ bool startHoming() {
     g_currentSpeedQ16 = 0;
     g_commandSpeedQ16 = 0;
     g_stepAccumulator = 0;
-    g_positionSteps = 0; // temporary coordinate used only during homing
-    g_targetPositionSteps = 0;
-    g_homingLegStartPosition = 0;
-    g_upperHitPosition = 0;
+    g_positionHalfSteps = 0; // temporary coordinate used only during homing
+    g_targetPositionHalfSteps = 0;
+    g_homingLegStartHalfSteps = 0;
+    g_upperHitHalfSteps = 0;
     g_homed = false;
     g_homingError = HomingError::NONE;
     g_homingState = HomingState::SEEKING_UPPER;
@@ -744,12 +896,17 @@ HomingError getHomingError() {
 }
 
 int32_t getTravelRangeSteps() {
+    return getTravelRangeHalfSteps() / 2;
+}
+
+int32_t getTravelRangeHalfSteps() {
     InterruptLock lock;
-    return g_travelRangeSteps;
+    return g_travelRangeHalfSteps;
 }
 
 float getTravelRangeMm() {
-    return static_cast<float>(getTravelRangeSteps()) * MM_PER_STEP;
+    return static_cast<float>(getTravelRangeHalfSteps()) *
+           (MM_PER_STEP * 0.5f);
 }
 
 bool lowerLimitIsActive() {
@@ -799,6 +956,17 @@ bool getLatestTofMeasurementMm(float &measuredPositionMm,
 MotionMode getMotionMode() {
     InterruptLock lock;
     return g_motionMode;
+}
+
+const char *stepModeName(StepMode mode) {
+    switch (mode) {
+        case StepMode::FULL_STEP:
+            return "full";
+        case StepMode::HALF_STEP:
+            return "half";
+        default:
+            return "unknown";
+    }
 }
 
 const char *motionModeName(MotionMode mode) {

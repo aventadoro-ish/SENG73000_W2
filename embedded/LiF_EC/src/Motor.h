@@ -13,13 +13,17 @@ namespace LiF_Motor {
 // Mechanical and control configuration
 // -----------------------------------------------------------------------------
 
-constexpr int32_t STEPS_PER_REVOLUTION = 200; // 1.8-degree motor
+constexpr int32_t FULL_STEPS_PER_REVOLUTION = 200; // 1.8-degree motor
+constexpr int32_t STEPS_PER_REVOLUTION = FULL_STEPS_PER_REVOLUTION; // legacy alias
+constexpr int32_t HALF_STEPS_PER_REVOLUTION = 2 * FULL_STEPS_PER_REVOLUTION;
 
 // The tickISR() function must be called at exactly this frequency.
 constexpr uint32_t CONTROL_TICK_HZ = 10000;
 
-// Positive speed/position is upward. Change these values for the mechanism.
-constexpr float MM_PER_STEP = 1.0f;               // TODO: set measured conversion
+// All public speed values in "steps/s" are physical full-steps per second,
+// regardless of whether FULL_STEP or HALF_STEP electrical drive is selected.
+// MM_PER_STEP is likewise millimetres per physical full step.
+constexpr float MM_PER_STEP = 741.4f / 983.0f; // TODO: set measured conversion
 constexpr float MAX_ACCEL_STEPS_S2 = 300.0f;
 constexpr float DEFAULT_MOVE_SPEED_STEPS_S = 150.0f;
 constexpr float HOMING_SPEED_STEPS_S = 80.0f;
@@ -35,19 +39,24 @@ constexpr uint32_t UPPER_LIMIT_PIN = LimSw_2;
 
 // Assumed circuit:
 // NC switch -> Schmitt-trigger inverter -> MCU input.
-// With the common pull-up arrangement, an actuated/open switch produces LOW.
-// Change this to HIGH if your measured signal has the opposite polarity.
+// Change this to HIGH if the measured active level is HIGH.
 constexpr auto LIMIT_ACTIVE_LEVEL = LOW;
 constexpr auto LIMIT_PIN_MODE = INPUT_PULLUP;
 constexpr uint32_t LIMIT_DEBOUNCE_MS = 3;
 
-// The DDS step generator can produce at most one full step per control tick.
+// HALF_STEP requires two electrical phase changes per physical full step.
+// This conservative limit guarantees no more than one phase change per tick.
 constexpr float MAX_COMMAND_SPEED_STEPS_S =
-    static_cast<float>(CONTROL_TICK_HZ) * 0.8f;
+    static_cast<float>(CONTROL_TICK_HZ) * 0.4f;
 
 // -----------------------------------------------------------------------------
 // Public state types
 // -----------------------------------------------------------------------------
+
+enum class StepMode : uint8_t {
+    FULL_STEP,
+    HALF_STEP
+};
 
 enum class MotionMode : uint8_t {
     IDLE,
@@ -78,18 +87,28 @@ enum class HomingError : uint8_t {
 // -----------------------------------------------------------------------------
 
 /// Configures motor outputs, limit inputs, and external limit interrupts.
-/// Coils start released and the current coordinate starts at zero.
+/// Coils start released, FULL_STEP is selected, and position starts at zero.
 void setup();
 
 /// Call from a hardware-timer interrupt at CONTROL_TICK_HZ.
-/// Do not call Serial, Wire/I2C, delay(), or other blocking code from this ISR.
+/// Do not call Serial, Wire/I2C, delay(), or blocking code from this ISR.
 void tickISR();
+
+// -----------------------------------------------------------------------------
+// Electrical step mode
+// -----------------------------------------------------------------------------
+
+/// Selects two-phase full stepping or eight-state half stepping.
+/// The motor must be idle and its coils must be released. Changing the mode
+/// invalidates homing because the rotor may realign when re-energized.
+bool setStepMode(StepMode mode);
+StepMode getStepMode();
 
 // -----------------------------------------------------------------------------
 // Coil and motion control
 // -----------------------------------------------------------------------------
 
-/// Applies the currently selected electrical phase and enables holding torque.
+/// Applies the current electrical phase and enables holding torque.
 void energizeCoils();
 
 /// Immediately stops motion and drives all four bridge inputs LOW.
@@ -98,8 +117,8 @@ void releaseCoils();
 bool coilsAreEnergized();
 
 /// Continuous-speed mode. Positive is upward; negative is downward.
-/// Returns false if the command is out of range or points into an active limit.
-bool setTargetSpeedSteps(float stepsPerSecond);
+/// Units are physical full-steps/s in either electrical step mode.
+bool setTargetSpeedSteps(float fullStepsPerSecond);
 bool setTargetSpeedMm(float mmPerSecond);
 
 float getTargetSpeedSteps();
@@ -107,10 +126,17 @@ float getTargetSpeedMm();
 float getCurrentSpeedSteps();
 float getCurrentSpeedMm();
 
-/// Position mode. The supplied speed is a positive magnitude.
-/// When homed, targets are restricted to [0, getTravelRangeSteps()].
-bool moveToSteps(int32_t targetSteps,
-                 float maxSpeedStepsPerSecond = DEFAULT_MOVE_SPEED_STEPS_S);
+/// Whole-full-step position commands retained for compatibility.
+bool moveToSteps(int32_t targetFullSteps,
+                 float maxSpeedFullStepsPerSecond =
+                     DEFAULT_MOVE_SPEED_STEPS_S);
+
+/// Half-step-resolution position command. An odd target is rejected while
+/// FULL_STEP mode is selected because it cannot land on a half-step boundary.
+bool moveToHalfSteps(int32_t targetHalfSteps,
+                     float maxSpeedFullStepsPerSecond =
+                         DEFAULT_MOVE_SPEED_STEPS_S);
+
 bool moveToMm(float targetMm,
               float maxSpeedMmPerSecond =
                   DEFAULT_MOVE_SPEED_STEPS_S * MM_PER_STEP);
@@ -123,21 +149,27 @@ void emergencyStop();
 // Position and homing
 // -----------------------------------------------------------------------------
 
+/// Whole full-step values. At an odd half-step coordinate these truncate
+/// toward zero; use the half-step or mm accessors for exact position.
 int32_t getPositionSteps();
+int32_t getPositionHalfSteps();
+float getPositionStepsExact();
 float getPositionMm();
+
 int32_t getTargetPositionSteps();
+int32_t getTargetPositionHalfSteps();
 float getTargetPositionMm();
 
 /// Changes only the coordinate assigned to the current physical location.
 /// This is allowed only while stopped.
-bool setCurrentPositionSteps(int32_t positionSteps);
+bool setCurrentPositionSteps(int32_t positionFullSteps);
+bool setCurrentPositionHalfSteps(int32_t positionHalfSteps);
 bool setCurrentPositionMm(float positionMm);
 
 /// Non-blocking homing sequence:
 /// 1. Move upward until the upper switch becomes active.
 /// 2. Move downward until the lower switch becomes active.
-/// 3. Record the measured step range and assign the lower end position zero.
-/// Progress is performed entirely by tickISR().
+/// 3. Record the measured range and assign the lower end position zero.
 bool startHoming();
 void cancelHoming();
 
@@ -145,7 +177,9 @@ bool isHomed();
 bool isHoming();
 HomingState getHomingState();
 HomingError getHomingError();
+
 int32_t getTravelRangeSteps();
+int32_t getTravelRangeHalfSteps();
 float getTravelRangeMm();
 
 // -----------------------------------------------------------------------------
@@ -167,6 +201,7 @@ bool getLatestTofMeasurementMm(float &measuredPositionMm,
                                uint32_t &sampleTimeMs);
 
 MotionMode getMotionMode();
+const char *stepModeName(StepMode mode);
 const char *motionModeName(MotionMode mode);
 const char *homingStateName(HomingState state);
 const char *homingErrorName(HomingError error);
