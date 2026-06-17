@@ -17,7 +17,9 @@
 #define USE_HARDCODED_FLOORS
 
 
-
+// -----------------------------------------------------------------------------
+// Global Declarations
+// -----------------------------------------------------------------------------
 #ifdef USE_HARDCODED_FLOORS
 #define FLOOR1_STEPS    500
 #define FLOOR2_STEPS    1000
@@ -34,11 +36,19 @@ enum class EC_State : uint8_t {
 };
 
 
+// -----------------------------------------------------------------------------
+// Global Variables
+// -----------------------------------------------------------------------------
 EC_State state = EC_State::INITIALIZE;
 unsigned long int last_heartbeat_time;
 uint8_t target_floor = 255;     // 255 ensures the initial floor request results in move
 uint8_t current_floor = 0;      // 0 is internally interpreted as moving
 
+
+
+// -----------------------------------------------------------------------------
+// Function Declarations
+// -----------------------------------------------------------------------------
 
 /**
  * @brief Process incoming CAN frame according to the simplified test CAN protocol
@@ -61,8 +71,16 @@ void process_CAN_msg_simplified_mode(CAN_message_t rxMsg);
  */
 void process_CAN_msg_full_mode(CAN_message_t rxMsg);
 
+/**
+ * @brief Send CAN frame using EC format defined in the elevator protocol.
+ * @param is_enabled is EC currently enabled
+ * @param position current floor position or 0 for `MOVING` state
+ */
 void send_EC_CAN_frame(bool is_enabled, uint8_t position);
 
+/**
+ * @brief Sends auto-generated heartbeat to CAN based on global variables.
+ */
 void send_heartbeat();
 
 /// @brief Infinite loop. E-stop is activated.
@@ -77,7 +95,6 @@ void fault_mode(const char* reason = nullptr);
 // -----------------------------------------------------------------------------
 // Arduino setup and loop
 // -----------------------------------------------------------------------------
-
 void setup() {
     Serial.begin(115200);
     while (!Serial) {
@@ -146,6 +163,12 @@ void loop() {
 
 }
 
+
+
+
+// -----------------------------------------------------------------------------
+// Function definitions
+// -----------------------------------------------------------------------------
 
 void process_CAN_msg_simplified_mode(CAN_message_t rxMsg) {
     Serial.printf(
@@ -225,7 +248,7 @@ void process_CAN_msg_full_mode(CAN_message_t rxMsg) {
                 break;
             }
 #else
-#error "Dynamic (non-hardcoded) floors are not supported yet
+#error "Dynamic (non-hardcoded) floors are not supported yet"
 #endif
 
             // inform SC that we are now moving
