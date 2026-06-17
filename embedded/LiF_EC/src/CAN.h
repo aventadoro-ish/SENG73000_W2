@@ -27,6 +27,9 @@ namespace LiF_CAN {
     constexpr int FILTER_F2 = 0x0202;
     constexpr int FILTER_F3 = 0x0203;
 
+    // other parameters
+    constexpr unsigned long int heartbeat_period_ms = 1000;
+
 
     extern STM32_CAN bus;
 
