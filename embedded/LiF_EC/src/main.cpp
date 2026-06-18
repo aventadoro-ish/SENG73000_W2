@@ -10,9 +10,9 @@
 // -----------------------------------------------------------------------------
 // Compile Settings
 // -----------------------------------------------------------------------------
-#define HOME_ON_STARTUP
+// #define HOME_ON_STARTUP
 #define ENERGIZE_ON_STARTUP
-// #define USE_MOTOR_SERIAL
+#define USE_MOTOR_SERIAL
 // #define USE_SIMPLIFIED_CAN_PROTOCOL
 #define USE_HARDCODED_FLOORS
 
@@ -21,9 +21,9 @@
 // Global Declarations
 // -----------------------------------------------------------------------------
 #ifdef USE_HARDCODED_FLOORS
-#define FLOOR1_STEPS    500
-#define FLOOR2_STEPS    1000
-#define FLOOR3_STEPS    1500
+#define FLOOR1_STEPS    500 / 2
+#define FLOOR2_STEPS    1000 / 2
+#define FLOOR3_STEPS    1500 / 2
 #endif
 
 
@@ -147,16 +147,29 @@ void loop() {
     // send "heartbeat"
     if (millis() - last_heartbeat_time >= LiF_CAN::heartbeat_period_ms) {
         send_heartbeat();
+        Serial.printf("tStep = %u, cStep = %u, tFlr = %u cFlr = %u", 
+            LiF_Motor::getTargetPositionHalfSteps(),
+            LiF_Motor::getPositionHalfSteps(),
+            target_floor,
+            current_floor
+        );
+        if (state == EC_State::MOVING) {
+            Serial.println(" moving");
+        } else {
+            Serial.println(" not moving");
+        }
     }
 
     
     // check if in final position
     if (
         state == EC_State::MOVING && 
-        LiF_Motor::getTargetPositionSteps() == LiF_Motor::getPositionSteps()
+        LiF_Motor::getTargetPositionHalfSteps() == LiF_Motor::getPositionHalfSteps()
     ) {
+        Serial.println("Move finished. Now IDLE");
         // it is implied that the motor is stopped
-        state == EC_State::IDLE;
+        state = EC_State::IDLE;
+        current_floor = target_floor;
         send_heartbeat();
     }
 
@@ -214,10 +227,12 @@ void process_CAN_msg_full_mode(CAN_message_t rxMsg) {
         return;
     }
 
-    if (rxMsg.id == LiF_CAN::FILTER_CC) {
+    if (rxMsg.id == LiF_CAN::FILTER_SC) {
+        Serial.printf("Received CAN message with ID %x from SC. Processing\r\n", rxMsg.id);
+
         // message from the supervisory controller
-        bool is_enabled = (rxMsg.buf[0] && 0b00000100) >> 2;
-        uint8_t floor_req = (rxMsg.buf[0] && 0b00000011);
+        bool is_enabled = (rxMsg.buf[0] & 0b00000100) >> 2;
+        uint8_t floor_req = (rxMsg.buf[0] & 0b00000011);
 
         if (floor_req == 0) {
             // illegal floor request -> enter fault mode
@@ -234,24 +249,32 @@ void process_CAN_msg_full_mode(CAN_message_t rxMsg) {
             LiF_Motor::stop();
         }
 
+        Serial.printf("is_enabled: %u, floor_req %u, current_floor %u\r\n", is_enabled, floor_req, current_floor);
         if (is_enabled && floor_req != current_floor) {
-            state == EC_State::MOVING;
+            state = EC_State::MOVING;
             target_floor = floor_req;
+            DEBUG_PRINTLN("moving now");
             
 #ifdef USE_HARDCODED_FLOORS
+            unsigned int tgt_step = 0;
             switch (target_floor) {
-            case 1:     LiF_Motor::moveToSteps(FLOOR1_STEPS); break;
-            case 2:     LiF_Motor::moveToSteps(FLOOR2_STEPS); break;
-            case 3:     LiF_Motor::moveToSteps(FLOOR3_STEPS); break;
+            case 1:     tgt_step = FLOOR1_STEPS; break;
+            case 2:     tgt_step = FLOOR2_STEPS; break;
+            case 3:     tgt_step = FLOOR3_STEPS; break;
             default:
                 fault_mode("Illegal switch case value");
                 break;
+            }
+
+            if (!LiF_Motor::moveToSteps(tgt_step)) {
+                Serial.println("Failed to move");
             }
 #else
 #error "Dynamic (non-hardcoded) floors are not supported yet"
 #endif
 
             // inform SC that we are now moving
+            Serial.print("Start Move->");
             send_heartbeat();
         }
     }
@@ -259,17 +282,20 @@ void process_CAN_msg_full_mode(CAN_message_t rxMsg) {
 
 
 void send_EC_CAN_frame(bool is_enabled, uint8_t position) {
+    // DEBUG_PRINTLN("Sending CAN Frame");
     CAN_message_t txMsg;
     txMsg.id = LiF_CAN::TxID;   // EC message id
     txMsg.buf[0] = 
         (is_enabled << 2) |     // enabled bit 
         (position & 0b11);      // floor position
+    txMsg.len = 1;
 
     LiF_CAN::bus.write(txMsg);
 }
 
 
 void send_heartbeat() {
+    // DEBUG_PRINTLN("Sending hearbeat");
     last_heartbeat_time = millis();
     bool is_enabled =                       // EC is considered enabled when...
         (state != EC_State::DISABLED)   &&  // state is not DISABLED
@@ -278,11 +304,12 @@ void send_heartbeat() {
     uint8_t floor_pos;
     if (state == EC_State::MOVING) {
         floor_pos = 0;
+        DEBUG_PRINT("aaaaaaaa");
     } else {
         // if not moving, assume target floor is reached
         floor_pos = target_floor;
     }
-    send_EC_CAN_frame(is_enabled, target_floor);
+    send_EC_CAN_frame(is_enabled, floor_pos);
 }
 
 
