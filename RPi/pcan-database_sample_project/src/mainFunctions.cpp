@@ -6,8 +6,14 @@
 #include <stdlib.h>
 #include <unistd.h> 
 
+int requestQueue[QUEUE_SIZE];
+int queueHead = 0;   // next item to serve
+int queueTail = 0;   // next empty slot
+int queueCount = 0;  // how many items currently waiting
 
 int menu(){
+
+	//State currentState = STATE_IDLE; --> won't assume idle at first
 	
 	int usrchoice = 0;
 	system("@cls||clear");
@@ -90,6 +96,7 @@ int chooseMsg(){
 		printf("1. Go to floor 1\n");
 		printf("2. Go to floor 2\n");
 		printf("3. Go to floor 3\n");
+		sleep(1);
 		printf("\nYour choice: ");
 		scanf("%d", &messageChoice);
 
@@ -149,4 +156,26 @@ int FloorFromHex(int Hex){
 		default:
 			return(1);							// Default is to reset to floor 1 on bad input
 		}
+}
+
+//Queue of new floor requests
+void enqueueFloor(int floor) {
+    // avoid duplicate floor requests already waiting
+    for (int i = 0; i < queueCount; i++) {
+        int idx = (queueHead + i) % QUEUE_SIZE;
+        if (requestQueue[idx] == floor) return;  // already queued, skip
+    }
+    if (queueCount < QUEUE_SIZE) {
+        requestQueue[queueTail] = floor;
+        queueTail = (queueTail + 1) % QUEUE_SIZE;
+        queueCount++;
+    }
+}
+
+int dequeueFloor() {
+    if (queueCount == 0) return -1;  // nothing waiting
+    int floor = requestQueue[queueHead];
+    queueHead = (queueHead + 1) % QUEUE_SIZE;
+    queueCount--;
+    return floor;
 }

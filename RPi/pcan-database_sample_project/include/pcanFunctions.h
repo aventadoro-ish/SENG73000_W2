@@ -1,6 +1,7 @@
 #ifndef PCAN_FUNCTIONS
 #define PCAN_FUNCTIONS
 
+#include <libpcan.h> // used for TPCANMsg
 
 // Defines
 // ***********************************************************************************************************
@@ -19,6 +20,10 @@
 #define GO_TO_FLOOR2 0x06	// Go to floor 2
 #define GO_TO_FLOOR3 0x07	// Go to floor 3
 
+//New for FSM
+int pcanRxInit();
+int pcanRxClose();
+int pcanRxState(TPCANMsg *msg); // if a message is recieved = 1, no message recieved = 0
 
 // Function declarations
 int pcanTx(int id, int data);
