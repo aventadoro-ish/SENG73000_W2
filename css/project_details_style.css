@@ -40,6 +40,13 @@
 		   margin: 0px auto 0px auto;
 		   border: 2px solid black;}
 	
+	
+	figcaption{
+		text-align: center;
+		font-style: italic;
+		font-size: 90%;
+	}
+
 	figure {
 		 padding: 0px auto 0px auto;
 		 border: 2px solid green;
