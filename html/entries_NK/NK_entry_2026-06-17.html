@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+
+<!--
+Author: Nick Kapuka
+-->
+
+<html lang="en">
+    <head>
+        <title>NK's Logbook</title>
+		<meta charset="UTF-8">
+        <meta name="description">
+		<link rel="stylesheet" href="../css/logbook_person.css">
+		<link rel="icon" href="../../media/icons/LiF_icon.ico" type="image/x-icon">
+        <link rel="stylesheet" href="../../css/master.css">
+		<!-- Prism syntax highlighting theme -->
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css">
+		<link rel="stylesheet" href="../../css/code_formatting.css">
+		
+		<meta name="author" content="Nick Kapuka">
+		<meta name="description" content="This is a daily logbook entry page for Nick Kapuka as part of Engineering Project VI, ESE at Conestoga College.">
+		<meta name="robots" content="index, follow">
+		<meta http-equiv="Pragma" content="no-cache">
+    </head>
+
+    <body>
+		<aside><iframe src="../links.html" title="Navigation"></iframe></aside>
+		<section id="page_top">
+			<h1>Logbook Entry, 2026-06-17 by Nick Kapuka</h1>
+			<h2>Summary of work performed</h2>
+			<p class="logbook_summary">Improved LED and pushbutton logic, finished the CAN bus cable and tested it on the scope</p>
+            <a href="../logbook_NK.html">My logbook cover page</a>
+		</section>
+		
+		<section id="log">
+            <h2>Improved LED logic</h2>
+			<h4>The Problem:</h4>
+            <p>When Matvey was testing communication via my STM32 code, he observed that CAN messages were being sent twice with one button press exactly 700 ms apart</p>
+			<p></p>
+
+            <figure>
+				<img class="img_med" src="../../media/images/DoubleCANSending.png" alt="Pulleys and Plates">
+				<figcaption><b>Double CAN messages being sent</b></figcaption>
+			</figure>
+
+            <figure>
+				<img class="img_med" src="../../media/images/DoubleCANSending_Cursor.png" alt="Pulleys and Plates">
+				<figcaption><b>Double CAN messages being sent 700 ms apart (cursors cropped the signals out a bit)</b></figcaption>
+			</figure>
+
+			<p>after glancing over the STM32 code, I noticed the main two issues</p>
+
+			<pre class="code-block language-c"><code class="language-c">			
+void PB_Process(uint8_t button){
+// CC exclusive code; won't run unless CC is selected using SELECTED_BOARD
+#if SELECTED_BOARD == CC_BOARD
+
+	// PB1/2/3 means go to floor 1/2/3
+	if(button == F1_BUTTON_PRESS)
+	{
+		CAN_ByteTransmit(MY_ID, FLOOR_1);
+		// illuminate PB LED for visual confirmation
+		blinkLED(PB1_LED_GPIO_Port, PB1_LED_Pin, 200);
+		current_floor = 1;
+
+	}
+	// other code
+}
+			</code></pre>
+
+			<p>The first was with the fact that the function above that handled button preses (on stm32 shields) would stop the program for 200 ms</p>
+			<p>The second was the implementation in main which would blink the green LED when a CAN message was sent. See below:</p>
+
+			<pre class="code-block language-c"><code class="language-c">			
+ // Transmit messages
+// check if input present
+	if(BUTTON != NO_BUTTON_PRESSED)
+	{
+		// temporarily store before processing
+	  	// avoids weird interrupt flags (like if BUTTON is updated before msg read)
+	  	uint8_t pressed_button = BUTTON;
+	  	// reset BUTTON since it's input has been captured
+	  	BUTTON = NO_BUTTON_PRESSED;
+	  	// process button
+	  	PB_Process(pressed_button);
+	  	// blink green LED briefly for transmit successful
+	  	blinkLED(GPIOA, Green_LED_Pin, 500);
+
+	}
+			</code></pre>
+
+			<p>The <code>blinkLED(GPIOA, Green_LED_Pin, 500)</code> line delayed it by another 500 ms</p>
+			<p>So... 200 ms in <code>PB_Process(uint8_t button)</code> and another 500 ms in main... Lines up with the 700 ms Matvey R. saw</p>
+
+			<h4>The fix:</h4>
+			<p>I rewrote the logic to use HAL_GetTick() instead of HAL_Delay(). Delay halts every action on the mcu, while getTick() with a few if statements can be non-blocking.</p>
+			<p>First, an LED timer struct was defined. See the implementation below:</p>
+
+			<pre class="code-block language-c"><code class="language-c">
+// define a struct for non-blocking LED logic
+typedef struct {
+	GPIO_TypeDef* port;
+	uint16_t pin;
+	uint8_t active;
+	uint32_t off_time;
+} LED_Timer;
+
+// enable the four LEDs (three floors and green blink for CANTx)
+LED_Timer greenLedTimer = {GPIOA, Green_LED_Pin, 0, 0};
+LED_Timer F1_Req_LED = {PB1_LED_GPIO_Port, PB1_LED_Pin, 0, 0};
+LED_Timer F2_Req_LED = {PB2_LED_GPIO_Port, PB2_LED_Pin, 0, 0};
+LED_Timer F3_Req_LED = {PB3_LED_GPIO_Port, PB3_LED_Pin, 0, 0};
+			</code></pre>
+
+			<p>Then the two functions to implement it.</p>
+
+			<pre class="code-block language-c"><code class="language-c">	
+// function to blink the LED without blocking (HAL_Delay is my nemesis)
+// allows you to select what LED to blink and for how long
+void LED_BlinkStart(LED_Timer* led, uint32_t duration_ms)
+{
+	// enable the LED via the defined port and pin (LED_Timer struct) and set it
+	HAL_GPIO_WritePin(led->port, led->pin, GPIO_PIN_SET);
+	// pointer to the LED_Timer struct to enable the 'active' bit in the struct
+	led->active = 1;
+	// pointer to the LED_Timer struct to set the desired delay time
+	// if tick is 100 and delay is 200, off_time is 300; Then when tick is 300, LED will be turned off via blinkUpdate below
+	led->off_time = HAL_GetTick() + duration_ms;
+}
+			</code></pre>
+			<p>This function uses the user inputted delay value and adds it to <code>HAL_GetTick()</code> and then compares it in the function below:</p>
+			<pre class="code-block language-c"><code class="language-c">
+// function to update the state of the LED without blocking (HAL_delay is my nemesis)
+void LED_BlinkUpdate(LED_Timer* led)
+{
+	// check if the LED is active
+	if(led->active)
+	{
+		if((int32_t)(HAL_GetTick() - led->off_time) >= 0)
+		{
+			// turn the led off
+			HAL_GPIO_WritePin(led->port, led->pin, GPIO_PIN_RESET);
+			// disable the a'ctive' bit in the struct
+			led->active = 0;
+		}
+	}
+}
+			</code></pre>
+			<p>In this function, it checks the current HAL_GetTick vs the LED off time in <code>if((int32_t)(HAL_GetTick() - led->off_time) >= 0)</code> and turns the LED off once completed</p>
+			<p>Now, the LEDs will blink without the delay function, creating a <b>non-blocking implementation</b> of it</p>
+
+        <h2>Finished and tested CAN bus cable</h2>
+			<p>Finished making the CAN bus cable that the LiF group will be using for the elevator</p>
+			<p>The cable had one mistake (soldered CANH to pin 8 instead of 7 by accident) but fixed that. Also noticed that without all nodes connected on the line, the signal integrity was a bit rough.</p>
+			<p>Attached are the images with their relevant captions regarding what was happening</p>
+
+			<figure>
+				<img class="img_med" src="../../media/images/CANCable_061726.png" alt="Pulleys and Plates">
+				<figcaption><b>CAN cable with poor signal integrity - cable still had the mistake</b></figcaption>
+			</figure>
+
+			<figure>
+				<img class="img_med" src="../../media/images/CANCable_Fixed_0601826.png" alt="Pulleys and Plates">
+				<figcaption><b>CAN cable after fixing the pin mismatch with EC sending 3 data bits</b></figcaption>
+			</figure>
+
+        </section>
+		
+		<footer>
+			<p><a href="#page_top">Go to the top of this page</a></p>
+			<p>Copyright &copy Nick Kapuka</p>
+		</footer>
+
+		<!-- Prism.js script for code formatting-->
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>		
+		<!-- Import  C language -->
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
+    </body>
+</html>
