@@ -57,8 +57,8 @@
 		 
 		 }
 	
-	.mkunderlined{text-decoration: underline; color:red;}
-	.mkbold {font-weight: 700; color: red;}
+	.mkunderlined{text-decoration: underline; }
+	.mkbold {font-weight: 700; }
 		 
 	ul {list-style-type: square; }
 	/*ul {list-style-image: URL("../images/Conestoga_logo.jpg");} */
