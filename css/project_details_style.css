@@ -63,11 +63,20 @@
 	ul {list-style-type: square; }
 	/*ul {list-style-image: URL("../images/Conestoga_logo.jpg");} */
 	ol {list-style-type: lower-roman;}
-
-	.navBar{
-		position: sticky;
-        top: 0px;
-	}
 	
+	aside {
+  		width: 30%;
+  		padding-left: 15px;
+  		margin-left: 15px;
+  		float: right;
+  		font-style: italic;
+  		background-color: lightgray;
+  		height: 100vh;
+  
+	}
+		aside iframe {
+ 	 	height: 100%;
+	}
+
 	
 	
