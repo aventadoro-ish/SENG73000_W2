@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+
+<!--
+Author: Rita Yevtushenko
+-->
+
+<html lang="en">
+    <head>
+        <title>RY's Logbook</title>
+        <meta charset="UTF-8">
+        <meta name="description">
+        <link rel="stylesheet" href="../css/logbook_person.css">
+        <link rel="stylesheet" href="../../css/master.css">
+        <link rel="icon" href="../../media/icons/LiF_icon.ico" type="image/x-icon">
+        
+        <meta name="author" content="Rita Yevtushenko">
+        <meta name="description" content="This is a daily logbook entry page for Rita Yevtushenko as part of Engineering Project VI, ESE at Conestoga College.">
+        <meta name="robots" content="index, follow">
+        <meta http-equiv="Pragma" content="no-cache">
+    </head>
+    <body>
+        <aside><iframe src="../links.html" title="Navigation"></iframe></aside>
+        <section id="page_top">
+            <h1>Logbook Entry, 2026-06-16 by Rita Yevtushenko</h1>
+            <h2>Summary of work performed</h2>
+            <p class="logbook_summary">Connected to RPi5 server, worked on about page, and completed group photos.</p>
+            <a href="../logbook_RY.html">My logbook cover page</a>
+        </section>
+        
+        <section id="log">
+            <h2>Setup of SC and EC for testing</h2>
+                <ul> 
+                    <li>Matvey provided the STM32 that could connect to the CANBus, USB adapter</li>
+                    <li>I connected and tested everything through SSH in RPi4</li>
+                </ul>
+            
+            <h2>Results: RPi4 Screen (SC)</h2>
+                <ul>
+                    <li>Tx: Selected Option 1 (Tx) -> Selected Option 1 SC to EC -> FL1</li>
+                    <li>Rx:"Unknown message format"</li>
+                    <li>I will test out the message signal through UART using TerraTerm or an osciloscope</li>
+                </ul>
+
+            <h2>Results: UART Screen (EC simulation)</h2>
+            <ul>
+                <li>Connected the RPi4 - STM32 setup to TerraTerm and recorded a video of the Tx message </li>
+                <br><b><u>TerraTerm</u></b>
+                    <div>
+                    Tx: Option 1: Send -> Option 1: SC to EC -> Floor 1 (1x100) <br>
+                    Rx: Received CAN msg (S): ID:100, DATA: 5 0 0 0 0 0 0 0 <br>
+                    Unknown message format <br>
+                    </div><br>
+
+                    <div>
+                    Tx: Option 1: Send -> Option 2: EC to All -> Floor 2 (1x101) <br>
+                    Rx: Received CAN msg (S): ID:101, DATA: 6 0 0 0 0 0 0 0 <br>
+                    Unknown message format <br> 
+                    </div><br>
+
+                    <div>
+                    Tx: Option 1: Send -> Option 2: SC to CC -> Floor 1 (1x100) <br>
+                    Rx: Received CAN msg (S): ID:101, DATA: 6 0 0 0 0 0 0 0 <br>
+                    Unknown message format <br>
+                    </div>  
+                 <br><li><i>insert video</i></li>   
+            </ul>
+
+        </section>
+        
+        <footer>
+            <p><a href="#page_top">Go to the top of this page</a></p>
+            <p>Copyright &copy; 2026 Rita Yevtushenko</p>
+        </footer>
+        
+    </body>
+</html>
