@@ -19,17 +19,13 @@
 				font-size: 90%;
 	}
 	
-	.mkbold {font-weight: bold;
-			 color: red; }
+	.mkbold {font-weight: bold; }
 	
-	.mkunderlined {text-decoration: underline;
-					color: red; }
+	.mkunderlined {text-decoration: underline;}
 	
-	#hcs12 { font-weight: bold;
-		color: blue;}
+	#hcs12 { font-weight: bold;}
 	
-	#can { font-weight: bold;
-		color: blue;}
+	#can { font-weight: bold;}
 	
 	#buttons { font-weight: bold;
 		color: blue;  }
@@ -68,7 +64,10 @@
 	/*ul {list-style-image: URL("../images/Conestoga_logo.jpg");} */
 	ol {list-style-type: lower-roman;}
 
-	
+	.navBar{
+		position: sticky;
+        top: 0px;
+	}
 	
 	
 	
