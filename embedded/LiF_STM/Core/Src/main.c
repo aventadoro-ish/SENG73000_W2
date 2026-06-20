@@ -3,7 +3,7 @@
   ******************************************************************************
   * @file           : main.c
   * @brief          : Main program body
-  * @author			: Nick Kapuka
+  * @author		    : Nick Kapuka
   ******************************************************************************
   * @attention
   *
@@ -41,7 +41,7 @@
 #define F3_BOARD	3					// Floor 3 STM32
 
 // ********************************* CHANGE PER BOARD *********************************
-#define SELECTED_BOARD	CC_BOARD		// currently selected board; change when flashing
+#define SELECTED_BOARD	F3_BOARD		// currently selected board; change when flashing
 // ************************************************************************************
 
 // CAN IDs:
@@ -53,10 +53,11 @@
 #define F3_ID				0x203		// Floor 3 controller; STM32
 
 // variable names for each floor
-#define NO_FLOOR			0			// no floor; used for Cab
+#define CAB_MOVING			0			// no floor; used for Cab
 #define FLOOR_1				1
 #define FLOOR_2				2
 #define FLOOR_3				3
+#define CAB_BLOCK			4
 
 // pre-comp code block for configuring STM32 FLASHING
 #if SELECTED_BOARD == CC_BOARD
@@ -89,6 +90,7 @@
 #define	F1_BUTTON_PRESS		1		// req to go to floor 1 PB pressed
 #define F2_BUTTON_PRESS		2		// req to go to floor 2 PB pressed
 #define F3_BUTTON_PRESS		3		// req to go to floor 3 PB pressed
+#define FX_BUTTON_PRESS		1		// req to go to send message (due to Matvey's requst)
 
 /* USER CODE END PD */
 
@@ -119,6 +121,21 @@ uint8_t	 elevator_en 	= 0;				// elevator enabled flag (part of the message that
 uint8_t	 current_floor 	= 0;				// current floor value (part of the message that EC sends)
 											// note: these are used in RxCallback function
 
+// define a struct for non-blocking LED logic
+typedef struct {
+	GPIO_TypeDef* port;
+	uint16_t pin;
+	uint8_t active;
+	uint32_t off_time;
+} LED_Timer;
+
+// enable the four LEDs (three floors and green blink for CANTx)
+LED_Timer greenLedTimer = {GPIOA, Green_LED_Pin, 0, 0};
+LED_Timer F1_Req_LED = {PB1_LED_GPIO_Port, PB1_LED_Pin, 0, 0};
+LED_Timer F2_Req_LED = {PB2_LED_GPIO_Port, PB2_LED_Pin, 0, 0};
+LED_Timer F3_Req_LED = {PB3_LED_GPIO_Port, PB3_LED_Pin, 0, 0};
+
+
 
 /* USER CODE END PV */
 
@@ -129,10 +146,13 @@ static void MX_CAN_Init(void);
 static void MX_USART2_UART_Init(void);
 /* USER CODE BEGIN PFP */
 void CAN_ByteTransmit(uint32_t std_id, uint8_t data0);
-void blinkLED(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin, uint32_t delay_ms);
+void LED_BlinkStart(LED_Timer* led, uint32_t duration_ms);
+void LED_BlinkUpdate(LED_Timer* led);
 void CAN_ProcessReceive(void);
-void PB_Process(uint8_t button);
+uint8_t PB_Process(uint8_t button);
 void showFloor(void);
+void doorSwitch(void);
+
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -163,11 +183,33 @@ void CAN_ByteTransmit(uint32_t std_id, uint8_t data0){
     // CAN_ByteTransmit(MY_ID, FLOOR_X);
 }
 
-void blinkLED(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin, uint32_t delay_ms){
-	 // blink LED briefly
-		HAL_GPIO_WritePin(GPIOx, GPIO_Pin, GPIO_PIN_SET);
-		HAL_Delay(delay_ms);
-		HAL_GPIO_WritePin(GPIOx, GPIO_Pin, GPIO_PIN_RESET);
+// function to blink the LED without blocking (HAL_Delay is my nemesis)
+// allows you to select what LED to blink and for how long
+void LED_BlinkStart(LED_Timer* led, uint32_t duration_ms)
+{
+	// enable the LED via the defined port and pin (LED_Timer struct) and set it
+	HAL_GPIO_WritePin(led->port, led->pin, GPIO_PIN_SET);
+	// pointer to the LED_Timer struct to enable the 'active' bit in the struct
+	led->active = 1;
+	// pointer to the LED_Timer struct to set the desired delay time
+	// if tick is 100 and delay is 200, off_time is 300; Then when tick is 300, LED will be turned off via blinkUpdate below
+	led->off_time = HAL_GetTick() + duration_ms;
+}
+
+// function to update the state of the LED without blocking (HAL_delay is my nemesis)
+void LED_BlinkUpdate(LED_Timer* led)
+{
+	// check if the LED is active
+	if(led->active)
+	{
+		if((int32_t)(HAL_GetTick() - led->off_time) >= 0)
+		{
+			// turn the led off
+			HAL_GPIO_WritePin(led->port, led->pin, GPIO_PIN_RESET);
+			// disable the a'ctive' bit in the struct
+			led->active = 0;
+		}
+	}
 }
 
 
@@ -207,62 +249,95 @@ void CAN_ProcessReceive(void){
 }
 
 
-void PB_Process(uint8_t button){
+uint8_t PB_Process(uint8_t button){
 // CC exclusive code; won't run unless CC is selected using SELECTED_BOARD
 #if SELECTED_BOARD == CC_BOARD
 
 	// PB1/2/3 means go to floor 1/2/3
-	if(button == F1_BUTTON_PRESS)
+	// for CC, the button detects were flipped due to the STM32 being mounted upside down on the assembly
+	// makes it easier to visually see the "floor 3" button corresponding to floor 1 because it's the lowest on the PCB
+
+	if(button == F3_BUTTON_PRESS)
 	{
 		CAN_ByteTransmit(MY_ID, FLOOR_1);
 		// illuminate PB LED for visual confirmation
-		blinkLED(PB1_LED_GPIO_Port, PB1_LED_Pin, 200);
-		current_floor = 1;
+		LED_BlinkStart(&F3_Req_LED, 200);
+		return 1;
 
 	}
 	else if(button == F2_BUTTON_PRESS)
 	{
 		CAN_ByteTransmit(MY_ID, FLOOR_2);
 		// illuminate PB LED for visual confirmation
-		blinkLED(PB2_LED_GPIO_Port, PB2_LED_Pin, 200);
-		current_floor = 2;
+		LED_BlinkStart(&F2_Req_LED, 200);
+		return 1;
 
 	}
-	else if(button == F3_BUTTON_PRESS)
+	else if(button == F1_BUTTON_PRESS)
 	{
 		CAN_ByteTransmit(MY_ID, FLOOR_3);
 		// illuminate PB LED for visual confirmation
-		blinkLED(PB3_LED_GPIO_Port, PB3_LED_Pin, 200);
-		current_floor = 3;
+		LED_BlinkStart(&F1_Req_LED, 200);
+		return 1;
 
 	}
 
 // process button input differently based on what STM32 is used (car vs floor controllers):
 #elif SELECTED_BOARD == F1_BOARD
-	if(button == F1_BUTTON_PRESS){
+	if(button == FX_BUTTON_PRESS){
 		CAN_ByteTransmit(MY_ID, 0x01);
 		// illuminate PB LED for visual confirmation
-		blinkLED(PB1_LED_GPIO_Port, PB1_LED_Pin, 200);
+		LED_BlinkStart(&F1_Req_LED, 200);
+		return 1;
 	}
 
 #elif SELECTED_BOARD == F2_BOARD
-	if(button == F2_BUTTON_PRESS){
+	if(button == FX_BUTTON_PRESS){
 		CAN_ByteTransmit(MY_ID, 0x01);
 		// illuminate PB LED for visual confirmation
-		blinkLED(PB2_LED_GPIO_Port, PB2_LED_Pin, 200);
+		LED_BlinkStart(&F2_Req_LED, 200);
+		return 1;
 	}
 
 #elif SELECTED_BOARD == F3_BOARD
-	if(button == F3_BUTTON_PRESS){
+	if(button == FX_BUTTON_PRESS){
 		CAN_ByteTransmit(MY_ID, 0x01);
 		// illuminate PB LED for visual confirmation
-		blinkLED(PB3_LED_GPIO_Port, PB3_LED_Pin, 200);
+		LED_BlinkStart(&F3_Req_LED, 200);
+		return 1;
+	}
+#endif
+
+	return 0;
+}
+
+// function for door switch on car controller
+void doorSwitch(void){
+
+// only run the code if it's the CC_BOARD and not Floor controllers
+#if SELECTED_BOARD == CC_BOARD
+
+	// set a helper variable to 0. Use static to keep it between function calls.
+	static GPIO_PinState lastSwitchState = GPIO_PIN_RESET;
+	// grab current switch state
+	GPIO_PinState currentSwitchState = HAL_GPIO_ReadPin(CC_Switch_GPIO_Port, CC_Switch_Pin);
+
+	// if there was a change (switch flipped)
+	if(currentSwitchState != lastSwitchState)
+	{
+		// reset the variable
+		lastSwitchState = currentSwitchState;
+
+		// if the switch is ON
+		if(currentSwitchState == GPIO_PIN_SET)
+		{
+			// switch is ON = doors open = no movement allowed. Send CAN message of 0b100 or 0x04
+			CAN_ByteTransmit(MY_ID, CAB_BLOCK);
+			LED_BlinkStart(&greenLedTimer, 200);
+		}
 	}
 #endif
 }
-
-
-
 
 
 
@@ -313,6 +388,14 @@ int main(void)
     /* USER CODE BEGIN 3 */
 	  	  // always display current floor on floor PCBs and car cab PCB
 	  	  showFloor();
+
+	  	  // always update the state of the LEDs blinking
+	  	  LED_BlinkUpdate(&greenLedTimer);
+	  	  LED_BlinkUpdate(&F1_Req_LED);
+	  	  LED_BlinkUpdate(&F2_Req_LED);
+	  	  LED_BlinkUpdate(&F3_Req_LED);
+	  	  // run function to check if doorswitch was changed
+	  	  //doorSwitch();
 	  	  // Receive messages
 	  	  // check if msgpending (if msg received)
 	  	 if (CAN_MsgPending)
@@ -325,20 +408,33 @@ int main(void)
 
 	  	 // Transmit messages
 	  	 // check if input present
-	  	 if(BUTTON != NO_BUTTON_PRESSED)
-	  	 {
+	  	if(BUTTON != NO_BUTTON_PRESSED)
+	  	{
+	  		// variable for storing current tick (debounce)
+	  	    static uint32_t lastButtonTxTime = 0;
 	  		 // temporarily store before processing
 	  		 // avoids weird interrupt flags (like if BUTTON is updated before msg read)
-	  		 uint8_t pressed_button = BUTTON;
-	  		 // reset BUTTON since it's input has been captured
-	  		 BUTTON = NO_BUTTON_PRESSED;
-	  		 // process button
-	  		 PB_Process(pressed_button);
-	  		 // blink green LED briefly for transmit successful
-	  		 blinkLED(GPIOA, Green_LED_Pin, 500);
+	  	    uint8_t pressed_button = BUTTON;
+	  	    BUTTON = NO_BUTTON_PRESSED;
 
-	  	 }
+	  	    // check current tick and compare to last press. Only send message if its a proper button press and not spam
+	  	    if(HAL_GetTick() - lastButtonTxTime > 250)
+	  	    {
+	  	    	 // process button
+	  	        uint8_t transmitSuccessful = PB_Process(pressed_button);
+	  	        lastButtonTxTime = HAL_GetTick();
+
+	  	        // blink green LED briefly if transmit succesful.
+	  	        if(transmitSuccessful)
+	  	        {
+	  	        LED_BlinkStart(&greenLedTimer, 200);
+	  	        }
+
+	  	    }
+
+	  	}
   }
+  return 0;
   /* USER CODE END 3 */
 }
 
@@ -532,6 +628,12 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(Blue_Button_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : CC_Switch_Pin */
+  GPIO_InitStruct.Pin = CC_Switch_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  HAL_GPIO_Init(CC_Switch_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pins : PB1_LED_Pin Green_LED_Pin PB2_LED_Pin PB3_LED_Pin */
   GPIO_InitStruct.Pin = PB1_LED_Pin|Green_LED_Pin|PB2_LED_Pin|PB3_LED_Pin;

@@ -1,4 +1,3 @@
-	body { font-family: Georgia, serif;}
 
 	p,ul,ol { font-size: 100%;
 		line-height: 20px;
@@ -19,26 +18,30 @@
 				font-size: 90%;
 	}
 	
-	.mkbold {font-weight: bold;
-			 color: red; }
+	.mkbold {font-weight: bold; }
 	
-	.mkunderlined {text-decoration: underline;
-					color: red; }
+	.mkunderlined {text-decoration: underline;}
 	
-	#hcs12 { font-weight: bold;
-		color: blue;}
+	#hcs12 { font-weight: bold;}
 	
-	#can { font-weight: bold;
-		color: blue;}
+	#can { font-weight: bold;}
 	
 	#buttons { font-weight: bold;
 		color: blue;  }
 
 
-	body { width: 950px;
-		   padding: 0px 10px 0px 10px;
-		   margin: 0px auto 0px auto;
-		   border: 2px solid black;}
+	body {
+		font-family: Georgia, serif;
+    	width: 950px;
+    	padding: 10px;
+    	margin: 70px auto 0 auto;
+    	border: 2px solid black;
+    	box-sizing: border-box;
+	}
+
+	aside {
+    	display: none;
+	}
 	
 	
 	figcaption{
@@ -48,24 +51,26 @@
 	}
 
 	figure {
-		 padding: 0px auto 0px auto;
-		 border: 2px solid green;
-		 border-radius: 25px;
-		 }
-		 
-	img {height: 300px;
-		 display: block;  /* Notice that img elements are inline */
-		 margin: 0px auto 0px auto;
-		 border: 2px solid blue;
-		 box-shadow: 10px 10px 5px gray;
-		 
-		 }
+    	text-align: center;
+    	padding: 10px;
+    	border: 2px solid green;
+    	border-radius: 25px;
+		}
+
+	img {
+    	height: 300px;
+    	display: block;
+    	margin: 0px auto;
+    	border: 2px solid blue;
+    	box-shadow: 10px 10px 5px gray;
+	}
+	
+	.mkunderlined{text-decoration: underline; }
+	.mkbold {font-weight: 700; }
 		 
 	ul {list-style-type: square; }
 	/*ul {list-style-image: URL("../images/Conestoga_logo.jpg");} */
 	ol {list-style-type: lower-roman;}
-
-	
 	
 	
 	

@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+
+<!--
+Author: Matvey Regentov
+Contributors to this page:
+ - Matvey Regentov
+
+About:
+This is a template for a daily logbook entry. This page should be duplicated 
+by each team member when they work on the project. Each team member is 
+responsible for linking their logbook entries to their personal logbook cover 
+page. See ./logbook_person_template.html for more info.
+Template usage checklist:
+- [x] replace "Matvey Regentov" with your name
+- [x] replace "2026-06-15" with the date of the logbook entry
+- [ ] write log in section with id "log"
+- [ ] add link to personal logbook cover by replacing "../html/logbook_person_template.html" with actual path
+- [ ] replace xx in head/title tag with your initials
+-->
+
+<html lang="en">
+    <head>
+        <title>MR's Logbook</title>
+		<meta charset="UTF-8">
+		<link rel="stylesheet" href="../../css/logbook_person.css">
+		<link rel="stylesheet" href="../../css/master.css">
+		<link rel="icon" href="../../media/icons/LiF_icon.ico" type="image/x-icon">
+		
+		<!--[if lt IE 9]>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js"></script>
+		<![endif]-->
+		
+		<meta name="author" content="Matvey Regentov">
+		<meta name="description" content="This is a daily logbook entry page for Matvey Regentov as part of Engineering Project VI, ESE at Conestoga College.">
+		<meta name="robots" content="index, follow">
+		<meta http-equiv="Pragma" content="no-cache">
+    </head>
+
+    <body>
+        <aside><iframe src="../links.html" title="Navigation"></iframe></aside>
+		<section id="page_top">
+			<h1>Logbook Entry, 2026-06-15 by Matvey Regentov</h1>
+			<h2>Summary of work performed</h2>
+			<p class="logbook_summary">
+                Weekly debrief and coordination for phase 1 end
+            </p>
+            <a href="../logbook_MR.html">My logbook cover page</a>
+		</section>
+		
+        <section id="log">
+            <h2>Debrief Preparation</h2>
+            <p>
+                LiF Team got together to discuss accomplished task and prepare for the debriefing with the professor. 
+                <ul>
+                    <li>
+                        <b>Accomplished last week</b>
+                        <ul>
+                            <li>
+                                RPi code software (Rita)
+                                <ul>
+                                    <li>Fully completed</li>
+                                    <li>Tested and proven to be working</li>
+                                </ul>
+                            </li>
+                            <li>
+                                Website
+                                <ul>
+                                    <li>Rita started working on <a href="../proj_details.html">Project Details</a> and <a href="../about.html">About</a> pages</li>
+                                </ul>
+                            </li>
+                            <li>
+                                Mechanical Design (Matvey)
+                                <ul>
+                                    <li>All critical parts are modelled. Some need to be printed</li>
+                                    <li>Some supplementary parts still need to be designed, but they are not critical for phase 1</li>
+                                </ul>
+                            </li>
+                            <li>
+                                Elevator Controller (Matvey)
+                                <ul>
+                                    <li>Switched to STM32 and Molybdenum Penguin PCB stackup due to part availability and cross-compatibility</li>
+                                    <li>Tested MoP stepper driver using <code>Stepper.h</code> library, but it proved to be too limiting</li>
+                                    <li>Developed advanced stepper motor control library for MoP stackup</li>
+                                    <li>CAN tx/rx functionality works. Tested with 2 nodes</li>
+                                </ul>
+                            </li>
+                            <li>
+                                STM32 code (Nick)
+                                <ul>
+                                    <li>Base functionality is fully implemented</li>
+                                </ul>
+                            </li>
+                            <li>
+                                CAN bus cable (Nick took over from Matvey)
+                                <li>Work in progress - <b>critical path</b></li>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
+                        <b>Plans for this week (end of phase 1)</b>
+                        <ul>
+                            <li>Finish CAN bus cable</li>
+                            <li>Add toggle switch to CC</li>
+                            <li>Integration testing of the system</li>
+                            <li>Phase 1 demo preparation</li>
+                            <li>ToF sensor for timeout functionality</li>
+                        </ul>
+                    </li>
+                    <li>
+                        <b>Feedback from the professor</b>
+                        <ul>
+                            <li>DB9 connector is unnecessary - we can use simple twisted wire pair for phase 1 to save time</li>
+                            <li>Timeouts are not required for phase 1 -> omit ToF sensor for now</li>
+                            <li>
+                                Demo will be required to include:
+                                <ul>
+                                    <li>
+                                        Full operation sequence testing
+                                        <ol>
+                                            <li>FC requests the car</li>
+                                            <li>SC forwards the request to EC</li>
+                                            <li>EC moves the car and reports when it is ready</li>
+                                            <li>CC reports when the elevator doors are closed (toggle switch as the doors)</li>
+                                            <li>EC moves the car to the requested floor from CC</li>
+                                        </ol>
+                                    </li>
+                                    <li>
+                                        Full operation sequence will test
+                                        <ul>
+                                            <li>Request car from any FC</li>
+                                            <li>Car moving after any button is pressed on CC</li>
+                                        </ul>
+                                    </li>
+                                    <li>
+                                        CAN traffic
+                                        <ul>
+                                            <li>All controllers need to implement UART</li>
+                                            <li>Prof will connect to any node and monitor UART message</li>
+                                            <li>UART messages inform if a received CAN packet was ignored or accepted</li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </p>
+
+            <h2>Stepper motor acceleration control and limit switches</h2>
+            <p>
+                I implemented advanced stepper motor control module for EC using 
+                <i>Chat GPT</i>. Use of LLM was deemed acceptable since full EC 
+                code is provided for school-built elevator platforms. <br>
+                Main features of the module:
+                <ul>
+                    <li>
+                        Interrupt-driven control loop
+                        <ul>
+                            <li>TIM6 calls Stepper ISR with 10kHz frequency</li>
+                            <li>This eliminates the need for <code>Stepper.tick()</code> calls inside the main loop</li>
+                        </ul>
+                    </li>
+                    <li>Interrupt-driven limit switches</li>
+                    <li>Speed and acceleration limits</li>
+                    <li>Homing sequence</li>
+                    <li>Automatic travel range determination</li>
+                    <li>Serial command and status interface</li>
+                </ul>
+
+                The module was tested using Serial interface. It functions well, 
+                but there are a few quirks that need to be resolved.
+                <ul>
+                    <li>
+                        Only 1 limit switch is active during travel move. The 
+                        other limit switch is ignored. This behavior should be 
+                        changed to enter fault mode when wrong limit switch is 
+                        triggered for safety purposes.
+                    </li>
+                    <li>
+                        <code>movemm</code> command has a limited range of 
+                        accepted values even if the desired target is within 
+                        the range of motion determined during homing procedure.
+                    </li>
+                </ul>
+
+                These faults were deemed non-critical for now, but will be 
+                revisited in the future.
+            </p>
+            <figure>
+                <video class="img_lrg" controls>
+                    <source src="../../media/video/Lif-Ec-Stepper-Acc-Control&Limsw.mp4" alt="Acceleration control demonstration">
+                </video>
+                <figcaption>Acceleration control demonstration</figcaption>
+            </figure>
+
+            <p>
+                Additionally, simplified CAN protocol was implemented to test CC 
+                issuing commands to EC to move the stepper motor.
+            </p>
+
+            <figure>
+                <video class="img_lrg" controls>
+                    <source src="../../media/video/Cc-To-Ec-Comms-Demo.mp4" alt="Simplified CAN protocol, issuing commands from CC to EC to move the motor">
+                </video>
+                <figcaption>Simplified CAN protocol, issuing commands from CC to EC to move the motor</figcaption>
+            </figure>
+
+        </section>
+
+		
+		<footer>
+			<p><a href="#page_top">Go to the top of this page</a></p>
+			<p>Copyright &copy; Matvey Regentov</p>
+		</footer>
+		
+    </body>
+</html>
