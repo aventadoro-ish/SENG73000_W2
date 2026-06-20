@@ -16,10 +16,17 @@
 		<meta http-equiv="Pragma" content="no-cache">
 		<link rel="stylesheet" href="css/master.css">
 
+        <!-- bootstrap functions -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
     </head>		
 
     <body>
-        <aside><iframe src="html/links.html" title="Navigation"></iframe></aside>
+        <div id="navbar-placeholder" data-root=""></div>
+        <script src="js/navbar.js"></script>
+        <br><br>
         <h1>
             Engineering Project VI Homepage
         </h1>
@@ -36,6 +43,9 @@
             have an account yet.
         </p>
 
+        <br>
+        <h4 id="currentDateTime"></h4>
+
         <h1>Login Form</h1>
         <form action="php/login.php" method="post" id="login">
             <p>Basic login form example</p>
@@ -47,7 +57,7 @@
             </p>
             <input type="submit" value="log in" />
         </form>
-
+        <script src="js/date_time.js"></script>
     </body>
 
     <footer>
