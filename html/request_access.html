@@ -16,28 +16,33 @@
 		<meta name="robots" content="index, follow">
 		<meta http-equiv="Pragma" content="no-cache">
     </head>
-    <body>
+    <body id="page_top">
         <aside><iframe src="links.html" title="Navigation"></iframe></aside>
         <h1>Request Access</h1>
-        <form action="php/req_access.php" method="post">
+        <form action="../php/request_access.php" method="post">
             <fieldset>  <!--Adds a boundary, encapsulating elements-->
                 <legend>Contact Info</legend>
                 <p>First Name: <input type="text" name="firstName"/></p>
                 <p>Last Name: <input type="text" name="lastName"/></p>
+                <p>Email: <input type="email" name="email" required></p>
                 
                 <legend>Occupation</legend>
                 <!--radio elements with matching names are selected exclusively-->
                 <label><input type="radio" name="fac_or_student" value="faculty"/>Faculty <br></label>
                 <label><input type="radio" name="fac_or_student" value="student"/>Student <br></label>
-                <input type="date"/>
+
+                <p>
+                    Birthday:
+                    <input type="date" name="birthday" required>
+                </p>
 
 
                 <p>Currently, I am ... (select all that applies)</p>
                 <!--Label allows to click text and still select the checkbox-->
-                <label><input type="checkbox" name="involvement" value="None"/>Nobody</label><br>
-                <label><input type="checkbox" name="involvement" value="Instructor"/> Instructor </label><br>
-                <label><input type="checkbox" name="involvement" value="Boss"/> Boss </label><br>
-                <label><input type="checkbox" name="involvement" value="Investor"/> Investor </label><br>
+                <label><input type="checkbox" name="involvement[]" value="None"/>Nobody</label><br>
+                <label><input type="checkbox" name="involvement[]" value="Instructor"/> Instructor </label><br>
+                <label><input type="checkbox" name="involvement[]" value="Boss"/> Boss </label><br>
+                <label><input type="checkbox" name="involvement[]" value="Investor"/> Investor </label><br>
 
                 <p>Do you drive a car?
                     <select name="drives_car">
@@ -50,16 +55,14 @@
             </fieldset>
 
             <p>Tell us about yourself</p>
-            <textarea>
-                Other details
-            </textarea> <br>
+            <textarea name="details" placeholder="Other details"></textarea>
 
             <input type="submit" value="Submit Request"/>
         </form>
+    
+        <footer>
+            <p><a href="#page_top">Go to the top of this page</a></p>
+            <p>Copyright &copy; 2026 Matvey Regentov</p>
+        </footer>
     </body>
-
-    <footer>
-        <p><a href="#page_top">Go to the top of this page</a></p>
-        <p>Copyright &copy; 2026 Matvey Regentov</p>
-    </footer>
 </html>
