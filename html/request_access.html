@@ -78,10 +78,16 @@
                 <legend>Additional Details</legend>
                 <label for="details">Tell us about yourself:</label>
                 <textarea id="details" name="details" placeholder="Other details"></textarea>
+                <p id="character_count">180 characters remaining</p>
+                <p id="character_error" role="alert" hidden>
+                    You have exceeded the maximum number of 180 characters allowed.
+                </p>
             </fieldset>
 
             <input id="request_access_btn" type="submit" value="Submit Request">
         </form>
+
+        <script src="../js/request_access.js"></script>
 
         <footer>
             <p><a href="#page_top">Go to the top of this page</a></p>
