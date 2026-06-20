@@ -14,22 +14,49 @@
 		<meta name="author" content="Matvey Regentov">
 		<meta name="description" content="Request access to hidden contents of the website.">
 		<meta name="robots" content="index, follow">
+        <!-- bootstrap functions -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="../css/request_access_style.css">
 		<meta http-equiv="Pragma" content="no-cache">
     </head>
     <body>
-        <aside><iframe src="links.html" title="Navigation"></iframe></aside>
+        <div id="navbar-placeholder" data-root="../"></div>
+		<script src="../js/navbar.js"></script>
+		<br><br>
+
         <h1>Request Access</h1>
-        <form action="php/req_access.php" method="post">
-            <fieldset>  <!--Adds a boundary, encapsulating elements-->
+        <form action="../php/req_access.php" method="post" class="access_form">
+            <fieldset> 
                 <legend>Contact Info</legend>
-                <p>First Name: <input type="text" name="firstName"/></p>
-                <p>Last Name: <input type="text" name="lastName"/></p>
+
+                <p class="form-row">
+                    <label for="firstname">First Name:</label>
+                    <input type="text" name="firstName"/>
+                </p>
                 
+                 <p class="form_row">
+                    <label for="lastname">Last Name:</label> 
+                    <input type="text" name="lastName"/>
+                </p>
+            </fieldset> 
+            
+            <fieldset>
                 <legend>Occupation</legend>
-                <!--radio elements with matching names are selected exclusively-->
-                <label><input type="radio" name="fac_or_student" value="faculty"/>Faculty <br></label>
-                <label><input type="radio" name="fac_or_student" value="student"/>Student <br></label>
-                <input type="date"/>
+                <p class="option_row">
+                    <label>
+                        <input type="radio", name="fac_or_student", value="faculty">
+                    Faculty</label>
+                </p>
+
+                <p class="option_row">
+                    <label>
+                        <input type="radio", name="fac_or_student", value="student">
+                    Student</label>
+                </p>
+            </fieldset>
+
 
 
                 <p>Currently, I am ... (select all that applies)</p>

@@ -14,32 +14,43 @@
 		<link rel="stylesheet" href="../css/master.css">
 		<meta name="description" content="Login Page.">
 		<meta name="robots" content="index, follow">
-		<meta http-equiv="Pragma" content="no-cache">
+          <!-- bootstrap functions -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        <meta http-equiv="Pragma" content="no-cache">
     </head>	
 
     <body>
-        <aside><iframe src="links.html" title="Navigation"></iframe></aside>
+        <div id="navbar-placeholder" data-root="../"></div>
+		<script src="../js/navbar.js"></script>
+		<br><br>
 
         <h1>User Login Form</h1>
         <form action="../php/login.php" method="POST" id="login">
-            <p>Username: 
-                <input type="text" name="username" required/>
+             <p>
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" required>
             </p>
-            <p>Password: 
-                <input type="password" name="password" required/>
-            </p>
-            <input type="submit" value="Log in" />
-        </form>
 
+            <p>
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required>
+            </p>
+
+            <p id="loginMessage"></p>
+            <input type="submit" value="Log in">
+        </form>
         <p>
             If you don't have an account, use <a href="request_access.html">Request Access</a> form to register.
         </p>
 
-
+        <script src="../js/login_validation.js"></script>
 
     <footer>
         <p><a href="#page_top">Go to the top of this page</a></p>
         <p>Copyright &copy; 2026 Rita Yevtushenko</p>
     </footer>
+    </body>
 </html>
 
