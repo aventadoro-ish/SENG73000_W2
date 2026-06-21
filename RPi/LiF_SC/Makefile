@@ -4,7 +4,7 @@ SRC_DIR := src
 INC_DIR := include
 OBJ_DIR := obj
 
-TARGET := executable
+TARGET := LiF_SC
 
 LDFLAGS := -L/usr/lib/arm-linux-gnueabihf
 LDLIBS := -l:libmysqlcppconn.so -lpcan
