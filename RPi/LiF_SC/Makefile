@@ -1,35 +1,21 @@
-CXX := g++
+IDIR =../include
+LDIR =-L/usr/lib/arm-linux-gnueabihf
+CC=g++
+CFLAGS=-I$(IDIR)
+ODIR=obj
 
-SRC_DIR := src
-INC_DIR := include
-OBJ_DIR := obj
+LIBS=-l:libmysqlcppconn.so -lpcan
 
-TARGET := executable
+_OBJ = main.o mainFunctions.o pcanFunctions.o databaseFunctions.o
+OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
 
-LDFLAGS := -L/usr/lib/arm-linux-gnueabihf
-LDLIBS := -l:libmysqlcppconn.so -lpcan
+$(ODIR)/%.o: %.cpp
+	$(CC) -c -o $@ $< $(CFLAGS)
 
-CPPFLAGS := -I$(INC_DIR)
-CXXFLAGS := -Wall -Wextra -g
+main: $(OBJ)
+	g++ -o $@ $^ $(CFLAGS) $(LDIR) $(LIBS)
 
-SOURCES := \
-	$(SRC_DIR)/main.cpp \
-	$(SRC_DIR)/mainFunctions.cpp \
-	$(SRC_DIR)/pcanFunctions.cpp \
-	$(SRC_DIR)/databaseFunctions.cpp
-
-OBJECTS := $(patsubst $(SRC_DIR)/%.cpp,$(OBJ_DIR)/%.o,$(SOURCES))
-
-.PHONY: all clean
-
-all: $(TARGET)
-
-$(TARGET): $(OBJECTS)
-	$(CXX) -o $@ $^ $(LDFLAGS) $(LDLIBS)
-
-$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
-	@mkdir -p $(OBJ_DIR)
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
+.PHONY: clean
 
 clean:
-	rm -rf $(OBJ_DIR) $(TARGET)
+	rm -f $(ODIR)/*.o *~ core $(INCDIR)/*~
