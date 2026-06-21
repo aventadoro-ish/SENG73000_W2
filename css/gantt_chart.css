@@ -1,0 +1,63 @@
+/* #Gantt td:not(:empty) {
+    background-color: #cfe8d5;
+} */
+
+#Gantt {
+    font-family: sans-serif;
+    & thead {
+        & tr {
+            & th:first-child {
+                background-color: white;
+            }
+
+            & th:not(:first-child){
+                background-color: firebrick;
+                width: 5.7%;
+            }
+        }
+    }
+    & tbody {
+        & tr {
+            max-width: 20%;
+            text-align: left;
+            word-wrap: break-word;
+            
+            & .main {
+                text-align: left;
+            }
+            
+            & .sub {
+                padding-left: 3ch;
+            }
+
+            & .sub2 {
+                padding-left: 6ch;
+            }
+
+            & .completed {
+                    background-color: lightgreen;
+            }
+
+            & .ongoing {
+                background-color: lightblue;
+            }
+    
+            & .behind {
+                background-color: lightcoral;
+            }
+
+            & .omitted {
+                text-decoration: line-through;
+                background-color: gray;
+            }
+
+        }
+    }
+}
+
+/* Patch for fixed top navbar covering sticky Gantt header */
+#Gantt thead{
+    position: sticky;
+    top: 50px;
+    z-index: 1020;
+}

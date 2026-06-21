@@ -1,2 +1,4 @@
 embedded/LiF_EC/.pio
 embedded/LiF_STM/Debug/*
+.vscodeembedded/LiF_STM/.settings/language.settings.xml
+**/.settings/language.settings.xml

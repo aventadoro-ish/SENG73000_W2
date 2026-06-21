@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+
+<!--
+Author: Nick Kapuka
+-->
+
+<html lang="en">
+    <head>
+        <title>NK's Logbook</title>
+		<meta charset="UTF-8">
+        <meta name="description">
+		<link rel="stylesheet" href="../css/logbook_person.css">
+		<link rel="icon" href="../../media/icons/LiF_icon.ico" type="image/x-icon">
+        <link rel="stylesheet" href="../../css/master.css">
+        <link rel="codeformatting" href="../../css/code_formatting.css">
+		
+		<!--[if lt IE 9]>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js"></script>
+		<![endif]-->
+		
+		<meta name="author" content="Nick Kapuka">
+		<meta name="description" content="This is a daily logbook entry page for Nick Kapuka as part of Engineering Project VI, ESE at Conestoga College.">
+		<meta name="robots" content="index, follow">
+		<meta http-equiv="Pragma" content="no-cache">
+    </head>
+
+    <body>
+		<aside><iframe src="../links.html" title="Navigation"></iframe></aside>
+		<section id="page_top">
+			<h1>Logbook Entry, 2026-06-16 by Nick Kapuka</h1>
+			<h2>Summary of work performed</h2>
+			<p class="logbook_summary">began to make the CAN bus cable and 3D printed a few more parts for the project</p>
+            <a href="../logbook_NK.html">My logbook cover page</a>
+		</section>
+		
+		<section id="log">
+            <h2>Began to solder and make the CAN bus cable</h2>
+            <p>- Ordered a DB9 quick connector kit off of 
+                
+                <a href="https://a.co/d/04uHdVVp"
+                target="_blank" rel="noopener noreferrer">
+                    Amazon
+                </a>
+                that came with 15 male and 15 female DB9 heads, as well as 30 plastic casings that are easy to mount. 
+                They utilize screws for the casing so it allows for removal of the casing to double check or modify the wiring. 
+                Saved a lot of time, as the alternative was cable splicing
+            </p>
+
+            <figure>
+				<img class="img_med" src="../../media/images/DB9_Connectors_AmazonPage.png" alt="Pulleys and Plates">
+				<figcaption><b>DB9 Connector and what it came with</b></figcaption>
+			</figure>
+
+			<p>- stripped cable and soldered three colours to the DB9 connectors - white for CANH (pin 7 of DB9), blue for CANL (pin 2 of DB9), and black for GND (pin 3 of DB9)</p>
+
+            <figure>
+				<img class="img_med" src="../../media/images/DB9_Connector_Pinout.png" alt="Pulleys and Plates">
+				<figcaption><b>CAN wiring for DB9 connector</b></figcaption>
+			</figure>
+
+            <p>- The cable lengths were defined by our elevator platform and discussed with MR. See attached image below:</p>
+
+            <figure>
+				<img class="img_med" src="../../media/images/LiF_CableLengths.png" alt="Pulleys and Plates">
+				<figcaption><b>rough wiring diagram for the elevator - cable lengths and connector type (M/F) </b></figcaption>
+			</figure>
+
+            <p>- Soldered one cable, then connected two cables together in the next node (since everything had to be connected together). Followed diagram above for lengths and connector type. See progress images below:</p>
+
+            <figure>
+				<img class="img_med" src="../../media/images/MicroscopeShot_DB9_QuickConnect.png" alt="Pulleys and Plates">
+				<figcaption><b>Soldered wires to the DB9 connector (image under microscope). White for CANH, blue for CANL, black for GND</b></figcaption>
+			</figure>
+
+            <figure>
+				<img class="img_med" src="../../media/images/DB9_QuickConnect_WiresIn.png" alt="Pulleys and Plates">
+				<figcaption><b>Wires sitting in DB9 Quick Connect</b></figcaption>
+			</figure>
+
+            <figure>
+				<img class="img_med" src="../../media/images/DB9_QuickConnect_Together.png" alt="Pulleys and Plates">
+				<figcaption><b>DB9 connectors made</b></figcaption>
+			</figure>
+
+
+
+		<section id="log">
+
+            <h2>3D printed the last few remaining parts needed</h2>
+
+            <p>- had to reprint the stepper motor mount due to heat damage</p>
+            <p>- printed mount for the drag chain</p>
+            <p>- reprinted a pulley out of PETG due to PLA being too brittle and overheating</p>
+
+            <figure>
+				<img class="img_med" src="../../media/images/PrintPlate_StepperMount&Pulley.png" alt="Pulleys and Plates">
+				<figcaption><b>DB9 connectors made</b></figcaption>
+			</figure>
+
+        </section>
+		
+		<footer>
+			<p><a href="#page_top">Go to the top of this page</a></p>
+			<p>Copyright &copy; Nick Kapuka</p>
+		</footer>
+		
+    </body>
+</html>

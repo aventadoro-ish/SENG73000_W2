@@ -1,0 +1,36 @@
+
+/* formatting for code blocks within logbook entries
+made by Nick Kapuka
+
+use by: 
+<pre class="code-block"><code>
+// code
+</code></pre>
+
+
+Prism.js uses pre[class*="language-"] so using pre.code-block and class *="language-" lets MY css override prisms default
+
+*/
+pre.code-block[class*="language-"] {
+    background-color: #dedede;
+    color: black;
+    border: 1px solid black;
+    padding: 10px;
+    margin: 15px 0px 15px 0px;
+    overflow-x: auto;
+
+    font-family: Consolas, "Courier New", monospace;
+    font-size: 90%;
+    line-height: 20px;
+
+    text-align: left;
+    white-space: pre;
+    text-shadow: none;
+}
+
+pre.code-block code[class*="language-"] {
+    font-family: Consolas, "Courier New", monospace;
+    font-size: 100%;
+    line-height: 20px;
+    text-align: left;
+}
