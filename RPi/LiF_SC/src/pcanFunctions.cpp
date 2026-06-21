@@ -72,6 +72,7 @@ int pcanTx(int id, int data){
 
 	// Close CAN 2.0 channel and exit	
 	CAN_Close(h);
+    return status;
 }
 
 int pcanRx(int num_msgs){

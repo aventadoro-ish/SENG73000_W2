@@ -11,6 +11,10 @@
 using namespace std;
 State currentState = STATE_IDLE;
 
+// #define DO_USE_DB
+
+
+
 
 // ******************************************************************
 
@@ -30,7 +34,9 @@ int main() {
 				ID = chooseID();		// user to select ID depending on intended recipient
 				data = chooseMsg();		// user to select message data
 				pcanTx(ID, data);		// transmit ID and data 
+#ifdef DO_USE_DB
 				db_setFloorNum(FloorFromHex(data)); 		// change floor number in database ** NEW **
+#endif
 				break; 
 				
 			case 2:
@@ -46,10 +52,13 @@ int main() {
 	
 				// Synchronize elevator db and CAN (start at 1st floor)
 				pcanTx(ID_SC_TO_EC, GO_TO_FLOOR1);
+#ifdef DO_USE_DB
 				db_setFloorNum(1);
+#endif
 				currentState = STATE_IDLE;
-
+				
 				{
+					bool is_CC_door_closed = false;
 					TPCANMsg incoming;
 					int targetFloor = 1;
 					//int activeTargetFloor = -1;
@@ -62,8 +71,9 @@ int main() {
 						bool newRequest = false;
 
 						//Check database for requests
-
+#ifdef DO_USE_DB
 						floorNumber = db_getFloorNum();
+#endif
 						if (prev_floorNumber != floorNumber) {								// If floor number changes in database
 							pendingFloor = floorNumber;
 							enqueueFloor(floorNumber);
@@ -86,6 +96,11 @@ int main() {
 									enqueueFloor(3);
 									break;
 								case ID_CC_TO_SC:
+									if ((incoming.DATA[0] & 0b00000100) > 0) {
+										is_CC_door_closed = true;
+									} else {
+										is_CC_door_closed = false;
+									}
 									// CC_FloorReq is bits 1-0 of the data byte
 									enqueueFloor(incoming.DATA[0] & 0x03);
 									break;
@@ -99,7 +114,7 @@ int main() {
 						switch(currentState) {
 
 						case STATE_IDLE:
-							if (queueCount > 0) {
+							if (queueCount > 0 && is_CC_door_closed) {
 								targetFloor = dequeueFloor();
 								pcanTx(ID_SC_TO_EC, HexFromFloor(targetFloor));
 								moveStartTime = time(NULL);
@@ -137,7 +152,9 @@ int main() {
 					
 
 						case STATE_ARRIVED:
+#ifdef DO_USE_DB
 							db_setFloorNum(targetFloor);
+#endif
 							currentState = STATE_IDLE;
 							break;
 

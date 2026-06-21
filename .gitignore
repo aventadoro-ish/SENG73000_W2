@@ -1,5 +1,5 @@
 embedded/LiF_EC/.pio
-embedded/LiF_STM/Debug/*
+embedded/LiF_STM/Debug/**
 .vscode/*
 !.vscode/tasks.json
 embedded/LiF_STM/.settings/language.settings.xml
