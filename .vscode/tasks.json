@@ -8,24 +8,50 @@
             "args": [
                 "-r",
                 "${workspaceFolder}/RPi/LiF_SC/.",
-                "rita@LiF.local:/home/rita/LiF_SC/"
+                "rita@lif.local:/home/rita/LiF_SC/"
             ],
             "windows": {
                 "args": [
                     "-r",
                     "${workspaceFolder}\\RPi\\LiF_SC\\.",
-                    "rita@LiF.local:/home/rita/LiF_SC/"
+                    "rita@lif.local:/home/rita/LiF_SC/"
                 ]
             },
             "problemMatcher": [],
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            },
             "presentation": {
                 "reveal": "always",
                 "panel": "shared",
                 "clear": true
+            }
+        },
+        {
+            "label": "Build LiF_SC on Raspberry Pi",
+            "type": "shell",
+            "command": "ssh",
+            "args": [
+                "rita@lif.local",
+                "cd /home/rita/LiF_SC && make clean && make"
+            ],
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared",
+                "clear": false
+            }
+        },
+        {
+            "label": "Deploy and Build LiF_SC",
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "Deploy LiF_SC to Raspberry Pi",
+                "Build LiF_SC on Raspberry Pi"
+            ],
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
             }
         }
     ]

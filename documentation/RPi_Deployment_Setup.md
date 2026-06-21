@@ -65,14 +65,40 @@ Use the following configuration:
                 ]
             },
             "problemMatcher": [],
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            },
             "presentation": {
                 "reveal": "always",
                 "panel": "shared",
                 "clear": true
+            }
+        },
+        {
+            "label": "Build LiF_SC on Raspberry Pi",
+            "type": "shell",
+            "command": "ssh",
+            "args": [
+                "rita@lif.local",
+                "cd /home/rita/LiF_SC && make clean && make"
+            ],
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared",
+                "clear": false
+            }
+        },
+        {
+            "label": "Deploy and Build LiF_SC",
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "Deploy LiF_SC to Raspberry Pi",
+                "Build LiF_SC on Raspberry Pi"
+            ],
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
             }
         }
     ]
@@ -300,30 +326,7 @@ Exit the SSH session with:
 exit
 ```
 
-### 6. Clone or update the repository
-
-For a new local copy:
-
-```bash
-git clone <repository-url>
-```
-
-For an existing local copy:
-
-```bash
-git pull
-```
-
-Open the repository root as the VS Code workspace.
-
-The repository root must be the directory containing:
-
-```text
-.vscode/
-RPi/
-```
-
-### 7. Run the deployment task
+### 6. Run the deployment task
 
 In VS Code, press:
 
