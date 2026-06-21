@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>LiF Homepage</title>
+        <!--BOOTSTRAP-->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+          rel="stylesheet">
+        <meta charset="utf-8" />
+        <meta name="author" content="Rita Yevtushenko, Matvey Regentov">
+        <meta name="description" content="LiF Website Homepage.">
+        <meta name="robots" content="index, follow">
+        <meta http-equiv="Pragma" content="no-cache">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="icon" href="../../media/icons/LiF_icon.ico" type="image/x-icon">
+        <link rel="stylesheet" type="text/css" href="css/mystyle.css" />
+
+        <!--[if lt IE 9]>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js"></script>
+        <![endif]-->
+    </head>
+<body>
+<div id="page" class="container">
+    <header>
+        <img id="logo"
+             src="../../media/icons/LiF_icon.ico"
+             alt="Project Logo" />
+        <h1>Engineering Project VI Homepage</h1>
+        <nav class="navbar navbar-expand-lg justify-content-center">
+            <ul class="navbar-nav flex-row" id="links_section">
+                <li class="nav-item">
+                    <a class="nav-link" href="../../html/proj_details.html">Project Details</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="../../html/about.html">About</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="../../html/links.html">Links</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="logbooksDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Logbooks
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="logbooksDropdown">
+                        <li><a class="dropdown-item" href="../../html/logbook_MR.html">Matvey Regentov's Logbook</a></li>
+                        <li><a class="dropdown-item" href="../../html/logbook_RY.html">Rita Yevtushenko's Logbook</a></li>
+                        <li><a class="dropdown-item" href="../../html/logbook_NK.html">Nick Kapuka's Logbook</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="accessDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Access Control
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="accessDropdown">
+                        <li><a class="dropdown-item" href="../../html/login.html">Login</a></li>
+                        <li><a class="dropdown-item" href="../../html/request_access.html">Request Access</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    <main id="content">
+        <section class="row">
+            <div class="col-12">
+                <p>
+                    Welcome to <i>Lithium Firefly Team (LiF Team)</i> elevator project
+                    homepage. See <a href="../../html/proj_details.html">Project Details</a>
+                    page to learn more about the project. Additionally, use the
+                    navigation panel above. Additionally, all the code used in the
+                    project can be found on our
+                    <a href="https://github.com/aventadoro-ish/SENG73000_W2">GitHub repo</a>.
+                    If you want to see hidden sections of the website, please,
+                    <a href="../../html/login.html">login</a> or
+                    <a href="../../html/request_access.html">request access</a> if you do not
+                    have an account yet.
+                </p>
+                <h4 id="currentDateTime"></h4>
+            </div>
+        </section>
+
+        <section class="row">
+            <div class="col-12">
+                <h2>Login Form</h2>
+                <form action="php/login.php" method="post" id="login">
+                    <p>Basic login form example</p>
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Username</label>
+                        <input type="text" class="form-control" id="username" name="username" required />
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="password" name="password" required />
+                    </div>
+                    <input type="submit" class="btn btn-primary" value="Log in" />
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p><a href="#page_top">Go to the top of this page</a></p>
+        <p>Copyright &copy; 2026 Rita Yevtushenko, Matvey Regentov, and Nick Kapuka</p>
+    </footer>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+<script src="js/date_time.js"></script>
+</body>
+</html>
