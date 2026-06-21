@@ -304,7 +304,6 @@ void send_heartbeat() {
     uint8_t floor_pos;
     if (state == EC_State::MOVING) {
         floor_pos = 0;
-        DEBUG_PRINT("aaaaaaaa");
     } else {
         // if not moving, assume target floor is reached
         floor_pos = target_floor;

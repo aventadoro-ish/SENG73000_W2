@@ -41,7 +41,7 @@
 #define F3_BOARD	3					// Floor 3 STM32
 
 // ********************************* CHANGE PER BOARD *********************************
-#define SELECTED_BOARD	F3_BOARD		// currently selected board; change when flashing
+#define SELECTED_BOARD	CC_BOARD		// currently selected board; change when flashing
 // ************************************************************************************
 
 // CAN IDs:
@@ -57,7 +57,7 @@
 #define FLOOR_1				1
 #define FLOOR_2				2
 #define FLOOR_3				3
-#define CAB_BLOCK			4
+#define CAB_ALLOW			4
 
 // pre-comp code block for configuring STM32 FLASHING
 #if SELECTED_BOARD == CC_BOARD
@@ -257,9 +257,20 @@ uint8_t PB_Process(uint8_t button){
 	// for CC, the button detects were flipped due to the STM32 being mounted upside down on the assembly
 	// makes it easier to visually see the "floor 3" button corresponding to floor 1 because it's the lowest on the PCB
 
+	// add door switch check to every CAN transmission
+	// grab current switch state
+	GPIO_PinState currentSwitchState = HAL_GPIO_ReadPin(CC_Switch_GPIO_Port, CC_Switch_Pin);
+	uint8_t doorBit;
+	if (currentSwitchState == GPIO_PIN_SET) {
+		doorBit = 0;	// door open
+	} else {
+		doorBit = 0b00000100;	// door closed
+	}
+
+
 	if(button == F3_BUTTON_PRESS)
 	{
-		CAN_ByteTransmit(MY_ID, FLOOR_1);
+		CAN_ByteTransmit(MY_ID, FLOOR_1 | doorBit);
 		// illuminate PB LED for visual confirmation
 		LED_BlinkStart(&F3_Req_LED, 200);
 		return 1;
@@ -267,7 +278,7 @@ uint8_t PB_Process(uint8_t button){
 	}
 	else if(button == F2_BUTTON_PRESS)
 	{
-		CAN_ByteTransmit(MY_ID, FLOOR_2);
+		CAN_ByteTransmit(MY_ID, FLOOR_2 | doorBit);
 		// illuminate PB LED for visual confirmation
 		LED_BlinkStart(&F2_Req_LED, 200);
 		return 1;
@@ -275,7 +286,7 @@ uint8_t PB_Process(uint8_t button){
 	}
 	else if(button == F1_BUTTON_PRESS)
 	{
-		CAN_ByteTransmit(MY_ID, FLOOR_3);
+		CAN_ByteTransmit(MY_ID, FLOOR_3 | doorBit);
 		// illuminate PB LED for visual confirmation
 		LED_BlinkStart(&F1_Req_LED, 200);
 		return 1;
@@ -331,8 +342,12 @@ void doorSwitch(void){
 		// if the switch is ON
 		if(currentSwitchState == GPIO_PIN_SET)
 		{
-			// switch is ON = doors open = no movement allowed. Send CAN message of 0b100 or 0x04
-			CAN_ByteTransmit(MY_ID, CAB_BLOCK);
+			// switch is ON = doors open = no movement allowed. Send CAN message of 0b000 or 0x00
+			CAN_ByteTransmit(MY_ID, 0);
+			LED_BlinkStart(&greenLedTimer, 200);
+		} else {
+			// switch is OFF = doors closed = movement allowed. Send CAN message of 0b100 or 0x04
+			CAN_ByteTransmit(MY_ID, CAB_ALLOW);
 			LED_BlinkStart(&greenLedTimer, 200);
 		}
 	}
@@ -395,7 +410,7 @@ int main(void)
 	  	  LED_BlinkUpdate(&F2_Req_LED);
 	  	  LED_BlinkUpdate(&F3_Req_LED);
 	  	  // run function to check if doorswitch was changed
-	  	  //doorSwitch();
+	  	  doorSwitch();
 	  	  // Receive messages
 	  	  // check if msgpending (if msg received)
 	  	 if (CAN_MsgPending)
@@ -632,7 +647,7 @@ static void MX_GPIO_Init(void)
   /*Configure GPIO pin : CC_Switch_Pin */
   GPIO_InitStruct.Pin = CC_Switch_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  GPIO_InitStruct.Pull = GPIO_PULLDOWN;
   HAL_GPIO_Init(CC_Switch_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pins : PB1_LED_Pin Green_LED_Pin PB2_LED_Pin PB3_LED_Pin */

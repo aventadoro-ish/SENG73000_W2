@@ -76,6 +76,7 @@ int main() {
 #endif
 						if (prev_floorNumber != floorNumber) {								// If floor number changes in database
 							pendingFloor = floorNumber;
+							printf("Queued floor %d\n", floorNumber);
 							enqueueFloor(floorNumber);
 						}
 
@@ -85,27 +86,40 @@ int main() {
 						int gotMessage = pcanRxState(&incoming);
 						if (gotMessage)
 						{
+							printf("Received CAN frame with ID %x ", incoming.ID);
 							switch(incoming.ID) {
 								case ID_F1_TO_SC:
+									printf("- Queue FC1\n");
 									enqueueFloor(1);
 									break;
 								case ID_F2_TO_SC:
+									printf("- Queue FC2\n");
 									enqueueFloor(2);
 									break;
 								case ID_F3_TO_SC:
+									printf("- Queue FC3\n");
 									enqueueFloor(3);
 									break;
 								case ID_CC_TO_SC:
 									if ((incoming.DATA[0] & 0b00000100) > 0) {
 										is_CC_door_closed = true;
+										printf("- CC doors closed ");
+
+										if ((incoming.DATA[0] & 0x03) != 0) {
+											// CC_FloorReq is bits 1-0 of the data byte
+											printf("- Queue CC %x\n", incoming.DATA[0] & 0x03);
+											enqueueFloor(incoming.DATA[0] & 0x03);
+										}
+
 									} else {
 										is_CC_door_closed = false;
+										printf("- CC doors open - ignore request\n");
+										
 									}
-									// CC_FloorReq is bits 1-0 of the data byte
-									enqueueFloor(incoming.DATA[0] & 0x03);
+
 									break;
 								case ID_EC_TO_ALL:
-						
+									printf("EC heartbeat\n");
 									break;
 							}
 						}
