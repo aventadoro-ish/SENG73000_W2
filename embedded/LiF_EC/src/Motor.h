@@ -23,10 +23,10 @@ constexpr uint32_t CONTROL_TICK_HZ = 10000;
 // All public speed values in "steps/s" are physical full-steps per second,
 // regardless of whether FULL_STEP or HALF_STEP electrical drive is selected.
 // MM_PER_STEP is likewise millimetres per physical full step.
-constexpr float MM_PER_STEP = 741.4f / 983.0f; // TODO: set measured conversion
+constexpr float MM_PER_STEP = 766.8f / 2256.0f; // TODO: set measured conversion
 constexpr float MAX_ACCEL_STEPS_S2 = 500.0f;
 constexpr float DEFAULT_MOVE_SPEED_STEPS_S = 300.0f;
-constexpr float HOMING_SPEED_STEPS_S = 80.0f;
+constexpr float HOMING_SPEED_STEPS_S = 150.0f;
 constexpr int32_t HOMING_MAX_LEG_STEPS = 100000;
 
 // Set to -1 if the electrical sequence called "up" moves the mechanism down.

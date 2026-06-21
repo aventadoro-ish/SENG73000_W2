@@ -10,7 +10,7 @@
 // -----------------------------------------------------------------------------
 // Compile Settings
 // -----------------------------------------------------------------------------
-// #define HOME_ON_STARTUP
+#define HOME_ON_STARTUP
 #define ENERGIZE_ON_STARTUP
 #define USE_MOTOR_SERIAL
 // #define USE_SIMPLIFIED_CAN_PROTOCOL
@@ -21,9 +21,9 @@
 // Global Declarations
 // -----------------------------------------------------------------------------
 #ifdef USE_HARDCODED_FLOORS
-#define FLOOR1_STEPS    500 / 2
-#define FLOOR2_STEPS    1000 / 2
-#define FLOOR3_STEPS    1500 / 2
+#define FLOOR1_STEPS    100 
+#define FLOOR2_STEPS    1200 
+#define FLOOR3_STEPS    2250 
 #endif
 
 
@@ -117,10 +117,14 @@ void setup() {
         Serial.println(
             LiF_Motor::homingErrorName(LiF_Motor::getHomingError()));
     }
+    while (LiF_Motor::isHoming()) { 
+        ; // wait until homing is finished
+    }
 #endif
 
     last_heartbeat_time = millis();
     state = EC_State::IDLE;
+
 
     Serial.println("LiF EC - Setup finished");
 
@@ -223,7 +227,7 @@ void process_CAN_msg_full_mode(CAN_message_t rxMsg) {
         rxMsg.id == LiF_CAN::FILTER_F2 || 
         rxMsg.id == LiF_CAN::FILTER_F3
     ) {
-        Serial.printf("Received CAN message with ID %x. Ignoring", rxMsg.id);
+        Serial.printf("Received CAN message with ID %x. Ignoring\r\n", rxMsg.id);
         return;
     }
 
