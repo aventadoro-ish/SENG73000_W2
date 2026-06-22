@@ -1,0 +1,205 @@
+/*
+/* #Gantt td:not(:empty) {
+    background-color: #cfe8d5;
+} 
+
+#Gantt {
+    font-family: sans-serif;
+    & thead {
+        & tr {
+            & th:first-child {
+                background-color: white;
+            }
+
+            & th:not(:first-child){
+                background-color: firebrick;
+                width: 5.7%;
+            }
+        }
+    }
+    & tbody {
+        & tr {
+            max-width: 20%;
+            text-align: left;
+            word-wrap: break-word;
+            
+            & .main {
+                text-align: left;
+            }
+            
+            & .sub {
+                padding-left: 3ch;
+            }
+
+            & .sub2 {
+                padding-left: 6ch;
+            }
+
+            & .completed {
+                    background-color: lightgreen;
+            }
+
+            & .ongoing {
+                background-color: lightblue;
+            }
+    
+            & .behind {
+                background-color: lightcoral;
+            }
+
+            & .omitted {
+                text-decoration: line-through;
+                background-color: gray;
+            }
+
+        }
+    }
+}
+
+/* Patch for fixed top navbar covering sticky Gantt header 
+#Gantt thead{
+    position: sticky;
+    top: 50px;
+    z-index: 1020;
+}
+
+*/
+
+
+/* tropical gant chart! */
+
+/* variables for colouring - copied from tropical.css*/
+:root {
+    --coral: #FCA47C;
+    --cyan: #23CED9;
+    --yellow: #F9DB79;
+    --palm: #A1CCA6;
+    --deep-blue: #097C87;
+    --orange: #FF9C5F;
+    --ember: #EB4203;
+    --cream: #FCEFC3;
+    --aqua: #00CEC8;
+    --ink: #17383b;
+    --card-bg: rgba(255, 255, 255, 0.88);
+    --shadow: rgba(9, 124, 135, 0.18);
+}
+
+#Gantt {
+    width: 100%;
+    min-width: 1150px;
+    border-collapse: collapse;
+    font-family: Georgia, serif;
+    font-size: 0.92rem;
+    background-color: #fffdf4;
+}
+
+#Gantt th,
+#Gantt td {
+    padding: 9px 10px;
+    border: 1px solid rgba(9, 124, 135, 0.18);
+    vertical-align: middle;
+}
+
+#Gantt thead th {
+    color: white;
+    background-color: var(--deep-blue);
+    text-align: center;
+}
+
+#Gantt thead th:first-child {
+    color: var(--deep-blue);
+    background-color: var(--yellow);
+    text-align: left;
+    min-width: 330px;
+}
+
+#Gantt tbody tr:first-child th,
+#Gantt tbody tr:first-child td {
+    color: var(--ink);
+    background-color: #fff8df;
+    text-align: center;
+}
+
+#Gantt tbody tr:hover td,
+#Gantt tbody tr:hover th {
+    background-color: rgba(225, 0, 255, 0.568);
+}
+
+#Gantt .main {
+    color: white;
+    background-color: var(--deep-blue);
+    text-align: left;
+    font-weight: bold;
+}
+
+#Gantt .sub {
+    padding-left: 3ch;
+    color: var(--ink);
+    background-color: rgba(252, 239, 195, 0.7);
+    text-align: left;
+    font-weight: normal;
+}
+
+#Gantt .sub2 {
+    padding-left: 6ch;
+    color: var(--ink);
+    background-color: rgba(252, 239, 195, 0.48);
+    text-align: left;
+    font-weight: normal;
+}
+
+#Gantt .completed {
+    color: var(--ink);
+    background-color: var(--palm);
+    font-weight: bold;
+    text-align: center;
+}
+
+#Gantt .ongoing {
+    color: var(--ink);
+    background-color: var(--aqua);
+    font-weight: bold;
+    text-align: center;
+}
+
+#Gantt .behind {
+    color: var(--ink);
+    background-color: var(--coral);
+    font-weight: bold;
+    text-align: center;
+}
+
+#Gantt .omitted {
+    color: #333;
+    background-color: #b7b7b7;
+    text-decoration: line-through;
+}
+
+#Gantt .omitted.completed {
+    background: repeating-linear-gradient(135deg,
+            #b7b7b7,
+            #b7b7b7 8px,
+            var(--palm) 8px,
+            var(--palm) 16px);
+}
+
+/* patch to add sticky back */
+.gantt-table-wrapper {
+    overflow: visible;
+    border-radius: 12px;
+    border: 1px solid rgba(9, 124, 135, 0.22);
+    box-shadow: 0 4px 14px var(--shadow);
+}
+
+#Gantt thead th {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    color: white;
+    background-color: var(--deep-blue);
+}
+
+#Gantt thead th:first-child {
+    color: var(--deep-blue);
+    background-color: var(--yellow);
+}

@@ -1,0 +1,88 @@
+/* logbook entry styling */
+
+.logbook-entry-intro {
+    grid-template-columns: 2fr 0.9fr;
+}
+
+.logbook-entry-content {
+    margin-top: 28px;
+    padding: 30px;
+    background-color: var(--card-bg);
+    border-radius: 14px;
+    border-left: 5px solid var(--orange);
+    box-shadow: 0 4px 14px var(--shadow);
+}
+
+.logbook-entry-content h2 {
+    margin-top: 34px;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    color: var(--deep-blue);
+    border-bottom: 2px solid rgba(0, 206, 200, 0.28);
+}
+
+.logbook-entry-content h2:first-child {
+    margin-top: 0;
+}
+
+.logbook-entry-content h4 {
+    display: inline-block;
+    margin-top: 18px;
+    margin-bottom: 8px;
+    padding: 6px 12px;
+    color: var(--ink);
+    background-color: #fff8df;
+    border-left: 4px solid var(--aqua);
+    border-radius: 6px;
+}
+
+.logbook-entry-content p {
+    text-align: left;
+    text-indent: 0;
+    line-height: 1.6;
+}
+
+.logbook-entry-content code {
+    font-size: 0.95rem;
+}
+
+.logbook-entry-content pre {
+    margin-top: 16px;
+    margin-bottom: 22px;
+    border-radius: 12px;
+    box-shadow: 0 4px 14px var(--shadow);
+}
+
+.logbook-entry-content figure {
+    margin: 22px auto;
+    padding: 16px;
+    max-width: 600px;
+    background-color: #fff8df;
+    border-radius: 14px;
+    border-top: 5px solid var(--palm);
+    box-shadow: 0 4px 14px var(--shadow);
+}
+
+.logbook-entry-content figure img,
+.logbook-entry-content .img_med {
+    display: block;
+    max-width: 100%;
+    max-height: 360px;
+    width: auto;
+    height: auto;
+    margin: 0 auto;
+    object-fit: contain;
+    border-radius: 10px;
+    border: 3px solid rgba(0, 206, 200, 0.28);
+    background-color: white;
+}
+
+.logbook-entry-content figcaption {
+    margin-top: 10px;
+    padding: 10px 12px;
+    text-align: center;
+    text-indent: 0;
+    line-height: 1.4;
+    background-color: rgba(252, 239, 195, 0.75);
+    border-radius: 8px;
+}

@@ -1,0 +1,62 @@
+/* documentation page formatting */
+
+.documentation-intro {
+    grid-template-columns: 2fr 0.9fr;
+}
+
+.documentation-card-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+    margin-top: 28px;
+}
+
+.documentation-card {
+    display: flex;
+    min-height: 260px;
+    padding: 26px;
+    background-color: var(--card-bg);
+    border-radius: 14px;
+    border-left: 5px solid var(--aqua);
+    box-shadow: 0 4px 14px var(--shadow);
+    transition: 0.25s;
+}
+
+.documentation-card:hover {
+    transform: translateY(-3px);
+    border-left-color: var(--yellow);
+    box-shadow: 0 0 18px rgba(249, 219, 121, 0.55);
+}
+
+.documentation-card-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.documentation-card-text h2 {
+    margin-top: 0;
+    color: var(--deep-blue);
+}
+
+.documentation-card-text p {
+    text-align: left;
+    text-indent: 0;
+    line-height: 1.55;
+}
+
+.documentation-card-text .button {
+    align-self: flex-start;
+    margin-top: auto;
+}
+
+.documentation-card:nth-child(2) {
+    border-left-color: var(--orange);
+}
+
+.documentation-card:nth-child(3) {
+    border-left-color: var(--palm);
+}
+
+.documentation-card:nth-child(4) {
+    border-left-color: var(--coral);
+}

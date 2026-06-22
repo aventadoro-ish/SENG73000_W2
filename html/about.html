@@ -1,90 +1,182 @@
 <!DOCTYPE html>
 <!--
-Author: Rita Yevtushenko
+Author: Rita Yevtushenko 
 Contributors to this page:
-Rita Yevtushenko
-Matvey Regentov
+Nick Kapuka (revamped to match theme)
+Matvey Regentov (the goat)
 -->
 <html lang="en">
-    <head>
-        <title>Project VI - About</title>
-        <meta charset="UTF-8">
-        <link rel="stylesheet" href="../css/master.css">
-        <link rel="icon" href="../media/icons/LiF_icon.ico" type="image/x-icon">
 
-		<!--[if lt IE 9]>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js"></script>
-		<![endif]-->
-		
-		<meta name="author" content=" Rita Yevtushenko">
-		<meta name="description" content="Lithium Firefly Team introduction and plans for Engineering Project VI">
-		<meta name="robots" content="index, follow">
-		<meta http-equiv="Pragma" content="no-cache">
+<head>
+    <title>Project VI - About</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="../css/master.css">
+    <link rel="icon" href="../media/icons/LiF_icon.ico" type="image/x-icon">
 
-        <style>
-            .img_med {
-                width: 400px;
-                height: auto;
-            }
-        </style>
-        <!-- bootstrap functions -->
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    </head>
-    <body>
-        <div id="navbar-placeholder" data-root="../"></div>
-		<script src="../js/navbar.js"></script>
-		<br><br>
+    <meta name="author" content="Rita Yevtushenko">
+    <meta name="description" content="Lithium Firefly Team introduction">
+    <meta name="robots" content="index, follow">
+    <meta http-equiv="Pragma" content="no-cache">
+    <link rel="stylesheet" href="../css/base.css">
+    <link rel="stylesheet" href="../css/about.css">
+</head>
 
 
-        <section id="page_top">
-            <h1>About Project VI</h1>
-            <p>Welcome to <b>Project VI - Elevator project</b>.
-            This is where we will provide an overview of our project.
-            In this project, we will design an elevator control system,
-            implementing CAN protocol, and essentially, communication
-            between microcontrollers, that will control motors, sensors
-            and finally, the elevator cart.</p>
+<body>
+    <!-- Nav bar -->
+    <div id="navbar-placeholder" data-root="../"></div>
+    <script src="../js/navbar.js"></script>
 
-            <h2>Project Team</h2>
-            <ul>
-                <li><b>Matvey Regentov</b></li>
-                <li><b>Nick Kapuka</b></li>
-                <li><b>Rita Yevtushenko</b></li>
-            </ul>
+    <!-- main Page -->
+    <main class="page-wrapper">
 
-            <figure>
-                <img class="img_med" src="../media/images/team_picture.jpg" alt="Group photo">
-                <figcaption><b>Group Photo</b> - <i>Lithium Firefly</i> happy team, no accidents yet, woohoo!</figcaption>
-            </figure>
+        <!-- general intro -->
+        <section class="intro-section about-intro">
+            <div class="intro-text">
+                <p class="section-label">About the Team</p>
 
-            <p>
-                For more information about the project, visit <a href="../../proj_details.html">Project Details</a> page.
-            </p>
+                <h1>About Project VI</h1>
 
-            <figure>
-                <video class="img_med" controls>
-                    <source src="../media/video/Team-Intro.mp4" alt="Video introducing our team and the project">
-                </video>
-                <figcaption>Video introducing our team and the project</figcaption>
-            </figure>
+                <p class="intro-description">
+                    Welcome to <b>Project VI - Elevator Project</b>. This page introduces
+                    the Lithium Firefly team and gives a short overview of the system we are building.
+                    Our project focuses on designing an elevator control system using microcontrollers,
+                    sensors, motor control, and CAN communication.
+                </p>
+
+                <div class="button-row">
+                    <a href="proj_details.html" class="button primary-button">View Project Details</a>
+                    <a href="proj_plan.html" class="button secondary-button">View Project Plan</a>
+                </div>
+            </div>
+
+            <aside class="summary-card">
+                <h2>Team Members</h2>
+                <ul class="clean-list">
+                    <li>Matvey Regentov</li>
+                    <li>Nick Kapuka</li>
+                    <li>Rita Yevtushenko</li>
+                </ul>
+            </aside>
+        </section>
+
+        <section class="about-grid">
+
+            <article class="info-card">
+                <h2>Project Goal</h2>
+                <p>
+                    The goal of the project is to build an elevator control system that utilizing various
+                    microcontrollers and establishing communication between them.
+                    In the next part, we will develop a way to control the elevator directly from this website!
+                </p>
+            </article>
+
+            <article class="info-card">
+                <h2>Communication</h2>
+                <p>
+                    The project uses the CAN (Controller Area Network) protocol so the different controllers can
+                    exchange information.
+                    Updates for what floor the car is on, requests to go floors, commands to come to floors, etc.
+                </p>
+            </article>
+
+            <article class="info-card">
+                <h2>System Control</h2>
+                <p>
+                    The LiF elevator &trade; combines various microcontrollers, custom PCB shields, sensors,
+                    and status indicators (LEDs) to simulate a real elevator control process.
+                    Microcontrollers include: STM32F303RE, Raspberry Pi 4
+                </p>
+            </article>
 
         </section>
 
-        <h3>Our Evil base of operations:</h3>
-        <iframe
-            width="450"
-            height="300"
-            style="border:0"
-            loading="lazy"
-            allowfullscreen
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2898.4!2d-80.3999!3d43.3870521!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x882b8a7ec9d60715%3A0xd5e712873de8af2d!2sConestoga%20College%20Cambridge%20-%20Fountain%20Street%20campus!5e0!3m2!1sen!2sca!4v1234567890">
-        </iframe>
+        <section class="responsibilities-section">
+            <p class="section-label">Team Contributions</p>
+            <h2>Responsibilities among the Team</h2>
 
-        <footer>
-            <p><a href="#page_top">Go to the top of this page</a></p>
-            <p>Copyright &copy; 2026 Rita Yevtushenko</p>
-        </footer>
-    </body>
+            <div class="responsibility-grid">
+                <article class="responsibility-card">
+                    <h3>Matvey Regentov</h3>
+                    <p>
+                        Matvey is contributing to the CAD design of the elevator system, the
+                        programming of the Elevator Controller (STM32), and Project Documentation and Management
+                    </p>
+                </article>
+
+                <article class="responsibility-card">
+                    <h3>Nick Kapuka</h3>
+                    <p>
+                        Nick is contributing to the Floor and Car Controller (STM32) functionality,
+                        website updates/development, and elevator assembly.
+                    </p>
+                </article>
+
+                <article class="responsibility-card">
+                    <h3>Rita Yevtushenko</h3>
+                    <p>
+                        Rita is contributing to the project planning, website content,
+                        documentation, and programming the Supervisor Controller (it's a Pi 4)
+                    </p>
+                </article>
+            </div>
+            <br>
+            <p>Individually, we each update our personal logbooks everytime we have performed work on this project to
+                keep ourselves, organized, and aware of each other's contributions and changes.</p>
+        </section>
+
+
+        <section class="media-section">
+            <div class="media-card">
+                <h2>Group Photo</h2>
+
+                <figure class="framed-media">
+                    <img src="../media/images/team_picture.jpg" alt="Lithium Firefly group photo">
+                    <figcaption>
+                        <b>Group Photo</b> - <i>Lithium Firefly</i> happy team, no accidents yet, woohoo!
+                    </figcaption>
+                </figure>
+            </div>
+
+            <div class="media-card">
+                <h2>Team Introduction Video</h2>
+
+                <figure class="framed-media">
+                    <video controls>
+                        <source src="../media/video/Team-Intro.mp4" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                    <figcaption>Video introducing our team and the project.</figcaption>
+                </figure>
+            </div>
+        </section>
+
+        <section class="location-section">
+            <div class="location-text">
+                <p class="section-label">Base of Operations</p>
+                <h2>Our Evil Base of Operations</h2>
+                <p>
+                    Our team works out of the Fountain Campus at Conestoga College.
+                    This is where our planning, testing, problem solving, and magic happens!
+                </p>
+            </div>
+
+            <div class="map-card">
+                <iframe title="Conestoga College Cambridge Fountain Street campus map" loading="lazy" allowfullscreen
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2898.4!2d-80.3999!3d43.3870521!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x882b8a7ec9d60715%3A0xd5e712873de8af2d!2sConestoga%20College%20Cambridge%20-%20Fountain%20Street%20campus!5e0!3m2!1sen!2sca!4v1234567890">
+                </iframe>
+            </div>
+        </section>
+
+        <p class="top-link">
+            <a href="#page_top">Go to the top of this page</a>
+        </p>
+
+    </main>
+
+    <footer class="site-footer">
+        <p>Copyright &copy; 2026 Rita Yevtushenko, Matvey Regentov, and Nick Kapuka</p>
+    </footer>
+</body>
+
 </html>

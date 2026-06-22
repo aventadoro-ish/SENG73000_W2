@@ -1,105 +1,108 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>Access Request Form</title>
-        <meta charset="UTF-8">
-        <link rel="stylesheet" href="../css/master.css">
-        <link rel="stylesheet" href="../css/auth_forms.css">
-        <link rel="icon" href="../media/icons/LiF_icon.ico" type="image/x-icon">
 
-        <!--[if lt IE 9]>
+<head>
+    <title>Access Request Form</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="../css/master.css">
+    <link rel="stylesheet" href="../css/auth_forms.css">
+    <link rel="icon" href="../media/icons/LiF_icon.ico" type="image/x-icon">
+
+    <!--[if lt IE 9]>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js"></script>
         <![endif]-->
 
-        <meta name="author" content="Matvey Regentov">
-        <meta name="description" content="Request access to hidden contents of the website.">
-        <meta name="robots" content="index, follow">
-        <!-- bootstrap functions -->
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-		<link rel="stylesheet" href="../css/request_access_style.css">
-        <meta http-equiv="Pragma" content="no-cache">
-    <body id="page_top">
-        <div id="navbar-placeholder" data-root="../"></div>
-		<script src="../js/navbar.js"></script>
-		<br><br>
+    <meta name="author" content="Matvey Regentov">
+    <meta name="description" content="Request access to hidden contents of the website.">
+    <meta name="robots" content="index, follow">
+    <!-- bootstrap functions -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="../css/request_access_style.css">
+    <meta http-equiv="Pragma" content="no-cache">
+
+<body id="page_top">
+    <div id="navbar-placeholder" data-root="../"></div>
+    <script src="../js/navbar.js"></script>
+    <br><br>
 
 
-        <h1>Request Access</h1>
+    <h1>Request Access</h1>
 
-        <form action="../php/request_access.php" method="post" class="access-form">
-            <p class="required-note">Fields marked as required must be completed.</p>
+    <form action="../php/request_access.php" method="post" class="access-form">
+        <p class="required-note">Fields marked as required must be completed.</p>
 
-            <fieldset>
-                <legend>Contact Information</legend>
+        <fieldset>
+            <legend>Contact Information</legend>
 
-                <div class="form-row">
-                    <label for="firstName">First Name:</label>
-                    <input type="text" id="firstName" name="firstName">
-                </div>
+            <div class="form-row">
+                <label for="firstName">First Name:</label>
+                <input type="text" id="firstName" name="firstName">
+            </div>
 
-                <div class="form-row">
-                    <label for="lastName">Last Name:</label>
-                    <input type="text" id="lastName" name="lastName">
-                </div>
+            <div class="form-row">
+                <label for="lastName">Last Name:</label>
+                <input type="text" id="lastName" name="lastName">
+            </div>
 
-                <div class="form-row">
-                    <label for="email">Email:</label>
-                    <input type="email" id="email" name="email" required>
-                </div>
+            <div class="form-row">
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required>
+            </div>
 
-                <div class="form-row">
-                    <label for="birthday">Birthday:</label>
-                    <input type="date" id="birthday" name="birthday" required>
-                </div>
-            </fieldset>
+            <div class="form-row">
+                <label for="birthday">Birthday:</label>
+                <input type="date" id="birthday" name="birthday" required>
+            </div>
+        </fieldset>
 
-            <fieldset>
-                <legend>Occupation and Involvement</legend>
+        <fieldset>
+            <legend>Occupation and Involvement</legend>
 
-                <div class="option-group">
-                    <p>Occupation:</p>
-                    <label><input type="radio" name="fac_or_student" value="faculty">Faculty</label>
-                    <label><input type="radio" name="fac_or_student" value="student">Student</label>
-                </div>
+            <div class="option-group">
+                <p>Occupation:</p>
+                <label><input type="radio" name="fac_or_student" value="faculty">Faculty</label>
+                <label><input type="radio" name="fac_or_student" value="student">Student</label>
+            </div>
 
-                <div class="option-group">
-                    <p>Currently, I am ... (select all that apply)</p>
-                    <label><input type="checkbox" name="involvement[]" value="None">Nobody</label>
-                    <label><input type="checkbox" name="involvement[]" value="Instructor">Instructor</label>
-                    <label><input type="checkbox" name="involvement[]" value="Boss">Boss</label>
-                    <label><input type="checkbox" name="involvement[]" value="Investor">Investor</label>
-                </div>
+            <div class="option-group">
+                <p>Currently, I am ... (select all that apply)</p>
+                <label><input type="checkbox" name="involvement[]" value="None">Nobody</label>
+                <label><input type="checkbox" name="involvement[]" value="Instructor">Instructor</label>
+                <label><input type="checkbox" name="involvement[]" value="Boss">Boss</label>
+                <label><input type="checkbox" name="involvement[]" value="Investor">Investor</label>
+            </div>
 
-                <div class="form-row">
-                    <label for="drives_car">Do you drive a car?</label>
-                    <select id="drives_car" name="drives_car">
-                        <option value="no_answer" selected>Prefer not to say</option>
-                        <option value="true">Yes</option>
-                        <option value="false">No</option>
-                    </select>
-                </div>
-            </fieldset>
+            <div class="form-row">
+                <label for="drives_car">Do you drive a car?</label>
+                <select id="drives_car" name="drives_car">
+                    <option value="no_answer" selected>Prefer not to say</option>
+                    <option value="true">Yes</option>
+                    <option value="false">No</option>
+                </select>
+            </div>
+        </fieldset>
 
-            <fieldset>
-                <legend>Additional Details</legend>
-                <label for="details">Tell us about yourself:</label>
-                <textarea id="details" name="details" placeholder="Other details"></textarea>
-                <p id="character_count">180 characters remaining</p>
-                <p id="character_error" role="alert" hidden>
-                    You have exceeded the maximum number of 180 characters allowed.
-                </p>
-            </fieldset>
+        <fieldset>
+            <legend>Additional Details</legend>
+            <label for="details">Tell us about yourself:</label>
+            <textarea id="details" name="details" placeholder="Other details"></textarea>
+            <p id="character_count">180 characters remaining</p>
+            <p id="character_error" role="alert" hidden>
+                You have exceeded the maximum number of 180 characters allowed.
+            </p>
+        </fieldset>
 
-            <input id="request_access_btn" type="submit" value="Submit Request">
-        </form>
+        <input id="request_access_btn" type="submit" value="Submit Request">
+    </form>
 
-        <script src="../js/request_access.js"></script>
+    <script src="../js/request_access.js"></script>
 
-        <footer>
-            <p><a href="#page_top">Go to the top of this page</a></p>
-            <p>Copyright &copy; 2026 Matvey Regentov</p>
-        </footer>
-    </body>
+    <footer>
+        <p><a href="#page_top">Go to the top of this page</a></p>
+        <p>Copyright &copy; 2026 Matvey Regentov</p>
+    </footer>
+</body>
+
 </html>
