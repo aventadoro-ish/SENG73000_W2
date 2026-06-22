@@ -10,6 +10,7 @@
 
 using namespace std;
 State currentState = STATE_IDLE;
+int ccDoorClosed = 0;
 
 
 // ******************************************************************
@@ -61,21 +62,21 @@ int main() {
 						int pendingFloor = -1; //no other message in the queue
 						bool newRequest = false;
 
-						//Check database for requests
+						//Check database for requests (not currently in use)
 
-						floorNumber = db_getFloorNum();
-						if (prev_floorNumber != floorNumber) {								// If floor number changes in database
-							pendingFloor = floorNumber;
-							enqueueFloor(floorNumber);
-						}
+						// floorNumber = db_getFloorNum();
+						// if (prev_floorNumber != floorNumber) {								// If floor number changes in database
+						// 	pendingFloor = floorNumber;
+						// 	enqueueFloor(floorNumber);
+						// }
 
-						prev_floorNumber = floorNumber; 
+						// prev_floorNumber = floorNumber; 
 
 						// Check CAN for floor requests
 						int gotMessage = pcanRxState(&incoming);
-						if (gotMessage)
+						if (gotMessage == 1)
 						{
-							switch(incoming.ID) {
+    						switch(incoming.ID) {
 								case ID_F1_TO_SC:
 									enqueueFloor(1);
 									break;
@@ -86,15 +87,22 @@ int main() {
 									enqueueFloor(3);
 									break;
 								case ID_CC_TO_SC:
-									// CC_FloorReq is bits 1-0 of the data byte
-									enqueueFloor(incoming.DATA[0] & 0x03);
-									break;
+									ccDoorClosed = (incoming.DATA[0] >> 2) & 0x01;   // CC_EN bit
+									{
+										int ccFloorReq = incoming.DATA[0] & 0x03;     // CC_FloorReq bits 1-0
+										if (ccFloorReq != 0) enqueueFloor(ccFloorReq); // 0 = INVALID per table 
+									}
+								break;
 								case ID_EC_TO_ALL:
 						
 									break;
 							}
+						} 
+						else if (gotMessage == -1)
+						{
+   						printf("WARNING: CAN bus error detected\n");
+						// Will have more functions to fix the error
 						}
-
 						//FSM Logic
 						switch(currentState) {
 
@@ -137,7 +145,7 @@ int main() {
 					
 
 						case STATE_ARRIVED:
-							db_setFloorNum(targetFloor);
+							// db_setFloorNum(targetFloor);
 							currentState = STATE_IDLE;
 							break;
 

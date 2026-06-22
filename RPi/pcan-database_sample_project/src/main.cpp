@@ -99,14 +99,12 @@ int main() {
 						switch(currentState) {
 
 						case STATE_IDLE:
-							if (queueCount > 0) {
+							if (ccDoorClosed && queueCount > 0) {
 								targetFloor = dequeueFloor();
 								pcanTx(ID_SC_TO_EC, HexFromFloor(targetFloor));
-								moveStartTime = time(NULL);
-								printf("Moving to floor %d\n", targetFloor);
 								currentState = STATE_MOVING;
 							}
-						
+							// else: stay IDLE, request stays queued — no info lost
 							break;
 
 						case STATE_MOVING:
