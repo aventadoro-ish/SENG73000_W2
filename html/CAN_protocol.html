@@ -10,8 +10,10 @@
     <meta name="description" content="CAN protocol explanation">
     <meta name="robots" content="index, follow">
     <meta http-equiv="Pragma" content="no-cache">
+    <link rel="stylesheet" href="../css/base.css">
+    <link rel="stylesheet" href="../css/can.css">
 
-    <link rel="stylesheet" href="../css/tropical.css">
+
 </head>
 
 <body>
@@ -19,10 +21,269 @@
     <div id="navbar-placeholder" data-root="../"></div>
     <script src="../js/navbar.js"></script>
 
-    <!-- main Page -->
+    <!-- main page -->
     <main class="page-wrapper">
+        <section class="intro-section CANprotocol-intro">
+            <div class="intro-text">
+                <p class="section-label">CAN Communication</p>
+
+                <h1>LiF CAN Protocol Explained</h1>
+
+                <p class="intro-description">
+                    // briefly talk about CAN bus here
+                </p>
+            </div>
+
+            <aside class="summary-card">
+                <h2>CAN bus info:</h2>
+                <p><b>Project:</b> Engineering Project VI</p>
+                <p><b>Team:</b> Lithium Firefly</p>
+                <p><b>Controllers:</b>SC, EC, CC, FC (x3)</p>
+                <p><b>DLC:</b>1 - single byte transmission</p>
+            </aside>
+        </section>
+
+        <!-- CAN intro card -->
+        <section class="CANprotocol-card-list">
+            <article class="CANprotocol-card">
+                <div class="CANprotocol-card-text">
+                    <p class="section-label"></p>
+                    <h2>CAN bus communication</h2>
+
+                    <p>
+                        Majority of our project relies on the CAN bus communication protocol, especially for the
+                        embedded controllers to send each other updates and messages regarding the elevator.
+
+                        Below is a detailed look at the CAN communication structure established for our elevator. It
+                        features CAN IDs, message bytes and the bits they represent, what controller sends what message
+                        with what ID, all summarized into a table for easy-viewing.
+                    </p>
+                </div>
+            </article>
+        </section>
+
+        <section class="CANprotocol-table-section">
+            <div class="CANprotocol-section-heading">
+                <p class="section-label"></p>
+                <h2>CAN ID and First Byte Layout</h2>
+                <p>
+                    The table below shows each CAN ID, the transmitting controller, the intended recipient,
+                    The table below shows the way that the CAN bus protocol was implemented on our elevator platform. It
+                    displays the CAN ID,
+                    transmitting controller, the intended recipient of the message, DLC (1 for all). Then, in the table
+                    below that one, it displays what each unique bit triggers and the various states it has.
+                </p>
+            </div>
+
+            <section class="CANprotocol-legend-section">
+                <p class="section-label">Legend</p>
+                <h2>Bit Type Key</h2>
+
+                <div class="CANprotocol-legend-grid">
+                    <div class="CANprotocol-legend-item">
+                        <span class="CANprotocol-legend-box CANprotocol-enable"></span>
+                        Enable / status bit
+                    </div>
+
+                    <div class="CANprotocol-legend-item">
+                        <span class="CANprotocol-legend-box CANprotocol-position"></span>
+                        Position bits
+                    </div>
+
+                    <div class="CANprotocol-legend-item">
+                        <span class="CANprotocol-legend-box CANprotocol-request"></span>
+                        Floor request bits
+                    </div>
+                </div>
+            </section>
+
+            <div class="CANprotocol-table-wrapper">
+                <table class="CANprotocol-table">
+                    <thead>
+                        <tr>
+                            <th rowspan="2">CAN ID<br>(hex)</th>
+                            <th rowspan="2">Transmitter</th>
+                            <th rowspan="2">Recipient(s)</th>
+                            <th rowspan="2">DLC</th>
+                            <th colspan="8" class="CANprotocol-byte-header">Byte 0</th>
+                        </tr>
+
+                        <tr>
+                            <th>7</th>
+                            <th>6</th>
+                            <th>5</th>
+                            <th>4</th>
+                            <th>3</th>
+                            <th>2</th>
+                            <th>1</th>
+                            <th>0</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <tr>
+                            <td>0x100</td>
+                            <td>SC</td>
+                            <td>EC</td>
+                            <td>1</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td class="CANprotocol-bit CANprotocol-enable">SC_EN</td>
+                            <td class="CANprotocol-bit CANprotocol-request">SC_FloorReq</td>
+                        </tr>
+
+                        <tr>
+                            <td>0x101</td>
+                            <td>EC</td>
+                            <td>ALL</td>
+                            <td>1</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td class="CANprotocol-bit CANprotocol-enable">EC_EN</td>
+                            <td class="CANprotocol-bit CANprotocol-position">EC_Position</td>
+                        </tr>
+
+                        <tr>
+                            <td>0x200</td>
+                            <td>CC</td>
+                            <td>SC</td>
+                            <td>1</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td class="CANprotocol-bit CANprotocol-enable">CC_EN</td>
+                            <td class="CANprotocol-bit CANprotocol-request">CC_FloorReq</td>
+                        </tr>
+
+                        <tr>
+                            <td>0x201</td>
+                            <td>F1</td>
+                            <td>SC</td>
+                            <td>1</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td class="CANprotocol-bit CANprotocol-request">F1_Req</td>
+                        </tr>
+
+                        <tr>
+                            <td>0x202</td>
+                            <td>F2</td>
+                            <td>SC</td>
+                            <td>1</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td class="CANprotocol-bit CANprotocol-request">F2_Req</td>
+                        </tr>
+
+                        <tr>
+                            <td>0x203</td>
+                            <td>F3</td>
+                            <td>SC</td>
+                            <td>1</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td class="CANprotocol-bit CANprotocol-request">F3_Req</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- make another table for the field, desc, and value since above is only a legend -->
+        <div class="CANprotocol-table-wrapper">
+            <table class="CANprotocol-table">
+                <thead>
+                    <tr>
+                        <th rowspawn="2">Fields</th>
+                        <th rowspawn="4">Description</th>
+                        <th rowspawn="4">Value</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr>
+                        <td>SC_EN</td>
+                        <td>Supervisory Controller Enable bit</td>
+                        <td>0 - disabled<br>1 - enabled</td>
+                    </tr>
 
 
+                    <tr>
+                        <td>SC_FloorReq</td>
+                        <td>SC Request to EC to move elevator cabin to a given floor</td>
+                        <td>0 - INVALID<br>1, 2, 3 - go to floor X</td>
+                    </tr>
+
+                    <tr>
+                        <td>EC_EN</td>
+                        <td>ELevator Controller Enable bit</td>
+                        <td>0 - disabled<br>1 - enabled</td>
+                    </tr>
+
+                    <tr>
+                        <td>EC_Pos</td>
+                        <td>EC reports current Position of the elevator cabin</td>
+                        <td>0 - moving<br>1, 2, 3 - currently at floor X</td>
+                    </tr>
+
+                    <tr>
+                        <td>CC_EN</td>
+                        <td>Car Controller Enable - informs SC if door is closed (enable) or open (disable)</td>
+                        <td>0 - door is open and cabin must NOT move<br>1 - door is closed and cabin can move</td>
+                    </tr>
+
+                    <tr>
+                        <td>CC_FloorReq</td>
+                        <td>CC Request to SC to move elevator to a certain floor</td>
+                        <td>0 - no request<br>1, 2, 3 - go to floor X</td>
+                    </tr>
+
+                    <tr>
+                        <td>F1_Req</td>
+                        <td>Floor Controller requesting the elevator cabin to floor 1</td>
+                        <td>0 - INVALID<br>1 - request cabin to this floor</td>
+                    </tr>
+
+                    <tr>
+                        <td>F2_Req</td>
+                        <td>Floor Controller requesting the elevator cabin to floor 2</td>
+                        <td>0 - INVALID<br>1 - request cabin to this floor</td>
+                    </tr>
+
+                    <tr>
+                        <td>F3_Req</td>
+                        <td>Floor Controller requesting the elevator cabin to floor 3</td>
+                        <td>0 - INVALID<br>1 - request cabin to this floor</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
 
         <p class="top-link">
             <a href="#page_top">Go to the top of this page</a>

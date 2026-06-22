@@ -122,7 +122,8 @@
 
 #Gantt tbody tr:hover td,
 #Gantt tbody tr:hover th {
-    background-color: rgba(225, 0, 255, 0.568);
+    background-color: #eb41035b;
+    /* same as --ember but a bit more transparent) */
 }
 
 #Gantt .main {

@@ -97,3 +97,23 @@ form button:hover {
     background-color: var(--yellow);
     box-shadow: 0 0 12px rgba(249, 219, 121, 0.85);
 }
+
+.reqacc-button {
+    display: block;
+    margin-top: 16px;
+    padding: 8px 18px;
+    font-family: Georgia, serif;
+    font-size: 1rem;
+    color: white;
+    background-color: var(--deep-blue);
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    text-align: center;
+}
+
+.reqacc-button:hover {
+    color: var(--ink);
+    background-color: var(--yellow);
+    box-shadow: 0 0 12px rgba(249, 219, 121, 0.85);
+}

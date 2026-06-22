@@ -14,12 +14,12 @@
     --shadow: rgba(9, 124, 135, 0.18);
 }
 
-/* general styling */
+/* general page styling */
 
 body {
     margin: 0;
     font-family: Georgia, serif;
-    font-size: 17px;
+    font-size: 18px;
     line-height: 1.55;
     color: var(--ink);
     background: linear-gradient(135deg, var(--cream), #dff4e4, #c8f2ef);

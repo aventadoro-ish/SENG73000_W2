@@ -135,3 +135,40 @@
     border: 1px solid rgba(9, 124, 135, 0.22);
     box-shadow: 0 4px 14px var(--shadow);
 }
+
+/* medium screens */
+@media screen and (min-width: 851px) and (max-width: 1150px) {
+    .reference-card-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .gantt-heading {
+        grid-template-columns: 1fr;
+        gap: 10px;
+        align-items: start;
+    }
+}
+
+/* small screens */
+@media screen and (max-width: 850px) {
+
+    .project-plan-intro,
+    .gantt-heading {
+        grid-template-columns: 1fr;
+    }
+
+    .gantt-heading {
+        gap: 10px;
+        align-items: start;
+    }
+
+    .references-section,
+    .legend-section,
+    .gantt-section {
+        padding: 22px;
+    }
+
+    .reference-card-grid {
+        grid-template-columns: 1fr;
+    }
+}
