@@ -13,21 +13,33 @@ Author: Nick Kapuka
 		<link rel="stylesheet" href="../css/master.css">
 		<link rel="icon" href="../media/icons/LiF_icon.ico" type="image/x-icon">
 		
+		<!--[if lt IE 9]>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js"></script>
+		<![endif]-->
+		
 		<meta name="author" content="Nick Kapuka">
 		<meta name="description" content="This is a logbook cover page for Nick Kapuka as part of Engineering Project VI, ESE at Conestoga College.">
 		<meta name="robots" content="index, follow">
-		<meta http-equiv="Pragma" content="no-cache">
+		  <!-- bootstrap functions -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        <meta http-equiv="Pragma" content="no-cache">
     </head>
 
     <body>
-        <aside><iframe src="links.html" title="Navigation"></iframe></aside>
+     	<div id="navbar-placeholder" data-root="../"></div>
+		<script src="../js/navbar.js"></script>
+		<br><br>
+
+
 		<section id="page_top">
 			<h1>Nick Kapuka's Logbook Cover Page</h1>
 			<figure>
 				<img class="img_med" src="../media/images/portrait_NK.jpg" alt="Nick Kapuka portrait">
 				<figcaption><b>Nick Kapuka</b> - ESE student, member of <i>Lithium Firefly</i> group</figcaption>
 			</figure>
-			
+			<p id="bioCopyright"></p>
 			<h2>About me</h2>
 			<p>I'm a 3rd year Bachelor of Engineering student at Conestoga College. This page is part of my Engineering Project VI course, where my team and I build an elevator, focusing on CAN, LAN, embedded, and web development.</p>
 			
@@ -142,9 +154,6 @@ Author: Nick Kapuka
 
 
 
-
-
-
 				
 			</ol>
 
@@ -159,8 +168,8 @@ Author: Nick Kapuka
 		
 		<footer>
 			<p><a href="#page_top">Go to the top of this page</a></p>
-			<p>Copyright &copy Nick Kapuka</p>
+			<p>Copyright &copy; Nick Kapuka</p>
 		</footer>
-		
+		<script src="../js/bio_info.js"></script>
     </body>
 </html>

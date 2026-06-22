@@ -5,17 +5,38 @@
         <meta charset="UTF-8">
         <link rel="icon" href="../media/icons/LiF_icon.ico" type="image/x-icon">
         
+		<!--[if lt IE 9]>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js"></script>
+		<![endif]-->
+		
 		<meta name="author" content="MR Regentov">
 		<link rel="stylesheet" href="../css/master.css">
-        <link rel="stylesheet" href="../css/gantt_chart.css">
 		<meta name="description" content="LiF Website Homepae.">
 		<meta name="robots" content="index, follow">
-		<meta http-equiv="Pragma" content="no-cache">
+		
+        <!-- bootstrap functions -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        <link rel="stylesheet" href="../css/gantt_chart.css">
+        <meta http-equiv="Pragma" content="no-cache">
     </head>		
 
     
     <body>
-        <aside><iframe src="links.html" title="Navigation"></iframe></aside>
+        <div id="navbar-placeholder" data-root="../"></div>
+		<script src="../js/navbar.js"></script>
+		<br><br>
+
+        <section>
+            <h1>References and Specifications</h1>
+            <ul>
+                <li><a href="../references/Project_Charter.pdf" target="_blank">Project Charter</a></li>
+                <li><a href="../references/Schematics_of_NucleoBoard_Shield.pdf" target="_blank">Nucleo Shield PCB Schematics</a></li>
+                <li><a href="../references/um1724-stm32-nucleo64-boards-mb1136-stmicroelectronics.pdf" target="_blank">User Manual for STM32 Nucelo Development Board</a></li>
+                <li><a href="../references/Layout_of_Nucleo_Shield.jpg" target="_blank">Nucleo Shield PCB Layout</a></li>
+            </ul>
+        </section>
 
         <section>
             <h1>Gantt Chart</h1>
@@ -99,7 +120,7 @@
                     <tr>
                         <th class="sub">Video introduction to project</th>
                         <td colspan="5"></td>
-                        <td class="behind">RY, NK, MR</td>
+                        <td class="completed">RY, NK, MR</td>
                     </tr>
 
 
@@ -164,21 +185,21 @@
                     <tr>
                         <th class="sub">Develop and implement test plan</th>
                         <td colspan="3"></td>
-                        <td class="behind">MR</td>
+                        <td class="completed">MR</td>
                         <td colspan="10"></td>
                     </tr>
 
                     <tr>
                         <th class="sub">Perform testing as per test plan</th>
                         <td colspan="4"></td>
-                        <td class="behind">NK</td>
-                        <td colspan="9"></td>
+                        <td class="behind" colspan="2">NK</td>
+                        <td colspan="8"></td>
                     </tr>
 
                     <tr>
                         <th class="sub">Add toggle switch to emulate door on CC</th>
                         <td colspan="4"></td>
-                        <td class="ongoing" colspan="2">NK</td>
+                        <td class="completed" colspan="2">NK</td>
                     </tr>
 
                     <tr>
@@ -215,7 +236,7 @@
                     <tr>
                         <th class="sub2">FSM for SC</th>
                         <td colspan="5"></td>
-                        <td class="behind">RY</td>
+                        <td class="completed">RY</td>
                         <td colspan="8"></td>
                     </tr>
 
@@ -307,4 +328,9 @@
         </section>
         
     </body>
+
+    <footer>
+        <p><a href="#page_top">Go to the top of this page</a></p>
+        <p>Copyright &copy; 2026 Matvey Regentov</p>
+    </footer>
 </html>

@@ -1,18 +1,21 @@
---> Added here
-body{
+
+/* changed some values in body, h1 ..., p since the values seemed small to me (NK) I'm blind*/
+body {
     font-family: Georgia, serif;
-    font-size: 100%;
+    font-size: 18px;
 }
+
 h1 {
-    font-size: 160%;
+    font-size: 2.2rem;
+    font-weight: bold;
 }
 
 h2 {
-    font-size: 125%;
+    font-size: 1.6rem;
 }
 
 p, li {
-    line-height: 20px;
+    line-height: 1.6;
     text-align: justify;
 }
 
@@ -25,7 +28,7 @@ figcaption {
     text-align: center;
     font-size: 90%;
 }
--->
+
 .img_med {
     display: block;
     max-width:400px;
@@ -76,3 +79,14 @@ aside iframe {
   height: 100%;
 }
 
+
+/* HTML5 Compatibility */
+header,
+footer,
+section,
+article,
+nav,
+aside,
+main {
+    display: block;
+}

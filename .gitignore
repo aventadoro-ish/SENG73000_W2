@@ -1,4 +1,17 @@
 embedded/LiF_EC/.pio
-embedded/LiF_STM/Debug/*
-.vscodeembedded/LiF_STM/.settings/language.settings.xml
+embedded/LiF_STM/Debug/**
+.vscode/*
+!.vscode/tasks.json
+embedded/LiF_STM/.settings/language.settings.xml
 **/.settings/language.settings.xml
+RPi/LiF_SC/obj/*
+RPi/LiF_SC/main
+
+
+# SSH credentials must never be stored in this repository
+*.pem
+*.key
+id_rsa
+id_rsa.pub
+id_ed25519
+id_ed25519.pub

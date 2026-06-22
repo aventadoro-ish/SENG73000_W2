@@ -5,24 +5,37 @@
         <meta charset="UTF-8">
         <link rel="icon" href="media/icons/LiF_icon.ico" type="image/x-icon">
         
+		<!--[if lt IE 9]>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js"></script>
+		<![endif]-->
+		
 		<meta name="author" content="Matvey Regentov">
 		<link rel="stylesheet" href="css/master.css">
 		<meta name="description" content="LiF Website Homepae.">
 		<meta name="robots" content="index, follow">
 		<meta http-equiv="Pragma" content="no-cache">
+		<link rel="stylesheet" href="css/master.css">
+
+        <!-- bootstrap functions -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        <link rel="stylesheet" href="css/master.css">
     </head>		
 
-
     <body>
-        <aside><iframe src="html/links.html" title="Navigation"></iframe></aside>
-
+        <div id="navbar-placeholder" data-root=""></div>
+        <script src="js/navbar.js"></script>
+        <br><br>
         <h1>
             Engineering Project VI Homepage
         </h1>
         <p>
-            Welcome to <i>Lithium Firefly Team (LiF Team)</i> elevator project homepage. 
-            To see more, use the navigation panel on the side. Additionally, 
-            all the code used in the project can be found on our 
+            Welcome to <i>Lithium Firefly Team (LiF Team)</i> elevator project 
+            homepage. See <a href="html/proj_details.html">Project Details</a> 
+            page to learn more about the project. Additionally, use the 
+            navigation panel on the side. Additionally, all the code used in the 
+            project can be found on our 
             <a href="https://github.com/aventadoro-ish/SENG73000_W2">GitHub repo</a>.
             If you want to see hidden sections of the website, please, 
             <a href="html/login.html">login</a> or 
@@ -30,9 +43,11 @@
             have an account yet.
         </p>
 
+        <br>
+        <h4 id="currentDateTime"></h4>
 
-
-
+        <br>
+        <h4 id="currentDateTime"></h4>
         <h1>Login Form</h1>
         <form action="php/login.php" method="post" id="login">
             <p>Basic login form example</p>
@@ -42,8 +57,18 @@
             <p>Password: 
                 <input type="password" name="password" required/>
             </p>
-            <input type="submit" value="log in" />
+            <input type="submit" value="Log in" />
         </form>
+        <script src="js/date_time.js"></script>
+        <p>
+            If you don't have an account, use <a href="request_access.html">Request Access</a> form to register.
+        </p>
+
 
     </body>
+
+    <footer>
+        <p><a href="#page_top">Go to the top of this page</a></p>
+        <p>Copyright &copy; 2026 Rita Yevtushenko, Matvey Regentov, and Nick Kapuka</p>
+    </footer>
 </html>

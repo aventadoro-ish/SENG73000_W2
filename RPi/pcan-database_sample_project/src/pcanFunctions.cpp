@@ -26,6 +26,32 @@ DWORD status;
 
 // Functions
 // *****************************************************************
+
+//New functions for FSM
+int pcanRxInit(){
+    h2 = LINUX_CAN_Open("/dev/pcanusb32", O_RDWR);
+    status = CAN_Init(h2, CAN_BAUD_125K, CAN_INIT_TYPE_ST);
+    status = CAN_Status(h2);
+    return 0;
+}
+
+int pcanRxClose(){
+    CAN_Close(h2);
+    return 0;
+}
+
+
+
+int pcanRxState(TPCANMsg *msg){
+	status = CAN_Read(h2, msg);
+	if (status == PCAN_NO_ERROR) {
+		return 1;	// message received
+	}
+	return 0;		// no message, keep looking
+}
+
+// *****************************************************************
+
 int pcanTx(int id, int data){
 	h = LINUX_CAN_Open("/dev/pcanusb32", O_RDWR);		// Open PCAN channel
 
@@ -91,3 +117,4 @@ int pcanRx(int num_msgs){
 	//printf("\nEnd Rx\n");
 	return ((int)Rxmsg.DATA[0]);						// Return the last value received
 }
+
