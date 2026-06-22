@@ -1,33 +1,48 @@
+// builds the shared navbar for all pages
 document.addEventListener("DOMContentLoaded", function () {
+    const navbarPlaceholder = document.getElementById("navbar-placeholder");
 
-    // find the empty placeholder div where the navbar will be inserted
-    const placeholder = document.getElementById("navbar-placeholder");
-
-    if (!placeholder) {
+    if (!navbarPlaceholder) {
         return;
     }
 
-    // get the root path from the data-root attribute in the HTML
-    const root = placeholder.getAttribute("data-root") || "";
+    const root = navbarPlaceholder.dataset.root || "";
 
-    // load the shared navbar HTML file
-    fetch(root + "html/navbar.html")
+    navbarPlaceholder.innerHTML = `
+        <header class="site-header" id="page_top">
+            <nav class="navbar">
+                <div class="nav-brand">LiF Team</div>
 
-        // convert the  file into plain text
-        .then(function (response) {
-            return response.text();
-        })
+                <ul class="nav-links">
+                    <li><a href="${root}index.html" data-page="home">Homepage</a></li>
+                    <li><a href="${root}html/about.html" data-page="about">About</a></li>
+                    <li><a href="${root}html/proj_details_revamp.html" data-page="details">Project Details</a></li>
+                    <li><a href="${root}html/proj_plan.html" data-page="plan">Project Plan</a></li>
+                    <li><a href="${root}html/logbook_main.html" data-page="logbooks">Logbooks</a></li>
+                    <li><a href="${root}html/documentation.html" data-page="documentation">Documentation</a></li>
+                </ul>
 
-        // insert the navbar into the placeholder div
-        .then(function (navbarHTML) {
+                <ul class="nav-links nav-right">
+                    <li><a href="${root}index.html#login-section">Login</a></li>
+                    <li><a href="${root}request_access.html">Request Access</a></li>
+                </ul>
+            </nav>
+        </header>
+    `;
 
-            // replace all {{root}} markers in navbar.html with the correct path
-            navbarHTML = navbarHTML.replaceAll("{{root}}", root);
-
-            placeholder.innerHTML = navbarHTML;
-        })
-
-        .catch(function (error) {
-            console.error("Navbar failed to load:", error);
-        });
+    highlightCurrentPage();
 });
+
+// Highlights the current navbar link
+function highlightCurrentPage() {
+    const currentFile = window.location.pathname.split("/").pop();
+    const navLinks = document.querySelectorAll(".nav-links a");
+
+    navLinks.forEach(function (link) {
+        const linkFile = link.getAttribute("href").split("/").pop();
+
+        if (currentFile === linkFile) {
+            link.classList.add("active");
+        }
+    });
+}

@@ -1,0 +1,175 @@
+/* personal logbook cover page styling - this genuinely took me like 30 mins with constant tweaking and Chat's help until I was happy bruh */
+
+.personal-logbook-intro {
+    display: grid;
+    grid-template-columns: 1.4fr 0.6fr;
+    gap: 28px;
+    align-items: center;
+    padding: 36px;
+    background-color: var(--card-bg);
+    border-radius: 16px;
+    border-top: 6px solid var(--orange);
+    box-shadow: 0 6px 18px var(--shadow);
+}
+
+.personal-logbook-text h1 {
+    margin-top: 0;
+    margin-bottom: 16px;
+    font-size: 2.35rem;
+    font-weight: bold;
+    color: var(--deep-blue);
+}
+
+.personal-profile-card {
+    margin: 0;
+    justify-self: center;
+    padding: 18px;
+    background-color: #fff8df;
+    border-radius: 14px;
+    border-left: 5px solid var(--aqua);
+    box-shadow: 0 4px 14px var(--shadow);
+}
+
+.personal-profile-card img {
+    display: block;
+    width: 260px;
+    height: 300px;
+    object-fit: cover;
+    object-position: center;
+    border-radius: 12px;
+    border: 4px solid rgba(0, 206, 200, 0.35);
+}
+
+.personal-profile-card figcaption {
+    margin-top: 12px;
+    text-align: center;
+    text-indent: 0;
+    line-height: 1.4;
+}
+
+.jump-section,
+.links-section,
+.week-entry-box {
+    margin-top: 28px;
+    padding: 28px;
+    background-color: var(--card-bg);
+    border-radius: 14px;
+    box-shadow: 0 4px 14px var(--shadow);
+}
+
+.jump-section {
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: 22px;
+    align-items: center;
+    border-left: 5px solid var(--aqua);
+}
+
+.jump-section h2,
+.links-section h2,
+.week-entry-box h2 {
+    margin-top: 0;
+    color: var(--deep-blue);
+}
+
+.jump-section p,
+.links-section p,
+.week-entry-box p,
+.entry-summary p {
+    text-align: left;
+    text-indent: 0;
+    line-height: 1.55;
+}
+
+.week-jump-form {
+    justify-self: end;
+    width: 100%;
+    max-width: 340px;
+}
+
+.week-jump-form label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+}
+
+.week-jump-form select {
+    width: 100%;
+    padding: 10px 12px;
+    font-family: Georgia, serif;
+    font-size: 1rem;
+    color: var(--ink);
+    background-color: #fff8df;
+    border: 2px solid var(--aqua);
+    border-radius: 8px;
+}
+
+.week-jump-form select:focus {
+    outline: 2px solid var(--yellow);
+}
+
+.small-link-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+}
+
+.small-link-card {
+    display: inline-block;
+    padding: 12px 18px;
+    color: white;
+    background-color: var(--deep-blue);
+    border-radius: 8px;
+    font-weight: bold;
+    transition: 0.25s;
+}
+
+.small-link-card:hover {
+    color: var(--ink);
+    background-color: var(--yellow);
+    box-shadow: 0 0 14px rgba(249, 219, 121, 0.85);
+    text-decoration: none;
+}
+
+.week-entry-box {
+    border-left: 5px solid var(--orange);
+}
+
+.week-header {
+    margin-bottom: 18px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(9, 124, 135, 0.20);
+}
+
+.entry-summary {
+    margin-top: 18px;
+    padding: 20px;
+    background-color: #fff8df;
+    border-radius: 12px;
+    border-top: 5px solid var(--palm);
+    box-shadow: 0 3px 10px var(--shadow);
+}
+
+.entry-summary h3 {
+    margin-top: 0;
+    color: var(--deep-blue);
+}
+
+.entry-summary h3 a {
+    color: var(--deep-blue);
+}
+
+.entry-summary h3 a:hover {
+    color: var(--ember);
+}
+
+.entry-summary ul {
+    margin-bottom: 0;
+    padding-left: 22px;
+}
+
+.entry-summary li {
+    margin-bottom: 6px;
+    text-align: left;
+    line-height: 1.55;
+}

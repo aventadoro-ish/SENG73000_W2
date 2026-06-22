@@ -23,7 +23,7 @@ Template useage checklist:
 General checklist:
 - [ ] add icon as ../media/icons/favicon.ico
 - [ ] add common style for logbook cover as ../css/logbook_person.css
--->
+
 
 <html lang="en">
     <head>
@@ -35,7 +35,7 @@ General checklist:
 		
 		<!--[if lt IE 9]>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js"></script>
-		<![endif]-->
+		<![endif]
 		
 		<meta name="author" content="Person Name Here">
 		<meta name="description" content="This is a logbook cover page for Person Name Here as part of Engineering Project VI, ESE at Conestoga College.">
@@ -95,4 +95,235 @@ General checklist:
 		</footer>
 		
     </body>
+</html> -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!DOCTYPE html>
+<!--
+Personal logbook template
+Template Author: Nick Kapuka
+Logbook Author: [YOUR NAME]
+
+SETUP CHECKLIST (feel free to delete when done):
+// also, Chat made this checklist so I'm sorry if it's stupid
+[ ] Save this file as logbook_[INITIALS].html
+    Example: logbook_NK.html
+
+[ ] Replace every [PLACEHOLDER] in this file with your own information.
+
+[ ] Update the page title:
+    <title>[YOUR NAME] - Logbook</title>
+
+[ ] Update meta author and description.
+
+[ ] Update your name in the main heading and caption.
+
+[ ] Update your portrait image path:
+    ../media/images/portrait_[INITIALS].jpg
+
+[ ] Update your personal description paragraph.
+
+[ ] Update your external links or remove the links section if not needed.
+
+[ ] Update each weekly section:
+    - id="week-X"
+    - section label: Week X
+    - heading: short summary of that week
+    - entry link
+    - entry date in YYYY-MM-DD format
+    - bullet points for work completed
+
+[ ] Keep entry dates in YYYY-MM-DD format.
+    The JavaScript uses this format to detect the latest entry automatically.
+
+[ ] Keep this button exactly as-is:
+    <a href="#" class="button primary-button" id="latest-entry-link">Latest Entry</a>
+    The JavaScript updates it automatically.
+
+[ ] Keep this dropdown empty except for the first option.
+    The JavaScript fills it automatically using each .week-entry-box section.
+
+[ ] Make sure this script is included near the bottom:
+    <script src="../js/logbook_tools.js"></script>
+-->
+
+<html>
+
+<head>
+	<title>[YOUR NAME] - Logbook</title>
+	<meta charset="UTF-8">
+	<meta name="author" content="[YOUR NAME]">
+	<meta name="description" content="[YOUR NAME]'s logbook cover page">
+	<meta name="robots" content="index, follow">
+	<meta http-equiv="Pragma" content="no-cache">
+
+	<link rel="icon" href="../media/icons/LiF_icon.ico" type="image/x-icon">
+
+	<!-- shared website styling -->
+	<link rel="stylesheet" href="../css/base.css">
+
+	<!-- personal logbook page styling -->
+	<link rel="stylesheet" href="../css/personal_logbook.css">
+
+</head>
+
+<body>
+	<!-- nav bar loaded by JS -->
+	<div id="navbar-placeholder" data-root="../"></div>
+	<script src="../js/navbar.js"></script>
+
+	<!-- main page -->
+	<main class="page-wrapper">
+
+		<!-- profile / cover section -->
+		<section class="personal-logbook-intro">
+			<div class="personal-logbook-text">
+				<p class="section-label">Personal Logbook</p>
+
+				<h1>[your name]'s Logbook</h1>
+
+				<p class="intro-description">
+					[description of you]
+				</p>
+
+				<div class="button-row">
+					<a href="logbook_main.html" class="button secondary-button">Back to Team Logbooks</a>
+
+					<!-- JS automatically updates this to the newest entry -->
+					<a href="#" class="button primary-button" id="latest-entry-link">Latest Entry</a>
+				</div>
+			</div>
+
+			<figure class="personal-profile-card">
+				<img src="../media/images/portrait_[INITIALS].jpg" alt="[YOUR NAME] portrait">
+				<figcaption>
+					<b>[your name]</b><br>
+					[caption <i>Lithium Firefly</i> group.]
+				</figcaption>
+			</figure>
+		</section>
+
+		<!-- dropdown section; don't touch -->
+		<section class="jump-section">
+			<div>
+				<p class="section-label">Quick Navigation</p>
+				<h2>Jump to a Week</h2>
+				<p>
+					Use this menu to jump directly to a specific weekly logbook section.
+				</p>
+			</div>
+
+			<form class="week-jump-form">
+				<label for="week-jump">Select week:</label>
+				<select id="week-jump">
+					<option value="">Choose a week...</option>
+				</select>
+			</form>
+		</section>
+
+		<!-- links section  -->
+		<section class="links-section">
+			<p class="section-label">External Links</p>
+			<h2>My Links</h2>
+
+			<div class="small-link-grid">
+				<a href="[GitHub]" target="_blank" class="small-link-card">GitHub</a>
+				<a href="[LinkedIn]" target="_blank" class="small-link-card">LinkedIn</a>
+			</div>
+		</section>
+
+		<!--
+        Week template
+
+        Copy and paste this block for each new week.
+
+        Important:
+        - each week-entry-box needs a unique id, like week-3, week-4, week-5.
+        - the dropdown uses these ids to jump around the page.
+        - entry links should include the date in YYYY-MM-DD format somewhere
+          in either the visible text or the file path (I tried to dumb it down)
+        -->
+
+		<!-- ********************************** EACH WEEK, COPY FROM HERE ********************************** -->
+		<!-- overall week summary-->
+		<section class="week-entry-box" id="week-[WEEK NUMBER]">
+			<div class="week-header">
+				<p class="section-label">Week [week #]</p> <!-- ideally "Week-X" format; no space-->
+				<h2>[short summary]</h2> <!-- feel free to see NK logbook cover page for reference -->
+			</div>
+
+			<!-- ******** EACH DAY, COPY FROM HERE ********  -->
+			<article class="entry-summary">
+				<h3><a href=" .html">Entry 1 - [YYYY-MM-DD]</a></h3>
+				<ul>
+					<li>[desc of work done A.]</li>
+					<li>[desc of work done B.]</li>
+					<li>[desc of work done C.]</li>
+				</ul>
+			</article>
+
+			<!-- ******** DAILY COPY ********  -->
+
+			<article class="entry-summary">
+				<h3><a href="./entries_[INITIALS]/[INITIALS]_entry_[YYYY-MM-DD].html">Entry 2 - [YYYY-MM-DD]</a></h3>
+				<ul>
+					<li>[desc of work done A.]</li>
+					<li>[desc of work done B.]</li>
+					<li>[desc of work done C.]</li>
+				</ul>
+			</article>
+		</section>
+
+		<!--
+        if you wanna add another week later, copy this:
+
+        <section class="week-entry-box" id="week-[week #]">
+            <div class="week-header">
+                <p class="section-label">Week [WEEK NUMBER]</p>
+                <h2>[short summary]</h2>
+            </div>
+
+            <article class="entry-summary">
+                <h3><a href="./entries_[INITIALS]/[INITIALS]_entry_[YYYY-MM-DD].html">Entry 1 - [YYYY-MM-DD]</a></h3>
+                <ul>
+                    <li>[Description of work done A.]</li>
+                    <li>[Description of work done B.]</li>
+                    <li>[Description of work done C.]</li>
+                </ul>
+            </article>
+        </section>
+        -->
+		<!-- ********************************** WEEKLY COPY ********************************** -->
+		<!-- ********************************** EACH WEEK, COPY FROM HERE ********************************** -->
+
+		<!-- yo mom -->
+
+		<!-- ********************************** WEEKLY COPY ********************************** -->
+
+		<p class="top-link">
+			<a href="#page_top">Go to the top of this page</a>
+		</p>
+
+	</main>
+
+	<footer class="site-footer">
+		<p>Copyright &copy; 2026 [YOUR NAME]</p>
+	</footer>
+
+	<!-- required for latest-entry button and week dropdown, don't touch -->
+	<script src="../js/logbook_tools.js"></script>
+</body>
+
 </html>

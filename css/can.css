@@ -1,0 +1,157 @@
+/* CAN protocol page styling */
+.CANprotocol-intro {
+    grid-template-columns: 2fr 0.9fr;
+}
+
+.CANprotocol-card-list {
+    display: grid;
+    gap: 24px;
+    margin-top: 28px;
+}
+
+.CANprotocol-card,
+.CANprotocol-table-section,
+.CANprotocol-legend-section {
+    padding: 28px;
+    background-color: var(--card-bg);
+    border-radius: 14px;
+    box-shadow: 0 4px 14px var(--shadow);
+}
+
+.CANprotocol-card {
+    border-left: 5px solid var(--aqua);
+}
+
+.CANprotocol-table-section {
+    margin-top: 28px;
+    border-top: 5px solid var(--orange);
+}
+
+.CANprotocol-legend-section {
+    margin-top: 28px;
+    border-left: 5px solid var(--palm);
+}
+
+.CANprotocol-card-text h2,
+.CANprotocol-section-heading h2,
+.CANprotocol-legend-section h2 {
+    margin-top: 0;
+    color: var(--deep-blue);
+}
+
+.CANprotocol-card-text p,
+.CANprotocol-section-heading p,
+.CANprotocol-legend-section p {
+    text-align: left;
+    text-indent: 0;
+    line-height: 1.55;
+}
+
+.CANprotocol-table-wrapper {
+    margin-top: 18px;
+    overflow-x: auto;
+    border-radius: 12px;
+    border: 1px solid rgba(9, 124, 135, 0.24);
+    box-shadow: 0 4px 14px var(--shadow);
+}
+
+.CANprotocol-table {
+    width: 100%;
+    min-width: 980px;
+    border-collapse: collapse;
+    background-color: #fffdf4;
+    font-size: 0.96rem;
+}
+
+.CANprotocol-table th,
+.CANprotocol-table td {
+    padding: 11px 12px;
+    border: 1px solid rgba(9, 124, 135, 0.22);
+    text-align: center;
+    vertical-align: middle;
+}
+
+.CANprotocol-table thead th {
+    color: var(--ink);
+    background-color: #d7d7d7;
+    font-weight: bold;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.CANprotocol-table .CANprotocol-byte-header {
+    color: white;
+    background-color: var(--deep-blue);
+}
+
+.CANprotocol-table thead tr:nth-child(2) th {
+    color: white;
+    background-color: var(--deep-blue);
+}
+
+.CANprotocol-table thead tr:first-child th:last-child {
+    color: white;
+    background-color: var(--deep-blue);
+    font-size: 1.05rem;
+}
+
+.CANprotocol-table thead tr:nth-child(2) th {
+    color: white;
+    background-color: var(--deep-blue);
+}
+
+.CANprotocol-table thead th[rowspan="2"] {
+    background-color: #d0d0d0;
+    color: var(--ink);
+}
+
+.CANprotocol-table tbody tr:hover td {
+    background-color: #eb41035b;
+    /* same as --ember but a bit more transparent) */
+}
+
+.CANprotocol-table tbody td:first-child {
+    font-weight: bold;
+    color: var(--deep-blue);
+}
+
+.CANprotocol-bit {
+    font-weight: bold;
+    color: var(--ink);
+}
+
+.CANprotocol-enable {
+    background-color: var(--aqua);
+}
+
+.CANprotocol-position {
+    background-color: var(--palm);
+}
+
+.CANprotocol-request {
+    background-color: var(--yellow);
+}
+
+.CANprotocol-legend-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-top: 18px;
+}
+
+.CANprotocol-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 10px 14px;
+    background-color: #fff8df;
+    border-radius: 25px;
+    font-weight: bold;
+}
+
+.CANprotocol-legend-box {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border-radius: 5px;
+}

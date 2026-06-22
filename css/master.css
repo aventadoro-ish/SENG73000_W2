@@ -1,9 +1,25 @@
 
 /* changed some values in body, h1 ..., p since the values seemed small to me (NK) I'm blind*/
+/* time to redesign our stupid chud website: 21_06_2026*/
+
+
 body {
     font-family: Georgia, serif;
     font-size: 18px;
+    line-height: 18px;
+    color: #252525; 
+    background: linear-gradient(135deg, #eeeeee, #d8d8d8) /* add colour gradient*/
 }
+
+a {
+    color: #1f6fbf; /* make links a lighter blue*/
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline; /* underline links when hovered over*/
+}
+
 
 h1 {
     font-size: 2.2rem;
@@ -20,6 +36,7 @@ p, li {
 }
 
 p {
+    margin-top: 0;
     text-indent: 15px;
 }
 
@@ -65,20 +82,6 @@ th, td {
     padding: 0px 5px 0px 5px;
 }
 
-aside {
-  width: 30%;
-  padding-left: 15px;
-  margin-left: 15px;
-  float: right;
-  font-style: italic;
-  background-color: lightgray;
-  height: 100vh;
-  
-}
-aside iframe {
-  height: 100%;
-}
-
 
 /* HTML5 Compatibility */
 header,
@@ -90,3 +93,78 @@ aside,
 main {
     display: block;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

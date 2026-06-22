@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<!-- Author: Nick Kapuka -->
+<html>
+
+<head>
+    <title>LiF Team - Documentation</title>
+    <meta charset="UTF-8">
+    <link rel="icon" href="../media/icons/LiF_icon.ico" type="image/x-icon">
+    <meta name="author" content="Nick Kapuka">
+    <meta name="description" content="LiF project documentation">
+    <meta name="robots" content="index, follow">
+    <meta http-equiv="Pragma" content="no-cache">
+    <link rel="stylesheet" href="../css/base.css">
+    <link rel="stylesheet" href="../css/documentation.css">
+</head>
+
+<body>
+    <!-- nav bar -->
+    <div id="navbar-placeholder" data-root="../"></div>
+    <script src="../js/navbar.js"></script>
+
+    <!-- main Page -->
+    <main class="page-wrapper">
+
+        <section class="intro-section documentation-intro">
+            <div class="intro-text">
+                <p class="section-label">Project References</p>
+
+                <h1>LiF Team Documentation</h1>
+
+                <p class="intro-description">
+                    This page collects supporting documentation that the Lithium Firefly team has collected/made.
+                    These pages branch into detailed technical breakdowns and references, project resoruces, workflows
+                    and other tracking pages.
+                </p>
+            </div>
+
+            <aside class="summary-card">
+                <h2>Documentation:</h2>
+                <p><b>Project:</b> Engineering Project VI</p>
+                <p><b>Team:</b> Lithium Firefly</p>
+                <p><b>Members:</b>Rita Yevtushenko, Matvey Regentov, Nick Kapuka</p>
+                <p><b>Sections:</b> CAN, BoM, R-Pi, Caffeine</p>
+            </aside>
+        </section>
+
+        <section class="documentation-card-list">
+            <article class="documentation-card">
+                <div class="documentation-card-text">
+                    <p class="section-label">Technical Reference:</p>
+                    <h2>Established CAN Protocol</h2>
+
+                    <p>
+                        Majority of our project relies on the CAN bus communication protocol, especially for the
+                        embedded controllers to send each other updates and messages regarding the elevator.
+
+                        Below is a detailed look at the CAN communication structure established for our elevator. It
+                        features CAN IDs, message bytes and the bits they represent, what controller sends what message
+                        with what ID, all summarized into a table for easy-viewing.
+                    </p>
+
+                    <a href="CAN_protocol.html" class="button primary-button">Open CAN Protocol</a>
+                </div>
+            </article>
+
+            <article class="documentation-card">
+                <div class="documentation-card-text">
+                    <p class="section-label">Project Resources</p>
+                    <h2>Bill of Materials</h2>
+
+                    <p>
+                        A generalized list of the major components, hardward, electronics, and project materials that
+                        were purchased exclusive for the Lithium Firefly elevator project. Some items are not included
+                        as they are from previous school semesters.
+                    </p>
+
+                    <a href="BOM.html" class="button primary-button">Open BoM</a>
+                </div>
+            </article>
+
+            <article class="documentation-card">
+                <div class="documentation-card-text">
+                    <p class="section-label">Deployment Workflow</p>
+                    <h2>Raspberry Pi Deployment Workflow</h2>
+
+                    <p>
+                        <!-- *************************************************************************************************************************************************************************-->
+                        Matvey fill this out when you get a chance. I'd love to but it is almost 5AM pls help
+                        <!-- *************************************************************************************************************************************************************************-->
+                    </p>
+
+                    <a href="RPi_deploymentWorkflow.html" class="button primary-button">Open R-Pi Workflow</a>
+                </div>
+            </article>
+
+            <article class="documentation-card">
+                <div class="documentation-card-text">
+                    <p class="section-label">Team Data</p>
+                    <h2>Caffeine Study</h2>
+
+                    <p>
+                        A semester-wide data-collection effort which tracks and logs total caffeine consumption from
+                        energy drinks. Very important information to monitor our total caffeine intake, and visually see
+                        the graph travel up as the semester progresses.
+
+                    </p>
+
+                    <a href="caffeine_datacollection.html" class="button primary-button">Open Caffeine Study</a>
+                </div>
+            </article>
+
+        </section>
+
+        <p class="top-link">
+            <a href="#page_top">Go to the top of this page</a>
+        </p>
+
+    </main>
+
+    <footer class="site-footer">
+        <p>Copyright &copy; 2026 Rita Yevtushenko, Matvey Regentov, and Nick Kapuka</p>
+    </footer>
+</body>
+
+</html>

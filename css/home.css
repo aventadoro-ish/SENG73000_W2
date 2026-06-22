@@ -1,0 +1,119 @@
+/* info cards for intro page */
+
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 22px;
+    margin-top: 28px;
+}
+
+.info-card {
+    padding: 24px;
+    background-color: var(--card-bg);
+    border-radius: 14px;
+    border-top: 5px solid var(--palm);
+    box-shadow: 0 4px 14px var(--shadow);
+    transition: 0.25s;
+}
+
+.info-card:hover {
+    transform: translateY(-3px);
+    border-top-color: var(--yellow);
+    box-shadow: 0 0 18px rgba(249, 219, 121, 0.55);
+}
+
+.info-card h2 {
+    margin-top: 0;
+    color: var(--deep-blue);
+}
+
+.info-card a {
+    font-weight: bold;
+}
+
+/* login card for intro page */
+
+.login-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 22px;
+    margin-top: 28px;
+}
+
+.login-card,
+.notice-card {
+    padding: 24px;
+    background-color: var(--card-bg);
+    border-radius: 14px;
+    box-shadow: 0 4px 14px var(--shadow);
+}
+
+.login-card h2,
+.notice-card h2 {
+    margin-top: 0;
+    color: var(--deep-blue);
+}
+
+.muted-text {
+    color: #53696b;
+}
+
+form label {
+    display: block;
+    margin-top: 12px;
+    margin-bottom: 4px;
+    font-weight: bold;
+}
+
+form input {
+    width: 100%;
+    max-width: 320px;
+    padding: 8px;
+    font-family: Georgia, serif;
+    font-size: 1rem;
+    border: 1px solid var(--palm);
+    border-radius: 6px;
+}
+
+form input:focus {
+    outline: 2px solid var(--aqua);
+}
+
+form button {
+    display: block;
+    margin-top: 16px;
+    padding: 8px 18px;
+    font-family: Georgia, serif;
+    font-size: 1rem;
+    color: white;
+    background-color: var(--deep-blue);
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+form button:hover {
+    color: var(--ink);
+    background-color: var(--yellow);
+    box-shadow: 0 0 12px rgba(249, 219, 121, 0.85);
+}
+
+.reqacc-button {
+    display: block;
+    margin-top: 16px;
+    padding: 8px 18px;
+    font-family: Georgia, serif;
+    font-size: 1rem;
+    color: white;
+    background-color: var(--deep-blue);
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    text-align: center;
+}
+
+.reqacc-button:hover {
+    color: var(--ink);
+    background-color: var(--yellow);
+    box-shadow: 0 0 12px rgba(249, 219, 121, 0.85);
+}

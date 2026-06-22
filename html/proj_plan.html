@@ -1,336 +1,416 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>LiF Project Plan</title>
-        <meta charset="UTF-8">
-        <link rel="icon" href="../media/icons/LiF_icon.ico" type="image/x-icon">
-        
-		<!--[if lt IE 9]>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js"></script>
-		<![endif]-->
-		
-		<meta name="author" content="MR Regentov">
-		<link rel="stylesheet" href="../css/master.css">
-		<meta name="description" content="LiF Website Homepae.">
-		<meta name="robots" content="index, follow">
-		
-        <!-- bootstrap functions -->
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-        <link rel="stylesheet" href="../css/gantt_chart.css">
-        <meta http-equiv="Pragma" content="no-cache">
-    </head>		
 
-    
-    <body>
-        <div id="navbar-placeholder" data-root="../"></div>
-		<script src="../js/navbar.js"></script>
-		<br><br>
+<head>
+    <title>LiF Team - Project Plan</title>
+    <meta charset="UTF-8">
+    <link rel="icon" href="../media/icons/LiF_icon.ico" type="image/x-icon">
+    <meta name="author" content="MR & NK">
+    <meta name="description" content="LiF planning and Gantt Chart">
+    <meta name="robots" content="index, follow">
+    <meta http-equiv="Pragma" content="no-cache">
+    <link rel="stylesheet" href="../css/base.css">
+    <link rel="stylesheet" href="../css/project_plan.css">
+    <link rel="stylesheet" href="../css/gantt_chart_tropical.css">
+</head>
 
-        <section>
-            <h1>References and Specifications</h1>
-            <ul>
-                <li><a href="../references/Project_Charter.pdf" target="_blank">Project Charter</a></li>
-                <li><a href="../references/Schematics_of_NucleoBoard_Shield.pdf" target="_blank">Nucleo Shield PCB Schematics</a></li>
-                <li><a href="../references/um1724-stm32-nucleo64-boards-mb1136-stmicroelectronics.pdf" target="_blank">User Manual for STM32 Nucelo Development Board</a></li>
-                <li><a href="../references/Layout_of_Nucleo_Shield.jpg" target="_blank">Nucleo Shield PCB Layout</a></li>
-            </ul>
+
+<body>
+    <!-- Nav bar -->
+    <div id="navbar-placeholder" data-root="../"></div>
+    <script src="../js/navbar.js"></script>
+
+    <main class="page-wrapper">
+        <section class="intro-section project-plan-intro">
+            <div class="intro-text">
+                <p class="section-label">Planning Phase</p>
+                <h1>Project Plan</h1>
+                <p class="intro-description">
+                    This page contains various references used for planning the project, specifications and manuals for
+                    the STM32, and
+                    lastly the schedule of the Lithum Firefly elevator project itself. Below, a Gantt chart has been
+                    made that tracks website developement,
+                    Raspberry-Pi server setup, STM32 programming, general controls, mechanical assembly, and FSM logic.
+                </p>
+                <div class="button-row">
+                    <a href="../references/Project_Charter.pdf" target="_blank" class="button primary-button">Open
+                        Project Charter</a>
+                    <a href="#gantt-chart-section" class="button secondary-button">Jump to Gantt Chart</a>
+                </div>
+            </div>
+            <aside class="summary-card">
+                <h2>Plan Snapshot</h2>
+                <p><b>Schedule:</b> 14 weeks (semester-long)</p>
+                <p><b>Phases:</b> 3 (total)</p>
+                <p><b>Team:</b> RY, NK, MR</p>
+                <p><b>Focus:</b> Build, test, integrate</p>
+            </aside>
         </section>
 
-        <section>
+        <!-- references to manuals-->
+        <section class="references-section">
+            <div class="references-text">
+                <p class="section-label">Supporting Documents</p>
+                <h2>References and Specifications</h2>
+                <p>
+                    References and specifications for items that aided design, implementation, testing, and programming
+                    of the elevator system. Includes STM32 programming manual, project charter, etc.
+                </p>
+            </div>
+            <div class="reference-card-grid">
+                <a class="reference-card" href="../references/Project_Charter.pdf" target="_blank">
+                    <h3>Project Charter</h3>
+                    <p>Project requirements, milestones, and phase expectations.</p>
+                </a>
+                <a class="reference-card" href="../references/Schematics_of_NucleoBoard_Shield.pdf" target="_blank">
+                    <h3>Nucleo Shield Schematics</h3>
+                    <p>Reference schematic for the STM32 Nucleo shield PCB.</p>
+                </a>
+                <a class="reference-card"
+                    href="../references/um1724-stm32-nucleo64-boards-mb1136-stmicroelectronics.pdf" target="_blank">
+                    <h3>STM32 Nucleo Manual</h3>
+                    <p>User manual for the STM32 Nucleo-64 development board.</p>
+                </a>
+                <a class="reference-card" href="../references/Layout_of_Nucleo_Shield.jpg" target="_blank">
+                    <h3>Nucleo Shield Layout</h3>
+                    <p>PCB layout reference image for the STM32 shield (PB, LEDs, etc.).</p>
+                </a>
+            </div>
+        </section>
+
+        <!-- Gantt chart legend - coloured squares to navigate the gantt chart-->
+        <section class="legend-section">
+            <p class="section-label">Schedule Key</p>
+            <h2>Gantt Chart Legend</h2>
+            <div class="legend-grid">
+                <div class="legend-item"><span class="legend-box completed-box"></span>Completed</div>
+                <div class="legend-item"><span class="legend-box ongoing-box"></span>Ongoing</div>
+                <div class="legend-item"><span class="legend-box behind-box"></span>Behind</div>
+                <div class="legend-item"><span class="legend-box omitted-box"></span>Omitted / Changed</div>
+                <div class="legend-item"><span class="legend-box ommited-completed"></span>Completed but Later Omited
+                </div>
+            </div>
+        </section>
+
+        <!-- gantt chart intro -->
+        <section class="gantt-section" id="gantt-chart-section">
             <h1>Gantt Chart</h1>
-            <table id="Gantt">
-                <thead>
-                    <tr>
-                        <th>Week &rarr;</th>
-                        <th>1</th>
-                        <th>2</th>
-                        <th>3</th>
-                        <th>4</th>
-                        <th>5</th>
-                        <th>6</th>
-                        <th>7</th>
-                        <th>8</th>
-                        <th>9</th>
-                        <th>10</th>
-                        <th>11</th>
-                        <th>12</th>
-                        <th>13</th>
-                        <th>14</th>
-                    </tr>
-                </thead>
+            <div class="gantt-heading">
+                <div>
+                    <p class="section-label">Project Timeline</p>
+                    <h2>Gantt Chart</h2>
+                </div>
+                <p>
+                    The chart shows the major project tasks, assigned team members, and approximate
+                    timing across the 14-week span of the project.
+                </p>
+            </div>
 
-                <tbody>
-                    <tr>
-                        <td></td>
-                        <th colspan="2">N/A</th>
-                        <th colspan="4">Phase 1</th>
-                        <th colspan="4">Phase 2</th>
-                        <th colspan="4">Phase 3</th>
-                    </tr>
+            <!-- gantt chart main chart -->
+            <div class="gantt-table-wrapper">
+                <table id="Gantt">
+                    <thead>
+                        <tr>
+                            <th>Week &rarr;</th>
+                            <th>1</th>
+                            <th>2</th>
+                            <th>3</th>
+                            <th>4</th>
+                            <th>5</th>
+                            <th>6</th>
+                            <th>7</th>
+                            <th>8</th>
+                            <th>9</th>
+                            <th>10</th>
+                            <th>11</th>
+                            <th>12</th>
+                            <th>13</th>
+                            <th>14</th>
+                        </tr>
+                    </thead>
 
-                    <tr>
-                        <th class="main">1. Project plan</th>
-                        <td colspan="14"></td>
-                    </tr>
+                    <tbody>
+                        <tr>
+                            <td></td>
+                            <th colspan="2">N/A</th>
+                            <th colspan="4">Phase 1</th>
+                            <th colspan="4">Phase 2</th>
+                            <th colspan="4">Phase 3</th>
+                        </tr>
 
-                    <tr>
-                        <th class="sub">Complete and submit a Project Plan</th>
-                        <td colspan="2"></td>
-                        <td class="completed">RY, NK, MR</td>
-                        <td colspan="11"></td>
-                    </tr>
+                        <tr>
+                            <th class="main">1. Project plan</th>
+                            <td colspan="14"></td>
+                        </tr>
 
-                    <tr>
-                        <th class="sub">Make About page for the website</th>
-                        <td colspan="2"></td>
-                        <td class="ongoing">RY</td>
-                        <td colspan="11"></td>
-                    </tr>
+                        <tr>
+                            <th class="sub">Complete and submit a Project Plan</th>
+                            <td colspan="2"></td>
+                            <td class="completed">RY, NK, MR</td>
+                            <td colspan="11"></td>
+                        </tr>
 
-                    <tr>
-                        <th class="sub">Make Logbook template for website</th>
-                        <td colspan="2"></td>
-                        <td class="completed">MR</td>
-                        <td colspan="11"></td>
-                    </tr>
+                        <tr>
+                            <th class="sub">Make About page for the website</th>
+                            <td colspan="2"></td>
+                            <td class="ongoing">RY</td>
+                            <td colspan="11"></td>
+                        </tr>
 
-                    <tr>
-                        <th class="sub">Make Plan page for the website</th>
-                        <td colspan="2"></td>
-                        <td class="completed" colspan="2">NK</td>
-                        <td colspan="10"></td>
-                    </tr>
+                        <tr>
+                            <th class="sub">Make Logbook template for website</th>
+                            <td colspan="2"></td>
+                            <td class="completed">MR</td>
+                            <td colspan="11"></td>
+                        </tr>
 
-                    <tr>
-                        <th class="sub">Update website weekly (logbooks)</th>
-                        <td colspan="2"></td>
-                        <td class="ongoing" colspan="4">RY, NK, MR</td>
-                        <td colspan="8"></td>
-                    </tr>
+                        <tr>
+                            <th class="sub">Make Plan page for the website</th>
+                            <td colspan="2"></td>
+                            <td class="completed" colspan="2">NK</td>
+                            <td colspan="10"></td>
+                        </tr>
 
-                    <tr>
-                        <th class="sub">Team + individual images for the website</th>
-                        <td colspan="2"></td>
-                        <td class="completed">RY, NK, MR (Thursday)</td>
-                        <td colspan="11"></td>
-                    </tr>
+                        <tr>
+                            <th class="sub">Update website weekly (logbooks)</th>
+                            <td colspan="2"></td>
+                            <td class="ongoing" colspan="4">RY, NK, MR</td>
+                            <td colspan="8"></td>
+                        </tr>
 
-                    <tr>
-                        <th class="sub">Video introduction to project</th>
-                        <td colspan="5"></td>
-                        <td class="completed">RY, NK, MR</td>
-                    </tr>
+                        <tr>
+                            <th class="sub">Team + individual images for the website</th>
+                            <td colspan="2"></td>
+                            <td class="completed">RY, NK, MR (Thursday)</td>
+                            <td colspan="11"></td>
+                        </tr>
 
+                        <tr>
+                            <th class="sub">Video introduction to project</th>
+                            <td colspan="5"></td>
+                            <td class="completed">RY, NK, MR</td>
+                            <td colspan="8"></td>
+                        </tr>
 
-                    <tr>
-                        <th class="main">2. Set up Raspberry Pi as Server and confirmed communication</th>
-                        <td colspan="14"></td>
-                    </tr>
-
-                    <tr>
-                        <th class="sub">Set up Raspberry Pi as a server</th>
-                        <td colspan="2"></td>
-                        <td class="completed" colspan="2">RY</td>
-                    </tr>
-
-                    <tr>
-                        <th class="sub">Confirm communication between client computer and server (HTTP/SSH)</th>
-                        <td colspan="3"></td>
-                        <td colspan="3">RY</td>
-                        <td colspan="8"></td>
-                    </tr>
-
-                    <tr>
-                        <th class="main">3. STM32 Programming via HAL</th>
-                        <td colspan="14"></td>
-                    </tr>
-
-                    <tr>
-                        <th class="sub">Explain common CAN messaging protocol</th>
-                        <td colspan="2"></td>
-                        <td class="completed">RY, NK, MR</td>
-                        <td colspan="11"></td>
-                    </tr>
-
-                    <tr>
-                        <th class="sub">Implement CAN messaging protocol / filters on STM32</th>
-                        <td colspan="2"></td>
-                        <td class="completed" colspan="2">MR</td>
-                        <td colspan="11"></td>
-                    </tr>
-
-                    <tr>
-                        <th class="sub">Confirm wiring with Group 1</th>
-                        <td colspan="2"></td>
-                        <td class="omitted completed">NK</td>
-                        <td colspan="11"></td>
-                    </tr>
-
-                    <tr>
-                        <th class="sub">Implement wiring on STM32, push buttons/LED indicators</th>
-                        <td colspan="2"></td>
-                        <td class="omitted completed" colspan="2">NK</td>
-                        <td colspan="10"></td>
-                    </tr>
-
-                    <tr>
-                        <th class="sub">Able to read CAN messages on Raspberry Pi and detect elevator requests/status</th>
-                        <td colspan="4"></td>
-                        <td class="completed">RY, NK, MR</td>
-                        <td colspan="9"></td>
-                    </tr>
-
-                    <tr>
-                        <th class="sub">Develop and implement test plan</th>
-                        <td colspan="3"></td>
-                        <td class="completed">MR</td>
-                        <td colspan="10"></td>
-                    </tr>
-
-                    <tr>
-                        <th class="sub">Perform testing as per test plan</th>
-                        <td colspan="4"></td>
-                        <td class="behind" colspan="2">NK</td>
-                        <td colspan="8"></td>
-                    </tr>
-
-                    <tr>
-                        <th class="sub">Add toggle switch to emulate door on CC</th>
-                        <td colspan="4"></td>
-                        <td class="completed" colspan="2">NK</td>
-                    </tr>
-
-                    <tr>
-                        <th class="main">3. Controls / indicators</th>
-                        <td colspan="14"></td>
-                    </tr>
-
-                    <tr>
-                        <th class="sub">Controls up/down built in HTML</th>
-                        <td colspan="3"></td>
-                        <td class="omitted" colspan="2">RY, NK, MR</td>
-                        <td colspan="9"></td>
-                    </tr>
-
-                    <tr>
-                        <th class="sub">Elevator car controls built in HTML</th>
-                        <td colspan="3"></td>
-                        <td class="omitted" colspan="2">RY, NK, MR</td>
-                        <td colspan="9"></td>
-                    </tr>
-
-                    <tr>
-                        <th class="main">4. Finite State Machine</th>
-                        <td colspan="14"></td>
-                    </tr>
-
-                    <tr>
-                        <th class="sub">Develop FSM logic for elevator operation</th>
-                        <td colspan="5"></td>
-                        <td class="ongoing">RY, NK, MR</td>
-                        <td colspan="8"></td>
-                    </tr>
-
-                    <tr>
-                        <th class="sub2">FSM for SC</th>
-                        <td colspan="5"></td>
-                        <td class="completed">RY</td>
-                        <td colspan="8"></td>
-                    </tr>
-
-                    <tr>
-                        <th class="sub2">FSM for FC and CC</th>
-                        <td colspan="5"></td>
-                        <td class="completed">NK</td>
-                        <td colspan="8"></td>
-                    </tr>
-
-                    <tr>
-                        <th class="sub2">FSM for EC</th>
-                        <td colspan="5"></td>
-                        <td class="completed">RY</td>
-                        <td colspan="8"></td>
-                    </tr>
+                        <tr>
+                            <th class="sub">Revamp the website for visual clarity and enhancement</th>
+                            <td colspan="6"></td>
+                            <td class="completed">NK</td>
+                            <td colspan="8"></td>
+                        </tr>
 
 
-                    <tr>
-                        <th class="main">5. Mechanical Design</th>
-                        <td colspan="14"></td>
-                    </tr>
+                        <tr>
+                            <th class="main">2. Set up Raspberry Pi as Server and confirmed communication</th>
+                            <td colspan="14"></td>
+                        </tr>
 
-                    <tr>
-                        <th class="sub">Overall Structure CAD model</th>
-                        <td colspan="2"></td>
-                        <td class="completed">MR</td>
-                        <td colspan="11"></td>
-                    </tr>
+                        <tr>
+                            <th class="sub">Set up Raspberry Pi as a server</th>
+                            <td colspan="2"></td>
+                            <td class="completed" colspan="2">RY</td>
+                        </tr>
 
-                    <tr>
-                        <th class="sub">Order parts for the assembly</th>
-                        <td colspan="3"></td>
-                        <td class="completed">MR</td>
-                        <td colspan="11"></td>
-                    </tr>
+                        <tr>
+                            <th class="sub">Confirm communication between client computer and server (HTTP/SSH)</th>
+                            <td colspan="3"></td>
+                            <td class="completed" colspan="3">RY</td>
+                            <td colspan="8"></td>
+                        </tr>
 
-                    <tr>
-                        <th class="sub">Assemble bulk structure</th>
-                        <td colspan="3"></td>
-                        <td class="completed">NK, MR</td>
-                        <td colspan="10"></td>
-                    </tr>
+                        <tr>
+                            <th class="main">3. STM32 Programming via HAL</th>
+                            <td colspan="14"></td>
+                        </tr>
 
-                    
-                    <tr>
-                        <th class="sub">Design motor mount subassembly</th>
-                        <td colspan="3"></td>
-                        <td class="completed">MR</td>
-                        <td colspan="10"></td>
-                    </tr>
-                    
-                    <tr>
-                        <th class="sub">Design car traveler subassembly</th>
-                        <td colspan="3"></td>
-                        <td class="completed">MR</td>
-                        <td colspan="10"></td>
-                    </tr>
+                        <tr>
+                            <th class="sub">Explain common CAN messaging protocol</th>
+                            <td colspan="2"></td>
+                            <td class="completed">RY, NK, MR</td>
+                            <td colspan="11"></td>
+                        </tr>
 
-                    <tr>
-                        <th class="sub">Design mounts for electronics</th>
-                        <td colspan="2"></td>
-                        <td class="completed" colspan="3">MR</td>
-                        <td colspan="9"></td>
-                    </tr>
+                        <tr>
+                            <th class="sub">Implement CAN messaging protocol / filters on STM32</th>
+                            <td colspan="2"></td>
+                            <td class="completed" colspan="2">MR & NK</td>
+                            <td colspan="11"></td>
+                        </tr>
 
-                    <tr>
-                        <th class="sub">3D Printing Parts</th>
-                        <td colspan="2"></td>
-                        <td class="ongoing" colspan="4">NK</td>
-                        <td colspan="8"></td>
-                    </tr>
+                        <tr>
+                            <th class="sub">Confirm wiring with Group 1</th>
+                            <td colspan="2"></td>
+                            <td class="omitted completed">NK</td>
+                            <td colspan="11"></td>
+                        </tr>
 
-                    <tr>
-                        <th class="main">6. Integration Testing</th>
-                        <td colspan="14"></td>
-                    </tr>
+                        <tr>
+                            <th class="sub">Implement wiring on STM32, push buttons/LED indicators</th>
+                            <td colspan="2"></td>
+                            <td class="omitted completed" colspan="2">NK</td>
+                            <td colspan="10"></td>
+                        </tr>
 
-                    <tr>
-                        <th class="sub">Test and prepare for demo</th>
-                        <td colspan="5"></td>
-                        <td class="ongoing" colspan="1">RY, NK, MR</td>
-                        <td colspan="8"></td>
-                    </tr>
+                        <tr>
+                            <th class="sub">Able to read CAN messages on Raspberry Pi and detect elevator
+                                requests/status</th>
+                            <td colspan="4"></td>
+                            <td class="completed">RY, NK, MR</td>
+                            <td colspan="9"></td>
+                        </tr>
 
-                </tbody>
-            </table>
+                        <tr>
+                            <th class="sub">Develop and implement test plan</th>
+                            <td colspan="3"></td>
+                            <td class="completed">MR</td>
+                            <td colspan="10"></td>
+                        </tr>
+
+                        <tr>
+                            <th class="sub">Perform testing as per test plan</th>
+                            <td colspan="4"></td>
+                            <td class="behind" colspan="2">NK</td>
+                            <td colspan="8"></td>
+                        </tr>
+
+                        <tr>
+                            <th class="sub">Add toggle switch to emulate door on CC</th>
+                            <td colspan="4"></td>
+                            <td class="completed" colspan="2">NK</td>
+                            <td colspan="8"></td>
+                        </tr>
+
+                        <tr>
+                            <th class="main">3. Controls / indicators</th>
+                            <td colspan="14"></td>
+                        </tr>
+
+                        <tr>
+                            <th class="sub">Controls up/down built in HTML</th>
+                            <td colspan="3"></td>
+                            <td class="omitted" colspan="2">RY, NK, MR</td>
+                            <td colspan="9"></td>
+                        </tr>
+
+                        <tr>
+                            <th class="sub">Elevator car controls built in HTML</th>
+                            <td colspan="3"></td>
+                            <td class="omitted" colspan="2">RY, NK, MR</td>
+                            <td colspan="9"></td>
+                        </tr>
+
+                        <tr>
+                            <th class="main">4. Finite State Machine</th>
+                            <td colspan="14"></td>
+                        </tr>
+
+                        <tr>
+                            <th class="sub">Develop FSM logic for elevator operation</th>
+                            <td colspan="5"></td>
+                            <td class="ongoing">RY, NK, MR</td>
+                            <td colspan="8"></td>
+                        </tr>
+
+                        <tr>
+                            <th class="sub2">FSM for SC</th>
+                            <td colspan="5"></td>
+                            <td class="completed">RY</td>
+                            <td colspan="8"></td>
+                        </tr>
+
+                        <tr>
+                            <th class="sub2">FSM for FC and CC</th>
+                            <td colspan="5"></td>
+                            <td class="completed">NK</td>
+                            <td colspan="8"></td>
+                        </tr>
+
+                        <tr>
+                            <th class="sub2">FSM for EC</th>
+                            <td colspan="5"></td>
+                            <td class="completed">RY</td>
+                            <td colspan="8"></td>
+                        </tr>
+
+
+                        <tr>
+                            <th class="main">5. Mechanical Design</th>
+                            <td colspan="14"></td>
+                        </tr>
+
+                        <tr>
+                            <th class="sub">Overall Structure CAD model</th>
+                            <td colspan="2"></td>
+                            <td class="completed">MR</td>
+                            <td colspan="11"></td>
+                        </tr>
+
+                        <tr>
+                            <th class="sub">Order parts for the assembly</th>
+                            <td colspan="3"></td>
+                            <td class="completed">MR</td>
+                            <td colspan="11"></td>
+                        </tr>
+
+                        <tr>
+                            <th class="sub">Assemble bulk structure</th>
+                            <td colspan="3"></td>
+                            <td class="completed">NK, MR</td>
+                            <td colspan="10"></td>
+                        </tr>
+
+
+                        <tr>
+                            <th class="sub">Design motor mount subassembly</th>
+                            <td colspan="3"></td>
+                            <td class="completed">MR</td>
+                            <td colspan="10"></td>
+                        </tr>
+
+                        <tr>
+                            <th class="sub">Design car traveler subassembly</th>
+                            <td colspan="3"></td>
+                            <td class="completed">MR</td>
+                            <td colspan="10"></td>
+                        </tr>
+
+                        <tr>
+                            <th class="sub">Design mounts for electronics</th>
+                            <td colspan="2"></td>
+                            <td class="completed" colspan="3">MR</td>
+                            <td colspan="9"></td>
+                        </tr>
+
+                        <tr>
+                            <th class="sub">3D Printing Parts</th>
+                            <td colspan="2"></td>
+                            <td class="ongoing" colspan="4">NK</td>
+                            <td colspan="8"></td>
+                        </tr>
+
+                        <tr>
+                            <th class="main">6. Integration Testing</th>
+                            <td colspan="14"></td>
+                        </tr>
+
+                        <tr>
+                            <th class="sub">Test and prepare for demo</th>
+                            <td colspan="5"></td>
+                            <td class="ongoing" colspan="1">RY, NK, MR</td>
+                            <td colspan="8"></td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
 
         </section>
-        
-    </body>
+        <p class="top-link"><a href="#page_top">Go to the top of this page</a></p>
+    </main>
+</body>
 
-    <footer>
-        <p><a href="#page_top">Go to the top of this page</a></p>
-        <p>Copyright &copy; 2026 Matvey Regentov</p>
-    </footer>
+<footer>
+    <p>Copyright &copy; 2026 Matvey Regentov & Nick Kapuka</p>
+</footer>
+
 </html>

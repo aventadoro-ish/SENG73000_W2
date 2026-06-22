@@ -1,0 +1,228 @@
+/* variables for colouring */
+:root {
+    --coral: #FCA47C;
+    --cyan: #23CED9;
+    --yellow: #F9DB79;
+    --palm: #A1CCA6;
+    --deep-blue: #097C87;
+    --orange: #FF9C5F;
+    --ember: #EB4203;
+    --cream: #FCEFC3;
+    --aqua: #00CEC8;
+    --ink: #17383b;
+    --card-bg: rgba(255, 255, 255, 0.88);
+    --shadow: rgba(9, 124, 135, 0.18);
+}
+
+/* general page styling */
+
+body {
+    margin: 0;
+    font-family: Georgia, serif;
+    font-size: 18px;
+    line-height: 1.55;
+    color: var(--ink);
+    background: linear-gradient(135deg, var(--cream), #dff4e4, #c8f2ef);
+    min-height: 100vh;
+}
+
+a {
+    color: var(--deep-blue);
+    text-decoration: none;
+}
+
+a:hover {
+    color: var(--ember);
+    text-decoration: underline;
+}
+
+p {
+    margin-top: 0;
+}
+
+/* nav bar */
+
+.site-header {
+    background-color: var(--deep-blue);
+    border-bottom: 4px solid var(--yellow);
+}
+
+.navbar {
+    display: flex;
+    align-items: center;
+    padding: 0 24px;
+    min-height: 56px;
+}
+
+.nav-brand {
+    color: white;
+    font-weight: bold;
+    font-size: 1.1rem;
+    margin-right: 30px;
+}
+
+.nav-links {
+    display: flex;
+    gap: 6px;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+.nav-links li a {
+    display: block;
+    padding: 16px 14px;
+    color: #e8ffff;
+    font-size: 0.95rem;
+}
+
+.nav-links li a:hover,
+.nav-links li a.active {
+    color: var(--ink);
+    background-color: var(--yellow);
+    text-decoration: none;
+}
+
+.nav-right {
+    margin-left: auto;
+}
+
+/* main intro page layout */
+
+.page-wrapper {
+    width: 90%;
+    max-width: 1200px;
+    margin: 32px auto;
+}
+
+/* intro to about page */
+
+.intro-section {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 28px;
+    align-items: center;
+    padding: 36px;
+    background-color: var(--card-bg);
+    border-radius: 16px;
+    border-top: 6px solid var(--orange);
+    box-shadow: 0 6px 18px var(--shadow);
+}
+
+.section-label {
+    margin-bottom: 8px;
+    color: var(--deep-blue);
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.intro-section h1 {
+    margin-top: 0;
+    margin-bottom: 16px;
+    font-size: 2.35rem;
+    font-weight: bold;
+    color: var(--deep-blue);
+}
+
+.intro-description {
+    max-width: 720px;
+    font-size: 1.05rem;
+}
+
+.button-row {
+    margin-top: 24px;
+}
+
+.button {
+    display: inline-block;
+    padding: 10px 18px;
+    margin-right: 10px;
+    border-radius: 8px;
+    font-weight: bold;
+    transition: 0.25s;
+}
+
+.primary-button {
+    color: white;
+    background-color: var(--deep-blue);
+}
+
+.primary-button:hover {
+    color: var(--ink);
+    background-color: var(--yellow);
+    box-shadow: 0 0 14px rgba(249, 219, 121, 0.85);
+    text-decoration: none;
+}
+
+.secondary-button {
+    color: var(--deep-blue);
+    background-color: #ffffff;
+    border: 1px solid var(--aqua);
+}
+
+.secondary-button:hover {
+    color: var(--ink);
+    background-color: var(--aqua);
+    text-decoration: none;
+}
+
+.summary-card {
+    padding: 22px;
+    background-color: #fff8df;
+    border-left: 5px solid var(--aqua);
+    border-radius: 12px;
+}
+
+.summary-card h2 {
+    margin-top: 0;
+    color: var(--deep-blue);
+}
+
+
+/* footer and dates */
+
+.date-line,
+.top-link {
+    margin-top: 22px;
+}
+
+.site-footer {
+    padding: 18px;
+    color: white;
+    text-align: center;
+    background-color: var(--deep-blue);
+    border-top: 4px solid var(--yellow);
+}
+
+.site-footer p {
+    margin: 0;
+}
+
+/* variable layout
+
+@media screen and (max-width: 850px) {
+    .navbar {
+        flex-wrap: wrap;
+        padding-bottom: 8px;
+    }
+
+    .nav-links {
+        flex-wrap: wrap;
+    }
+
+    .nav-right {
+        margin-left: 0;
+    }
+
+    .intro-section,
+    .card-grid,
+    .login-section {
+        grid-template-columns: 1fr;
+    }
+
+    .intro-section h1 {
+        font-size: 2rem;
+    }
+}
+*/

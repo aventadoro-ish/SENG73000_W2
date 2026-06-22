@@ -1,0 +1,146 @@
+/* project details (revamped page) styling */
+
+.project-details-intro {
+    grid-template-columns: 2fr 0.9fr;
+}
+
+.details-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 22px;
+    margin-top: 28px;
+}
+
+.project-section {
+    margin-top: 28px;
+    padding: 28px;
+    background-color: var(--card-bg);
+    border-radius: 14px;
+    border-left: 5px solid var(--aqua);
+    box-shadow: 0 4px 14px var(--shadow);
+}
+
+.project-section h2 {
+    margin-top: 0;
+    color: var(--deep-blue);
+}
+
+.project-section p,
+.diagram-text p,
+.milestone-text p,
+.info-card p {
+    text-align: left;
+    text-indent: 0;
+    line-height: 1.55;
+}
+
+.two-column-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 28px;
+}
+
+.styled-list {
+    padding-left: 22px;
+    line-height: 1.65;
+}
+
+.styled-list li {
+    margin-bottom: 8px;
+    text-align: left;
+}
+
+.diagram-section {
+    display: grid;
+    grid-template-columns: 0.9fr 1.1fr;
+    gap: 24px;
+    align-items: center;
+    margin-top: 28px;
+    padding: 28px;
+    background-color: var(--card-bg);
+    border-radius: 14px;
+    border-top: 5px solid var(--orange);
+    box-shadow: 0 4px 14px var(--shadow);
+}
+
+.reverse-layout {
+    grid-template-columns: 1.1fr 0.9fr;
+}
+
+.diagram-text h2 {
+    margin-top: 0;
+    color: var(--deep-blue);
+}
+
+.diagram-card {
+    margin: 0;
+}
+
+.diagram-card img {
+    display: block;
+    width: 100%;
+    max-height: 420px;
+    object-fit: contain;
+    background-color: #fff8df;
+    border-radius: 12px;
+    border: 3px solid rgba(0, 206, 200, 0.35);
+}
+
+.diagram-card figcaption {
+    margin-top: 10px;
+    padding: 10px 12px;
+    font-size: 0.95rem;
+    text-align: center;
+    background-color: #fff8df;
+    border-radius: 8px;
+}
+
+.milestone-section {
+    display: grid;
+    grid-template-columns: 0.85fr 1.15fr;
+    gap: 24px;
+    align-items: center;
+    margin-top: 28px;
+    padding: 28px;
+    background-color: var(--card-bg);
+    border-radius: 14px;
+    border-left: 5px solid var(--orange);
+    box-shadow: 0 4px 14px var(--shadow);
+}
+
+.milestone-text h2 {
+    margin-top: 0;
+    color: var(--deep-blue);
+}
+
+.table-card {
+    overflow-x: auto;
+}
+
+.milestone-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #fff8df;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.milestone-table th,
+.milestone-table td {
+    padding: 14px 16px;
+    text-align: left;
+    border-bottom: 1px solid rgba(9, 124, 135, 0.18);
+}
+
+.milestone-table th {
+    color: white;
+    background-color: var(--deep-blue);
+}
+
+.milestone-table tr:last-child td {
+    border-bottom: none;
+}
+
+.milestone-table tr:hover td {
+    background-color: rgba(249, 219, 121, 0.35);
+}

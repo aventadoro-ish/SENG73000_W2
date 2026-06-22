@@ -1,0 +1,174 @@
+/* project plan page styling */
+
+.project-plan-intro {
+    grid-template-columns: 2fr 0.9fr;
+}
+
+.references-section,
+.legend-section,
+.gantt-section {
+    margin-top: 28px;
+    padding: 28px;
+    background-color: var(--card-bg);
+    border-radius: 14px;
+    box-shadow: 0 4px 14px var(--shadow);
+}
+
+.references-section {
+    border-left: 5px solid var(--aqua);
+}
+
+.legend-section {
+    border-left: 5px solid var(--orange);
+}
+
+.gantt-section {
+    border-top: 5px solid var(--orange);
+}
+
+.references-section h2,
+.legend-section h2,
+.gantt-heading h2 {
+    margin-top: 0;
+    color: var(--deep-blue);
+}
+
+.references-text p,
+.gantt-heading p,
+.reference-card p {
+    text-align: left;
+    text-indent: 0;
+    line-height: 1.55;
+}
+
+.reference-card-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+    margin-top: 20px;
+}
+
+.reference-card {
+    display: block;
+    padding: 18px;
+    color: var(--ink);
+    background-color: #fff8df;
+    border-radius: 12px;
+    border-top: 5px solid var(--palm);
+    box-shadow: 0 3px 10px var(--shadow);
+    transition: 0.25s;
+}
+
+.reference-card:hover {
+    color: var(--ink);
+    text-decoration: none;
+    transform: translateY(-3px);
+    border-top-color: var(--yellow);
+    box-shadow: 0 0 16px rgba(249, 219, 121, 0.55);
+}
+
+.reference-card h3 {
+    margin-top: 0;
+    color: var(--deep-blue);
+}
+
+.legend-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-top: 18px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 12px;
+    background-color: #fff8df;
+    border-radius: 999px;
+    font-weight: bold;
+}
+
+.legend-box {
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    border-radius: 5px;
+    border: 1px solid rgba(9, 124, 135, 0.22);
+}
+
+.completed-box {
+    background-color: var(--palm);
+}
+
+.ongoing-box {
+    background-color: var(--aqua);
+}
+
+.behind-box {
+    background-color: var(--coral);
+}
+
+.omitted-box {
+    background-color: #b7b7b7;
+}
+
+.ommited-completed {
+    background: repeating-linear-gradient(135deg,
+            #b7b7b7,
+            #b7b7b7 8px,
+            var(--palm) 8px,
+            var(--palm) 16px);
+}
+
+.gantt-heading {
+    display: grid;
+    grid-template-columns: 0.7fr 1.3fr;
+    gap: 24px;
+    align-items: end;
+    margin-bottom: 20px;
+}
+
+.gantt-table-wrapper {
+    overflow-x: auto;
+    border-radius: 12px;
+    border: 1px solid rgba(9, 124, 135, 0.22);
+    box-shadow: 0 4px 14px var(--shadow);
+}
+
+/* medium screens */
+@media screen and (min-width: 851px) and (max-width: 1150px) {
+    .reference-card-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .gantt-heading {
+        grid-template-columns: 1fr;
+        gap: 10px;
+        align-items: start;
+    }
+}
+
+/* small screens */
+@media screen and (max-width: 850px) {
+
+    .project-plan-intro,
+    .gantt-heading {
+        grid-template-columns: 1fr;
+    }
+
+    .gantt-heading {
+        gap: 10px;
+        align-items: start;
+    }
+
+    .references-section,
+    .legend-section,
+    .gantt-section {
+        padding: 22px;
+    }
+
+    .reference-card-grid {
+        grid-template-columns: 1fr;
+    }
+}

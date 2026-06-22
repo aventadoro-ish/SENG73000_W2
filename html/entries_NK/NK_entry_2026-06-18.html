@@ -1,54 +1,164 @@
 <!DOCTYPE html>
-
 <!--
 Author: Nick Kapuka
 -->
 
 <html lang="en">
-    <head>
-        <title>NK's Logbook</title>
-		<meta charset="UTF-8">
-        <meta name="description">
-		<link rel="stylesheet" href="../css/logbook_person.css">
-		<link rel="icon" href="../../media/icons/LiF_icon.ico" type="image/x-icon">
-        <link rel="stylesheet" href="../../css/master.css">
-        <link rel="codeformatting" href="../../css/code_formatting.css">
-		
-		<!--[if lt IE 9]>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js"></script>
-		<![endif]-->
-		
-		<meta name="author" content="Nick Kapuka">
-		<meta name="description" content="This is a daily logbook entry page for Nick Kapuka as part of Engineering Project VI, ESE at Conestoga College.">
-		<meta name="robots" content="index, follow">
-		<meta http-equiv="Pragma" content="no-cache">
-    </head>
 
-    <body>
-		<aside><iframe src="../links.html" title="Navigation"></iframe></aside>
-		<section id="page_top">
-			<h1>Logbook Entry, 2026-06-12 by Nick Kapuka</h1>
-			<h2>Summary of work performed</h2>
-			<p class="logbook_summary">Implemented toggle switch code, made a new CSS file for code formatting and implemented prism JS to add code highlighting (used in 2026-06-17)</p>
-            <a href="../logbook_NK.html">My logbook cover page</a>
+<head>
+	<title>NK Logbook Entry - 2026-06-17</title>
+	<meta charset="UTF-8">
+	<meta name="author" content="Nick Kapuka">
+	<meta name="description" content="NK Logbook Entry">
+	<meta name="robots" content="index, follow">
+	<meta http-equiv="Pragma" content="no-cache">
+
+	<link rel="icon" href="../../media/icons/LiF_icon.ico" type="image/x-icon">
+
+	<!-- shared website styling -->
+	<link rel="stylesheet" href="../../css/base.css">
+
+	<!-- logbook entry page styling -->
+	<link rel="stylesheet" href="../../css/logbook_entry.css">
+
+	<!-- Prism syntax highlighting theme -->
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css">
+	<link rel="stylesheet" href="../../css/code_formatting.css">
+
+</head>
+
+<body>
+	<!-- Nav bar loaded by JavaScript -->
+	<div id="navbar-placeholder" data-root="../../"></div>
+	<script src="../../js/navbar.js"></script>
+
+	<main class="page-wrapper">
+
+		<section class="intro-section logbook-entry-intro" id="page_top">
+			<div class="intro-text">
+				<p class="section-label">Daily Logbook Entry</p>
+				<h1>Logbook Entry, 2026-06-17 by Nick Kapuka</h1>
+
+				<p class="intro-description">Improved LED and pushbutton logic, finished the CAN bus cable and tested it
+					on the scope</p>
+
+				<div class="button-row">
+					<a href="../logbook_NK.html" class="button secondary-button">My Logbook Cover Page</a>
+					<a href="#log" class="button primary-button">Jump to Entry</a>
+				</div>
+			</div>
+
+			<aside class="summary-card">
+				<h2>Entry Snapshot</h2>
+				<p><b>Date:</b> 2026-06-18</p>
+				<p><b>Author:</b> Nick Kapuka</p>
+				<p><b>Focus:</b>Toggle Switch code and Prism JS for code formatting</p>
+			</aside>
 		</section>
-		
-		<section id="log">
-            <h2>Received finished STM shields from Matvey and tested them</h2>
-            <p>- ensured all the pushbuttons (PBs) were functional, and that the LED logic worked as well</p>
-			<p>- next, CAN transmit had to be tested on all shields, and for this, the code was modified to support fast flashing; see below:</p>
 
-		<section id="log">
+		<section class="logbook-entry-content" id="log">
+			<h2>Toggle switch code implemented:</h2>
+			<p>Implemented the function seen below for tthe toggle switch.</p>
 
-            <h2></h2>
+			<pre class="code-block language-c"><code class="language-c">
+// function for door switch on car controller
+void doorSwitch(void){
+
+// only run the code if it's the CC_BOARD and not Floor controllers
+#if SELECTED_BOARD == CC_BOARD
+
+	// set a helper variable to 0. Use static to keep it between function calls.
+	static GPIO_PinState lastSwitchState = GPIO_PIN_RESET;
+	// grab current switch state
+	GPIO_PinState currentSwitchState = HAL_GPIO_ReadPin(CC_Switch_GPIO_Port, CC_Switch_Pin);
+
+	// if there was a change (switch flipped)
+	if(currentSwitchState != lastSwitchState)
+	{
+		// reset the variable
+		lastSwitchState = currentSwitchState;
+
+		// if the switch is ON
+		if(currentSwitchState == GPIO_PIN_SET)
+		{
+			// switch is ON = doors open = no movement allowed. Send CAN message of 0b100 or 0x04
+			CAN_ByteTransmit(MY_ID, CAB_BLOCK);
+			LED_BlinkStart(&greenLedTimer, 200);
+		}
+	}
+#endif
+}
+			</code></pre>
+
+			<p>It first checked what board it was running on (SELECTED_BOARD) since running it on a floor controller
+				would be a waste of resources (it doesn't have a toggle switch lol).
+
+				After, it grabbed the current GPIO state and stored it in a temporary variable before comparing if it
+				was toggle (current vs last state logic).
+
+				Lastly, if the switch was on, it would call <code class="language-c">CAN_ByteTransmit()</code> to send
+				the data out. This message had the message ID of 0x200 was it was the car controller sending it out
+				(refer to <a href="../CAN_protocol.html">CAN protocol</a>). The data bit it sent was 0b100 or just four.
+				This is because 1-3 were reserved for floor requests, and the 0th bit was used to show the toggle switch
+				being off.
+			</p>
+		</section>
+
+		<section class="logbook-entry-content" id="log">
+			<h2>Prism JS added for code formatting</h2>
+			<p>Prism JS is a JS script that highlights code based off of the language used. In the above example, it was
+				used to colour the function and format it into a code-block. I believe there's a way to refine it or
+				make it our own using various .CSS classes, but that will be left for phase 2.
+			</p>
+
+			<p>Here is how the script is called in the head of HTML files:</p>
+			<pre class="code-block language-markup"><code class="language-markup">
+&lt;link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css"&gt;
+			</code></pre>
+
+			<p>Then, to call the script to add the function of it, it is imported as such:</p>
+			<pre class="code-block language-markup"><code class="language-markup">
+&lt;!-- call the main JS library: --&gt;
+&lt;script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"&gt;&lt;/script&gt;
+
+&lt;!-- language auto-loader --&gt;
+&lt;script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"&gt;&lt;/script&gt;
+
+&lt;!-- alternatively and as a backup, I load C manually as well since autoload gave me some small issues with formatting. --&gt;
+&lt;script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"&gt;&lt;/script&gt;		
+			</code></pre>
 
 
-        </section>
-		
-		<footer>
-			<p><a href="#page_top">Go to the top of this page</a></p>
-			<p>Copyright &copy; Nick Kapuka</p>
-		</footer>
-		
-    </body>
+			<p>Lastly, to use it within the HTML file, it can be done like so (using C for this example):</p>
+			<pre class="code-block language-markup"><code class="language-markup">
+&lt;pre class="code-block language-c"&gt;&lt;code class="language-c"&gt;&lt;/code&gt;
+&lt; !-- code pasted in here --&gt;
+if(something) {
+	// do something
+}
+&lt;/code&gt;&lt;pre&gt;
+		</code></pre>
+		</section>
+
+
+
+		<p class="top-link">
+			<a href="#page_top">Go to the top of this page</a>
+		</p>
+
+	</main>
+
+	<footer class="site-footer">
+		<p>Copyright &copy; Nick Kapuka</p>
+	</footer>
+
+	<!-- Prism.js script for code formatting -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+	<!-- Import C language -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
+	<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-html.min.js"></script> -->
+	<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+
+</body>
+
 </html>
