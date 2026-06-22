@@ -12,7 +12,7 @@ responsible for linking their logbook entries to their personal logbook cover
 page. See ./logbook_person_template.html for more info.
 Template usage checklist:
 - [x] replace "Matvey Regentov" with your name
-- [ ] replace "2026-06-16" with the date of the logbook entry
+- [ ] replace "2026-06-17" with the date of the logbook entry
 - [ ] write log in section with id "log"
 - [ ] add link to personal logbook cover by replacing "../html/logbook_person_template.html" with actual path
 - [ ] replace xx in head/title tag with your initials
@@ -35,16 +35,88 @@ Template usage checklist:
     <body>
         <aside><iframe src="../links.html" title="Navigation"></iframe></aside>
 		<section id="page_top">
-			<h1>Logbook Entry, 2026-06-16 by Matvey Regentov</h1>
+			<h1>Logbook Entry, 2026-06-17 by Matvey Regentov</h1>
 			<h2>Summary of work performed</h2>
 			<p class="logbook_summary">
-                
+                Communication about the state of SC FSM, EC-SC communication test, CAN bus cable test
             </p>
             <a href="../logbook_MR.html">My logbook cover page</a>
 		</section>
 		
 		<section id="log">
+			<h2>The state of SC FSM</h2>
+			<p>
+				Today, Nick and I discovered that development of FSM for SC has 
+				not been even started. This created a lot of stress, as Rita 
+				explicity said that Raspberry Pi code is "completed and tested". 
+				Since, SC FSM is a crucial part of elevator operation, I asked 
+				Rita to focus all her efforts on catching up with this task. As 
+				a contingency plan, Nick and I prepared to develop the FSM 
+				ourselves, if Rita is unable to deliver by Thursday/Friday.
+			</p>
 
+			<h2>EC Testing</h2>
+			<p>
+				I implemented full elevator protocol for EC yesterday 
+				(<a href="MR_entry_2026-06-16.html">2026-06-16</a>). Today, I 
+				am testing how it actually interacts with SC. To do this, Rita 
+				showed me how to use the program she copied from course shell 
+				that runs on RPi and allows to manually send messages to 
+				various controller in the system. <br>
+				I used a DB9 breakout cable to monitor message on the lab oscilloscope in addition to serial interface implemented in EC code. <br>
+				Initially, there were bugs in the EC configuration:
+				<ul>
+					<li>Incorrect Data Length Code setting</li>
+					<li>Errors in EC FSM</li>
+				</ul>
+
+				<figure>
+					<img class="img_med" src="../../media/images/EC_response_to_SC_initial.jpg", alt="Oscilloscope capture showing initial testing of SC and EC communication">
+					<figcaption>Oscilloscope capture showing initial testing of SC and EC communication</figcaption>
+				</figure>
+
+				However, these issues were resolved. Unfortunately, I was unable to record a scope capture showing SC packet and EC response to it.
+
+				<figure>
+					<img class="img_med" src="../../media/images/EC_SC_Comms_Scope.PNG", alt="Oscilloscope capture showing EC heartbeat packet">
+					<figcaption>Oscilloscope capture showing EC heartbeat packet</figcaption>
+				</figure>
+
+				However, the following behavior was tested:
+				<ul>
+					<li>EC sends a frame informing SC that homing is done, EC enters idle state and awaits commands</li>
+					<li>SC (manually) sends a floor request</li>
+					<li>EC enters moving state and periodically sends heartbeat frames with floor field set to 0 (indicating move state of EC)</li>
+					<li>At the end of move, EC sends a frame informing all nodes of the current floor position and indicating the move is completed</li>
+					<li>EC enters idle state again</li>
+				</ul>
+				
+				So, overall EC CAN bus logic and FSM are working.
+			</p>
+
+			<h2>Tested Nick's CAN bus cable</h2>
+			<p>
+				Nick manufactured a CAN bus cable connecting all controller nodes 
+				together. So, I re-soldered terminating 120 Ohm resistors to ends 
+				of the bus in the new configuration. CC and FC1 received the 
+				terminating resistors. During initial testing, the cable was 
+				found to be faulty, so I used a lab oscilloscope to check the 
+				signal integrity.
+				<figure>
+					<img class="img_lrg" src="../../media/images/Scope_CAN_Bus_Signal_2_nodes_capture.PNG" alt="CAN signal before the new cable was installed">
+					<figcaption>CAN signal before the new cable was installed</figcaption>
+				</figure>
+				
+				<figure>
+					<img class="img_lrg" src="../../media/images/Scope_CAN_Bus_Signal_6_nodes_capture_initial.PNG" alt="CAN signal with new cable installed">
+					<figcaption>CAN signal with new cable installed</figcaption>
+				</figure>
+
+				Nick and I tested the cable with a DMM. Turns out some connectors had open circuit resulting. Nick proceeded to fix the issues and work on the cable overnight.
+			</p>
+
+
+		</section>
 		
 		<footer>
 			<p><a href="#page_top">Go to the top of this page</a></p>

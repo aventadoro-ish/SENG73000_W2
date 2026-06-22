@@ -12,7 +12,7 @@ responsible for linking their logbook entries to their personal logbook cover
 page. See ./logbook_person_template.html for more info.
 Template usage checklist:
 - [x] replace "Matvey Regentov" with your name
-- [ ] replace "2026-06-16" with the date of the logbook entry
+- [ ] replace "2026-06-19" with the date of the logbook entry
 - [ ] write log in section with id "log"
 - [ ] add link to personal logbook cover by replacing "../html/logbook_person_template.html" with actual path
 - [ ] replace xx in head/title tag with your initials
@@ -35,15 +35,110 @@ Template usage checklist:
     <body>
         <aside><iframe src="../links.html" title="Navigation"></iframe></aside>
 		<section id="page_top">
-			<h1>Logbook Entry, 2026-06-16 by Matvey Regentov</h1>
+			<h1>Logbook Entry, 2026-06-19 by Matvey Regentov</h1>
 			<h2>Summary of work performed</h2>
 			<p class="logbook_summary">
-                
+				<ol>
+					<li>Final assembly of the platform for phase 1</li>
+					<li>Soldering door switch</li>
+					<li>Work on SENG73000 assignment</li>
+					<li>Coping after SENG73000 assignment</li>
+				</ol>
             </p>
             <a href="../logbook_MR.html">My logbook cover page</a>
 		</section>
 		
 		<section id="log">
+			<h2>Final assembly of the platform for phase 1</h2>
+			<p>
+				Nick brought final printed parts for phase 1 of the project. 
+				Nick and I worked on replacing the parts and finalizing the 
+				assembly. We found that drag chain catches on FC2 Mini USB 
+				cable/connector on the way down from the upper-most position. 
+				To solve this, we agreed on installing a cardboard panel along 
+				the left side of the elevator to prevent the drag chain from 
+				going out of bounds there.
+			</p>
+
+			<h2>Soldering door switch</h2>
+			<p>
+				I soldered and installed the door switch to the elevator cabin. 
+				The initial plan utilized a 2-pole toggle switch I had left 
+				over from a prior project. I tested the switch as I remembered 
+				that batch wasn't particularly reliable, and some toggle 
+				switched were stuck in a single position. I drew up a 
+				connection diagram for wiring the switch and an indicator LED. 
+			</p>
+			<figure>
+				<img class="img_lrg" src="../../media/images/Schematic_Door_Switch_2-pole.png" alt="Circuit Diagram showing 2-pole toggle switch as the door switch on CC">
+				<figcaption>Circuit Diagram showing 2-pole toggle switch as the door switch on CC</figcaption>
+			</figure>
+
+			<p>
+				However, after soldering and installing the switch, it got stuck 
+				in open position after just 1 toggle. In an attempt to get it 
+				unstuck with pliers, the lever of the switch broke off. Incredible material properties of <i>chineesium</i> were demonstrated again.
+			</p>
+			
+			<figure>
+				<img class="img_med" src="../../media/images/CC_Switch_Broken.jpg" alt="Broken CC door toggle switch">
+				<figcaption>Broken CC door toggle switch</figcaption>
+			</figure>
+
+			<p>
+				Fortunately, Nick had a 1-pole replacement switch on hand. 
+				In order to use this switch, I redrew the circuit diagram and 
+				expanded the mounting hole of the toggle switch mount 
+				(<code>003-007-01-Toggle Switch Mount</code>). 
+			</p>
+
+			<figure>
+				<img class="img_lrg" src="../../media/images/Schematic_Door_Switch_2-and-1-pole.png" alt="Circuit Diagram showing 1-pole toggle switch as the door switch on CC">
+				<figcaption>Circuit Diagram showing 1-pole toggle switch as the door switch on CC</figcaption>
+			</figure>
+
+
+
+			<h2>Work on SENG73000 assignment</h2>
+			<p>
+				Today, our team focused on completing SENG73000 assignment. <br>
+				As part of the assignment, we also recorded a video introducing 
+				our team and the project. This video can be seen on the 
+				<a href="../about.html">About</a> page. It is also attached below:
+				<figure>
+					<video class="img_lrg" controls>
+						<source src="../../media/video/Team-Intro.mp4" alt="Video introducing our team and the project">
+					</video>
+					<figcaption>Video introducing our team and the project</figcaption>
+            	</figure>	
+			</p>
+
+
+			<h2>Coping after SENG73000 assignment</h2>
+			<p>
+				The assignment proved to be quite exhausting. In order to stay sane while doing the assignment, one of the team members proposed going outside and "touching grass". Having pulled an all-nighter that day, we listened to our wise team member.
+				<figure>
+					<img class="img_med" src="../../media/images/TeamRelaxing_2026-06-18_1.jpg" alt="Team members performing a relaxing activity">
+					<figcaption>Team members performing a relaxing activity</figcaption>
+				</figure>
+
+				<figure>
+					<img class="img_med" src="../../media/images/TeamRelaxing_2026-06-18_2.jpg" alt="Team members performing a relaxing activity as seen by another group">
+					<figcaption>Team members performing a relaxing activity, as seen by another group</figcaption>
+				</figure>
+
+				After the assignment, we went to celebrate the end of the week in a local pub. Turns out, a World Cup match was starting just as we arrived.
+
+					<figure>
+					<img class="img_med" src="../../media/images/TeamRelaxing_2026-06-18_3.jpg" alt="Team-building exercise">
+					<figcaption>Team-building exercise</figcaption>
+				</figure>
+
+			</p>
+
+
+
+		</section>
 
 		
 		<footer>

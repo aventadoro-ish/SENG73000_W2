@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+
+<!--
+Author: Matvey Regentov
+Contributors to this page:
+ - Matvey Regentov
+
+About:
+This is a template for a daily logbook entry. This page should be duplicated 
+by each team member when they work on the project. Each team member is 
+responsible for linking their logbook entries to their personal logbook cover 
+page. See ./logbook_person_template.html for more info.
+Template usage checklist:
+- [x] replace "Matvey Regentov" with your name
+- [ ] replace "2026-06-21" with the date of the logbook entry
+- [ ] write log in section with id "log"
+- [ ] add link to personal logbook cover by replacing "../html/logbook_person_template.html" with actual path
+- [ ] replace xx in head/title tag with your initials
+-->
+
+<html lang="en">
+    <head>
+        <title>MR's Logbook</title>
+		<meta charset="UTF-8">
+		<link rel="stylesheet" href="../../css/logbook_person.css">
+		<link rel="stylesheet" href="../../css/master.css">
+		<link rel="icon" href="../../media/icons/LiF_icon.ico" type="image/x-icon">
+		
+		<meta name="author" content="Matvey Regentov">
+		<meta name="description" content="This is a daily logbook entry page for Matvey Regentov as part of Engineering Project VI, ESE at Conestoga College.">
+		<meta name="robots" content="index, follow">
+		<meta http-equiv="Pragma" content="no-cache">
+    </head>
+
+    <body>
+        <aside><iframe src="../links.html" title="Navigation"></iframe></aside>
+		<section id="page_top">
+			<h1>Logbook Entry, 2026-06-21 by Matvey Regentov</h1>
+			<h2>Summary of work performed</h2>
+			<p class="logbook_summary">
+				<ul>
+					<li>Developed a workflow for RPi development</li>
+					<li>Finalized SC FSM for Phase 1 requirements</li>
+					<li>Recorded Phase 1 demo video</li>
+					<li>Communicated with Nick about tasks to finish before the demo</li>
+					<li>Call with Rita about the project (cancelled)</li>
+				</ul>
+            </p>
+            <a href="../logbook_MR.html">My logbook cover page</a>
+		</section>
+		
+		<section id="log">
+			<h2>Developed a workflow for RPi development</h2>
+			<p>
+				After initial attempt at headless development of RPi code on 
+				<a href="MR_entry_2026-06-18.html">2026-06-18</a>, I decided 
+				to improve the workflow. I used VSCode build tasks functionality 
+				to implement automatic transfer an compilation of RPi code 
+				from a PC on the same network. The workflow is documented in 
+				<a href="../../documentation/RPi_Deployment_Setup.md"><code>RPi_Deployment_Setup.md</code></a> 
+				file.
+			</p>
+
+			<h2>Finalized SC FSM for Phase 1 requirements</h2>
+			<p>
+				Since Rita never delivered the version of FSM with support for 
+				CC door toggle switch, I added that functionality to prepare 
+				for the demo tomorrow. The implementation and changes to 
+				physical circuit of the door toggle switch (as described in 
+				<a href="MR_entry_2026-06-19.html">2026-06-19</a> logbook entry), 
+				required me to also modify code for CC. <br>
+				The door toggle switch required a change to the elevator CAN bus communication protocol, which previously wasn't properly documented. I created a table defining this protocol.
+				
+				<meta http-equiv="Content-Type" content="text/html; charset=utf-8"><link type="text/css" rel="stylesheet" href="resources/sheet.css" >
+				<style type="text/css">.ritz .waffle a { color: inherit; }.ritz .waffle .s4{background-color:#ffffff;text-align:left;color:#000000;font-family:Arial;font-size:10pt;vertical-align:bottom;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s5{background-color:#ffffff;text-align:left;color:#000000;font-family:Arial;font-size:10pt;vertical-align:top;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s3{background-color:#efefef;text-align:left;color:#000000;font-family:Arial;font-size:10pt;vertical-align:bottom;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s0{background-color:#d9d9d9;text-align:center;font-weight:bold;color:#000000;font-family:Arial;font-size:10pt;vertical-align:middle;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s1{background-color:#ffffff;text-align:center;color:#000000;font-family:Arial;font-size:10pt;vertical-align:bottom;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s6{background-color:#ffffff;text-align:left;color:#000000;font-family:Arial;font-size:10pt;vertical-align:top;white-space:normal;overflow:hidden;word-wrap:break-word;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s2{background-color:#ffffff;text-align:right;color:#000000;font-family:Arial;font-size:10pt;vertical-align:bottom;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}</style>
+				<div class="ritz grid-container" dir="ltr">
+					<table class="waffle" cellspacing="0" cellpadding="0">
+						<thead>
+							<tr style="height: 20px">
+								<td class="s0" dir="ltr" rowspan="2">CAN ID<br>[Hex]</td>
+								<td class="s0" dir="ltr" rowspan="2">Transmitter</td>
+								<td class="s0" dir="ltr" rowspan="2">Recipient(s)</td>
+								<td class="s0" dir="ltr" rowspan="2">DLC</td>
+								<td class="s0" dir="ltr" colspan="8">Byte 0</td>
+							</tr>
+						</thead>
+						<tbody>
+						<tr style="height: 20px">
+							<td class="s0" dir="ltr">7</td>
+							<td class="s0" dir="ltr">6</td>
+							<td class="s0" dir="ltr">5</td>
+							<td class="s0" dir="ltr">4</td>
+							<td class="s0" dir="ltr">3</td>
+							<td class="s0" dir="ltr">2</td>
+							<td class="s0" dir="ltr">1</td>
+							<td class="s0" dir="ltr">0</td>
+						</tr>
+						<tr style="height: 20px">
+							<td class="s1" dir="ltr">0x100</td>
+							<td class="s1" dir="ltr">SC</td>
+							<td class="s1" dir="ltr">EC</td>
+							<td class="s2" dir="ltr">1</td>
+							<td class="s3"></td>
+							<td class="s3" dir="ltr"></td>
+							<td class="s3"></td>
+							<td class="s3"></td>
+							<td class="s3"></td>
+							<td class="s4" dir="ltr">SC_EN</td>
+							<td class="s4" dir="ltr" colspan="2">SC_FloorReq</td>
+						</tr>
+						<tr style="height: 20px">
+							<td class="s1" dir="ltr">0x101</td>
+							<td class="s1" dir="ltr">EC</td>
+							<td class="s1" dir="ltr">ALL</td>
+							<td class="s2" dir="ltr">1</td>
+							<td class="s3"></td>
+							<td class="s3"></td>
+							<td class="s3"></td>
+							<td class="s3"></td>
+							<td class="s3"></td>
+							<td class="s4" dir="ltr">EC_EN</td>
+							<td class="s4" dir="ltr" colspan="2">EC_Pos</td>
+						</tr>
+						<tr style="height: 20px">
+							<td class="s1" dir="ltr">0x200</td>
+							<td class="s1" dir="ltr">CC</td>
+							<td class="s1" dir="ltr">SC</td>
+							<td class="s2" dir="ltr">1</td>
+							<td class="s3"></td>
+							<td class="s3"></td>
+							<td class="s3"></td>
+							<td class="s3"></td>
+							<td class="s3"></td>
+							<td class="s4" dir="ltr">CC_EN</td>
+							<td class="s4" dir="ltr" colspan="2">CC_FloorReq</td>
+						</tr>
+						<tr style="height: 20px">
+							<td class="s1" dir="ltr">0x201</td>
+							<td class="s1" dir="ltr">F1</td>
+							<td class="s1" dir="ltr">SC</td>
+							<td class="s2" dir="ltr">1</td>
+							<td class="s3"></td>
+							<td class="s3"></td>
+							<td class="s3" dir="ltr"></td>
+							<td class="s3"></td>
+							<td class="s3"></td>
+							<td class="s3"></td>
+							<td class="s3"></td>
+							<td class="s4" dir="ltr">F1_Req</td>
+						</tr>
+						<tr style="height: 20px">
+							<td class="s1" dir="ltr">0x202</td>
+							<td class="s1" dir="ltr">F2</td>
+							<td class="s1" dir="ltr">SC</td>
+							<td class="s2" dir="ltr">1</td>
+							<td class="s3"></td>
+							<td class="s3"></td>
+							<td class="s3"></td>
+							<td class="s3"></td>
+							<td class="s3"></td>
+							<td class="s3"></td>
+							<td class="s3"></td>
+							<td class="s4" dir="ltr">F2_Req</td>
+						</tr>
+						<tr style="height: 20px">
+							<td class="s1" dir="ltr">0x203</td>
+							<td class="s1" dir="ltr">F3</td>
+							<td class="s1" dir="ltr">SC</td>
+							<td class="s2" dir="ltr">1</td>
+							<td class="s3"></td>
+							<td class="s3"></td>
+							<td class="s3"></td>
+							<td class="s3"></td>
+							<td class="s3"></td>
+							<td class="s3"></td>
+							<td class="s3"></td>
+							<td class="s4" dir="ltr">F3_Req</td>
+						</tr>
+						<tr style="height: 20px">
+							<td class="s0" dir="ltr">Fields</td>
+							<td class="s0" dir="ltr" colspan="2">Description</td>
+							<td class="s0" dir="ltr" colspan="6">Value</td>
+							<td class="s0" dir="ltr"></td>
+							<td class="s0" dir="ltr"></td>
+							<td class="s0" dir="ltr"></td>
+						</tr>
+						<tr style="height: 20px">
+							<td class="s5">SC_EN</td>
+							<td class="s6" dir="ltr" colspan="2">Supervisory Controller Enable</td>
+							<td class="s4" dir="ltr" colspan="9">0 - disabled<br>1 - enabled</td>
+						</tr>
+							<tr style="height: 20px">
+							<td class="s5">SC_FloorReq</td>
+							<td class="s6" dir="ltr" colspan="2">SC request to EC to move the elevator cabin to a given floor</td>
+							<td class="s4" dir="ltr" colspan="9">0 - INVALID<br>1-3 - floors 1-3</td>
+						</tr>
+							<tr style="height: 20px">
+							<td class="s5">EC_EN</td>
+							<td class="s6" dir="ltr" colspan="2">Elevator Controller Enable</td>
+							<td class="s4" dir="ltr" colspan="9">0 - disabled<br>1 - enabled</td>
+						</tr>
+							<tr style="height: 20px">
+							<td class="s5">EC_Pos</td>
+							<td class="s6" dir="ltr" colspan="2">EC reports current position of the elevator cabin</td>
+							<td class="s4" dir="ltr" colspan="9">0 - moving<br>1-3 - stopped at floor 1-3</td>
+						</tr>
+							<tr style="height: 20px">
+							<td class="s5">CC_EN</td>
+							<td class="s6" dir="ltr" colspan="2">Car Controller Enable. Informs SC if door is closed (enable) or open (disable)</td>
+							<td class="s4" dir="ltr" colspan="9">0 - door is open, and cabin MUST NOT be moved<br>1 - door is closed, and cabin may be moved</td>
+						</tr>
+						<tr style="height: 20px">
+							<td class="s5">CC_FloorReq</td>
+							<td class="s6" dir="ltr" colspan="2">CC request to SC to move elevator cabin to a certain floor</td>
+							<td class="s4" dir="ltr" colspan="9">0 - no request<br>1-3 - floors 1-3</td>
+						</tr>
+							<tr style="height: 20px">
+							<td class="s5">F1_Req</td>
+							<td class="s6" dir="ltr" colspan="2">Floor Controller requesting the elevator cabin to floor 1</td>
+							<td class="s4" dir="ltr" colspan="9">0 - INVALID<br>1 - request cabin to this floor</td>
+						</tr>
+							<tr style="height: 20px">
+							<td class="s5">F2_Req</td>
+							<td class="s6" dir="ltr" colspan="2">Floor Controller requesting the elevator cabin to floor 2</td>
+							<td class="s4" dir="ltr" colspan="9">0 - INVALID<br>1 - request cabin to this floor</td>
+						</tr>
+							<tr style="height: 20px">
+							<td class="s5">F3_Req</td>
+							<td class="s6" dir="ltr" colspan="2">Floor Controller requesting the elevator cabin to floor 3</td>
+							<td class="s4" dir="ltr" colspan="9">0 - INVALID<br>1 - request cabin to this floor</td>
+						</tr>
+						</tbody>
+					</table>
+				</div>
+
+				This table is also available on <a href="../CAN_protocol.html">CAN Protocol</a> page.
+				
+			</p>
+
+
+			<h2>Recorded Phase 1 demo video</h2>
+			<p>
+				I shot and edited the Phase 1 demo video showcasing:
+				<ul>
+					<li>System-wide CAN communication</li>
+					<li>SC and EC console outputs demonstrating CAN frame filtering on both controllers</li>
+					<li>Door toggle switch as a safety measure</li>
+					<li>Elevator moving up and down to the requested floor</li>
+					<li>
+						Full operation sequence
+						<ol>
+							<li>FCx requests the cabin to a floor x</li>
+							<li>SC receiving the request and waiting until CC door is closed</li>
+							<li>CC sending door closed bit</li>
+							<li>SC issuing command to EC to move the cabin</li>
+							<li>EC informs all nodes about cabin moving</li>
+							<li>EC informing all nods about cabin reaching the requested floor</li>
+							<li>CC "opening" door and informing SC that doors are open</li>
+							<li>SC blocking all floor requests until CC sends doors closed frame</li>
+							<li>CC requesting a floor with doors closed</li>
+							<li>SC issuing command to EC to move the cabin</li>
+						</ol>
+					</li>
+					<li>Floor request queuing and dequeuing</li>
+				</ul>
+
+				<figure>
+					<video class="img_lrg" controls>
+						<source src="../../media/video/LiF_Phase1_Demo Export.mp4" alt="LiF - Phase 1 Demonstration Video">
+					</video>
+					<figcaption>LiF - Phase 1 Demonstration Video</figcaption>
+            	</figure>
+			</p>
+
+
+			<h2>Communicated with Nick about tasks to finish before the demo</h2>
+			<p>
+				Nick stopped by after his shift to get ice cream and talk about project. We outlined what was done, and what needs to be prepared for Monday demonstration.
+			</p>
+
+
+			<h2>Call with Rita about the project (cancelled)</h2>
+			<p>
+				Rita asked if I have time for a call about the project earlier today. I confirmed and waited for a call all day, but she never called me.
+			</p>
+
+
+
+		</section>
+
+		
+		<footer>
+			<p><a href="#page_top">Go to the top of this page</a></p>
+			<p>Copyright &copy Matvey Regentov</p>
+		</footer>
+		
+    </body>
+</html>

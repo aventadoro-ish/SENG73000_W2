@@ -78,7 +78,29 @@ Template usage checklist:
 				Additionally, to satisfy the professor's requirements, I modelled a toggle switch mount that simulates the elevator door. It has room for a tumbler switch and a status LED, which indicates if the door is open or not.
 			</p>
 
-			
+			<figure>
+				<img class="img_med" src="../../media/images/CAD_Cabin_with_payload_and_switch_closeup.png", alt="CAD Close-up render of cabin with payload and door toggle switch">
+				<figcaption>CAD Close-up render of cabin with payload and door toggle switch</figcaption>
+			</figure>
+
+			<h2>EC CAN bus logic and FSM</h2>
+			<p>
+				I implemented full EC CAN bus logic and FSM. Unlike previously, when I simply replied to any packet with another packet, this implementation handles all necessary interactions according to the set protocol:
+				<ul>
+					<li>Sends periodic heartbeat frames with status and current floor position information</li>
+					<li>Handles enable/disable commands from SC</li>
+					<li>Enters enabled state after initialization and homing</li>
+					<li>Moves cabin to the requested floor</li>
+				</ul>
+
+				Below is a state diagram which uses pseudo-code and <code>LiF-CAN</code> and <code>LiF-Motor</code> module APIs.
+				<figure>
+					<img src="../../media/images/EC_FSM_state_diagram.png" class="img_lrg" alt="State Diagram of EC FSM">
+					<figcaption>State Diagram of EC FSM</figcaption>
+				</figure>
+
+				This implementation will be tested tomorrow in the lab with Rita's SC FSM.
+			</p>
 
         <section id="log">
 

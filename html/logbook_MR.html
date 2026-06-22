@@ -4,24 +4,6 @@
 Author: Matvey Regentov
 Contributors to this page:
  - Matvey Regentov
-
-About:
-This is a template for a personal logbook "cover". This page should be duplicated 
-by each team member. Each team member is responsible for linking their logbook 
-entries to this "cover" page. See ./logbook_entry_template.html for more info.
-Template useage checklist:
-- [x] add your image as ../media/images/person_protrait.jpg 
-	- [x] change this path in the document to link to your own picture
-- [x] replace "Matvey Regentov" with your name
-- [x] add some text about yourself under "About me" header
-- [x] update your links
-- [x] make a directory for your logbook entries html files in ./entries_MR/ where 
-    xx are your initials
-	- [x] replace "./entries_MR/" with the actual path
-
-General checklist:
-- [ ] add icon as ../media/icons/favicon.ico
-- [ ] add common style for logbook cover as ../css/logbook_person.css
 -->
 
 <html lang="en">
@@ -39,11 +21,18 @@ General checklist:
 		<meta name="author" content="Matvey Regentov">
 		<meta name="description" content="This is a logbook cover page for Matvey Regentov as part of Engineering Project VI, ESE at Conestoga College.">
 		<meta name="robots" content="index, follow">
+		<!-- bootstrap functions -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		
 		<meta http-equiv="Pragma" content="no-cache">
     </head>
 
     <body>
-        <aside><iframe src="links.html" title="Navigation"></iframe></aside>
+     	<div id="navbar-placeholder" data-root="../"></div>
+		<script src="../js/navbar.js"></script>
+		<br><br>
 
 		<section id="page_top">
 			<h1>Matvey Regentov's Logbook Cover Page</h1>
@@ -199,8 +188,21 @@ General checklist:
 				<li>
 					<a href="./entries_MR/MR_entry_2026-06-19.html">2026-06-19</a>
 					<ul>
-						<li>Fix melted pulley</li>
-						<li>Integrated Testing</li>
+						<li>Final assembly of the platform for phase 1</li>
+						<li>Soldering door switch</li>
+						<li>Work on SENG73000 assignment</li>
+						<li>Coping after SENG73000 assignment</li>
+					</ul>
+				</li>
+
+				<li>
+					<a href="./entries_MR/MR_entry_2026-06-21.html">2026-06-21</a>
+					<ul>
+						<li>Developed a workflow for RPi development</li>
+						<li>Finalized SC FSM for Phase 1 requirements</li>
+						<li>Recorded Phase 1 demo video</li>
+						<li>Communicated with Nick about tasks to finish before teh demo</li>
+						<li>Call with Rita about the project (cancelled)</li>
 					</ul>
 				</li>
 			</ol>

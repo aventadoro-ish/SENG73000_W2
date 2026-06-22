@@ -12,7 +12,7 @@ responsible for linking their logbook entries to their personal logbook cover
 page. See ./logbook_person_template.html for more info.
 Template usage checklist:
 - [x] replace "Matvey Regentov" with your name
-- [ ] replace "2026-06-16" with the date of the logbook entry
+- [ ] replace "2026-06-18" with the date of the logbook entry
 - [ ] write log in section with id "log"
 - [ ] add link to personal logbook cover by replacing "../html/logbook_person_template.html" with actual path
 - [ ] replace xx in head/title tag with your initials
@@ -25,6 +25,7 @@ Template usage checklist:
 		<link rel="stylesheet" href="../../css/logbook_person.css">
 		<link rel="stylesheet" href="../../css/master.css">
 		<link rel="icon" href="../../media/icons/LiF_icon.ico" type="image/x-icon">
+		<link rel="stylesheet" href="../../css/code_formatting.css">
 		
 		<meta name="author" content="Matvey Regentov">
 		<meta name="description" content="This is a daily logbook entry page for Matvey Regentov as part of Engineering Project VI, ESE at Conestoga College.">
@@ -35,17 +36,132 @@ Template usage checklist:
     <body>
         <aside><iframe src="../links.html" title="Navigation"></iframe></aside>
 		<section id="page_top">
-			<h1>Logbook Entry, 2026-06-16 by Matvey Regentov</h1>
+			<h1>Logbook Entry, 2026-06-18 by Matvey Regentov</h1>
 			<h2>Summary of work performed</h2>
 			<p class="logbook_summary">
-                
+                <ul>
+					<li>Gantt Chart update</li>
+					<li>Work on SENG73000 assignment</li>
+					<li>Nick's fix to CAN bus cable testing</li>
+					<li>Rita's SC FSM testing</li>
+					<li>Developed test plan for phase 1</li>
+				</ul>
             </p>
             <a href="../logbook_MR.html">My logbook cover page</a>
 		</section>
 		
 		<section id="log">
+			<h2>Updating Gantt Chart and styling</h2>
+			<p>
+				I added tasks the team performed during the phase to document 
+				progress as well as help prepare and organize new tasks to 
+				perform before the upcoming phase 1 demonstration. One of the 
+				notable features of the new <code>gantt_chart.css</code> is 
+				floating top row. The new styling also allows to mark tasks as 
+				<code>completed</code>, <code>behind</code>, 
+				<code>ongoing</code>, and <code>omitted</code>. See new Gantt 
+				chart on our <a href="../proj_plan.html">Project Plan</a> page.
 
+				<figure>
+					<img class="img_med" src="../../media/images/Gantt_chart_sanpshot_2026-06-22.png" alt="Gantt Chart with new styling, snapshot from 2026-06-22">
+					<figcaption>Gantt Chart with new styling, snapshot from 2026-06-22</figcaption>
+				</figure>
+			</p>
 		
+			<h2>Working on SENG73000 assignment</h2>
+			<p>
+				This assignment, while unrelated to the project, requires our 
+				team to make major changes to the website, so it gets a mention 
+				here. The appearance of the website in upcoming project 
+				submissions will improve, as we add more styling and 
+				functionality to it.
+			</p>
+
+			<h2>Nick's fix to CAN bus cable testing</h2>
+			Nick returned the CAN bus cable after fixing if. I tested the cable with a lab oscilloscope. Below are 2 oscilloscope captures showing signal integrity of CAN signal before and after the fixes
+
+			<figure>
+				<img class="img_lrg" src="../../media/images/Scope_CAN_Bus_Signal_6_nodes_capture_initial.PNG" alt="CAN signal with new cable installed">
+				<figcaption>CAN signal with new cable installed</figcaption>
+			</figure>
+			
+			<figure>
+				<img class="img_lrg" src="../../media/images/Scope_CAN_Bus_Signal_6_nodes_capture_fixed.PNG" alt="CAN signal with new cable installed and OCs fixed">
+				<figcaption>CAN signal with new cable installed and OCs fixed</figcaption>
+			</figure>
+
+
+			
+			<h2>Rita's SC FSM testing</h2>
+			<p>
+				Rita delivered an initial untested version of SC FSM implementation. 
+				Since she had to leave the lab early, I tested the code for her. <br>
+				To do this initial testing, I used <i>git</i> to transfer the source files and test the program on RPi, which proved to be very time-consuming and tedious. This setup required me to:
+				<ol>
+					<li>run on PC<pre class="code-block language-bash"><code class="language-bash">git add .</code></pre></li>
+					<li>run on PC<pre class="code-block language-bash"><code class="language-bash">git commit -m "message"</code></pre></li>
+					<li>run on PC<pre class="code-block language-bash"><code class="language-bash">git push</code></pre></li>
+					<li>run on RPi<pre class="code-block language-bash"><code class="language-bash">git pull</code></pre></li>
+					<li>run on RPi<pre class="code-block language-bash"><code class="language-bash">make clean</code></pre></li>
+					<li>run on RPi<pre class="code-block language-bash"><code class="language-bash">make</code></pre></li>
+					<li>run on RPi<pre class="code-block language-bash"><code class="language-bash">./main</code></pre></li>
+				</ol>
+				This workflow needs to be improved significantly to make SC development easier with a headless setup.
+			</p>
+			<p>
+				The testing revealed several bugs and errors in the code, but, 
+				fortunately, all of the bugs were caught by the compiler as 
+				warnings, so troubleshooting was relatively quick. <br>
+				As the result of this, all parts of the system moved together for the first time.
+				<figure>
+					<video class="img_lrg" controls>
+						<source src="../../media/video/First_Integrated_Comms_Test.mp4" alt="Video of the first integrated test of the system-wide communication">
+					</video>
+					<figcaption>Video of the first integrated test of the system-wide communication</figcaption>
+				</figure>
+
+				<figure>
+					<img class="img_lrg" src="../../media/images/Initial_Integrated_Test_Console_Printout.png" alt="Console printout of the first initial test with all controllers present">
+					<figcaption>Console printout of the first initial test with all controllers present</figcaption>
+				</figure>
+
+
+				While functional, this version of the FSM does not support door 
+				toggle switch monitoring. Additionally, there aren't enough 
+				console prints to demonstrate CAN bus message filtering. I will 
+				ask Rita to implement this functionality. <br>
+				Additionally, new motor pulley wheel needs to be installed to proceed with testing.
+			</p>
+
+
+			<h2>Developed test plan for phase 1</h2>
+			<p>
+				I added a test plan to our team's internal spreadsheet. Here is the copy of the test plan converted to HTML format.
+				<meta http-equiv="Content-Type" content="text/html; charset=utf-8"><link type="text/css" rel="stylesheet" href="resources/sheet.css" >
+				<style type="text/css">.ritz .waffle a { color: inherit; }.ritz .waffle .s5{background-color:#f3f3f3;text-align:right;color:#000000;font-family:Arial;font-size:10pt;vertical-align:top;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s4{background-color:#ffffff;text-align:left;color:#000000;font-family:Arial;font-size:10pt;vertical-align:bottom;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s0{background-color:#d9d9d9;text-align:left;font-weight:bold;color:#000000;font-family:Arial;font-size:13pt;vertical-align:bottom;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s7{background-color:#f3f3f3;text-align:center;color:#000000;font-family:Arial;font-size:10pt;vertical-align:middle;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s8{background-color:#f3f3f3;text-align:left;color:#000000;font-family:Arial;font-size:10pt;vertical-align:bottom;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s3{background-color:#ffffff;text-align:center;color:#000000;font-family:Arial;font-size:10pt;vertical-align:middle;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s2{background-color:#ffffff;text-align:left;color:#000000;font-family:Arial;font-size:10pt;vertical-align:top;white-space:normal;overflow:hidden;word-wrap:break-word;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s6{background-color:#f3f3f3;text-align:left;color:#000000;font-family:Arial;font-size:10pt;vertical-align:top;white-space:normal;overflow:hidden;word-wrap:break-word;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s1{background-color:#ffffff;text-align:right;color:#000000;font-family:Arial;font-size:10pt;vertical-align:top;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}</style>
+				<svg style="display:none;" width="16px" height="16px" viewBox="0 0 16 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+					<defs>
+						<path id="checked-checkbox-id" d="M17,3 L4.75,3 C3.77875,3 3,3.7875 3,4.75 L3,17 C3,17.9625 3.77875,18.75 4.75,18.75 L17,18.75 C17.97125,18.75 18.75,17.9625 18.75,17 L18.75,4.75 C18.75,3.7875 17.97125,3 17,3 L17,3 Z M9.125,15.25 L4.75,10.875 L5.98375,9.64125 L9.125,12.77375 L15.76625,6.1325 L17,7.375 L9.125,15.25 L9.125,15.25 Z" transform="translate(-3.000000, -3.000000)"></path>
+						<path id="unchecked-checkbox-id" d="M17,3.75 L17,16 L4.75,16 L4.75,3.75 L17,3.75 L17,3.75 Z M17,2 L4.75,2 C3.7875,2 3,2.7875 3,3.75 L3,16 C3,16.9625 3.7875,17.75 4.75,17.75 L17,17.75 C17.9625,17.75 18.75,16.9625 18.75,16 L18.75,3.75 C18.75,2.7875 17.9625,2 17,2 L17,2 Z" transform="translate(-3.000000, -2.000000)"></path>
+					</defs>
+				</svg>
+				<div class="ritz grid-container" dir="ltr">
+					<table class="waffle" cellspacing="0" cellpadding="0">
+						<thead>
+							<tr><th class="row-header freezebar-origin-ltr"></th><th id="1577452840C0" style="width:26px;" class="column-headers-background">A</th><th id="1577452840C1" style="width:100px;" class="column-headers-background">B</th><th id="1577452840C2" style="width:184px;" class="column-headers-background">C</th><th id="1577452840C3" style="width:168px;" class="column-headers-background">D</th><th id="1577452840C4" style="width:65px;" class="column-headers-background">E</th><th id="1577452840C5" style="width:105px;" class="column-headers-background">F</th><th id="1577452840C6" style="width:100px;" class="column-headers-background">G</th></tr>
+						</thead>
+						<tbody>
+							<tr style="height: 20px"><th id="1577452840R0" style="height: 20px;" class="row-headers-background"><div class="row-header-wrapper" style="line-height: 20px">1</div></th><td class="s0" dir="ltr">#</td><td class="s0" dir="ltr">Name</td><td class="s0" dir="ltr">Procedure</td><td class="s0" dir="ltr">Expected Outcome</td><td class="s0" dir="ltr">Passes</td><td class="s0" dir="ltr">Date Tested</td><td class="s0" dir="ltr">Inspector</td></tr>
+							<tr style="height: 20px"><th id="1577452840R1" style="height: 20px;" class="row-headers-background"><div class="row-header-wrapper" style="line-height: 20px">2</div></th><td class="s1" dir="ltr">0</td><td class="s2" dir="ltr">Power on</td><td class="s2" dir="ltr">Supply power to the system</td><td class="s2" dir="ltr">All controllers start working<br>EC performs homing procedure<br>EC reports ready after homing is done</td><td class="s3"><svg width="16px" height="16px" viewBox="0 0 16 16" style="display:inline;"><use href="#unchecked-checkbox-id" fill="#000000"/></svg></td><td class="s4"></td><td class="s4"></td></tr>
+							<tr style="height: 20px"><th id="1577452840R2" style="height: 20px;" class="row-headers-background"><div class="row-header-wrapper" style="line-height: 20px">3</div></th><td class="s5" dir="ltr">1</td><td class="s6" dir="ltr">CAN signal integrity</td><td class="s6" dir="ltr">Connect CAN bus to an oscilloscope<br>Enable CAN protocol decoding<br>Record CAN traffic<br>Use Serial to monitor CAN packet decoding on each controller (one-by-one is allowed)</td><td class="s6" dir="ltr">Oscilloscop can decode CAN frames<br>Each controller correctly receives and decodes CAN frames</td><td class="s7"><svg width="16px" height="16px" viewBox="0 0 16 16" style="display:inline;"><use href="#unchecked-checkbox-id" fill="#000000"/></svg></td><td class="s8"></td><td class="s8"></td></tr>
+							<tr style="height: 20px"><th id="1577452840R3" style="height: 20px;" class="row-headers-background"><div class="row-header-wrapper" style="line-height: 20px">4</div></th><td class="s1" dir="ltr">2</td><td class="s2" dir="ltr">EC motion test</td><td class="s2" dir="ltr">Connect to EC with Serial<br>Perform homing<br>Send EC to each of the floors</td><td class="s2" dir="ltr">Motion is smooth<br>Car acceleration is limited to a predefined value<br>Car stops within 5mm of each floor level<br>EC reports car height in mm correctly</td><td class="s3"><svg width="16px" height="16px" viewBox="0 0 16 16" style="display:inline;"><use href="#unchecked-checkbox-id" fill="#000000"/></svg></td><td class="s4"></td><td class="s4"></td></tr>
+							<tr style="height: 20px"><th id="1577452840R4" style="height: 20px;" class="row-headers-background"><div class="row-header-wrapper" style="line-height: 20px">5</div></th><td class="s5" dir="ltr">3</td><td class="s6" dir="ltr">Floor Request</td><td class="s6" dir="ltr">Power on the system and let it initialize<br>Use FC button to request the car to move to the corresponding floor</td><td class="s6" dir="ltr">CAN frames are exchanged between FC and SC, then SC and EC<br>Car is moved to the requested floor</td><td class="s7"><svg width="16px" height="16px" viewBox="0 0 16 16" style="display:inline;"><use href="#unchecked-checkbox-id" fill="#000000"/></svg></td><td class="s8"></td><td class="s8"></td></tr>
+							<tr style="height: 20px"><th id="1577452840R5" style="height: 20px;" class="row-headers-background"><div class="row-header-wrapper" style="line-height: 20px">6</div></th><td class="s1" dir="ltr">4</td><td class="s2" dir="ltr">Car Request</td><td class="s2" dir="ltr">Power on the system and let it initialize<br>Use CC button to request the car to move to the corresponding floor<br>Toggle the door switch on CC to allow motion</td><td class="s2" dir="ltr">CAN frames are exchanged between CC and SC, then SC and EC<br>Car does not move until door toggle switch is put in closed position<br>Car is moved to the requested floor</td><td class="s3"><svg width="16px" height="16px" viewBox="0 0 16 16" style="display:inline;"><use href="#unchecked-checkbox-id" fill="#000000"/></svg></td><td class="s4"></td><td class="s4"></td></tr>
+						</tbody>
+					</table>
+				</div>
+			</p>
+
 		<footer>
 			<p><a href="#page_top">Go to the top of this page</a></p>
 			<p>Copyright &copy Matvey Regentov</p>

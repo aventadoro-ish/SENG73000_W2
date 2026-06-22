@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<!--
+Author: Matvey Regentov
+Contributors to this page:
+Matvey Regentov
+-->
+<html lang="en">
+    <head>
+        <title>LiF - CAN Protocol</title>
+        <meta charset="UTF-8">
+        <link rel="stylesheet" href="../css/master.css">
+        <link rel="icon" href="../media/icons/LiF_icon.ico" type="image/x-icon">
+
+		<!--[if lt IE 9]>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js"></script>
+		<![endif]-->
+		
+		<meta name="author" content="Matvey Regentov">
+		<meta name="description" content="Lithium Firefly CAN Communication Protocol for Engineering Project VI">
+		<meta name="robots" content="index, follow">
+		<meta http-equiv="Pragma" content="no-cache">
+
+        <style>
+            .img_med {
+                width: 400px;
+                height: auto;
+            }
+        </style>
+        <!-- bootstrap functions -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    </head>
+    <body>
+        <div id="navbar-placeholder" data-root="../"></div>
+		<script src="../js/navbar.js"></script>
+		<br><br>
+
+
+        <section id="page_top">
+            <h1>CAN Protocol Table</h1>
+            <meta http-equiv="Content-Type" content="text/html; charset=utf-8"><link type="text/css" rel="stylesheet" href="resources/sheet.css" >
+				<style type="text/css">.ritz .waffle a { color: inherit; }.ritz .waffle .s4{background-color:#ffffff;text-align:left;color:#000000;font-family:Arial;font-size:10pt;vertical-align:bottom;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s5{background-color:#ffffff;text-align:left;color:#000000;font-family:Arial;font-size:10pt;vertical-align:top;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s3{background-color:#efefef;text-align:left;color:#000000;font-family:Arial;font-size:10pt;vertical-align:bottom;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s0{background-color:#d9d9d9;text-align:center;font-weight:bold;color:#000000;font-family:Arial;font-size:10pt;vertical-align:middle;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s1{background-color:#ffffff;text-align:center;color:#000000;font-family:Arial;font-size:10pt;vertical-align:bottom;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s6{background-color:#ffffff;text-align:left;color:#000000;font-family:Arial;font-size:10pt;vertical-align:top;white-space:normal;overflow:hidden;word-wrap:break-word;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s2{background-color:#ffffff;text-align:right;color:#000000;font-family:Arial;font-size:10pt;vertical-align:bottom;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}</style>
+				<div class="ritz grid-container" dir="ltr">
+					<table class="waffle" cellspacing="0" cellpadding="0">
+						<thead>
+							<tr style="height: 20px">
+								<td class="s0" dir="ltr" rowspan="2">CAN ID<br>[Hex]</td>
+								<td class="s0" dir="ltr" rowspan="2">Transmitter</td>
+								<td class="s0" dir="ltr" rowspan="2">Recipient(s)</td>
+								<td class="s0" dir="ltr" rowspan="2">DLC</td>
+								<td class="s0" dir="ltr" colspan="8">Byte 0</td>
+							</tr>
+						</thead>
+						<tbody>
+						<tr style="height: 20px">
+							<td class="s0" dir="ltr">7</td>
+							<td class="s0" dir="ltr">6</td>
+							<td class="s0" dir="ltr">5</td>
+							<td class="s0" dir="ltr">4</td>
+							<td class="s0" dir="ltr">3</td>
+							<td class="s0" dir="ltr">2</td>
+							<td class="s0" dir="ltr">1</td>
+							<td class="s0" dir="ltr">0</td>
+						</tr>
+						<tr style="height: 20px">
+							<td class="s1" dir="ltr">0x100</td>
+							<td class="s1" dir="ltr">SC</td>
+							<td class="s1" dir="ltr">EC</td>
+							<td class="s2" dir="ltr">1</td>
+							<td class="s3"></td>
+							<td class="s3" dir="ltr"></td>
+							<td class="s3"></td>
+							<td class="s3"></td>
+							<td class="s3"></td>
+							<td class="s4" dir="ltr">SC_EN</td>
+							<td class="s4" dir="ltr" colspan="2">SC_FloorReq</td>
+						</tr>
+						<tr style="height: 20px">
+							<td class="s1" dir="ltr">0x101</td>
+							<td class="s1" dir="ltr">EC</td>
+							<td class="s1" dir="ltr">ALL</td>
+							<td class="s2" dir="ltr">1</td>
+							<td class="s3"></td>
+							<td class="s3"></td>
+							<td class="s3"></td>
+							<td class="s3"></td>
+							<td class="s3"></td>
+							<td class="s4" dir="ltr">EC_EN</td>
+							<td class="s4" dir="ltr" colspan="2">EC_Pos</td>
+						</tr>
+						<tr style="height: 20px">
+							<td class="s1" dir="ltr">0x200</td>
+							<td class="s1" dir="ltr">CC</td>
+							<td class="s1" dir="ltr">SC</td>
+							<td class="s2" dir="ltr">1</td>
+							<td class="s3"></td>
+							<td class="s3"></td>
+							<td class="s3"></td>
+							<td class="s3"></td>
+							<td class="s3"></td>
+							<td class="s4" dir="ltr">CC_EN</td>
+							<td class="s4" dir="ltr" colspan="2">CC_FloorReq</td>
+						</tr>
+						<tr style="height: 20px">
+							<td class="s1" dir="ltr">0x201</td>
+							<td class="s1" dir="ltr">F1</td>
+							<td class="s1" dir="ltr">SC</td>
+							<td class="s2" dir="ltr">1</td>
+							<td class="s3"></td>
+							<td class="s3"></td>
+							<td class="s3" dir="ltr"></td>
+							<td class="s3"></td>
+							<td class="s3"></td>
+							<td class="s3"></td>
+							<td class="s3"></td>
+							<td class="s4" dir="ltr">F1_Req</td>
+						</tr>
+						<tr style="height: 20px">
+							<td class="s1" dir="ltr">0x202</td>
+							<td class="s1" dir="ltr">F2</td>
+							<td class="s1" dir="ltr">SC</td>
+							<td class="s2" dir="ltr">1</td>
+							<td class="s3"></td>
+							<td class="s3"></td>
+							<td class="s3"></td>
+							<td class="s3"></td>
+							<td class="s3"></td>
+							<td class="s3"></td>
+							<td class="s3"></td>
+							<td class="s4" dir="ltr">F2_Req</td>
+						</tr>
+						<tr style="height: 20px">
+							<td class="s1" dir="ltr">0x203</td>
+							<td class="s1" dir="ltr">F3</td>
+							<td class="s1" dir="ltr">SC</td>
+							<td class="s2" dir="ltr">1</td>
+							<td class="s3"></td>
+							<td class="s3"></td>
+							<td class="s3"></td>
+							<td class="s3"></td>
+							<td class="s3"></td>
+							<td class="s3"></td>
+							<td class="s3"></td>
+							<td class="s4" dir="ltr">F3_Req</td>
+						</tr>
+						<tr style="height: 20px">
+							<td class="s0" dir="ltr">Fields</td>
+							<td class="s0" dir="ltr" colspan="2">Description</td>
+							<td class="s0" dir="ltr" colspan="6">Value</td>
+							<td class="s0" dir="ltr"></td>
+							<td class="s0" dir="ltr"></td>
+							<td class="s0" dir="ltr"></td>
+						</tr>
+						<tr style="height: 20px">
+							<td class="s5">SC_EN</td>
+							<td class="s6" dir="ltr" colspan="2">Supervisory Controller Enable</td>
+							<td class="s4" dir="ltr" colspan="9">0 - disabled<br>1 - enabled</td>
+						</tr>
+							<tr style="height: 20px">
+							<td class="s5">SC_FloorReq</td>
+							<td class="s6" dir="ltr" colspan="2">SC request to EC to move the elevator cabin to a given floor</td>
+							<td class="s4" dir="ltr" colspan="9">0 - INVALID<br>1-3 - floors 1-3</td>
+						</tr>
+							<tr style="height: 20px">
+							<td class="s5">EC_EN</td>
+							<td class="s6" dir="ltr" colspan="2">Elevator Controller Enable</td>
+							<td class="s4" dir="ltr" colspan="9">0 - disabled<br>1 - enabled</td>
+						</tr>
+							<tr style="height: 20px">
+							<td class="s5">EC_Pos</td>
+							<td class="s6" dir="ltr" colspan="2">EC reports current position of the elevator cabin</td>
+							<td class="s4" dir="ltr" colspan="9">0 - moving<br>1-3 - stopped at floor 1-3</td>
+						</tr>
+							<tr style="height: 20px">
+							<td class="s5">CC_EN</td>
+							<td class="s6" dir="ltr" colspan="2">Car Controller Enable. Informs SC if door is closed (enable) or open (disable)</td>
+							<td class="s4" dir="ltr" colspan="9">0 - door is open, and cabin MUST NOT be moved<br>1 - door is closed, and cabin may be moved</td>
+						</tr>
+						<tr style="height: 20px">
+							<td class="s5">CC_FloorReq</td>
+							<td class="s6" dir="ltr" colspan="2">CC request to SC to move elevator cabin to a certain floor</td>
+							<td class="s4" dir="ltr" colspan="9">0 - no request<br>1-3 - floors 1-3</td>
+						</tr>
+							<tr style="height: 20px">
+							<td class="s5">F1_Req</td>
+							<td class="s6" dir="ltr" colspan="2">Floor Controller requesting the elevator cabin to floor 1</td>
+							<td class="s4" dir="ltr" colspan="9">0 - INVALID<br>1 - request cabin to this floor</td>
+						</tr>
+							<tr style="height: 20px">
+							<td class="s5">F2_Req</td>
+							<td class="s6" dir="ltr" colspan="2">Floor Controller requesting the elevator cabin to floor 2</td>
+							<td class="s4" dir="ltr" colspan="9">0 - INVALID<br>1 - request cabin to this floor</td>
+						</tr>
+							<tr style="height: 20px">
+							<td class="s5">F3_Req</td>
+							<td class="s6" dir="ltr" colspan="2">Floor Controller requesting the elevator cabin to floor 3</td>
+							<td class="s4" dir="ltr" colspan="9">0 - INVALID<br>1 - request cabin to this floor</td>
+						</tr>
+						</tbody>
+					</table>
+				</div>
+				
+
+        </section>
+
+        <footer>
+            <p><a href="#page_top">Go to the top of this page</a></p>
+            <p>Copyright &copy; 2026 Matvey Regentov</p>
+        </footer>
+    </body>
+</html>
