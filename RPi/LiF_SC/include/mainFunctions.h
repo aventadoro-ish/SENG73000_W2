@@ -28,6 +28,7 @@ typedef enum {
 } State;
 
 extern State currentState;
+extern int ccDoorClosed; //0 - door open, 1 - door closed
 
 #define MOVE_TIMEOUT_SEC 15
 

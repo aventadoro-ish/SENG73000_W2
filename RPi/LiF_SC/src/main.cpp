@@ -80,11 +80,11 @@ int main() {
 							enqueueFloor(floorNumber);
 						}
 
-						prev_floorNumber = floorNumber; 
+						// prev_floorNumber = floorNumber; 
 
 						// Check CAN for floor requests
 						int gotMessage = pcanRxState(&incoming);
-						if (gotMessage)
+						if (gotMessage == 1)
 						{
 							printf("Received CAN frame with ID %x ", incoming.ID);
 							switch(incoming.ID) {
@@ -122,8 +122,12 @@ int main() {
 									printf("EC heartbeat\n");
 									break;
 							}
+						} 
+						else if (gotMessage == -1)
+						{
+   						printf("WARNING: CAN bus error detected\n");
+						// Will have more functions to fix the error
 						}
-
 						//FSM Logic
 						switch(currentState) {
 

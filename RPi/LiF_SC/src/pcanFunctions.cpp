@@ -42,12 +42,19 @@ int pcanRxClose(){
 
 
 
-int pcanRxState(TPCANMsg *msg){
-	status = CAN_Read(h2, msg);
-	if (status == PCAN_NO_ERROR) {
-		return 1;	// message received
-	}
-	return 0;		// no message, keep looking
+int pcanRxState(TPCANMsg *msg); // 1 = message received, 0 = no message waiting, -1 = real CAN error    status = CAN_Read(h2, msg);
+	
+	//Message received adn valid
+    if (status == PCAN_NO_ERROR) {
+        return 1;
+    }
+	// No message, waiting
+    if (status == PCAN_RECEIVE_QUEUE_EMPTY) {
+        return 0;
+    }
+    // anything else is a real error - rx. hardware disconnected
+    printf("CAN Rx error: 0x%x\n", (int)status);
+    return -1;
 }
 
 // *****************************************************************
