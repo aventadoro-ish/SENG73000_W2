@@ -41,7 +41,7 @@
 #define F3_BOARD	3					// Floor 3 STM32
 
 // ********************************* CHANGE PER BOARD *********************************
-#define SELECTED_BOARD	CC_BOARD		// currently selected board; change when flashing
+#define SELECTED_BOARD	F1_BOARD		// currently selected board; change when flashing
 // ************************************************************************************
 
 // CAN IDs:
@@ -135,7 +135,7 @@ LED_Timer F1_Req_LED = {PB1_LED_GPIO_Port, PB1_LED_Pin, 0, 0};
 LED_Timer F2_Req_LED = {PB2_LED_GPIO_Port, PB2_LED_Pin, 0, 0};
 LED_Timer F3_Req_LED = {PB3_LED_GPIO_Port, PB3_LED_Pin, 0, 0};
 
-
+uint8_t tx_buff[254];
 
 /* USER CODE END PV */
 
@@ -238,14 +238,22 @@ void showFloor(void)
 
 void CAN_ProcessReceive(void){
 	// check if received ID is the ID of the EC
+  int length = snprintf(tx_buff, sizeof(tx_buff), "Rec CAN frame with ID: %x and data %x ", rx_ID, rx_Byte0);
+  HAL_UART_Transmit(&huart2, tx_buff, strlen(tx_buff), 1000);
 	if (rx_ID == EC_ID)
 	{
-		// shift the 3rd bit (the actual EC en bit; >> 2) down to bit 1 and keep that (& 0x01)
+    strcpy(tx_buff, " - EC - Accepted\n");
+    HAL_UART_Transmit(&huart2, tx_buff, strlen(tx_buff), 1000);
+    // shift the 3rd bit (the actual EC en bit; >> 2) down to bit 1 and keep that (& 0x01)
 		elevator_en = (rx_Byte0 >> 2) & 0x01;
 
 		// only read the first two bits
 		current_floor = rx_Byte0 & 0x03;
-	}
+	} else {
+    strcpy(tx_buff, " - Rejected\n");
+    HAL_UART_Transmit(&huart2, tx_buff, strlen(tx_buff), 1000);
+
+  }
 }
 
 
@@ -270,7 +278,11 @@ uint8_t PB_Process(uint8_t button){
 
 	if(button == F3_BUTTON_PRESS)
 	{
-		CAN_ByteTransmit(MY_ID, FLOOR_1 | doorBit);
+    CAN_ByteTransmit(MY_ID, FLOOR_1 | doorBit);
+
+    int length = snprintf(tx_buff, sizeof(tx_buff), "Sending CAN frame with ID: %x and data %x\n", MY_ID, FLOOR_1 | doorBit);
+    HAL_UART_Transmit(&huart2, tx_buff, strlen(tx_buff), 1000);
+
 		// illuminate PB LED for visual confirmation
 		LED_BlinkStart(&F3_Req_LED, 200);
 		return 1;
@@ -279,6 +291,10 @@ uint8_t PB_Process(uint8_t button){
 	else if(button == F2_BUTTON_PRESS)
 	{
 		CAN_ByteTransmit(MY_ID, FLOOR_2 | doorBit);
+
+    int length = snprintf(tx_buff, sizeof(tx_buff), "Sending CAN frame with ID: %x and data %x\n", MY_ID, FLOOR_2 | doorBit);
+    HAL_UART_Transmit(&huart2, tx_buff, strlen(tx_buff), 1000);
+
 		// illuminate PB LED for visual confirmation
 		LED_BlinkStart(&F2_Req_LED, 200);
 		return 1;
@@ -287,6 +303,10 @@ uint8_t PB_Process(uint8_t button){
 	else if(button == F1_BUTTON_PRESS)
 	{
 		CAN_ByteTransmit(MY_ID, FLOOR_3 | doorBit);
+
+    int length = snprintf(tx_buff, sizeof(tx_buff), "Sending CAN frame with ID: %x and data %x\n", MY_ID, FLOOR_3 | doorBit);
+    HAL_UART_Transmit(&huart2, tx_buff, strlen(tx_buff), 1000);
+
 		// illuminate PB LED for visual confirmation
 		LED_BlinkStart(&F1_Req_LED, 200);
 		return 1;
@@ -297,6 +317,10 @@ uint8_t PB_Process(uint8_t button){
 #elif SELECTED_BOARD == F1_BOARD
 	if(button == FX_BUTTON_PRESS){
 		CAN_ByteTransmit(MY_ID, 0x01);
+    
+    int length = snprintf(tx_buff, sizeof(tx_buff), "Sending CAN frame with ID: %x and data %x\n", MY_ID, 0x01);
+    HAL_UART_Transmit(&huart2, tx_buff, strlen(tx_buff), 1000);
+
 		// illuminate PB LED for visual confirmation
 		LED_BlinkStart(&F1_Req_LED, 200);
 		return 1;
@@ -305,6 +329,10 @@ uint8_t PB_Process(uint8_t button){
 #elif SELECTED_BOARD == F2_BOARD
 	if(button == FX_BUTTON_PRESS){
 		CAN_ByteTransmit(MY_ID, 0x01);
+    
+    int length = snprintf(tx_buff, sizeof(tx_buff), "Sending CAN frame with ID: %x and data %x\n", MY_ID, 0x01);
+    HAL_UART_Transmit(&huart2, tx_buff, strlen(tx_buff), 1000);
+
 		// illuminate PB LED for visual confirmation
 		LED_BlinkStart(&F2_Req_LED, 200);
 		return 1;
@@ -313,6 +341,10 @@ uint8_t PB_Process(uint8_t button){
 #elif SELECTED_BOARD == F3_BOARD
 	if(button == FX_BUTTON_PRESS){
 		CAN_ByteTransmit(MY_ID, 0x01);
+    
+    int length = snprintf(tx_buff, sizeof(tx_buff), "Sending CAN frame with ID: %x and data %x\n", MY_ID, 0x01);
+    HAL_UART_Transmit(&huart2, tx_buff, strlen(tx_buff), 1000);
+
 		// illuminate PB LED for visual confirmation
 		LED_BlinkStart(&F3_Req_LED, 200);
 		return 1;
@@ -344,10 +376,18 @@ void doorSwitch(void){
 		{
 			// switch is ON = doors open = no movement allowed. Send CAN message of 0b000 or 0x00
 			CAN_ByteTransmit(MY_ID, 0);
+      
+      int length = snprintf(tx_buff, sizeof(tx_buff), "Sending CAN frame with ID: %x and data %x\n", MY_ID, 0);
+      HAL_UART_Transmit(&huart2, tx_buff, strlen(tx_buff), 1000);
+
 			LED_BlinkStart(&greenLedTimer, 200);
 		} else {
 			// switch is OFF = doors closed = movement allowed. Send CAN message of 0b100 or 0x04
 			CAN_ByteTransmit(MY_ID, CAB_ALLOW);
+      
+      int length = snprintf(tx_buff, sizeof(tx_buff), "Sending CAN frame with ID: %x and data %x\n", MY_ID, CAB_ALLOW);
+      HAL_UART_Transmit(&huart2, tx_buff, strlen(tx_buff), 1000);
+
 			LED_BlinkStart(&greenLedTimer, 200);
 		}
 	}
@@ -761,7 +801,7 @@ void assert_failed(uint8_t *file, uint32_t line)
 {
   /* USER CODE BEGIN 6 */
   /* User can add his own implementation to report the file name and line number,
-     ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
+     ex: printf("Wrong parameters value: file %s on line %d\n", file, line) */
   /* USER CODE END 6 */
 }
 #endif /* USE_FULL_ASSERT */
