@@ -98,6 +98,15 @@
     line-height: 1.55;
 }
 
+.info-card {
+    padding: 24px;
+    background-color: var(--card-bg);
+    border-radius: 14px;
+    border-top: 5px solid var(--palm);
+    box-shadow: 0 4px 14px var(--shadow);
+    transition: 0.25s;
+}
+
 /* responsbilities section */
 .responsibilities-section {
     margin-top: 28px;
