@@ -18,5 +18,6 @@ id_ed25519.pub
 
 
 # KiCAD
-KiCAD/LiF_FC-PCB_rev1/LiF_FC-PCB_rev1/*.zip
+KiCAD/LiF_FC-PCB_rev1/LiF_FC-PCB_rev1-backups/*.zip
+KiCAD/LiF_FC-PCB_rev1/LiF_FC-PCB_rev1-backups/
 KiCAD/LiF_FC-PCB_rev1/~LiF_FC-PCB_rev1.kicad_sch.lck
