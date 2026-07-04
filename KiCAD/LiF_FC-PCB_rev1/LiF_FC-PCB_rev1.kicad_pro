@@ -420,6 +420,10 @@
     [
       "dbf56dc2-3990-4801-b0e0-f59d351af64c",
       "Power Regulation"
+    ],
+    [
+      "18794d3c-1606-4c60-8412-e38df19bc4d8",
+      "5V Regulator"
     ]
   ],
   "text_variables": {}

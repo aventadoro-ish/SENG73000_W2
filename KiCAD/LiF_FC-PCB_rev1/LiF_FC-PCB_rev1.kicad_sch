@@ -7,7 +7,7 @@
 	(lib_symbols)
 	(sheet
 		(at 193.04 100.33)
-		(size 36.83 17.78)
+		(size 36.83 22.86)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -31,7 +31,7 @@
 			)
 		)
 		(property "Sheetfile" "LiF_PowerReg.kicad_sch"
-			(at 193.04 118.6946 0)
+			(at 193.04 123.7746 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -40,7 +40,7 @@
 			)
 		)
 		(pin "A3V3" output
-			(at 229.87 115.57 0)
+			(at 229.87 120.65 0)
 			(uuid "40b49cfb-d00d-45b7-a8e5-e9cf325c11b7")
 			(effects
 				(font
@@ -50,7 +50,7 @@
 			)
 		)
 		(pin "A3V3_{EN}" input
-			(at 193.04 115.57 180)
+			(at 193.04 121.92 180)
 			(uuid "3fa433a6-992d-4734-ab9f-2699e0d5720b")
 			(effects
 				(font
@@ -60,7 +60,7 @@
 			)
 		)
 		(pin "R3V3" output
-			(at 229.87 109.22 0)
+			(at 229.87 111.76 0)
 			(uuid "d96e202e-0a2f-41a4-8fb0-5d06efb12731")
 			(effects
 				(font
@@ -70,7 +70,7 @@
 			)
 		)
 		(pin "R3V3_{EN}" input
-			(at 193.04 113.03 180)
+			(at 193.04 119.38 180)
 			(uuid "0ad87d45-4852-4dfe-ad28-a65f67735fee")
 			(effects
 				(font
@@ -102,6 +102,16 @@
 		(pin "V_{IN2}" input
 			(at 193.04 107.95 180)
 			(uuid "6cbd97b7-e02f-49db-aeea-0039079620de")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "I2C{SCL, SDA}" bidirectional
+			(at 193.04 116.84 180)
+			(uuid "1c49ad83-fea6-465f-8da2-cc0a5d482d05")
 			(effects
 				(font
 					(size 1.27 1.27)
