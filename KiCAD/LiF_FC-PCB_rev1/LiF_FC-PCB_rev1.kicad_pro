@@ -412,6 +412,14 @@
     [
       "9e3e8da7-e506-46c9-90e5-307e4ad30d29",
       "Root"
+    ],
+    [
+      "b5f6c072-28d6-4dbf-9d97-d5b17dc4e7a5",
+      "Power OR-ing"
+    ],
+    [
+      "dbf56dc2-3990-4801-b0e0-f59d351af64c",
+      "Power Regulation"
     ]
   ],
   "text_variables": {}

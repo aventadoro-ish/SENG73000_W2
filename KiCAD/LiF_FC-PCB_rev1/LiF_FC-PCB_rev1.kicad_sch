@@ -5,6 +5,118 @@
 	(uuid "9e3e8da7-e506-46c9-90e5-307e4ad30d29")
 	(paper "A4")
 	(lib_symbols)
+	(sheet
+		(at 193.04 100.33)
+		(size 36.83 17.78)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "dbf56dc2-3990-4801-b0e0-f59d351af64c")
+		(property "Sheetname" "Power Regulation"
+			(at 193.04 99.6184 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "LiF_PowerReg.kicad_sch"
+			(at 193.04 118.6946 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(pin "A3V3" output
+			(at 229.87 115.57 0)
+			(uuid "40b49cfb-d00d-45b7-a8e5-e9cf325c11b7")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(pin "A3V3_{EN}" input
+			(at 193.04 115.57 180)
+			(uuid "3fa433a6-992d-4734-ab9f-2699e0d5720b")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "R3V3" output
+			(at 229.87 109.22 0)
+			(uuid "d96e202e-0a2f-41a4-8fb0-5d06efb12731")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(pin "R3V3_{EN}" input
+			(at 193.04 113.03 180)
+			(uuid "0ad87d45-4852-4dfe-ad28-a65f67735fee")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "R5V0" output
+			(at 229.87 102.87 0)
+			(uuid "de7d872a-6258-4537-a4b0-f2a01e324c03")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(pin "V_{IN1}" input
+			(at 193.04 102.87 180)
+			(uuid "e7cd3c5d-d679-44a1-8de9-37e4ecf56136")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "V_{IN2}" input
+			(at 193.04 107.95 180)
+			(uuid "6cbd97b7-e02f-49db-aeea-0039079620de")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(instances
+			(project "LiF_FC-PCB_rev1"
+				(path "/9e3e8da7-e506-46c9-90e5-307e4ad30d29"
+					(page "3")
+				)
+			)
+		)
+	)
 	(sheet_instances
 		(path "/"
 			(page "1")
