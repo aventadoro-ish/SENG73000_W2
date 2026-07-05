@@ -127,48 +127,6 @@
 			)
 		)
 	)
-	(sheet
-		(at 62.23 62.23)
-		(size 44.45 38.1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(stroke
-			(width 0.1524)
-			(type solid)
-		)
-		(fill
-			(color 0 0 0 0.0000)
-		)
-		(uuid "fa6eb845-b5e3-4a8e-9c24-c1b567f4e987")
-		(property "Sheetname" "MCU"
-			(at 62.23 61.5184 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left bottom)
-			)
-		)
-		(property "Sheetfile" "LiF_MCU.kicad_sch"
-			(at 62.23 100.9146 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left top)
-			)
-		)
-		(instances
-			(project "LiF_FC-PCB_rev1"
-				(path "/9e3e8da7-e506-46c9-90e5-307e4ad30d29"
-					(page "5")
-				)
-			)
-		)
-	)
 	(sheet_instances
 		(path "/"
 			(page "1")
