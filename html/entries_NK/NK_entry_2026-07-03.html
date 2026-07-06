@@ -1,0 +1,414 @@
+<!doctype html>
+<!--
+Author: Nick Kapuka
+-->
+
+<html lang="en">
+  <head>
+    <title>NK Logbook Entry - 2026-07-03</title>
+    <meta charset="UTF-8" />
+    <meta name="author" content="Nick Kapuka" />
+    <meta name="description" content="NK Logbook Entry" />
+    <meta name="robots" content="index, follow" />
+    <meta http-equiv="Pragma" content="no-cache" />
+
+    <link
+      rel="icon"
+      href="../../media/icons/LiF_icon.ico"
+      type="image/x-icon"
+    />
+
+    <!-- shared website styling -->
+    <link rel="stylesheet" href="../../css/base.css" />
+
+    <!-- logbook entry page styling -->
+    <link rel="stylesheet" href="../../css/logbook_entry.css" />
+
+    <!-- Prism syntax highlighting theme -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css"
+    />
+    <link rel="stylesheet" href="../../css/code_formatting.css" />
+  </head>
+
+  <body>
+    <!-- Nav bar loaded by JavaScript -->
+    <div id="navbar-placeholder" data-root="../../"></div>
+    <script src="../../js/navbar.js"></script>
+
+    <main class="page-wrapper">
+      <section class="intro-section logbook-entry-intro" id="page_top">
+        <div class="intro-text">
+          <p class="section-label">Daily Logbook Entry</p>
+          <h1>Logbook Entry, 2026-07-03 by Nick Kapuka</h1>
+
+          <p class="intro-description">
+            Met with MR to finalize and revise several interface and
+            power-related circuits, including the double 7-segment display, the
+            pushbutton/LED layout, a button/LED floor feedback array, and early
+            USB-C Power Delivery IC options.
+          </p>
+
+          <div class="button-row">
+            <a href="../logbook_NK.html" class="button secondary-button"
+              >My Logbook Cover Page</a
+            >
+            <a href="#log" class="button primary-button">Jump to Entry</a>
+          </div>
+        </div>
+
+        <aside class="summary-card">
+          <h2>Entry Snapshot</h2>
+          <p><b>Date:</b> 2026-07-03</p>
+          <p><b>Author:</b> Nick Kapuka</p>
+          <p>
+            <b>Focus:</b>Double 7-segment display schematic, pushbutton/LED
+            layout, button/LED floor feedback, 74HC595 shift registers, and
+            USB-C Power Delivery IC research.
+          </p>
+        </aside>
+      </section>
+
+      <section class="logbook-entry-content" id="log">
+        <h2>Finalized and revised interface circuits</h2>
+        <p>
+          I met with MR to work on our project circuits together. During this
+          session, we finalized a few circuits and ended up redoing some
+          sections after comparing the practical layout options. The biggest
+          change was moving toward a double 7-segment display driven by two
+          shift registers, while still using the
+          <code class="language-text">74HC595</code> as the main display-driving
+          IC.
+        </p>
+
+        <figure>
+          <img
+            alt="Double 7-segment display schematic using two 74HC595 shift registers"
+            class="img_med"
+            src="../../media/images/NK_Schematic_7Seg_02.png"
+          />
+          <figcaption>
+            <b
+              >Updated double 7-segment display circuit using two 74HC595 shift
+              registers</b
+            >
+          </figcaption>
+        </figure>
+
+        <p>
+          The reason for using two shift registers is that each 7-segment digit
+          needs multiple controlled outputs. Using one
+          <code class="language-text">74HC595</code> per digit keeps the circuit
+          easier to understand and makes the display wiring cleaner than trying
+          to directly use a large number of microcontroller GPIO pins.
+        </p>
+
+        <h4>74HC595 notes</h4>
+        <ul class="clean-list">
+          <li>
+            <b>Purpose:</b> 8-bit serial-in, serial/parallel-out shift register
+            with a storage register and 3-state outputs.
+          </li>
+          <li>
+            <b>Operating voltage:</b> The 74HC family can commonly operate from
+            about 2.0 V to 6.0 V, making it usable with 3.3 V or 5 V systems
+            when the exact variant is chosen correctly.
+          </li>
+          <li>
+            <b>DS:</b> Serial data input from the ESP32 or other controller.
+          </li>
+          <li>
+            <b>SHCP / SRCLK:</b> Shift-register clock. Data is shifted in on
+            clock transitions.
+          </li>
+          <li>
+            <b>STCP / RCLK:</b> Storage-register/latch clock. This updates the
+            visible parallel outputs after the byte is shifted in.
+          </li>
+          <li>
+            <b>OE:</b> Output enable, active low. This can be tied low for
+            always-on outputs or controlled for blanking/dimming.
+          </li>
+          <li>
+            <b>MR / SRCLR:</b> Master reset/clear, active low. Normally held
+            high so the register does not reset unexpectedly.
+          </li>
+          <li>
+            <b>Q0-Q7:</b> Parallel outputs that can drive the segment lines
+            through current-limiting resistors or resistor arrays.
+          </li>
+          <li>
+            <b>Q7S:</b> Serial output used for cascading multiple shift
+            registers together.
+          </li>
+        </ul>
+      </section>
+
+      <section class="logbook-entry-content">
+        <h2>Added a 7-button and 7-LED floor request array</h2>
+        <p>
+          Since we moved away from the rotary encoder idea, another useful
+          interface feature is a dedicated 7-button array paired with a matching
+          7-LED array. Each floor button would have its own LED placed directly
+          above it, so when a passenger presses a floor button, the LED above
+          that button turns on. This gives the same kind of visual feedback that
+          a real elevator panel gives when a floor has been selected.
+        </p>
+
+        <p>
+          The basic behavior would be simple: button 1 controls LED 1, button 2
+          controls LED 2, and so on up to button 7. In firmware, each button
+          press can be stored as a pending floor request, then the matching LED
+          can stay lit until the elevator reaches that floor or the request is
+          cleared. This makes the interface much easier to understand because
+          the user can immediately see which floors are currently queued.
+        </p>
+
+        <figure>
+          <img
+            alt="Pushbutton and LED schematic for the user interface"
+            class="img_med"
+            src="../../media/images/NK_Schematic_PB&amp;LED.png"
+          />
+          <figcaption>
+            <b
+              >Updated pushbutton and LED circuit for the elevator user
+              interface</b
+            >
+          </figcaption>
+        </figure>
+
+        <h4>7-button / 7-LED interface notes</h4>
+        <ul class="clean-list">
+          <li>
+            <b>Button array:</b> Seven momentary pushbuttons can represent floor
+            requests 1 through 7.
+          </li>
+          <li>
+            <b>LED array:</b> Seven indicator LEDs can be placed above the
+            buttons to show which floor requests are active.
+          </li>
+          <li>
+            <b>Visual feedback:</b> When a button is pressed, the matching LED
+            glows to confirm the request was received.
+          </li>
+          <li>
+            <b>Firmware behavior:</b> The selected floor can be stored as a
+            queued request, then cleared once the cab reaches that floor.
+          </li>
+          <li>
+            <b>Electrical note:</b> Each LED will be fed through a resistor
+            array keep the PCB cleaner.
+          </li>
+          <li>
+            <b>GPIO note:</b> the LEDs will be driven through a shift register
+            such as the <code class="language-text">74HC595</code>.
+          </li>
+        </ul>
+
+        <p>
+          This also fits nicely with the double 7-segment display. The 7-segment
+          display can show the current elevator floor, while the button/LED
+          array shows which destination floors are currently requested.
+          Together, these two sections make the panel feel much closer to a real
+          elevator user interface instead of just a basic test board.
+        </p>
+      </section>
+
+      <section class="logbook-entry-content">
+        <h2>Researched USB-C Power Delivery controller options</h2>
+        <p>
+          For USB-C Power Delivery, I have not made the full circuit yet, but I
+          found a few possible IC options. The first promising option was the
+          <code class="language-text">STUSB4500LQTR</code>, which is a QFN-based
+          USB Type-C sink controller. It seems very useful and well-documented,
+          but it is also a little pricey at roughly $2.60 per piece.
+        </p>
+
+        <figure>
+          <img
+            alt="DigiKey listing for STUSB4500LQTR USB-C PD controller"
+            class="img_med"
+            src="../../media/images/NK_Schematic_STUSB4500LQTR_DigiKey.png"
+          />
+          <figcaption>
+            <b>DigiKey listing for the STUSB4500LQTR USB-C sink controller</b>
+          </figcaption>
+        </figure>
+
+        <figure>
+          <iframe
+            title="STUSB4500LQTR datasheet PDF preview"
+            src="../../references/STUSB4500LQTR.PDF"
+            width="100%"
+            height="420"
+            style="
+              border: 3px solid rgba(0, 206, 200, 0.28);
+              border-radius: 10px;
+              background-color: white;
+            "
+          >
+          </iframe>
+          <figcaption>
+            <b>Embedded STUSB4500LQTR datasheet PDF preview</b><br />
+            <a href="../../references/STUSB4500LQTR.PDF" target="_blank"
+              >Open STUSB4500LQTR datasheet PDF in a new tab</a
+            >
+          </figcaption>
+        </figure>
+
+        <h4>STUSB4500LQTR notes</h4>
+        <ul class="clean-list">
+          <li>
+            <b>Purpose:</b> Standalone USB Type-C sink port controller. It
+            handles Type-C attach detection and sink-side power path control.
+          </li>
+          <li>
+            <b>Package:</b> QFN-style package, which is compact but more
+            annoying to work with and needs an xray to gurantee proper reflow. A
+            package repalcement, especially to SOIC or SOT packages would be a
+            better idea.
+          </li>
+          <li>
+            <b>VDD:</b> Operates from about 3.3 V to 6.0 V on the VDD pin.
+          </li>
+          <li>
+            <b>VSYS:</b> Supports about 3.0 V to 5.5 V when powered from the
+            system supply.
+          </li>
+          <li>
+            <b>CC1 / CC2:</b> USB Type-C configuration-channel pins used to
+            detect plug attachment, cable orientation, and source capability.
+          </li>
+          <li>
+            <b>VBUS_EN_SNK:</b> Output used to enable the incoming VBUS power
+            path once a valid source is attached.
+          </li>
+          <li>
+            <b>SCL / SDA:</b> I<sup>2</sup>C interface pins used for
+            configuration and status reading.
+          </li>
+          <li>
+            <b>RESET / ALERT / GPIO:</b> Useful control and status pins for
+            fault handling or MCU interaction.
+          </li>
+        </ul>
+      </section>
+
+      <section class="logbook-entry-content">
+        <h2>Found a cheaper CH221K USB-C PD option</h2>
+        <p>
+          MR recommended looking for a cheaper and easier USB-C PD option, so I
+          found the <code class="language-text">WCH CH221K</code>. This IC comes
+          in a much smaller and simpler SOT-23-6 style package with only a few
+          pins. It looks like it would be much easier to place in the schematic
+          and route on the PCB compared to a QFN package.
+        </p>
+
+        <figure>
+          <img
+            alt="LCSC listing for the WCH CH221K USB-C PD controller"
+            class="img_med"
+            src="../../media/images/NK_Schematic_WCH_CH221K_LCSC.png"
+          />
+          <figcaption>
+            <b>LCSC listing for the WCH CH221K USB-C PD controller</b>
+          </figcaption>
+        </figure>
+
+        <figure>
+          <iframe
+            title="CH221K datasheet PDF preview"
+            src="../../references/CH221K.PDF"
+            width="100%"
+            height="420"
+            style="
+              border: 3px solid rgba(0, 206, 200, 0.28);
+              border-radius: 10px;
+              background-color: white;
+            "
+          >
+          </iframe>
+          <figcaption>
+            <b>Embedded CH221K datasheet PDF preview</b><br />
+            <a href="../../references/CH221K.PDF" target="_blank"
+              >Open CH221K datasheet PDF in a new tab</a
+            >
+          </figcaption>
+        </figure>
+
+        <p>
+          The main issue is that the datasheet I found is in Mandarin. Since I
+          am not very fluent, it will take some time to translate and verify it
+          properly. However, because of the lower cost, simpler wiring, and
+          small package, it may still be a better option for our board if the
+          required voltage configuration can be confirmed.
+        </p>
+
+        <h4>CH221K notes</h4>
+        <ul class="clean-list">
+          <li>
+            <b>Purpose:</b> USB-C PD sink/trigger controller for requesting a
+            fixed voltage from a USB-C PD source.
+          </li>
+          <li>
+            <b>Package:</b> SOT-23-6 style package, which is small but still
+            easier to handle than many QFN-only options.
+          </li>
+          <li>
+            <b>Protocol support:</b> CH221K is focused on USB PD 3.0/2.0 and
+            does not include the same wider fast-charging protocol support as
+            some CH224 variants.
+          </li>
+          <li>
+            <b>VDD:</b> Power input pin. The reference circuit uses a 1 &micro;F
+            decoupling capacitor and a series resistor connection from VBUS.
+          </li>
+          <li><b>GND:</b> Common ground.</li>
+          <li>
+            <b>PG:</b> Open-drain Power Good output, active low by default.
+          </li>
+          <li>
+            <b>CC1 / CC2:</b> USB Type-C configuration-channel pins connected to
+            the Type-C connector.
+          </li>
+          <li>
+            <b>CFG:</b> Analog configuration input. A resistor value selects the
+            requested PD voltage.
+          </li>
+          <li>
+            <b>Voltage selection:</b> Example resistor options listed in the
+            datasheet include 10 k&Omega; for 5 V, 20 k&Omega; for 9 V, 47
+            k&Omega; for 12 V, 100 k&Omega; for 15 V, and 200 k&Omega; for 20 V.
+          </li>
+        </ul>
+      </section>
+
+      <section class="logbook-entry-content">
+        <h2>Current decision</h2>
+        <p>
+          At this point, the double 7-segment display circuit and pushbutton
+          interface are much more settled. The USB-C PD section still needs more
+          work before the final schematic is made. The STUSB4500LQTR seems
+          better documented, but the CH221K appears cheaper and simpler. The
+          next step is to translate/check the CH221K datasheet enough to confirm
+          the wiring, the requested voltage configuration, and whether it is
+          safe for our intended power input.
+        </p>
+      </section>
+
+      <p class="top-link">
+        <a href="#page_top">Go to the top of this page</a>
+      </p>
+    </main>
+
+    <footer class="site-footer">
+      <p>Copyright &copy; Nick Kapuka</p>
+    </footer>
+
+    <!-- Prism.js script for code formatting -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+  </body>
+</html>

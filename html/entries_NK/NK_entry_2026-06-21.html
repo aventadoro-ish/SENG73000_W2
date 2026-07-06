@@ -1,0 +1,502 @@
+<!doctype html>
+<!--
+Author: Nick Kapuka
+-->
+
+<html lang="en">
+  <head>
+    <title>NK Logbook Entry - 2026-06-21</title>
+    <meta charset="UTF-8" />
+    <meta name="author" content="Nick Kapuka" />
+    <meta name="description" content="NK Logbook Entry" />
+    <meta name="robots" content="index, follow" />
+    <meta http-equiv="Pragma" content="no-cache" />
+
+    <link
+      rel="icon"
+      href="../../media/icons/LiF_icon.ico"
+      type="image/x-icon"
+    />
+
+    <!-- shared website styling -->
+    <link rel="stylesheet" href="../../css/base.css" />
+
+    <!-- logbook entry page styling -->
+    <link rel="stylesheet" href="../../css/logbook_entry.css" />
+
+    <!-- Prism syntax highlighting theme -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css"
+    />
+    <link rel="stylesheet" href="../../css/code_formatting.css" />
+  </head>
+
+  <body>
+    <!-- Nav bar loaded by JavaScript -->
+    <div id="navbar-placeholder" data-root="../../"></div>
+    <script src="../../js/navbar.js"></script>
+
+    <main class="page-wrapper">
+      <section class="intro-section logbook-entry-intro" id="page_top">
+        <div class="intro-text">
+          <p class="section-label">Daily Logbook Entry</p>
+          <h1>Logbook Entry, 2026-06-21 by Nick Kapuka</h1>
+
+          <p class="intro-description">
+            Continued revamping website pages, rebuilt the
+            logbook/documentation/CAN pages, added personal logbook navigation
+            JavaScript, and split the CSS into dedicated files.
+          </p>
+
+          <div class="button-row">
+            <a href="../logbook_NK.html" class="button secondary-button"
+              >My Logbook Cover Page</a
+            >
+            <a href="#log" class="button primary-button">Jump to Entry</a>
+          </div>
+        </div>
+
+        <aside class="summary-card">
+          <h2>Entry Snapshot</h2>
+          <p><b>Date:</b> 2026-06-21</p>
+          <p><b>Author:</b> Nick Kapuka</p>
+          <p>
+            <b>Focus:</b>Website page revamp, project plan/logbook/documentation
+            updates, personal logbook JavaScript navigation, and CSS file
+            organization.
+          </p>
+        </aside>
+      </section>
+
+      <section class="logbook-entry-content" id="log">
+        <h2>Continued revamping the project pages</h2>
+        <p>
+          This day, I continued revamping the webpages and powered through most
+          of the remaining major pages. A few notable updated pages are shown
+          below.
+        </p>
+
+        <figure>
+          <img
+            alt="Updated project plan page resource cards"
+            class="img_med"
+            src="../../media/images/LiF_ProjectPlanPage_01.png"
+          />
+          <figcaption>
+            <b
+              >Updated Project Plan page showing the main project resource
+              cards</b
+            >
+          </figcaption>
+        </figure>
+
+        <figure>
+          <img
+            alt="Updated project plan page Gantt chart"
+            class="img_med"
+            src="../../media/images/LiF_ProjectPlanPage_02.png"
+          />
+          <figcaption>
+            <b>Updated Project Plan page showing the redesigned Gantt chart</b>
+          </figcaption>
+        </figure>
+
+        <p>
+          This is the revised Project Plan page. It includes four
+          articles/subheadings that link to the main resources used throughout
+          the project. The second image shows the Gantt chart following the new
+          design.
+        </p>
+      </section>
+
+      <section class="logbook-entry-content">
+        <h2>Redid the main logbook page</h2>
+        <p>
+          The main Logbook page was also redone. It now includes links to each
+          team member's logbook page, along with a brief summary of what each
+          person is doing.
+        </p>
+
+        <figure>
+          <img
+            alt="Updated main logbook page"
+            class="img_med"
+            src="../../media/images/LiF_LogbookPage_01.png"
+          />
+          <figcaption>
+            <b
+              >Updated main Logbook page with links to each team member's
+              logbook</b
+            >
+          </figcaption>
+        </figure>
+      </section>
+
+      <section class="logbook-entry-content">
+        <h2>Updated personal logbook pages and jump navigation</h2>
+        <p>
+          The personal logbook pages were redone with the new colour palette and
+          a cleaner organization system. Weeks are separated using sections, and
+          individual entries are organized using articles.
+        </p>
+
+        <figure>
+          <img
+            alt="Updated personal logbook page top section"
+            class="img_med"
+            src="../../media/images/LiF_LogbookPersonalPage_01.png"
+          />
+          <figcaption>
+            <b>Updated personal logbook page using the new theme and layout</b>
+          </figcaption>
+        </figure>
+
+        <figure>
+          <img
+            alt="Updated personal logbook page weekly sections"
+            class="img_med"
+            src="../../media/images/LiF_LogbookPersonalPage_02.png"
+          />
+          <figcaption>
+            <b>Personal logbook page showing week-based organization</b>
+          </figcaption>
+        </figure>
+
+        <p>
+          Another feature that was added was the "jump to page" feature, which
+          allows for easier navigation between weekly sections on the personal
+          logbook page.
+        </p>
+
+        <figure>
+          <img
+            alt="Jump to entry dropdown feature"
+            class="img_med"
+            src="../../media/images/LiF_JumpToEntry_01.png"
+          />
+          <figcaption>
+            <b
+              >Jump-to-entry dropdown used for faster personal logbook
+              navigation</b
+            >
+          </figcaption>
+        </figure>
+
+        <p>Below is the relevant JavaScript code used to make it work:</p>
+
+        <pre
+          class="code-block language-javascript"
+        ><code class="language-javascript">
+// ok first personal JS file lessss gooooo
+// also mb, I will overcomment because writing code past 3am makes me forget it. I genuinely need to explain every line or I will have a stroke later trying to understand wtf I did
+
+// so we gotta run it AFTER the HTML has loaded cause JS LOVES to run first
+document.addEventListener(&quot;DOMContentLoaded&quot;, function () {
+    // these are CUSTOM functions!
+    setupLatestEntryButton();
+    setupWeekJumpMenu();
+})
+
+// let&#x27;s make the first function setupLatestEntryButton() that will find the newest logbook entry and update the &quot;latest entry&quot; button in our chud logbooks
+function setupLatestEntryButton() {
+    // find the button with id=&quot;latest-entry-link&quot;
+    const latestButton = document.getElementById(&quot;latest-entry-link&quot;);
+    // find all logbook entry links using the class in &lt;article class=&quot;entry-summary&quot;&gt;
+    const entryLinks = document.querySelectorAll(&quot;.entry-summary h3 a&quot;);
+
+    // return if no data/empty
+    if (!latestButton || entryLinks.length === 0) {
+        return;
+    }
+
+    // define these as empty to start
+    let latestEntry = null;
+    let latestDate = &quot;&quot;;
+
+    // loop through every entry link found on the page
+    entryLinks.forEach(function (link) {
+        // checks both the visible link text and the file path
+        // basically, let&#x27;s you use:
+        // &lt;a href=&quot;./entries_NK/NK_entry_2026-06-18.html&quot;&gt;Entry 3 - 2026-06-18&lt;/a&gt; or
+        // &lt;a href=&quot;./entries_NK/NK_entry_2026-06-18.html&quot;&gt;Entry 3&lt;/a&gt; -- if you&#x27;re a lazy bum
+        const date = findDate(link.textContent + &quot; &quot; + link.href);
+
+        // if this date is newer than the newest found so far, save it
+        if (date &gt; latestDate) {
+            latestDate = date;
+            latestEntry = link;
+        }
+    });
+
+    // when a latest entry is find, update the button for latest entry!
+    if (latestEntry) {
+        latestButton.href = latestEntry.href;
+        latestButton.textContent = &quot;Latest Entry - &quot; + latestDate;
+    }
+
+}
+
+// builds a drop down menu dynamically using the week sections already on the page
+function setupWeekJumpMenu() {
+    // grab the ID of &quot;week-jump&quot;
+    const weekMenu = document.getElementById(&quot;week-jump&quot;);
+    // find all the stuff with id of week-entry box (used in the HTML via &lt;section class=&quot;week-entry-box&quot; id=&quot;week-3&quot;&gt;
+    const weekSections = document.querySelectorAll(&quot;.week-entry-box&quot;);
+
+    // return of no data/empty
+    if (!weekMenu || weekSections.length === 0) {
+        return;
+    }
+
+    // since selectorAll grabbed many entries, forEach is basically a for loop that searches through each
+    // basically, for each week&#x27;s box, find that week box&#x27;s h2. Hard to explain but:
+    /* 
+            &lt;section class=&quot;week-entry-box&quot; id=&quot;week-5&quot;&gt;
+            &lt;div class=&quot;week-header&quot;&gt;
+                &lt;p class=&quot;section-label&quot;&gt;Week 5&lt;/p&gt;
+                &lt;h2&gt;STM32 CAN, LEDs, Pushbuttons, and Shield Testing&lt;/h2&gt;
+            &lt;/div&gt;
+
+        we first search in this section and find it&#x27;s h2:
+        &lt;h2&gt;STM32 CAN, LEDs, Pushbuttons, and Shield Testing&lt;/h2&gt;
+
+        then the const label thing gets:
+        &lt;p class=&quot;section-label&quot;&gt;Week 5&lt;/p&gt;
+
+        then, with the power of friendship it becomes a dropdown text in the label &amp;&amp; heading in if:
+        Week 5 - STM32 CAN, LEDs, Pushbuttons, and Shield Testing
+    */
+    weekSections.forEach(function (section) {
+        // this searches the webpage for the first h2
+        const heading = section.querySelector(&quot;h2&quot;);
+        // this searches only inside that SECTION for the first h2
+        const label = section.querySelector(&quot;.section-label&quot;);
+
+
+        // if the section has no id, skip it, and the dropdown needs an ID so return if nothing&#x27;s there 
+        if (!section.id) {
+            return;
+        }
+
+        // set the dropdown value to section id
+        // section.id = &quot;week-5&quot; so option.value would be &quot;#week-5&quot; - just formatting
+        const option = document.createElement(&quot;option&quot;);
+        option.value = &quot;#&quot; + section.id;
+
+        // this builds text for the dropdown menu
+        if (label &amp;&amp; heading) {
+            option.textContent = label.textContent + &quot; - &quot; + heading.textContent;
+        } else if (heading) {
+            option.textContent = heading.textContent;
+        } else {
+            option.textContent = section.id;
+        }
+        // add the new option into the dropdown menu
+        weekMenu.appendChild(option);
+    });
+
+    // when the user changes the dropdown, jump to the selected week
+    weekMenu.addEventListener(&quot;change&quot;, function () {
+        if (weekMenu.value !== &quot;&quot;) {
+            window.location.href = weekMenu.value;
+        }
+    });
+
+}
+
+// look for dates written like the usual format of 2026-06-20
+function findDate(text) {
+    // search the text for a date pattern: 4 digits, dash, 2 digits, dash, 2 digits
+    const match = text.match(/\d{4}-\d{2}-\d{2}/);
+
+    // if found, return this date
+    if (match) {
+        return match[0];
+    }
+    // if not, fmcl and return empty
+    return &quot;&quot;;
+}
+            </code></pre>
+      </section>
+
+      <section class="logbook-entry-content">
+        <h2>Updated the Documentation and CAN protocol pages</h2>
+        <p>
+          After the logbook pages, I returned to the other major pages. The
+          Documentation page now displays some of the documentation being done
+          outside the general scope of the main website pages. This includes our
+          modified CAN protocol compared to the class version, the Raspberry Pi
+          deployment workflow (WIP; MR), and the caffeine study, which is a
+          semester-long study of how many energy drinks we can consume (WIP;
+          NK).
+        </p>
+
+        <figure>
+          <img
+            alt="Updated documentation page"
+            class="img_med"
+            src="../../media/images/LiF_DocumentationPage_01.png"
+          />
+          <figcaption>
+            <b
+              >Updated Documentation page showing project documentation links</b
+            >
+          </figcaption>
+        </figure>
+
+        <p>
+          Below is the updated CAN protocol page, which features two tables and
+          their explanations.
+        </p>
+
+        <figure>
+          <img
+            alt="Updated CAN protocol page first table"
+            class="img_med"
+            src="../../media/images/LiF_CANPage_01.png"
+          />
+          <figcaption>
+            <b
+              >Updated CAN protocol page showing the first CAN table and
+              explanation</b
+            >
+          </figcaption>
+        </figure>
+
+        <figure>
+          <img
+            alt="Updated CAN protocol page second table"
+            class="img_med"
+            src="../../media/images/LiF_CANPage_02.png"
+          />
+          <figcaption>
+            <b
+              >Updated CAN protocol page showing the second CAN table and
+              explanation</b
+            >
+          </figcaption>
+        </figure>
+      </section>
+
+      <section class="logbook-entry-content">
+        <h2>Split the CSS into dedicated files</h2>
+        <p>
+          Lastly, the CSS was split into various files to keep the webpages more
+          organized with dedicated CSS includes. The near-thousand-line
+          <code class="language-css">tropical.css</code> file still exists for
+          reference, but each page now has more focused styling files.
+        </p>
+
+        <p>
+          The includes go inside the
+          <code class="language-markup">&lt;head&gt;</code> of each file like
+          this:
+        </p>
+
+        <pre class="code-block language-markup"><code class="language-markup">
+&lt;!-- shared website styling --&gt;
+&lt;link rel=&quot;stylesheet&quot; href=&quot;../../css/base.css&quot; /&gt;
+
+&lt;!-- dedicated page styling --&gt;
+&lt;link rel=&quot;stylesheet&quot; href=&quot;../../css/[relevant_styling].css&quot; /&gt;
+
+&lt;!-- Prism syntax highlighting theme --&gt;
+&lt;link
+  rel=&quot;stylesheet&quot;
+  href=&quot;https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css&quot;
+/&gt;
+&lt;link rel=&quot;stylesheet&quot; href=&quot;../../css/code_formatting.css&quot; /&gt;
+            </code></pre>
+
+        <p>
+          Below is an image showing the CSS files after the split. Some files
+          were still kept from before, mostly for logging/reference reasons.
+        </p>
+
+        <figure>
+          <img
+            alt="List of CSS files after organization"
+            class="img_med"
+            src="../../media/images/LiF_AllCSS.png"
+          />
+          <figcaption>
+            <b
+              >CSS files after splitting the larger stylesheet into
+              page-specific files</b
+            >
+          </figcaption>
+        </figure>
+
+        <h4>Main CSS files</h4>
+        <ul>
+          <li>
+            <b>tropical.css</b> &mdash; overall master file, still kept as a
+            near-complete reference with almost all classes
+          </li>
+          <li>
+            <b>base.css</b> &mdash; included for every webpage and sets the
+            background, general layout, and navbar
+          </li>
+          <li><b>about.css</b> &mdash; formatting for the About page</li>
+          <li>
+            <b>can.css</b> &mdash; formatting for the CAN documentation page
+          </li>
+          <li>
+            <b>code_formatting.css</b> &mdash; sets the background colour and
+            appearance of the code blocks used in logbook entries
+          </li>
+          <li>
+            <b>documentation.css</b> &mdash; formatting for the Documentation
+            page
+          </li>
+          <li>
+            <b>gantt_chart_tropical.css</b> &mdash; keeps Matvey&#x27;s initial
+            Gantt chart CSS while applying the tropical theme to the newer chart
+          </li>
+          <li>
+            <b>home.css</b> &mdash; formatting for the homepage/index.html
+          </li>
+          <li>
+            <b>logbook_entry.css</b> &mdash; formatting for individual logbook
+            entries
+          </li>
+          <li>
+            <b>logbook.css</b> &mdash; formatting for the main Logbook page that
+            links to each team member&#x27;s logbook
+          </li>
+          <li>
+            <b>personal_logbook.css</b> &mdash; formatting for the personal
+            logbook cover pages where individual entries are linked
+          </li>
+          <li>
+            <b>project_details.css</b> &mdash; formatting for the Project
+            Details page
+          </li>
+          <li>
+            <b>project_plan.css</b> &mdash; formatting for the rest of the
+            Project Plan page, excluding the Gantt chart
+          </li>
+        </ul>
+
+        <p>And that's it!</p>
+      </section>
+
+      <p class="top-link">
+        <a href="#page_top">Go to the top of this page</a>
+      </p>
+    </main>
+
+    <footer class="site-footer">
+      <p>Copyright &copy; Nick Kapuka</p>
+    </footer>
+
+    <!-- Prism.js script for code formatting -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <!-- Import languages used in this entry -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-css.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markup.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+  </body>
+</html>
