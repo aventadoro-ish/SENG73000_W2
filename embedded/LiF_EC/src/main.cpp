@@ -1,4 +1,7 @@
 #include <Arduino.h>
+#include <DFRobot_VL53L0X.h>
+#include <Wire.h>
+#include <LCDI2C_Multilingual.h>
 
 #include "pin_definition.h"
 #include "Motor.h"
@@ -26,6 +29,8 @@
 #define FLOOR3_STEPS    2250 
 #endif
 
+constexpr uint32_t DISPLAY_UPDATE_PERIOD_MS = 500;
+
 
 enum class EC_State : uint8_t {
     INITIALIZE,
@@ -44,6 +49,9 @@ unsigned long int last_heartbeat_time;
 uint8_t target_floor = 255;     // 255 ensures the initial floor request results in move
 uint8_t current_floor = 0;      // 0 is internally interpreted as moving
 
+DFRobot_VL53L0X tof_sensor;
+unsigned long int last_tof_update;
+LCDI2C_Latin_Symbols lcd(0x27, 16, 2);    // I2C address = 0x27
 
 
 // -----------------------------------------------------------------------------
@@ -92,6 +100,12 @@ void send_heartbeat();
 void fault_mode(const char* reason = nullptr);
 
 
+/**
+ * @brief Erases and rewrites info on the LCD screen.
+ */
+void update_lcd();
+
+
 // -----------------------------------------------------------------------------
 // Arduino setup and loop
 // -----------------------------------------------------------------------------
@@ -101,6 +115,22 @@ void setup() {
         ;
     }
     Serial.println("LiF EC - Setup Started");
+    
+    // Init I2C bus
+    Wire.begin();
+
+    // Set I2C sub-device address
+    tof_sensor.begin(0x50);
+    // Set to Back-to-back mode and high precision mode
+    tof_sensor.setMode(tof_sensor.eContinuous, tof_sensor.eHigh);
+    // Laser rangefinder begins to work
+    tof_sensor.start();
+
+    // Initialize the LCD
+    lcd.init();
+    // Turn on the LCD backlight
+    lcd.backlight();
+
 
     LiF_CAN::setup();
     LiF_Motor::setup();
@@ -123,6 +153,7 @@ void setup() {
 #endif
 
     last_heartbeat_time = millis();
+    last_tof_update = millis();
     state = EC_State::IDLE;
 
 
@@ -177,6 +208,10 @@ void loop() {
         send_heartbeat();
     }
 
+    if (millis() - last_tof_update  >= DISPLAY_UPDATE_PERIOD_MS) {
+        last_tof_update = millis();
+        update_lcd();
+    }
 
 }
 
@@ -325,6 +360,7 @@ void fault_mode(const char* reason) {
     
     for (;;) {
         if (millis() - last_heartbeat_time >= message_period_ms) {
+            update_lcd();
             last_message_time = millis();
             
             if (reason != nullptr) {
@@ -336,4 +372,37 @@ void fault_mode(const char* reason) {
             send_EC_CAN_frame(false, 0);
         }
     }
+}
+
+
+
+void update_lcd() {
+    lcd.clear();
+    lcd.home();
+    lcd.print("State: ");
+    
+    switch (state) {
+    case EC_State::INITIALIZE:
+        lcd.print("init");
+        break;
+    case EC_State::IDLE:
+        lcd.print("idle");
+        break;
+    case EC_State::MOVING:
+        lcd.print("moving");
+        break;
+    case EC_State::DISABLED:
+        lcd.print("disabled");
+        break;
+    case EC_State::FAULT:
+        lcd.print("fault");    
+        break;
+    default:
+        lcd.print("fault");
+        fault_mode("invalid EC_State");
+        break;
+    }
+    
+    lcd.setCursor(0, 1);
+    lcd.printf("dist: %f", tof_sensor.getDistance());
 }

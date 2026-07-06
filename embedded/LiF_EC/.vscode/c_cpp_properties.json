@@ -10,8 +10,10 @@
             "includePath": [
                 "C:/Users/Matve/Projects/LithiumFirefly/SENG73000_W2/embedded/LiF_EC/include",
                 "C:/Users/Matve/Projects/LithiumFirefly/SENG73000_W2/embedded/LiF_EC/src",
+                "C:/Users/Matve/Projects/LithiumFirefly/SENG73000_W2/embedded/LiF_EC/.pio/libdeps/nucleo_f303re/LiquidCrystal I2C Multilingual/src",
+                "C:/Users/Matve/Projects/LithiumFirefly/SENG73000_W2/embedded/LiF_EC/.pio/libdeps/nucleo_f303re/DFRobot_VL53L0X",
+                "C:/Users/Matve/.platformio/packages/framework-arduinoststm32/libraries/Wire/src",
                 "C:/Users/Matve/Projects/LithiumFirefly/SENG73000_W2/embedded/LiF_EC/.pio/libdeps/nucleo_f303re/STM32_CAN/src",
-                "C:/Users/Matve/Projects/LithiumFirefly/SENG73000_W2/embedded/LiF_EC/.pio/libdeps/nucleo_f303re/Stepper/src",
                 "C:/Users/Matve/.platformio/packages/framework-arduinoststm32/cores/arduino/avr",
                 "C:/Users/Matve/.platformio/packages/framework-arduinoststm32/cores/arduino/stm32",
                 "C:/Users/Matve/.platformio/packages/framework-arduinoststm32/libraries/SrcWrapper/inc",
@@ -47,7 +49,6 @@
                 "C:/Users/Matve/.platformio/packages/framework-arduinoststm32/libraries/SubGhz/src",
                 "C:/Users/Matve/.platformio/packages/framework-arduinoststm32/libraries/USBDevice/src",
                 "C:/Users/Matve/.platformio/packages/framework-arduinoststm32/libraries/VirtIO/src",
-                "C:/Users/Matve/.platformio/packages/framework-arduinoststm32/libraries/Wire/src",
                 ""
             ],
             "browse": {
@@ -55,8 +56,10 @@
                 "path": [
                     "C:/Users/Matve/Projects/LithiumFirefly/SENG73000_W2/embedded/LiF_EC/include",
                     "C:/Users/Matve/Projects/LithiumFirefly/SENG73000_W2/embedded/LiF_EC/src",
+                    "C:/Users/Matve/Projects/LithiumFirefly/SENG73000_W2/embedded/LiF_EC/.pio/libdeps/nucleo_f303re/LiquidCrystal I2C Multilingual/src",
+                    "C:/Users/Matve/Projects/LithiumFirefly/SENG73000_W2/embedded/LiF_EC/.pio/libdeps/nucleo_f303re/DFRobot_VL53L0X",
+                    "C:/Users/Matve/.platformio/packages/framework-arduinoststm32/libraries/Wire/src",
                     "C:/Users/Matve/Projects/LithiumFirefly/SENG73000_W2/embedded/LiF_EC/.pio/libdeps/nucleo_f303re/STM32_CAN/src",
-                    "C:/Users/Matve/Projects/LithiumFirefly/SENG73000_W2/embedded/LiF_EC/.pio/libdeps/nucleo_f303re/Stepper/src",
                     "C:/Users/Matve/.platformio/packages/framework-arduinoststm32/cores/arduino/avr",
                     "C:/Users/Matve/.platformio/packages/framework-arduinoststm32/cores/arduino/stm32",
                     "C:/Users/Matve/.platformio/packages/framework-arduinoststm32/libraries/SrcWrapper/inc",
@@ -92,7 +95,6 @@
                     "C:/Users/Matve/.platformio/packages/framework-arduinoststm32/libraries/SubGhz/src",
                     "C:/Users/Matve/.platformio/packages/framework-arduinoststm32/libraries/USBDevice/src",
                     "C:/Users/Matve/.platformio/packages/framework-arduinoststm32/libraries/VirtIO/src",
-                    "C:/Users/Matve/.platformio/packages/framework-arduinoststm32/libraries/Wire/src",
                     ""
                 ]
             },
