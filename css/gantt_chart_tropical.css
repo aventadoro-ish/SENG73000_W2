@@ -176,6 +176,13 @@
     text-decoration: line-through;
 }
 
+#Gantt .planned {
+    color: var(--ink);
+    background-color: var(--yellow);
+    font-weight: bold;
+    text-align: center;
+}
+
 #Gantt .omitted.completed {
     background: repeating-linear-gradient(135deg,
             #b7b7b7,
