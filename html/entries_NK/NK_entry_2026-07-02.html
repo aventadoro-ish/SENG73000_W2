@@ -1,0 +1,243 @@
+<!doctype html>
+<!--
+Author: Nick Kapuka
+-->
+
+<html lang="en">
+  <head>
+    <title>NK Logbook Entry - 2026-07-02</title>
+    <meta charset="UTF-8" />
+    <meta name="author" content="Nick Kapuka" />
+    <meta name="description" content="NK Logbook Entry" />
+    <meta name="robots" content="index, follow" />
+    <meta http-equiv="Pragma" content="no-cache" />
+
+    <link
+      rel="icon"
+      href="../../media/icons/LiF_icon.ico"
+      type="image/x-icon"
+    />
+
+    <!-- shared website styling -->
+    <link rel="stylesheet" href="../../css/base.css" />
+
+    <!-- logbook entry page styling -->
+    <link rel="stylesheet" href="../../css/logbook_entry.css" />
+
+    <!-- Prism syntax highlighting theme -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css"
+    />
+    <link rel="stylesheet" href="../../css/code_formatting.css" />
+  </head>
+
+  <body>
+    <!-- Nav bar loaded by JavaScript -->
+    <div id="navbar-placeholder" data-root="../../"></div>
+    <script src="../../js/navbar.js"></script>
+
+    <main class="page-wrapper">
+      <section class="intro-section logbook-entry-intro" id="page_top">
+        <div class="intro-text">
+          <p class="section-label">Daily Logbook Entry</p>
+          <h1>Logbook Entry, 2026-07-02 by Nick Kapuka</h1>
+
+          <p class="intro-description">
+            Began working on the user interface portion of the project,
+            including LEDs, buttons, rotary encoder planning, and a 7-segment
+            display schematic for showing the elevator's current floor.
+          </p>
+
+          <div class="button-row">
+            <a href="../logbook_NK.html" class="button secondary-button"
+              >My Logbook Cover Page</a
+            >
+            <a href="#log" class="button primary-button">Jump to Entry</a>
+          </div>
+        </div>
+
+        <aside class="summary-card">
+          <h2>Entry Snapshot</h2>
+          <p><b>Date:</b> 2026-07-02</p>
+          <p><b>Author:</b> Nick Kapuka</p>
+          <p>
+            <b>Focus:</b>User interface design, rotary encoder floor selection,
+            7-segment display planning, AS1115 research, and 74HC595 shift
+            register schematic work.
+          </p>
+        </aside>
+      </section>
+
+      <section class="logbook-entry-content" id="log">
+        <h2>Started working on the user interface</h2>
+        <p>
+          I began working on my part of the project, which focuses on the user
+          interface: LEDs and buttons. I proposed using a 7-segment display to
+          update and display what floor the elevator is currently on, similar to
+          the floor displays used in real elevators.
+        </p>
+
+        <p>
+          We also discussed potentially implementing more than the original
+          three floors, possibly expanding to six. I believe having 6-7 buttons
+          on a small PCB would become messy, so a rotary encoder seemed like a
+          good option for selecting the desired floor cleanly.
+        </p>
+
+        <figure>
+          <img
+            alt="Rotary encoder schematic for floor selection"
+            class="img_med"
+            src="../../media/images/NK_Schematic_RotaryEncoder.png"
+          />
+          <figcaption>
+            <b
+              >Rotary encoder schematic proposed for selecting elevator
+              floors</b
+            >
+          </figcaption>
+        </figure>
+
+        <p>
+          The idea is that the rotary encoder would be turned to choose a floor,
+          and then a button press would confirm and queue that floor. This would
+          be similar to how real elevators allow multiple floors to be queued.
+        </p>
+      </section>
+
+      <section class="logbook-entry-content">
+        <h2>Researched an LED driver for the 7-segment display</h2>
+        <p>
+          Another job of mine was designing a schematic for implementing a
+          7-segment display. I initially considered using a more complicated IC:
+          <code class="language-text">AS1115-BSST</code>.
+        </p>
+
+        <p>
+          The <code class="language-text">AS1115-BSST</code> is an LED driver
+          that can be powered with 3.3 V, which is ideal because the ESP32 uses
+          3.3 V logic. It also communicates using I<sup>2</sup>C, which would
+          make the interface fairly simple.
+        </p>
+
+        <p>
+          Below are the DigiKey page and datasheet reference images for this IC:
+        </p>
+
+        <figure>
+          <img
+            alt="DigiKey page for the AS1115 LED driver"
+            class="img_med"
+            src="../../media/images/NK_Schematic_AS1115_Page.png"
+          />
+          <figcaption>
+            <b>DigiKey page for the AS1115-BSST LED driver</b>
+          </figcaption>
+        </figure>
+
+        <figure>
+          <img
+            alt="AS1115 datasheet screenshot"
+            class="img_med"
+            src="../../media/images/NK_Schematic_AS1115_Datasheet.png"
+          />
+          <figcaption><b>AS1115 datasheet reference image</b></figcaption>
+        </figure>
+
+        <figure>
+          <iframe
+            title="AS1115 datasheet PDF preview"
+            src="../../references/AS1115_DS000206_1-00.pdf"
+            width="100%"
+            height="420"
+            style="
+              border: 3px solid rgba(0, 206, 200, 0.28);
+              border-radius: 10px;
+              background-color: white;
+            "
+          >
+          </iframe>
+          <figcaption>
+            <b>Embedded AS1115 datasheet PDF preview</b><br />
+            <a href="../../references/AS1115_DS000206_1-00.pdf" target="_blank"
+              >Open AS1115 datasheet PDF in a new tab</a
+            >
+          </figcaption>
+        </figure>
+      </section>
+
+      <section class="logbook-entry-content">
+        <h2>Switched the plan to a 74HC595 shift register</h2>
+        <p>
+          After consulting MR, it was decided to use a shift register instead.
+          This is simpler to implement, we are already familiar with shift
+          registers from a previous LED matrix project, and they are much
+          cheaper. Each shift register is about $0.50 compared to roughly $2-3
+          per piece for the AS1115.
+        </p>
+
+        <p>
+          The shift register that will likely be used is the
+          <code class="language-text">74HC595</code>. This is an 8-bit
+          serial-in/serial-or-parallel-out shift register. It receives data from
+          the ESP32, is clocked, and then the output is latched.
+        </p>
+
+        <figure>
+          <iframe
+            title="74HC595 datasheet PDF preview"
+            src="../../references/74HC_HCT595.PDF"
+            width="100%"
+            height="420"
+            style="
+              border: 3px solid rgba(0, 206, 200, 0.28);
+              border-radius: 10px;
+              background-color: white;
+            "
+          >
+          </iframe>
+          <figcaption>
+            <b>Embedded 74HC595 datasheet PDF preview</b><br />
+            <a href="../../references/74HC_HCT595.PDF" target="_blank"
+              >Open 74HC595 datasheet PDF in a new tab</a
+            >
+          </figcaption>
+        </figure>
+
+        <p>
+          From the shift register, the output is fed through a resistor array
+          instead of individual resistors, since using many separate resistors
+          would be annoying and less clean. The resistor array then feeds into
+          the 7-segment display.
+        </p>
+
+        <figure>
+          <img
+            alt="7-segment display schematic using a shift register and resistor array"
+            class="img_med"
+            src="../../media/images/NK_Schematic_7Seg_01.png"
+          />
+          <figcaption>
+            <b
+              >7-segment display schematic using a 74HC595 shift register and
+              resistor array</b
+            >
+          </figcaption>
+        </figure>
+      </section>
+
+      <p class="top-link">
+        <a href="#page_top">Go to the top of this page</a>
+      </p>
+    </main>
+
+    <footer class="site-footer">
+      <p>Copyright &copy; Nick Kapuka</p>
+    </footer>
+
+    <!-- Prism.js script for code formatting -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+  </body>
+</html>
