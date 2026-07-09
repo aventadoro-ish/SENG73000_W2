@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<!--
+Author: Matvey Regentov
+-->
+
+<html lang="en">
+
+<head>
+	<title>MR Logbook Entry - 2026-06-29</title>
+	<meta charset="UTF-8">
+	<meta name="author" content="Matvey Regentov">
+	<meta name="description" content="MR Logbook Entry">
+	<meta name="robots" content="index, follow">
+	<meta http-equiv="Pragma" content="no-cache">
+
+	<link rel="icon" href="../../media/icons/LiF_icon.ico" type="image/x-icon">
+
+	<!-- shared website styling -->
+	<link rel="stylesheet" href="../../css/base.css">
+
+	<!-- logbook entry page styling -->
+	<link rel="stylesheet" href="../../css/logbook_entry.css">
+
+	<!-- Prism syntax highlighting theme -->
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css">
+	<link rel="stylesheet" href="../../css/code_formatting.css">
+
+</head>
+
+<body>
+	<!-- Nav bar loaded by JavaScript -->
+	<div id="navbar-placeholder" data-root="../../"></div>
+	<script src="../../js/navbar.js"></script>
+
+	<main class="page-wrapper">
+
+		<section class="intro-section logbook-entry-intro" id="page_top">
+			<div class="intro-text">
+				<p class="section-label">Daily Logbook Entry</p>
+				<h1>Logbook Entry, 2026-06-29 by Matvey Regentov</h1>
+
+				<p class="intro-description">Phase 2 detailed planning</p>
+
+				<div class="button-row">
+					<a href="../logbook_MR.html" class="button secondary-button">My Logbook Cover Page</a>
+					<a href="#log" class="button primary-button">Jump to Entry</a>
+				</div>
+			</div>
+
+			<aside class="summary-card">
+				<h2>Entry Snapshot</h2>
+				<p><b>Date:</b> 2026-06-29</p>
+				<p><b>Author:</b> Matvey Regentov</p>
+				<p><b>Focus:</b>Toggle Switch code and Prism JS for code formatting</p>
+			</aside>
+		</section>
+
+		<section class="logbook-entry-content" id="log">
+			<h2>Detailed Phase 2 planning with the team</h2>
+            <p>
+                The LiF Team conducted an online meeting to assign tasks for 
+                Phase 2 deliverables. We mainly focused on PCB development 
+                planning and decided on our contingency plans for hitting 
+                primary deliverables without PCBs. I made an Obsidian document 
+                with requirements for each sub-system of the PCB. Exported PDF 
+                is available <a href="../../documentation/Project Lithium Firefly - Topic - Phase 2 Planning.pdf">here</a>. 
+                There rest of this logbook entry section contains the same 
+                information converted to HTML format using ChatGPT.
+            </p>
+            <p>
+                Team had an online meeting to finalize the plans for phase 2 of the project
+                (weeks 7-11 of the semester). Project Charter states the
+                <mark><strong>primary features</strong></mark> and deliverables that we
+                <strong>must</strong> get done:
+            </p>
+
+            <ul>
+                <li>Server on RPi</li>
+                <li>Website controls for the elevator with a GUI</li>
+                <li>Authentication and authorization</li>
+                <li>Database logging</li>
+                <li>Audio signals for visually-impaired users (can be played from SC)</li>
+            </ul>
+
+            <p>We also need to catch up on outstanding tasks from phase 1:</p>
+
+            <ul>
+                <li>ToF sensor</li>
+                <li>EC LCD screen</li>
+            </ul>
+
+            <p>Plan to fill the primary requirements:</p>
+
+            <ul>
+                <li>use I2C ToF sensor which we have on hand (Matvey)</li>
+                <li>add LCD to EC (Matvey)</li>
+            </ul>
+
+            <p>Other tasks for the reading week:</p>
+
+            <ul>
+                <li>Rita - get started on databases</li>
+                <li>Nick - more website work and GUI controls</li>
+            </ul>
+
+            <h3>Phase 2 PCB Design Timeline</h3>
+
+            <p>
+                The team will collaboratively design a replacement FC/CC PCB using KiCAD
+                9.0.9 software. Lead time on PCBs requires us to focus on this task during
+                the reading week (week 8). Approximate timeline for PCB implementation:
+            </p>
+
+            <ul>
+                <li>PCB design done by 07-05</li>
+                <li>PCBs arrive around 07-10 to 07-13</li>
+                <li>Assemble PCBs 07-13 to 07-17</li>
+            </ul>
+
+            <h3>Phase 2 PCB Design Collaboration</h3>
+
+            <p>
+                PCB functionality is divided into several sub-systems, and each sub-system
+                is assigned to one team member. Each team member will:
+            </p>
+
+            <ul>
+                <li>design a schematic sheet using KiCAD 9.0.9 software</li>
+                <li>
+                    provide documentation on their design:
+                    <ul>
+                        <li>justify passive component values</li>
+                        <li>provide references</li>
+                        <li>define pin assignment requirements for their sub-system</li>
+                    </ul>
+                </li>
+                <li>each schematic sheet will be verified by one other member</li>
+            </ul>
+
+            <p>
+                Then, Matvey will merge the schematic sheets together and route the PCB.
+                As a mechanical design lead, Matvey will come up with an outline of the PCB
+                and component placement to work well with the structure of the elevator.
+            </p>
+
+            <h3>Phase 2 PCB Design Team Standards</h3>
+
+            <ul>
+                <li>
+                    Passive components must be SMD 0805 size (metric code: 2012) unless
+                    there is a reason to deviate from this standard size. This will simplify
+                    component sourcing and PCB assembly.
+                </li>
+                <li>
+                    Components must be in-stock on DigiKey and have active production status
+                    unless there is a reason to deviate from this.
+                </li>
+                <li>
+                    No-lead IC packages must be avoided unless a substitute package/component
+                    does not exist.
+                </li>
+                <li>
+                    Use SMD components when possible. Through-hole components may be used for
+                    mechanical rigidity.
+                </li>
+            </ul>
+
+            <h3>Phase 2 PCB Design Modules and Tasks</h3>
+
+            <p>
+                Italicized headings are primary requirements for the PCB. Non-italicized
+                headings are additional features we want to include.
+            </p>
+
+            <h4><em>Buttons/LEDs</em> - Nick</h4>
+
+            <p>
+                The FC/CC boards require push buttons for user input to select a floor and a
+                set of LEDs to indicate user selection/elevator position.
+            </p>
+
+            <p>Primary requirement:</p>
+
+            <ul>
+                <li>3x push buttons</li>
+                <li>3x LEDs for floor selection</li>
+                <li>
+                    3x LEDs for cabin position indication. These pins can be reused for the
+                    7-segment display.
+                </li>
+                <li>
+                    1x toggle switch/limit switch connector
+                    <ul>
+                        <li>CC needs to have a toggle switch to simulate "doors are open"</li>
+                        <li>
+                            door servos, an additional feature, will require us to replace the
+                            toggle switch with a limit switch
+                        </li>
+                        <li>
+                            add a simple connector to the board to make toggle/limit switches
+                            interchangeable
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+
+            <p>Optional features:</p>
+
+            <ul>
+                <li>
+                    extra sets of buttons/LEDs for use with more than 3 floors
+                    <ul>
+                        <li>This will depend on GPIO availability and PCB footprint</li>
+                    </ul>
+                </li>
+            </ul>
+
+            <h4><em>CAN connector</em> - Rita</h4>
+
+            <p>
+                Current Nucleo Shields use DB9 connector for CAN bus, which is a defined and
+                existing standard. Our team wants to experiment with USB-C connector for CAN
+                to assess the feasibility of utilizing USB-C cables for CAN bus signal and
+                USB Power Delivery function. This feature will also help reduce labour of
+                wiring CAN-based systems, as USB connectors are readily available.
+                Furthermore, we want to include 2 connectors on each PCB to eliminate the
+                need for branching cables and use a simpler pass-through daisy-chained
+                connection topology. A detailed overview of the connection topology and
+                power path is shown in the <em>USB-C PD Trigger</em> section below.
+            </p>
+
+            <figure class="logbook-figure">
+                <img src="../../media/images/Project LiF_Proposed_PCB_connection_topology_and_power_path_2026-06-29.png"
+                    alt="Proposed PCB connection topology and power path" class="logbook-image centered-image"
+                    style="max-width: 100%; height: auto;">
+                <figcaption>Proposed PCB connection topology and power path</figcaption>
+            </figure>
+
+            <p>Proposed pinout CAN:</p>
+
+            <ul>
+                <li>D+ is used as CANH</li>
+                <li>D- is used as CANL</li>
+            </ul>
+
+            <p>
+                D+ and D- are a differential pair, but USB's characteristic impedance is
+                90ohm compared to 120 ohm for a CAN bus. Assume this will not affect our
+                system, which uses short cables at low bitrates.
+            </p>
+
+            <p>Additional USB-C connector connections/functions:</p>
+
+            <ul>
+                <li>
+                    VBUS and Gnd pins are used to provide power to the PCB from upstream port
+                    and will supply power to downstream port.
+                </li>
+                <li>
+                    CC1 and CC2 pins are used by USB PD protocol to negotiate VBUS voltage.
+                </li>
+            </ul>
+
+            <p>
+                In order to make our PCBs compatible with standard CAN-DB9 systems, we will
+                also keep 1x DB-9 connector on each PCB.
+            </p>
+
+            <p>Requirements:</p>
+
+            <ul>
+                <li>2x female horizontal USB-C connectors for CAN bus</li>
+                <li>
+                    1x 120Ohm termination resistor for CAN
+                    <ul>
+                        <li>
+                            use a DIP/toggle switch or a solder bridge to make this termination
+                            resistance optional, such that any board can be terminating or not on
+                            the CAN bus
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    1x DB-9 connector for CAN bus backup
+                    <ul>
+                        <li>
+                            optionally choose a footprint compatible with <code>5747844-4</code>
+                            (DigiKey PN: <code>A32117-ND</code>) since the tool room can supply
+                            compatible components
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    1x Double-Pole switch to disconnect CAN bus from upstream USB-C port to
+                    allow that port to be used with standard USB devices
+                </li>
+            </ul>
+
+            <h4><em>CAN Transceiver</em> - Rita</h4>
+
+            <p>
+                The PCB must include a CAN bus transceiver. There are not specific
+                requirements for the transceiver as of now, but they may appear during
+                further research into the topic.
+            </p>
+
+            <p>Safe-to-use reference components/designs:</p>
+
+            <ul>
+                <li>
+                    Molybdenum Penguin Communications PCB
+                    <ul>
+                        <li>uses <code>MCP2542FDxMF</code></li>
+                    </ul>
+                </li>
+            </ul>
+
+            <figure class="logbook-figure">
+                <img src="../../media/images/MoP_Comms_PCB_CAN_Bus_Schematics.png"
+                    alt="Molybdenum Penguin Communications PCB CAN Bus Schematic" class="logbook-image centered-image"
+                    style="max-width: 100%; height: auto;">
+            </figure>
+
+            <ul>
+                <li>
+                    STM32 Nucleo Elevator Shield
+                    <ul>
+                        <li>uses <code>TCAN1051HVDRQ1</code></li>
+                        <li>schematics are available on Engineering Project VI course shell</li>
+                    </ul>
+                </li>
+            </ul>
+
+            <h4><em>MCU</em> - Matvey</h4>
+
+            <p>
+                The team decided to use ESP32 MCU modules as they are easy to implement on a
+                PCB and have the required features for this system. ESP32-S3 module with
+                castellated edges will be used. USB and JTAG will be used for
+                flashing/debugging firmware.
+            </p>
+
+            <p>Requirements:</p>
+
+            <ul>
+                <li>
+                    ESP32-S3 module
+                    <ul>
+                        <li>castellated edges to make soldering/inspection easier</li>
+                        <li>PCB antenna to provide future wireless capabilities at a reduced part count</li>
+                    </ul>
+                </li>
+                <li>
+                    Firmware flashing
+                    <ul>
+                        <li>USB programming interface using USB-C connector</li>
+                        <li>JTAG programming/debugging interface</li>
+                    </ul>
+                </li>
+                <li>Reset button</li>
+                <li>DAC for sound signals</li>
+                <li>ADC for load cell measurements</li>
+                <li>PWM for servos</li>
+                <li>GPIOs for the rest of the PCB functions</li>
+                <li>TBD...</li>
+            </ul>
+
+            <h4><em>Power Regulator</em> - Matvey</h4>
+
+            <p>
+                Molybdenum Penguin power regulation circuit will be reused on this PCB
+                design, as it was tested and verified before.
+            </p>
+
+            <figure class="logbook-figure">
+                <img src="../../media/images/Schematic_MoP_Power_PCB_Power_Regulation.png"
+                    alt="Molybdenum Penguin Power PCB - Power Regulation Schematic" class="logbook-image centered-image"
+                    style="max-width: 100%; height: auto;">
+            </figure>
+
+            <p>
+                Note that only 1x 3.3V regulator will be used, unlike the original design.
+            </p>
+
+            <h4>USB-C PD Trigger - Nick</h4>
+
+            <p>
+                One of the benefits of using USB-C for CAN bus, as stated above, is USB
+                Power Delivery feature, which will allow to supply higher voltages on VBUS,
+                allowing each board to draw more power. However, USB PD standard includes a
+                lot of safety provisions<sup><a href="#source-2">[2]</a></sup> which need to
+                be handled properly to ensure our PCBs function and are safe to use with
+                non-CAN USB devices. A connection topology and power path diagram is shown
+                below.
+            </p>
+
+            <figure class="logbook-figure">
+                <img src="../../media/images/Project LiF_Proposed_PCB_connection_topology_and_power_path_2026-06-29.png"
+                    alt="Proposed PCB connection topology and power path" class="logbook-image centered-image"
+                    style="max-width: 100%; height: auto;">
+                <figcaption>Proposed PCB connection topology and power path</figcaption>
+            </figure>
+
+            <p>
+                Note that each node must act as a USB PD sink on the upstream port and USB
+                PD source on the downstream port. This way voltages higher than 5V are not
+                automatically exposed to all the nodes, and successful PD negotiation is
+                required between each board in the chain.
+            </p>
+
+            <p>
+                The diagram above shows how node 1 can be used as the power source for the
+                whole system. Node 1 has D+ and D- pins disconnected on the upstream USB-C
+                port via a double-pole switch. This way it is safe to plug in any standard
+                USB PD chargers/power supplies without exposing them to CAN signalling.
+            </p>
+
+            <p>A successful power-up PD negotiation sequence would follow these steps:</p>
+
+            <ol>
+                <li>User plugs in a USB cable from PD charger to upstream port on Node 1</li>
+                <li>
+                    PD charger provides 5V to Node 1, which powers on the system and PD
+                    trigger IC. This probably also results in 5V being supplied to the
+                    downstream USB-C port on Node 1
+                </li>
+                <li>Node 1 (sink) and PD charger (source) negotiate 12V voltage on VBUS</li>
+                <li>Now Node 1 has 12V supplied to it</li>
+                <li>
+                    Node 2 (sink) and Node 1 (source) negotiate 12V voltage on VBUS between
+                    the two nodes
+                </li>
+                <li>etc.</li>
+            </ol>
+
+            <p>
+                Additionally, each node will have a standard USB-C connector for MCU
+                programming purposes, and it would be beneficial to allow that port to act
+                as a PD sink for alternative power supply connection. A toggle switch or
+                similar should be used to prevent 2 sources from powering the system
+                together.
+            </p>
+
+            <figure class="logbook-figure">
+                <img src="../../media/images/Diagram_LiF_Proposed_PCB_USB_PD_modes_of_operation_2026-06-29.png"
+                    alt="USB PD modes of operation" class="logbook-image centered-image" style="max-width: 100%; height: auto;">
+                <figcaption>USB PD modes of operation</figcaption>
+            </figure>
+
+            <p>Requirements:</p>
+
+            <ul>
+                <li>
+                    2x USB PD trigger ICs
+                    <ul>
+                        <li>one acts as a sink controller on upstream USB-C CAN port</li>
+                        <li>another acts as a source controller on downstream USB-C CAN port</li>
+                    </ul>
+                </li>
+                <li>
+                    Selected PD trigger ICs:
+                    <ul>
+                        <li>must handle 12V</li>
+                        <li>may handle more than 12V</li>
+                        <li>
+                            may be AVS- or PPS-compatible (Adjustable Voltage Source and
+                            Programmable Power Supply)<sup><a href="#source-1">[1]</a></sup>
+                        </li>
+                    </ul>
+                </li>
+                <li>Safe operation when standard USB devices are connected to the PCB</li>
+            </ul>
+
+            <h4>Servos - Matvey</h4>
+
+            <p>
+                Servos will allow us to implement moving elevator doors and an emergency
+                brake system for the elevator cabin. Door servos will require a limit switch
+                to be used to detect door open/closed state to stay compatible with base
+                project requirements.
+            </p>
+
+            <p>Requirements:</p>
+
+            <ul>
+                <li>2x connectors for micro RC Servos</li>
+            </ul>
+
+            <h4>Accelerometer - Matvey</h4>
+
+            <p>
+                An accelerometer may be used to detect a fault condition that results in the
+                elevator cabin falling uncontrollably. This will trigger an emergency brake
+                servo to activate and slow down the cabin.
+            </p>
+
+            <p>Requirements:</p>
+
+            <ul>
+                <li>MEMS Accelerometer IC capable of detecting acceleration changes quickly</li>
+                <li>
+                    optionally, interrupt generation by the accelerometer IC upon acceleration
+                    value passing a configurable threshold
+                </li>
+            </ul>
+
+            <h4>Load cell - Rita</h4>
+
+            <p>
+                A load cell may be used to detect presence of a payload in the elevator
+                cabin. Load cells require special signal conditioning circuitry to provide
+                accurate readings.
+            </p>
+
+            <p>Requirements:</p>
+
+            <ul>
+                <li>
+                    load cell signal conditioning circuit
+                    <ul>
+                        <li>single supply rail operation, 5V or 3.3V</li>
+                        <li>0-3.3V analog output voltage</li>
+                    </ul>
+                </li>
+                <li>
+                    load cell component
+                    <ul>
+                        <li>0.5-1kg max weight rating</li>
+                    </ul>
+                </li>
+            </ul>
+
+            <h4>Audio - Nick</h4>
+
+            <p>
+                The base project requirements include an audio signaling feature for
+                visually-impaired users of the elevator. However, the base requirements
+                allow the speaker to be connected to SC, which would be far from users in a
+                proper elevator system. So, we aim to include a simple audio amplifier on
+                CC/FC PCBs to alert the user about the state of the elevator with a small
+                speaker.
+            </p>
+
+            <p>Requirements:</p>
+
+            <ul>
+                <li>ADC or I2S input</li>
+                <li>low power output for selected speaker component</li>
+                <li>single-supply rail operation, 3.3V or 5V</li>
+            </ul>
+
+            <h4>7-segment-display - Nick</h4>
+
+            <p>
+                The use of LEDs to indicate floor position may be unintuitive and difficult
+                to scale. As such, we aim to include a 7-segment-display on our FC/CC PCBs.
+            </p>
+
+            <p>Requirements:</p>
+
+            <ul>
+                <li>7 segment display component</li>
+                <li>
+                    signal to the display is either:
+                    <ul>
+                        <li>directly driving each segment with 7x MCU GPIO pins</li>
+                        <li>using binary-coded decimal decoder IC to reduce pin count to 4x GPIO pins</li>
+                        <li>
+                            using shift register ICs to reduce pin count to 3x GPIO pins
+                            (clock, data, reset) and make the display extendable to an arbitrary
+                            number of digits
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+
+            <h3>Phase 2 BLDC Motor</h3>
+
+            <p>
+                Currently-used stepper motor provides an unrealistic representation of real
+                elevator systems, which often use 3-phase motors. Using a BLDC motor would
+                allow us to more closely replicate an elevator system. Additionally, a BLDC
+                motor with Field-Oriented Control algorithm will allow us to sense torque
+                produced by the motor to detect payload presence in the elevator cabin.
+                Matvey will aim to implement a BLDC FOC driver PCB for the elevator platform
+                alongside regular FC/CC PCBs that the team is developing.
+            </p>
+
+            <h3>Phase 2 summary</h3>
+
+            <p>
+                The team will focus on PCB design during the reading week, and order PCBs no
+                later than 2026-07-06. Week 9, the first week back from the reading week,
+                will be spent implementing the primary project requirements while PCBs are
+                being manufactured. The team will record a video demonstration of the
+                primary features before new PCBs are installed. Once PCBs arrive, the team
+                will assemble 6 units, 4 primary and 2 backup, and begin integration of the
+                new PCBs before Phase 2 ends.
+            </p>
+            <h3>Sources</h3>
+            <ol class="source-list">
+                <li id="source-1">
+                    Texas Instruments,
+                    <em>USB Type-C® and USB Power Delivery: Designing for both Extended Power
+                    Range and battery-powered systems</em>,
+                    Technical Article:
+                    <a href="https://www.ti.com/lit/ta/ssztd49a/ssztd49a.pdf">
+                        https://www.ti.com/lit/ta/ssztd49a/ssztd49a.pdf
+                    </a>
+                </li>
+                <li id="source-2">
+                    Texas Instruments,
+                    <em>An Engineer's Guide to USB Type-C</em>,
+                    e-book:
+                    <a href="https://www.ti.com/lit/eb/slyy228/slyy228.pdf">
+                        https://www.ti.com/lit/eb/slyy228/slyy228.pdf
+                    </a>
+                </li>
+            </ol>
+		</section>
+
+        <section class="logbook-entry-content" id="log">
+			<h2>Collaborative PCB development with KiCAD and GitHub</h2>
+            <p>
+                Since KiCAD uses plain-text files to store schematic sheets, it 
+                should be compatible with GitHub for version control and 
+                collaboration. However, resolving merge conflicts may be 
+                challenging since the conflicting sections of code are not rendered. 
+                There is an <a href="https://techexplorations.com/blog/review/pcb-hub-review-kicad-collaboration-tool/">article</a>
+                mentioning 3 online resources that make GitHub-KiCAD workflow easier.
+            </p>
+            <p>
+                I also made 2 test branches to see how merging would work. As 
+                the result of my testing, there are no issues when 2 branches 
+                have edits on separate sheets.
+            </p>
+        </section>
+
+		<p class="top-link">
+			<a href="#page_top">Go to the top of this page</a>
+		</p>
+
+	</main>
+
+	<footer class="site-footer">
+		<p>Copyright &copy; Matvey Regentov</p>
+	</footer>
+
+	<!-- Prism.js script for code formatting -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+	<!-- Import C language -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
+	<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-html.min.js"></script> -->
+	<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+
+</body>
+
+</html>

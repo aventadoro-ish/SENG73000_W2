@@ -1,248 +1,463 @@
-<!DOCTYPE html>
+<!doctype html>
 <!--
 Author: Nick Kapuka 
 Note: dude redoing this page literally took me like an hour cause I mostly solo'd it (without Chat, I know, shocker).
 		I had such a clear idea in mind and kept referencing notes but like... Damn this was annoying. FMCL
 -->
 <html>
+  <head>
+    <title>Nick Kapuka - Logbook</title>
+    <meta charset="UTF-8" />
+    <meta name="author" content="Nick Kapuka" />
+    <meta name="description" content="Nick Kapuka's logbook cover page" />
+    <meta name="robots" content="index, follow" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <link rel="icon" href="../media/icons/LiF_icon.ico" type="image/x-icon" />
+    <link rel="stylesheet" href="../css/base.css" />
+    <link rel="stylesheet" href="../css/personal_logbook.css" />
+  </head>
 
-<head>
-	<title>Nick Kapuka - Logbook</title>
-	<meta charset="UTF-8">
-	<meta name="author" content="Nick Kapuka">
-	<meta name="description" content="Nick Kapuka's logbook cover page">
-	<meta name="robots" content="index, follow">
-	<meta http-equiv="Pragma" content="no-cache">
-	<link rel="icon" href="../media/icons/LiF_icon.ico" type="image/x-icon">
-	<link rel="stylesheet" href="../css/base.css">
-	<link rel="stylesheet" href="../css/personal_logbook.css">
+  <body>
+    <!-- Nav bar -->
+    <div id="navbar-placeholder" data-root="../"></div>
+    <script src="../js/navbar.js"></script>
 
-</head>
+    <!-- main page -->
+    <main class="page-wrapper">
+      <section class="personal-logbook-intro">
+        <div class="personal-logbook-text">
+          <p class="section-label">Personal Logbook</p>
 
-<body>
-	<!-- Nav bar -->
-	<div id="navbar-placeholder" data-root="../"></div>
-	<script src="../js/navbar.js"></script>
+          <h1>Nick Kapuka's Logbook</h1>
 
+          <p class="intro-description">
+            I'm a 3rd year Bachelor of Engineering student at Conestoga College.
+            This page documents my weekly Engineering Project VI progress as
+            part of the Lithium Firefly elevator project. My tasks include
+            embedded development, CAN communication, website redesign, 3D
+            printing, and functional testing.
+          </p>
 
-	<!-- main page -->
-	<main class="page-wrapper">
+          <div class="button-row">
+            <a href="logbook_main.html" class="button secondary-button"
+              >Back to Team Logbooks</a
+            >
+            <a href="#" class="button primary-button" id="latest-entry-link"
+              >Latest Entry</a
+            >
+          </div>
+        </div>
 
-		<section class="personal-logbook-intro">
-			<div class="personal-logbook-text">
-				<p class="section-label">Personal Logbook</p>
+        <figure class="personal-profile-card">
+          <img
+            src="../media/images/portrait_NK.jpg"
+            alt="Nick Kapuka portrait"
+          />
+          <figcaption>
+            <b>Nick Kapuka</b><br />
+            ESE student and member of the <em>Lithium Firefly</em> group.
+          </figcaption>
+        </figure>
+      </section>
 
-				<h1>Nick Kapuka's Logbook</h1>
+      <section class="jump-section">
+        <div>
+          <p class="section-label">Quick Navigation</p>
+          <h2>Jump to a Week</h2>
+          <p>
+            Use this menu to jump directly to a specific weekly logbook section.
+          </p>
+        </div>
 
-				<p class="intro-description">
-					I'm a 3rd year Bachelor of Engineering student at Conestoga College.
-					This page documents my weekly Engineering Project VI progress as part of
-					the Lithium Firefly elevator project. My tasks include embedded development,
-					CAN communication, website redesign, 3D printing, and functional testing.
-				</p>
+        <form class="week-jump-form">
+          <label for="week-jump">Select week:</label>
+          <select id="week-jump">
+            <option value="">Choose a week...</option>
+          </select>
+        </form>
+      </section>
 
-				<div class="button-row">
-					<a href="logbook_main.html" class="button secondary-button">Back to Team Logbooks</a>
-					<a href="#" class="button primary-button" id="latest-entry-link">Latest Entry</a>
-				</div>
-			</div>
+      <section class="links-section">
+        <p class="section-label">External Links</p>
+        <h2>My Links</h2>
 
-			<figure class="personal-profile-card">
-				<img src="../media/images/portrait_NK.jpg" alt="Nick Kapuka portrait">
-				<figcaption>
-					<b>Nick Kapuka</b><br>
-					ESE student and member of the <em>Lithium Firefly</em> group.
-				</figcaption>
-			</figure>
-		</section>
+        <div class="small-link-grid">
+          <a
+            href="https://github.com/NickKapuka"
+            target="_blank"
+            class="small-link-card"
+            >GitHub</a
+          >
+          <a
+            href="https://www.linkedin.com/in/nick-kapuka-0406362b6/"
+            target="_blank"
+            class="small-link-card"
+            >LinkedIn</a
+          >
+        </div>
+      </section>
 
-		<section class="jump-section">
-			<div>
-				<p class="section-label">Quick Navigation</p>
-				<h2>Jump to a Week</h2>
-				<p>
-					Use this menu to jump directly to a specific weekly logbook section.
-				</p>
-			</div>
+      <!-- week 1 and 2; project didn't start yet -->
+      <section class="week-entry-box" id="week-0">
+        <div class="week-header">
+          <p class="section-label">Week 1 & 2</p>
+          <h2>Empty Weeks</h2>
+        </div>
 
-			<form class="week-jump-form">
-				<label for="week-jump">Select week:</label>
-				<select id="week-jump">
-					<option value="">Choose a week...</option>
-				</select>
-			</form>
-		</section>
+        <article class="entry-summary">
+          <ul>
+            <li>
+              The project was not started these weeks as it started in week 3.
+            </li>
+          </ul>
+        </article>
+      </section>
 
-		<section class="links-section">
-			<p class="section-label">External Links</p>
-			<h2>My Links</h2>
+      <!-- week 3 -->
+      <section class="week-entry-box" id="week-3">
+        <div class="week-header">
+          <p class="section-label">Week 3</p>
+          <h2>Project Kickoff</h2>
+        </div>
 
-			<div class="small-link-grid">
-				<a href="https://github.com/NickKapuka" target="_blank" class="small-link-card">GitHub</a>
-				<a href="https://www.linkedin.com/in/nick-kapuka-0406362b6/" target="_blank"
-					class="small-link-card">LinkedIn</a>
-			</div>
-		</section>
+        <article class="entry-summary">
+          <h3>
+            <a href="./entries_NK/NK_entry_2026-05-25.html"
+              >Entry 1 - 2026-05-25</a
+            >
+          </h3>
+          <ul>
+            <li>Project kickoff.</li>
+            <li>
+              Team meeting for project planning, management, and Week 1 task
+              distribution.
+            </li>
+            <li>Team meeting for a team-building exercise.</li>
+          </ul>
+        </article>
+      </section>
 
-		<!-- week 1 and 2; project didn't start yet -->
-		<section class="week-entry-box" id="week-0">
-			<div class="week-header">
-				<p class="section-label">Week 1 & 2</p>
-				<h2>Empty Weeks</h2>
-			</div>
+      <!-- week 4 -->
+      <section class="week-entry-box" id="week-4">
+        <div class="week-header">
+          <p class="section-label">Week 4</p>
+          <h2>Setup, Website Updates, and 3D Printing</h2>
+        </div>
 
-			<article class="entry-summary">
-				<ul>
-					<li>The project was not started these weeks as it started in week 3.</li>
-				</ul>
-			</article>
-		</section>
+        <article class="entry-summary">
+          <h3>
+            <a href="./entries_NK/NK_entry_2026-06-01.html"
+              >Entry 1 - 2026-06-01</a
+            >
+          </h3>
+          <ul>
+            <li>Team met and worked together on project deliverables.</li>
+            <li>Updated logbook and committed the changes.</li>
+            <li>
+              Downloaded STM32CubeIDE v1.18.1 and configured it with Matvey for
+              the STM32F303RE.
+            </li>
+          </ul>
+        </article>
 
-		<!-- week 3 -->
-		<section class="week-entry-box" id="week-3">
-			<div class="week-header">
-				<p class="section-label">Week 3</p>
-				<h2>Project Kickoff</h2>
-			</div>
+        <article class="entry-summary">
+          <h3>
+            <a href="./entries_NK/NK_entry_2026-06-03.html"
+              >Entry 2 - 2026-06-03</a
+            >
+          </h3>
+          <ul>
+            <li>Worked on 3D printing the parts designed by Matvey.</li>
+            <li>Continued looking into STM32 setup.</li>
+          </ul>
+        </article>
 
-			<article class="entry-summary">
-				<h3><a href="./entries_NK/NK_entry_2026-05-25.html">Entry 1 - 2026-05-25</a></h3>
-				<ul>
-					<li>Project kickoff.</li>
-					<li>Team meeting for project planning, management, and Week 1 task distribution.</li>
-					<li>Team meeting for a team-building exercise.</li>
-				</ul>
-			</article>
-		</section>
+        <article class="entry-summary">
+          <h3>
+            <a href="./entries_NK/NK_entry_2026-06-06.html"
+              >Entry 3 - 2026-06-06</a
+            >
+          </h3>
+          <ul>
+            <li>3D printed more parts designed by Matvey.</li>
+            <li>
+              Finished the STM32 tutorial and began writing CAN transmit logic
+              for the Car Controller.
+            </li>
+          </ul>
+        </article>
+      </section>
 
-		<!-- week 4 -->
-		<section class="week-entry-box" id="week-4">
-			<div class="week-header">
-				<p class="section-label">Week 4</p>
-				<h2>Setup, Website Updates, and 3D Printing</h2>
-			</div>
+      <!-- week 5 -->
+      <section class="week-entry-box" id="week-5">
+        <div class="week-header">
+          <p class="section-label">Week 5</p>
+          <h2>STM32 CAN, LEDs, Pushbuttons, and Shield Testing</h2>
+        </div>
 
-			<article class="entry-summary">
-				<h3><a href="./entries_NK/NK_entry_2026-06-01.html">Entry 1 - 2026-06-01</a></h3>
-				<ul>
-					<li>Team met and worked together on project deliverables.</li>
-					<li>Updated logbook and committed the changes.</li>
-					<li>Downloaded STM32CubeIDE v1.18.1 and configured it with Matvey for the STM32F303RE.</li>
-				</ul>
-			</article>
+        <article class="entry-summary">
+          <h3>
+            <a href="./entries_NK/NK_entry_2026-06-10.html"
+              >Entry 1 - 2026-06-10</a
+            >
+          </h3>
+          <ul>
+            <li>Improved STM32 transmit logic.</li>
+            <li>Implemented receive logic.</li>
+            <li>Wrote logic for the STM shield LEDs and pushbuttons.</li>
+          </ul>
+        </article>
 
-			<article class="entry-summary">
-				<h3><a href="./entries_NK/NK_entry_2026-06-03.html">Entry 2 - 2026-06-03</a></h3>
-				<ul>
-					<li>Worked on 3D printing the parts designed by Matvey.</li>
-					<li>Continued looking into STM32 setup.</li>
-				</ul>
-			</article>
+        <article class="entry-summary">
+          <h3>
+            <a href="./entries_NK/NK_entry_2026-06-12.html"
+              >Entry 2 - 2026-06-12</a
+            >
+          </h3>
+          <ul>
+            <li>STM shields were finished being soldered.</li>
+            <li>
+              Tested pushbutton and LED functionality and confirmed floor LEDs
+              synced correctly.
+            </li>
+            <li>
+              Implemented STM fast flashing using a single variable to switch
+              between board roles.
+            </li>
+            <li>
+              Tested CAN transmit on the scope using STM shields on all boards.
+            </li>
+          </ul>
+        </article>
+      </section>
 
-			<article class="entry-summary">
-				<h3><a href="./entries_NK/NK_entry_2026-06-06.html">Entry 3 - 2026-06-06</a></h3>
-				<ul>
-					<li>3D printed more parts designed by Matvey.</li>
-					<li>Finished the STM32 tutorial and began writing CAN transmit logic for the Car Controller.</li>
-				</ul>
-			</article>
-		</section>
+      <!-- week 6 -->
+      <section class="week-entry-box" id="week-6">
+        <div class="week-header">
+          <p class="section-label">Week 6</p>
+          <h2>CAN Bus Cable, Non-blocking Logic, and Website Formatting</h2>
+        </div>
 
-		<!-- week 5 -->
-		<section class="week-entry-box" id="week-5">
-			<div class="week-header">
-				<p class="section-label">Week 5</p>
-				<h2>STM32 CAN, LEDs, Pushbuttons, and Shield Testing</h2>
-			</div>
+        <article class="entry-summary">
+          <h3>
+            <a href="./entries_NK/NK_entry_2026-06-16.html"
+              >Entry 1 - 2026-06-16</a
+            >
+          </h3>
+          <ul>
+            <li>Began creating the main CAN bus cable with DB9 connectors.</li>
+            <li>3D printed additional parts for the elevator assembly.</li>
+          </ul>
+        </article>
 
-			<article class="entry-summary">
-				<h3><a href="./entries_NK/NK_entry_2026-06-10.html">Entry 1 - 2026-06-10</a></h3>
-				<ul>
-					<li>Improved STM32 transmit logic.</li>
-					<li>Implemented receive logic.</li>
-					<li>Wrote logic for the STM shield LEDs and pushbuttons.</li>
-				</ul>
-			</article>
+        <article class="entry-summary">
+          <h3>
+            <a href="./entries_NK/NK_entry_2026-06-17.html"
+              >Entry 2 - 2026-06-17</a
+            >
+          </h3>
+          <ul>
+            <li>Improved LED and pushbutton logic to be non-blocking.</li>
+            <li>Finished making the CAN bus cable and captured scope shots.</li>
+          </ul>
+        </article>
 
-			<article class="entry-summary">
-				<h3><a href="./entries_NK/NK_entry_2026-06-12.html">Entry 2 - 2026-06-12</a></h3>
-				<ul>
-					<li>STM shields were finished being soldered.</li>
-					<li>Tested pushbutton and LED functionality and confirmed floor LEDs synced correctly.</li>
-					<li>Implemented STM fast flashing using a single variable to switch between board roles.</li>
-					<li>Tested CAN transmit on the scope using STM shields on all boards.</li>
-				</ul>
-			</article>
-		</section>
+        <article class="entry-summary">
+          <h3>
+            <a href="./entries_NK/NK_entry_2026-06-18.html"
+              >Entry 3 - 2026-06-18</a
+            >
+          </h3>
+          <ul>
+            <li>
+              Implemented toggle switch code that still needs to be updated.
+            </li>
+            <li>
+              Implemented CSS and Prism JS formatting for cleaner code display
+              on the website.
+            </li>
+          </ul>
+        </article>
 
-		<!-- week 6 -->
-		<section class="week-entry-box" id="week-6">
-			<div class="week-header">
-				<p class="section-label">Week 6</p>
-				<h2>CAN Bus Cable, Non-blocking Logic, and Website Formatting</h2>
-			</div>
+        <article class="entry-summary">
+          <h3>
+            <a href="./entries_NK/NK_entry_2026-06-19.html"
+              >Entry 3 - 2026-06-19</a
+            >
+          </h3>
+          <ul>
+            <li>
+              Worked with Matvey to assemble the full elevator and route all the
+              cables
+            </li>
+            <li>
+              Added a few JS functions as part of our SENG73000's assignment 1
+            </li>
+          </ul>
+        </article>
 
-			<article class="entry-summary">
-				<h3><a href="./entries_NK/NK_entry_2026-06-16.html">Entry 1 - 2026-06-16</a></h3>
-				<ul>
-					<li>Began creating the main CAN bus cable with DB9 connectors.</li>
-					<li>3D printed additional parts for the elevator assembly.</li>
-				</ul>
-			</article>
+        <article class="entry-summary">
+          <h3>
+            <a href="./entries_NK/NK_entry_2026-06-20.html"
+              >Entry 4 - 2026-06-20</a
+            >
+          </h3>
+          <ul>
+            <li>
+              Began to revamp the entire website - focused on general HTML page
+              layout and some CSS
+            </li>
+          </ul>
+        </article>
 
-			<article class="entry-summary">
-				<h3><a href="./entries_NK/NK_entry_2026-06-17.html">Entry 2 - 2026-06-17</a></h3>
-				<ul>
-					<li>Improved LED and pushbutton logic to be non-blocking.</li>
-					<li>Finished making the CAN bus cable and captured scope shots.</li>
-				</ul>
-			</article>
+        <article class="entry-summary">
+          <h3>
+            <a href="./entries_NK/NK_entry_2026-06-21.html"
+              >Entry 5 - 2026-06-21</a
+            >
+          </h3>
+          <ul>
+            <li>Finished revamping most of the website</li>
+            <li>
+              Revamped the rest of the remaining pages, split the CSS from one
+              large file into individual .css files, and wrote a few JS
+              functions for ease of use.
+            </li>
+          </ul>
+        </article>
+      </section>
 
-			<article class="entry-summary">
-				<h3><a href="./entries_NK/NK_entry_2026-06-18.html">Entry 3 - 2026-06-18</a></h3>
-				<ul>
-					<li>Implemented toggle switch code that still needs to be updated.</li>
-					<li>Implemented CSS and Prism JS formatting for cleaner code display on the website.</li>
-				</ul>
-			</article>
+      <!-- week 7 -->
+      <section class="week-entry-box" id="week-7">
+        <div class="week-header">
+          <p class="section-label">Week 7</p>
+          <h2>Phase 1 technical demo and midterms</h2>
+        </div>
 
-			<article class="entry-summary">
-				<h3><a href="./entries_NK/NK_entry_2026-06-18.html">Entry - 2026-06-18</a></h3>
-				<ul>
-					<li>Implemented toggle switch code that still needs to be updated.</li>
-					<li>Implemented CSS and Prism JS formatting for cleaner code display on the website.</li>
-				</ul>
-			</article>
+        <article class="entry-summary">
+          <h3>Entry 1 - 2026-06-22</h3>
+          <ul>
+            <li>Presented our phase 1 technical demo to the professor</li>
+            <li>
+              Met with the group briefly (30 mins) to discuss future planning
+            </li>
+            <li>
+              Note, this week does not have a dedicated logbook page as nothing
+              of note was done. This week was our midterm week so we were
+              focused on studying for those and took a light break from the
+              project.
+            </li>
+          </ul>
+        </article>
+      </section>
 
-			<article class="entry-summary">
-				<h3><a href="./entries_NK/NK_entry_2026-06-18.html">Entry 3 - 2026-06-18</a></h3>
-				<ul>
-					<li>Implemented toggle switch code that still needs to be updated.</li>
-					<li>Implemented CSS and Prism JS formatting for cleaner code display on the website.</li>
-				</ul>
-			</article>
+      <!-- week 8 -->
+      <section class="week-entry-box" id="week-8">
+        <div class="week-header">
+          <p class="section-label">Week 8</p>
+          <h2>
+            Created plan for the week, discussed custom PCBs, worked on
+            schematics
+          </h2>
+        </div>
 
-			<article class="entry-summary">
-				<h3><a href="./entries_NK/NK_entry_2026-06-18.html">Entry 3 - 2026-06-18</a></h3>
-				<ul>
-					<li>Implemented toggle switch code that still needs to be updated.</li>
-					<li>Implemented CSS and Prism JS formatting for cleaner code display on the website.</li>
-				</ul>
-			</article>
-		</section>
+        <article class="entry-summary">
+          <h3>
+            <a href="./entries_NK/NK_entry_2026-06-29.html"
+              >Entry 1 - 2026-06-29</a
+            >
+          </h3>
+          <ul>
+            <li>
+              Met with the group on the first day of reading week and discussed
+              plans for the week
+            </li>
+            <li>Agreed upon making custom PCBs using ESP32 instead of STM</li>
+            <li>Divided tasks for the week</li>
+          </ul>
+        </article>
 
-		<p class="top-link">
-			<a href="#page_top">Go to the top of this page</a>
-		</p>
+        <article class="entry-summary">
+          <h3>
+            <a href="./entries_NK/NK_entry_2026-07-02.html"
+              >Entry 2 - 2026-07-02</a
+            >
+          </h3>
+          <ul>
+            <li>
+              Began to work on my specific tasks - User Interface (buttons/LEDs)
+              and USB type-C PD
+            </li>
+            <li>
+              Thought of using a rotary encoder to save PCB space by allowing
+              the selection of floors via rotating switch (rotary phone type of
+              thing)
+            </li>
+          </ul>
+        </article>
 
-	</main>
+        <article class="entry-summary">
+          <h3>
+            <a href="./entries_NK/NK_entry_2026-07-03.html"
+              >Entry 3 - 2026-07-03</a
+            >
+          </h3>
+          <ul>
+            <li>
+              Met with Matvey and Emi (from another group) at a restaurant to
+              get some food and work together
+            </li>
+            <li>
+              Matvey and I discussed some aspects of the project and he agreed
+              to still include footprints for the buttons
+            </li>
+            <li>
+              Also agreed to use a double seven segment display for
+              <s>scope creep</s> future planning as one display
+            </li>
+            <li>
+              Decided to still have 7 LEDs so that they can move down when the
+              floor is selected
+            </li>
+            <li>
+              One challenge was definitely having to plan to fit all of this
+              stuff onto a single board (as floor controllers and the car
+              controller will vary slightly)
+            </li>
+          </ul>
+        </article>
+      </section>
 
-	<footer class="site-footer">
-		<p>Copyright &copy; 2026 Nick Kapuka</p>
-	</footer>
+      <!-- week 9 -->
+      <section class="week-entry-box" id="week-9">
+        <div class="week-header">
+          <p class="section-label">Week 9</p>
+          <h2>Planned phase 2 out, TBD.</h2>
+        </div>
 
-	<script src="../js/bio_info.js"></script>
-	<script src="../js/logbook_tools.js"></script>
-</body>
+        <article class="entry-summary">
+          <h3>Entry 1 - 2026-07-06</h3>
+          <ul>
+            <li>Caught up on logbook entries</li>
+            <li>
+              Planned phase 2 out and updated
+              <a href="proj_plan.html">Gantt chart</a>
+            </li>
+            <li>Had our phase 2 (de)brief.</li>
+          </ul>
+        </article>
+      </section>
 
+      <p class="top-link">
+        <a href="#page_top">Go to the top of this page</a>
+      </p>
+    </main>
+
+    <footer class="site-footer">
+      <p>Copyright &copy; 2026 Nick Kapuka</p>
+    </footer>
+
+    <script src="../js/bio_info.js"></script>
+    <script src="../js/logbook_tools.js"></script>
+  </body>
 </html>
