@@ -1,5 +1,5 @@
 // visual elevator demo, thanks to Chat
-// This does not send commands to hardware yet. It only updates the webpage visuals.
+// this does not send commands to hardware yet. It only updates the webpage visuals
 
 document.addEventListener("DOMContentLoaded", function () {
     const elevatorCar = document.getElementById("elevatorCar");
@@ -10,8 +10,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const carButtons = document.querySelectorAll(".car-floor-button");
     const carScreen = document.querySelector(".car-screen");
 
-    // These positions match the current desktop tower layout.
-    // Floor 1 is lowest, Floor 3 is highest.
+    // these positions match the current desktop tower layout
+    // floor 1 is lowest, floor 3 is highest
     const carPositions = {
         "1": "-354px",
         "2": "-177px",

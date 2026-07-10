@@ -261,8 +261,9 @@ function buildCaffeineLogTable(tableData) {
 
 }
 
-// Parses CSV text into a 2D array.
-// This version handles commas, quotes, and line breaks inside quoted cells.
+// note: functions below are made with ChatGPT as I'm not making my own CSV parser
+// parses CSV text into a 2D array
+// this version handles oddities - commas, quotes, and line breaks inside quoted cells.
 function parseCsv(csvText) {
     const rows = [];
     let currentRow = [];
@@ -314,7 +315,8 @@ function parseCsv(csvText) {
     return rows;
 }
 
-// Cleans Google Sheets CSV data.
+// Another ChatGPT-made function
+// cleans Google Sheets CSV data.
 // Google Sheets sometimes exports extra blank rows/columns from unused cells.
 function cleanTableData(tableData) {
     if (!tableData || tableData.length === 0) {
@@ -323,7 +325,7 @@ function cleanTableData(tableData) {
 
     const headerRow = tableData[0];
 
-    // Only keep columns where the header cell is not blank
+    // only keep columns where the header cell is not blank
     const columnsToKeep = [];
 
     headerRow.forEach(function (header, index) {
@@ -336,14 +338,14 @@ function cleanTableData(tableData) {
         return tableData;
     }
 
-    // Rebuild each row using only useful columns
+    // rebuild each row using only useful columns
     const cleanedRows = tableData.map(function (row) {
         return columnsToKeep.map(function (columnIndex) {
             return row[columnIndex] ? row[columnIndex].trim() : "";
         });
     });
 
-    // Remove fully empty rows
+    // remove fully empty rows
     return cleanedRows.filter(function (row) {
         return row.some(function (cell) {
             return cell.trim() !== "";
@@ -351,14 +353,14 @@ function cleanTableData(tableData) {
     });
 }
 
-// Cleans up labels before comparing them.
-// This helps if Google Sheets exports weird spacing or line breaks.
+// cleans up labels before comparing them.
+// this helps if Google Sheets exports weird spacing or line breaks.
 function normalizeLabel(text) {
     return String(text).replace(/\s+/g, " ").trim();
 }
 
-// Finds a row by checking the first cell in each row.
-// Example: findRow(tableData, "Total Caffeine Consumed [g]")
+// finds a row by checking the first cell in each row.
+// example: findRow(tableData, "Total Caffeine Consumed [g]")
 function findRow(tableData, rowName) {
     return tableData.find(function (row) {
         return normalizeLabel(row[0]) === normalizeLabel(rowName);
