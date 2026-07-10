@@ -23,8 +23,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 </ul>
 
                 <ul class="nav-links nav-right">
-                    <li><a href="${root}index.html#login-section">Login</a></li>
-                    <li><a href="${root}request_access.html">Request Access</a></li>
+                    <li><a href="${root}html/login.html">Login</a></li>
+                    <li><a href="${root}html/request_access.html">Request Access</a></li>
                 </ul>
             </nav>
         </header>

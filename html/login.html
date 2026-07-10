@@ -1,61 +1,103 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>User Login</title>
-        <meta charset="UTF-8">
-        <link rel="icon" href="../media/icons/LiF_icon.ico" type="image/x-icon">
-        <!--[if lt IE 9]>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js"></script>
-        <![endif]-->
-        
-        <meta name="author" content="Matvey Regentov">
-        <link rel="stylesheet" href="../css/master.css">
-        <link rel="stylesheet" href="../css/auth_forms.css">
-        <meta name="description" content="Login Page.">
-        <meta name="robots" content="index, follow">
-        <meta http-equiv="Pragma" content="no-cache">
-        
-    <body id="page_top">
-        <div id="navbar-placeholder" data-root="../"></div>
-        <script src="../js/navbar.js"></script>
-        <br><br>
-        
-        <!-- <aside><iframe src="links.html" title="Navigation"></iframe></aside> -->
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>LiF Team - User Login</title>
+    <meta charset="UTF-8" />
+    <link rel="icon" href="../media/icons/LiF_icon.ico" type="image/x-icon" />
 
-        <h1>User Login Form</h1>
+    <!--[if lt IE 9]>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <![endif]-->
 
-        <form action="../php/login.php" method="POST" id="login">
-            <p>
-                <label for="username">Username:</label>
-                <input type="text" id="username" name="username" required>
-            </p>
+    <meta name="author" content="Matvey Regentov" />
+    <meta name="description" content="Login page for the LiF Team website." />
+    <meta name="robots" content="index, follow" />
+    <meta http-equiv="Pragma" content="no-cache" />
 
-            <p>
-                <label for="password">Password:</label>
-                <input type="password" id="password" name="password" required>
-            </p>
+    <link rel="stylesheet" href="../css/base.css" />
+    <link rel="stylesheet" href="../css/login.css" />
+  </head>
 
-            <input id="submit_btn" type="submit" value="Log in">
-        </form>
+  <body>
+    <!-- nav bar -->
+    <div id="navbar-placeholder" data-root="../"></div>
+    <script src="../js/navbar.js"></script>
 
-            <p>
-                <label for="password">Password:</label>
-                <input type="password" id="password" name="password" required>
-            </p>
+    <main class="page-wrapper">
+      <section class="intro-section login-page-intro" id="page_top">
+        <div class="intro-text">
+          <p class="section-label">Member Access</p>
 
-            <p id="loginMessage"></p>
-            <input type="submit" value="Log in">
-        </form>
-        <p>
-            If you do not have an account, use the
-            <a href="request_access.html">Request Access</a> form to register.
-        </p>
+          <h1>User Login</h1>
 
-        <footer>
-            <p><a href="#page_top">Go to the top of this page</a></p>
-            <p>Copyright &copy; 2026 Matvey Regentov</p>
-        </footer>
-        <script src="../js/login_validation.js"></script>
+          <p class="intro-description">
+            Log in to access restricted Lithium Firefly project content. If you
+            do not have an account yet, use the request access form to register.
+          </p>
+        </div>
 
-    </body>
+        <aside class="summary-card">
+          <h2>Login Info</h2>
+          <p><strong>Project:</strong> Engineering Project VI</p>
+          <p><strong>Team:</strong> Lithium Firefly</p>
+          <p><strong>Access:</strong> Registered users only</p>
+        </aside>
+      </section>
+
+      <section class="login-page-section">
+        <div class="login-form-card">
+          <p class="section-label">Login Form</p>
+          <h2>Enter Your Credentials</h2>
+
+          <form action="../php/login.php" method="POST" id="login">
+            <div class="login-form-row">
+              <label for="username">Username:</label>
+              <input type="text" id="username" name="username" required />
+            </div>
+
+            <div class="login-form-row">
+              <label for="password">Password:</label>
+              <input type="password" id="password" name="password" required />
+            </div>
+
+            <p id="loginMessage" role="alert"></p>
+
+            <div class="login-button-row">
+              <input
+                id="submit_btn"
+                class="button primary-button"
+                type="submit"
+                value="Log in"
+              />
+            </div>
+          </form>
+        </div>
+
+        <aside class="login-help-card">
+          <p class="section-label">Need Access?</p>
+          <h2>No Account?</h2>
+
+          <p>
+            If you do not have an account, use the request access form to
+            register. The team can review your request and provide access if
+            approved.
+          </p>
+
+          <a href="request_access.html" class="button secondary-button"
+            >Request Access</a
+          >
+        </aside>
+      </section>
+
+      <p class="top-link">
+        <a href="#page_top">Go to the top of this page</a>
+      </p>
+    </main>
+
+    <footer class="site-footer">
+      <p>Copyright &copy; 2026 Matvey Regentov</p>
+    </footer>
+
+    <script src="../js/login_validation.js"></script>
+  </body>
 </html>

@@ -1,0 +1,145 @@
+/* ---------- PHP result styling (for req acc and login) ---------- */
+
+.auth-result-intro {
+  grid-template-columns: 2fr 0.9fr;
+}
+
+.auth-result-section {
+  margin-top: 28px;
+  padding: 28px;
+  background-color: var(--card-bg);
+  border-radius: 14px;
+  box-shadow: 0 4px 14px var(--shadow);
+}
+
+.auth-success-section {
+  border-left: 5px solid var(--aqua);
+}
+
+.auth-error-section {
+  border-left: 5px solid var(--ember);
+}
+
+.auth-result-section h2 {
+  margin-top: 0;
+  color: var(--deep-blue);
+}
+
+.auth-result-section p {
+  text-align: left;
+  text-indent: 0;
+  line-height: 1.55;
+}
+
+.auth-message-list {
+  margin-bottom: 0;
+  padding: 18px 18px 18px 42px;
+  background-color: #fff8df;
+  border-radius: 12px;
+  border-left: 5px solid var(--ember);
+}
+
+.auth-message-list li {
+  margin-bottom: 8px;
+  text-align: left;
+  line-height: 1.55;
+  font-weight: bold;
+}
+
+.auth-message-list li:last-child {
+  margin-bottom: 0;
+}
+
+.auth-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18px;
+  margin-top: 20px;
+}
+
+.auth-detail-card {
+  padding: 18px;
+  background-color: #fff8df;
+  border-radius: 12px;
+  border-top: 5px solid var(--palm);
+  box-shadow: 0 3px 10px var(--shadow);
+}
+
+.auth-detail-card h3 {
+  margin-top: 0;
+  margin-bottom: 8px;
+  color: var(--deep-blue);
+}
+
+.auth-detail-card p {
+  margin-bottom: 0;
+  word-break: break-word;
+}
+
+.wide-card {
+  grid-column: 1 / -1;
+}
+
+.auth-note {
+  margin-top: 18px;
+  padding: 12px 14px;
+  background-color: rgba(255, 248, 223, 0.75);
+  border-left: 4px solid var(--orange);
+  border-radius: 8px;
+  font-weight: bold;
+}
+
+.password-reveal-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+#passwordDisplay {
+  padding: 8px 12px;
+  background-color: white;
+  border: 1px solid var(--palm);
+  border-radius: 8px;
+  font-family: Georgia, serif;
+  word-break: break-word;
+}
+
+.password-eye-button {
+  padding: 8px 12px;
+  color: white;
+  background-color: var(--deep-blue);
+  border: none;
+  border-radius: 8px;
+  font-family: Georgia, serif;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.password-eye-button:hover {
+  color: var(--ink);
+  background-color: var(--yellow);
+  box-shadow: 0 0 12px rgba(249, 219, 121, 0.85);
+}
+
+.login-result-value {
+  display: inline-block;
+  padding: 8px 12px;
+  background-color: white;
+  border: 1px solid var(--palm);
+  border-radius: 8px;
+  word-break: break-word;
+}
+
+.second-section-label {
+  margin-top: 30px;
+}
+
+.login-result-value {
+  display: inline-block;
+  padding: 8px 12px;
+  background-color: white;
+  border: 1px solid var(--palm);
+  border-radius: 8px;
+  word-break: break-word;
+}

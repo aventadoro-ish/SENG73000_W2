@@ -1,0 +1,167 @@
+/* ---------- Request Access Page Styling ---------- */
+
+.request-access-intro {
+  grid-template-columns: 2fr 0.9fr;
+}
+
+.request-access-section {
+  margin-top: 28px;
+  padding: 28px;
+  background-color: var(--card-bg);
+  border-radius: 14px;
+  border-left: 5px solid var(--aqua);
+  box-shadow: 0 4px 14px var(--shadow);
+}
+
+.request-access-heading h2 {
+  margin-top: 0;
+  color: var(--deep-blue);
+}
+
+.request-access-heading p,
+.access-form p {
+  text-align: left;
+  text-indent: 0;
+  line-height: 1.55;
+}
+
+.access-form {
+  margin-top: 22px;
+}
+
+.required-note {
+  padding: 12px 14px;
+  background-color: #fff8df;
+  border-left: 4px solid var(--orange);
+  border-radius: 8px;
+  font-weight: bold;
+}
+
+.required-marker {
+  color: var(--ember);
+  font-weight: bold;
+}
+
+.access-form fieldset {
+  margin-top: 22px;
+  padding: 22px;
+  border: 2px solid rgba(0, 206, 200, 0.35);
+  border-radius: 12px;
+  background-color: rgba(255, 248, 223, 0.58);
+}
+
+.access-form legend {
+  padding: 0 10px;
+  color: var(--deep-blue);
+  font-size: 1.18rem;
+  font-weight: bold;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18px 22px;
+}
+
+.form-row {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-row label,
+.option-group p {
+  margin-bottom: 6px;
+  font-weight: bold;
+  color: var(--ink);
+}
+
+.access-form input[type="text"],
+.access-form input[type="email"],
+.access-form input[type="date"],
+.access-form select,
+.access-form textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  font-family: Georgia, serif;
+  font-size: 1rem;
+  color: var(--ink);
+  background-color: white;
+  border: 1px solid var(--palm);
+  border-radius: 8px;
+}
+
+.access-form input:focus,
+.access-form select:focus,
+.access-form textarea:focus {
+  outline: 2px solid var(--aqua);
+  border-color: var(--deep-blue);
+}
+
+.option-group {
+  margin-top: 10px;
+}
+
+.option-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.option-row label {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 12px;
+  background-color: white;
+  border: 1px solid rgba(9, 124, 135, 0.22);
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.option-row label:hover {
+  background-color: #fff8df;
+  border-color: var(--aqua);
+}
+
+.access-form input[type="radio"],
+.access-form input[type="checkbox"] {
+  accent-color: var(--deep-blue);
+}
+
+.compact-row {
+  max-width: 360px;
+  margin-top: 18px;
+}
+
+.access-form textarea {
+  min-height: 150px;
+  resize: vertical;
+}
+
+#character_count {
+  margin-top: 10px;
+  margin-bottom: 0;
+  color: #53696b;
+  font-weight: bold;
+}
+
+#character_error {
+  margin-top: 8px;
+  padding: 10px 12px;
+  color: white;
+  background-color: var(--ember);
+  border-radius: 8px;
+  font-weight: bold;
+}
+
+.form-button-row {
+  margin-top: 22px;
+}
+
+#request_access_btn {
+  border: none;
+  cursor: pointer;
+  font-family: Georgia, serif;
+  font-size: 1rem;
+}
