@@ -23,7 +23,7 @@
 //New for FSM
 int pcanRxInit();
 int pcanRxClose();
-int pcanRxState(TPCANMsg *msg); // if a message is recieved = 1, no message recieved = 0
+int pcanRxState(TPCANMsg *msg); // if a message is recieved = 1, no message recieved = 0, error = -1
 
 // Function declarations
 int pcanTx(int id, int data);

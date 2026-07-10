@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<!--
+Author: Matvey Regentov
+-->
+
+<html lang="en">
+
+<head>
+	<title>MR Logbook Entry - 2026-07-02</title>
+	<meta charset="UTF-8">
+	<meta name="author" content="Matvey Regentov">
+	<meta name="description" content="MR Logbook Entry">
+	<meta name="robots" content="index, follow">
+	<meta http-equiv="Pragma" content="no-cache">
+
+	<link rel="icon" href="../../media/icons/LiF_icon.ico" type="image/x-icon">
+
+	<!-- shared website styling -->
+	<link rel="stylesheet" href="../../css/base.css">
+
+	<!-- logbook entry page styling -->
+	<link rel="stylesheet" href="../../css/logbook_entry.css">
+
+	<!-- Prism syntax highlighting theme -->
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css">
+	<link rel="stylesheet" href="../../css/code_formatting.css">
+
+</head>
+
+<body>
+	<!-- Nav bar loaded by JavaScript -->
+	<div id="navbar-placeholder" data-root="../../"></div>
+	<script src="../../js/navbar.js"></script>
+
+	<main class="page-wrapper">
+
+		<section class="intro-section logbook-entry-intro" id="page_top">
+			<div class="intro-text">
+				<p class="section-label">Daily Logbook Entry</p>
+				<h1>Logbook Entry, 2026-07-02 by Matvey Regentov</h1>
+
+				<p class="intro-description">toggle switch code and Prism JS for code formatting</p>
+
+				<div class="button-row">
+					<a href="../logbook_MR.html" class="button secondary-button">My Logbook Cover Page</a>
+					<a href="#log" class="button primary-button">Jump to Entry</a>
+				</div>
+			</div>
+
+			<aside class="summary-card">
+				<h2>Entry Snapshot</h2>
+				<p><b>Date:</b> 2026-07-02</p>
+				<p><b>Author:</b> Matvey Regentov</p>
+				<p><b>Focus:</b>Toggle Switch code and Prism JS for code formatting</p>
+			</aside>
+		</section>
+
+		<section class="logbook-entry-content" id="log">
+			<h2>PCB outline planning</h2>
+            <figure class="logbook-figure">
+                <img src="../../media/images/Diagram_Custom_FC_PCB_Outline_2026-07-02.png"
+                    alt="Initial Custom FC PCB outline" class="logbook-image centered-image"
+                    style="max-width: 100%; height: auto;">
+                <figcaption>Initial Custom FC PCB outline</figcaption>
+            </figure>
+
+            <p>
+                I thought about how to arrange primary components on the FC/CC 
+                PCB. I "indented" the USB-C connector ports such that USB-C cable 
+                plug (rigid part of it) will stay within PCB bounding box. This 
+                should help protect the ports and cable from mechanical strain. 
+                I had an idea that the majority of PCB components can be placed 
+                on the back side of the PCB, while easy-to-solder I/O components 
+                can be positioned on the front side of the PCB. This way, the 
+                overall outline and size of the PCB can be reduced while still 
+                providing a neat and logical arrangement for I/O.
+            </p>
+
+		</section>
+
+
+		<p class="top-link">
+			<a href="#page_top">Go to the top of this page</a>
+		</p>
+
+	</main>
+
+	<footer class="site-footer">
+		<p>Copyright &copy; Matvey Regentov</p>
+	</footer>
+
+	<!-- Prism.js script for code formatting -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+	<!-- Import C language -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
+	<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-html.min.js"></script> -->
+	<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+
+</body>
+
+</html>

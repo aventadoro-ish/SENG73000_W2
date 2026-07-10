@@ -1,0 +1,287 @@
+<!doctype html>
+<!--
+Author: Nick Kapuka
+-->
+
+<html lang="en">
+  <head>
+    <title>NK Logbook Entry - 2026-06-29</title>
+    <meta charset="UTF-8" />
+    <meta name="author" content="Nick Kapuka" />
+    <meta name="description" content="NK Logbook Entry" />
+    <meta name="robots" content="index, follow" />
+    <meta http-equiv="Pragma" content="no-cache" />
+
+    <link
+      rel="icon"
+      href="../../media/icons/LiF_icon.ico"
+      type="image/x-icon"
+    />
+
+    <!-- shared website styling -->
+    <link rel="stylesheet" href="../../css/base.css" />
+
+    <!-- logbook entry page styling -->
+    <link rel="stylesheet" href="../../css/logbook_entry.css" />
+
+    <!-- Prism syntax highlighting theme -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css"
+    />
+    <link rel="stylesheet" href="../../css/code_formatting.css" />
+  </head>
+
+  <body>
+    <!-- Nav bar loaded by JavaScript -->
+    <div id="navbar-placeholder" data-root="../../"></div>
+    <script src="../../js/navbar.js"></script>
+
+    <main class="page-wrapper">
+      <section class="intro-section logbook-entry-intro" id="page_top">
+        <div class="intro-text">
+          <p class="section-label">Daily Logbook Entry</p>
+          <h1>Logbook Entry, 2026-06-29 by Nick Kapuka</h1>
+
+          <p class="intro-description">
+            Met with the team in a voice call to plan Phase 2 of the project,
+            including major features, PCB subsystem ownership, board
+            requirements, ordering plans, and the rough timeline for design, PCB
+            arrival, and assembly.
+          </p>
+
+          <div class="button-row">
+            <a href="../logbook_NK.html" class="button secondary-button"
+              >My Logbook Cover Page</a
+            >
+            <a href="#log" class="button primary-button">Jump to Entry</a>
+          </div>
+        </div>
+
+        <aside class="summary-card">
+          <h2>Entry Snapshot</h2>
+          <p><b>Date:</b> 2026-06-29</p>
+          <p><b>Author:</b> Nick Kapuka</p>
+          <p>
+            <b>Focus:</b>Phase 2 planning meeting, PCB subsystem task split,
+            design timeline, and component ordering requirements.
+          </p>
+        </aside>
+      </section>
+
+      <section class="logbook-entry-content" id="log">
+        <h2>Phase 2 planning meeting</h2>
+        <p>
+          On our first meeting for this part of the project, we met in a voice
+          call and decided on a general plan for the week and for Phase 2 as a
+          whole. The goal of the meeting was to break the project into smaller
+          PCB subsystems, assign responsibility for each subsystem, and decide
+          what needed to be finished first so the boards could be ordered on
+          time.
+        </p>
+
+        <p>
+          The main time window discussed was <b>Weeks 7-11</b>, which covers the
+          transition from planning and PCB design into ordering, assembly,
+          testing, and integration.
+        </p>
+      </section>
+
+      <section class="logbook-entry-content">
+        <h2>Main Phase 2 features discussed</h2>
+        <p>
+          The team listed the main features and catch-up items that need
+          attention during Phase 2. These include both website/software tasks
+          and embedded/electrical tasks.
+        </p>
+
+        <ul>
+          <li>
+            <b>Server controls:</b> allowing the elevator system to be
+            controlled or monitored from the server-side interface.
+          </li>
+          <li>
+            <b>LCD interface:</b> continuing LCD-related work for system
+            information, floor status, or user feedback.
+          </li>
+          <li>
+            <b>Authentication:</b> adding or improving login/auth features for
+            the web interface.
+          </li>
+          <li>
+            <b>Database:</b> storing useful project data, user access
+            information, logs, or system states.
+          </li>
+          <li>
+            <b>Audio signals:</b> adding buzzer/speaker feedback for
+            elevator-like behavior.
+          </li>
+          <li>
+            <b>ToF sensor:</b> considering Time-of-Flight sensing for position
+            or distance-related feedback.
+          </li>
+          <li>
+            <b>Catch-up work:</b> finishing or cleaning up items from Phase 1
+            before deeper Phase 2 integration.
+          </li>
+        </ul>
+      </section>
+
+      <section class="logbook-entry-content">
+        <h2>PCB subsystem ownership</h2>
+        <p>
+          A major part of the meeting was dividing the PCB into smaller
+          subsystems so each person could focus on specific circuits. This
+          should make the schematic/layout work more manageable and reduce
+          overlap between team members.
+        </p>
+
+        <h4>Nick's responsibilities</h4>
+        <ul>
+          <li>
+            <b>Buttons and LEDs:</b> user interface inputs and visual
+            indicators.
+          </li>
+          <li>
+            <b>USB-C PD trigger:</b> power delivery trigger circuit for
+            requesting a useful supply voltage.
+          </li>
+          <li>
+            <b>Audio:</b> buzzer/speaker circuit for elevator-style sound
+            feedback.
+          </li>
+          <li>
+            <b>7-segment display:</b> display circuit for showing the elevator
+            floor/status.
+          </li>
+        </ul>
+
+        <h4>Rita's responsibilities</h4>
+        <ul>
+          <li>
+            <b>CAN connector:</b> connector interface for the CAN bus wiring.
+          </li>
+          <li>
+            <b>CAN circuit:</b> CAN-related hardware needed for communication
+            between controllers.
+          </li>
+          <li><b>Load cell:</b> circuit related to weight/load measurement.</li>
+          <li>
+            <b>Database work:</b> starting database development during the week.
+          </li>
+        </ul>
+
+        <h4>Matvey's responsibilities</h4>
+        <ul>
+          <li><b>MCU:</b> main microcontroller section of the PCB.</li>
+          <li><b>Servos:</b> servo control circuitry.</li>
+          <li>
+            <b>Accelerometer:</b> acceleration/orientation sensing circuit.
+          </li>
+          <li>
+            <b>Power regulation:</b> regulator section for generating required
+            board voltages.
+          </li>
+          <li>
+            <b>BLDC driver:</b> driver circuit for brushless DC motor control.
+          </li>
+        </ul>
+      </section>
+
+      <section class="logbook-entry-content">
+        <h2>PCB timeline</h2>
+        <p>
+          The team also made a rough timeline so the PCB design could be
+          completed, ordered, received, and assembled with enough time left for
+          testing.
+        </p>
+
+        <ul>
+          <li>
+            <b>PCB design target:</b> finish the design by <b>2026-07-05</b>.
+          </li>
+          <li>
+            <b>Expected PCB arrival:</b> around <b>2026-07-10 to 2026-07-13</b>.
+          </li>
+          <li>
+            <b>Assembly window:</b> assemble the PCBs around
+            <b>2026-07-13 to 2026-07-17</b>.
+          </li>
+        </ul>
+
+        <p>
+          The general idea is to finish the schematic/layout early enough that
+          there is still time to order parts, assemble the boards, debug
+          hardware issues, and integrate the final circuits into the elevator
+          system.
+        </p>
+      </section>
+
+      <section class="logbook-entry-content">
+        <h2>Design and ordering requirements</h2>
+        <p>
+          A few practical requirements were agreed on so that everyone is
+          designing around the same expectations. These requirements help keep
+          the boards easier to assemble and easier to source parts for.
+        </p>
+
+        <ul>
+          <li><b>EDA software:</b> use <b>KiCad 9.0.9</b> or newer.</li>
+          <li>
+            <b>Passive component size:</b> use <b>0805</b> parts where possible,
+            since they are reasonable to hand solder.
+          </li>
+          <li>
+            <b>Supplier:</b> use <b>DigiKey</b> for component sourcing where
+            possible.
+          </li>
+          <li><b>PCB quantity:</b> order <b>10 PCB blanks</b>.</li>
+          <li>
+            <b>Component quantity:</b> order enough components for approximately
+            <b>6 units</b>.
+          </li>
+        </ul>
+      </section>
+
+      <section class="logbook-entry-content">
+        <h2>Immediate next steps</h2>
+        <p>
+          By the end of the meeting, we had a clearer idea of what each person
+          needed to work on first. For my part, the next focus was to continue
+          the website/GUI controls while also preparing the user-interface PCB
+          circuits assigned to me.
+        </p>
+
+        <ul>
+          <li>
+            <b>Rita:</b> begin database work during the week and improving the .
+          </li>
+          <li>
+            <b>Matvey:</b> Research into the ESP32-S3-WROOM1 and begin making
+            the various schematics while improving the mechanical design.
+          </li>
+          <li>
+            <b>Nick:</b> continue website and GUI controls, along with assigned
+            PCB subsystems.
+          </li>
+          <li>
+            <b>Team:</b> continue refining the Phase 2 PCB plan and add
+            notes/details as the design becomes more concrete.
+          </li>
+        </ul>
+      </section>
+
+      <p class="top-link">
+        <a href="#page_top">Go to the top of this page</a>
+      </p>
+    </main>
+
+    <footer class="site-footer">
+      <p>Copyright &copy; Nick Kapuka</p>
+    </footer>
+
+    <!-- Prism.js script for code formatting -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+  </body>
+</html>

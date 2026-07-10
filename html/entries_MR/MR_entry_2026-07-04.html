@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<!--
+Author: Matvey Regentov
+-->
+
+<html lang="en">
+
+<head>
+	<title>MR Logbook Entry - 2026-07-04</title>
+	<meta charset="UTF-8">
+	<meta name="author" content="Matvey Regentov">
+	<meta name="description" content="MR Logbook Entry">
+	<meta name="robots" content="index, follow">
+	<meta http-equiv="Pragma" content="no-cache">
+
+	<link rel="icon" href="../../media/icons/LiF_icon.ico" type="image/x-icon">
+
+	<!-- shared website styling -->
+	<link rel="stylesheet" href="../../css/base.css">
+
+	<!-- logbook entry page styling -->
+	<link rel="stylesheet" href="../../css/logbook_entry.css">
+
+	<!-- Prism syntax highlighting theme -->
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css">
+	<link rel="stylesheet" href="../../css/code_formatting.css">
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['\\(', '\\)'], ['$', '$']],
+                displayMath: [['\\[', '\\]'], ['$$', '$$']]
+            },
+            svg: {
+                fontCache: 'global'
+            }
+        };
+    </script>        
+	<script
+		id="MathJax-script"
+		async
+		src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js">
+	</script>
+</head>
+
+<body>
+	<!-- Nav bar loaded by JavaScript -->
+	<div id="navbar-placeholder" data-root="../../"></div>
+	<script src="../../js/navbar.js"></script>
+
+	<main class="page-wrapper">
+
+		<section class="intro-section logbook-entry-intro" id="page_top">
+			<div class="intro-text">
+				<p class="section-label">Daily Logbook Entry</p>
+				<h1>Logbook Entry, 2026-07-04 by Matvey Regentov</h1>
+
+				<p class="intro-description">PCB Power Regulation</p>
+
+				<div class="button-row">
+					<a href="../logbook_MR.html" class="button secondary-button">My Logbook Cover Page</a>
+					<a href="#log" class="button primary-button">Jump to Entry</a>
+				</div>
+			</div>
+
+			<aside class="summary-card">
+				<h2>Entry Snapshot</h2>
+				<p><b>Date:</b> 2026-07-04</p>
+				<p><b>Author:</b> Matvey Regentov</p>
+				<p><b>Focus:</b>Toggle Switch code and Prism JS for code formatting</p>
+			</aside>
+		</section>
+
+		<section class="logbook-entry-content" id="log">
+			<h2>Power Regulation Schematics</h2>
+			<p>
+				Initially, I thought I can reuse Project MoP Power PCB Power 
+				Regulation circuit in this PCB. However, 5V switching regulator 
+				from that design can only operate in buck mode, and will not 
+				allow 5V pass-through. This is a crucial feature due to USB PD 
+				negotiation. The board will initially get supplied with 5V, and 
+				only the PD negotiation is completed, the higher voltage will 
+				get supplied. Therefore, I need to redesign the 5V regulator.
+			</p>
+			<p>
+				I user <a href="https://webench.ti.com/power-designer/switching-regulator">TI Webench Power Designer</a> 
+				tool to find a suitable circuit. The design parameters I used:
+				<ul>
+					<li>\(V_{in}\) range: 5-20 [V]</li>
+					<li>\(V_{in_{nom}}=15\) [V]</li>
+					<li>\(V_{out} = 5\) [V]</li>
+					<li>\(I_{out_{max}}=6\) [A]</li>
+					<li>\(T_{ambient}=30\) [&deg;C]</li>
+				</ul>
+				These design parameters resulted in a lot of various possible 
+				circuits, however, a lot of them required custom inductors or 
+				transformers. Such designs were excluded from the search manually. 
+				When I tried to filter out QFN and BGA IC packages, the 
+				resulting designs were inefficient, bulky, and required a large 
+				BOM count. In order to simplify component sourcing and reduce 
+				PCB cost, lead-less packages were allowed. As the result, 
+				TPS55285VALR IC<sup><a href="#source-1">[1]</a></sup> proved to be the best option. It requires only a 
+				handful of supporting passive components, uses an off-the-shelf 
+				inductor, integrates MOSFETs, and fulfills all the primary design 
+				requirements. Link to shared design<sup><a href="#source-2">[2]</a></sup>.
+			</p>
+            <figure class="logbook-figure">
+                <img src="../../media/images/Schematic_TPS55285VALR_5V_regulator_TiWebench.png"
+                    alt="TI Webench-generated power regulator design with TPS55285VALR IC" class="logbook-image centered-image"
+                    style="max-width: 100%; height: auto;">
+                <figcaption>TI Webench-generated power regulator design with TPS55285VALR IC</figcaption>
+            </figure>
+
+			<h3>TPS55285 Mode Pin and Resistor Divider Updates</h3>
+			<p>
+				I further modified the design to reduce the BOM count.
+			</p>
+
+			<h4>Mode Pin</h4>
+
+			<p>
+				WEBENCH shows a 24.9k resistor to ground on the MODE pin. According to
+				Table 6-2 of the TPS55285 datasheet, this configuration results in an
+				I2C address of <code>0x75</code> and default output enable set to
+				<code>1</code>. Leaving the MODE pin open/disconnected changes the I2C
+				address to <code>0x74</code>, while still keeping default output enable set
+				to <code>1</code>.
+			</p>
+
+			<p>
+				Based on this, <code>R<sub>MODE</sub></code> can be removed from the circuit
+				if the <code>0x74</code> I2C address is acceptable for the design.
+			</p>
+
+			<h4>Feedback and UVLO Resistor Dividers</h4>
+
+			<ul>
+				<li>Original FB divider uses 102k and 6.02k resistors.</li>
+				<li>Original UVLO divider uses 301k and 100k resistors.</li>
+				<li>
+					The FB divider is being modified to use 100k and 5.92k resistors while
+					keeping approximately the same voltage ratio of <code>0.0559</code>.
+					This removes the 102k resistor from the BOM.
+				</li>
+				<li>
+					The UVLO threshold was changed from 4.9V to 4.8V, and the 302k resistor
+					was replaced with 294k.
+				</li>
+			</ul>
+
+			<h4>Input Capacitance</h4>
+
+			<ul>
+				<li>
+					Original design uses 2x 120uF electrolytic capacitors, plus 4.7uF and
+					1uF ceramic capacitors.
+				</li>
+				<li>
+					The input capacitance is being changed to 1x 560uF capacitor, 33uF, and
+					1uF to simplify the BOM.
+				</li>
+			</ul>
+
+		</section>
+
+		<section class="logbook-entry-content" id="log">
+			<h2>Power OR-ing circuit design</h2>
+			<p>
+				Since there are 2 potential voltage sources for the PCB: 
+				Programming and Debugging USB-C port and CAN-enabled USB-C port, 
+				a power OR-ing circuit is needed to allow seamless operation of 
+				the device with 1 or 2 power sources being connected.
+				<figure class="logbook-figure">
+					<img src="../../media/images/Diagram_LiF_Proposed_PCB_USB_PD_modes_of_operation_2026-06-29.png"
+						alt="USB PD modes of operation" class="logbook-image centered-image" style="max-width: 100%; height: auto;">
+					<figcaption>USB PD modes of operation</figcaption>
+            	</figure>
+
+				I found LN5050-1IC<sup><a href="#source-3">[3]]</a></sup>  which in combination with an external MOSFET 
+				allows to implement power OR-ing circuit in an "ideal diode" 
+				configuration. Several of such devices can be connected in 
+				parallel to allow multiple input power sources.
+				<figure class="logbook-figure">
+					<img src="../../media/images/Schematic_Power_OR-ing_circuit.png"
+						alt="Power OR-ing circuit using LN5050-1 IC for 2 channels" class="logbook-image centered-image" style="max-width: 100%; height: auto;">
+					<figcaption>Power OR-ing circuit using LN5050-1 IC for 2 channels</figcaption>
+            	</figure>
+
+				However, I still need to verify if this configuration is safe 
+				to use when 2 power sources have different voltages, e.g. 
+				15V PD from CAN USB-C and 5V from programming USB-C.
+			</p>
+		</section>
+
+		<section class="logbook-entry-content" id="log">
+			<h2>MCU selection</h2>
+			<p>
+				ESP32-S3 was chosen as the MCU series for our design. ESP WROOM 
+				modules integrate a lot of strapping components required for MCU 
+				operation. The resulting circuit around the module is very minimal.
+				As such, ESP32-S3-WROOM-1 package was chosen. Compared to 1U 
+				variant, it integrates a PCB antenna, so if future wireless 
+				features need to be added, there is no need to add an external 
+				antenna. Additionally, 1U module can be installed in place of 1 
+				variant, but not the other way around due to its smaller size 
+				and lack of PCB clearance requirements. <br>
+				The final thing to select is FLASH and RAM size. The difference 
+				between base model and 8MB FLASH and 8MB SRAM models is 1.2CAD, 
+				so it is fairly inconsequential.
+			</p>
+
+			<p>
+				I started designing an MCU schematics sheet. I used 
+				<a href="../../references/SCH_ESP32-S3-DevKitC-1_V1.1_20220413.pdf">ESP32-S3-DevKit-1 dev board schematics</a>
+				 as a reference for the necessary strapping components, 
+				flashing circuitry, and reset logic.
+				<figure class="logbook-figure">
+					<img src="../../media/images/Schematic_ESP32-S3_sheet.png"
+						alt="ESP32-S3 Schematics Sheet, Initial" class="logbook-image centered-image" style="max-width: 100%; height: auto;">
+					<figcaption>ESP32-S3 Schematics Sheet, Initials</figcaption>
+            	</figure>
+			
+				The flashing circuitry uses a placeholder USB-C connector, 
+				CY7C65213-28PVXI USB-to-UART bridge IC<sup><a href="#source-4">[4]</a></sup> , and 2x NPN transistors <sup><a href="#source-5">[5]</a></sup> 
+				to automatically enter flashing mode.
+			</p>
+
+		</section>
+
+		<section class="logbook-entry-content" id="log">
+			<h2>Sources and reference</h2>
+				<ol class="source-list">
+					<li id="source-1">
+						Texas Instruments,
+						<em>TPS55285VALR configuration and pin-setting details are based on the Texas
+						Instruments TPS55285</em>,
+						datasheet:
+						<a href="https://www.ti.com/lit/ds/symlink/tps55285.pdf">
+							https://www.ti.com/lit/ds/symlink/tps55285.pdf
+						</a>.
+					</li>
+					<li id="source-2">
+						Texas Instruments,
+						<em>5V power regulator design using TPS55285VALR</em>,
+						TI WEBENCH shared design link:
+						<a href="https://webench.ti.com/appinfo/webench/scripts/SDP.cgi?ID=517AED498B52F418">
+							https://webench.ti.com/appinfo/webench/scripts/SDP.cgi?ID=517AED498B52F418
+						</a>
+					</li>
+					<li id="source-3">
+						Infineon,
+						<em>IRLML6344TRPbF HEXFET Power MOSFET</em>,
+						Datasheet:
+						<a href="https://www.infineon.com/assets/row/public/documents/24/49/infineon-irlml6344-datasheet-en.pdf">
+							https://www.infineon.com/assets/row/public/documents/24/49/infineon-irlml6344-datasheet-en.pdf
+						</a>
+					</li>
+					<li id="source-4">
+						Cypress,
+						<em>CY7C65213, CY7C65213A USB-UART LP Bridge Controller</em>,
+						datasheet:
+						<a href="https://rocelec.widen.net/view/pdf/lbnf5iposc/CYPR-S-A0004572493-1.pdf">
+							https://rocelec.widen.net/view/pdf/lbnf5iposc/CYPR-S-A0004572493-1.pdf
+						</a>
+					</li>
+					<li id="source-5">
+						Panjit Semiconductor,
+						<em>MMBT4401 NPN General Purpose Switching Transistor</em>,
+						datasheet:
+						<a href="https://www.panjit.com.tw/upload/datasheet/MMBT4401.pdf">
+							https://www.panjit.com.tw/upload/datasheet/MMBT4401.pdf
+						</a>
+					</li>
+				</ol>
+		</section>
+
+		<p class="top-link">
+			<a href="#page_top">Go to the top of this page</a>
+		</p>
+
+	</main>
+
+	<footer class="site-footer">
+		<p>Copyright &copy; Matvey Regentov</p>
+	</footer>
+
+	<!-- Prism.js script for code formatting -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+	<!-- Import C language -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
+	<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-html.min.js"></script> -->
+	<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+
+</body>
+
+</html>
