@@ -4,5 +4,12 @@
 	(generator_version "9.0")
 	(uuid "a22e738a-12d4-4126-a934-c949d53fcf1c")
 	(paper "A4")
+	(title_block
+		(title "LiF - PD, UI, and Audio")
+		(date "2026-07-02")
+		(rev "0")
+		(company "Conestoga College")
+		(comment 1 "Designed by NK")
+	)
 	(lib_symbols)
 )

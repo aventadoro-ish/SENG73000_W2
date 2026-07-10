@@ -637,6 +637,10 @@
     [
       "7db427e6-7968-4846-b583-18e0176faad4",
       "LiF_06_Audio"
+    ],
+    [
+      "bf38ce5a-6e0a-4fe9-8f4d-2cf211212732",
+      "LiF_07_Accel"
     ]
   ],
   "text_variables": {}
