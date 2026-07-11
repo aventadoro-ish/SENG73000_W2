@@ -6,6 +6,170 @@
 	(paper "A4")
 	(lib_symbols)
 	(sheet
+		(at 67.31 171.45)
+		(size 33.02 19.05)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "17577359-df8d-4d28-9071-787d31b1b6da")
+		(property "Sheetname" "Load Cell"
+			(at 67.31 170.7384 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "LiF_LoadCell.kicad_sch"
+			(at 67.31 191.0846 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(pin "3V3_{IN}" input
+			(at 67.31 173.99 180)
+			(uuid "f028af71-7f9a-49ab-b718-8840ab332811")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "5V0_{IN}" input
+			(at 67.31 176.53 180)
+			(uuid "3999dd6c-33ca-4828-91de-1faf580bb9d6")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "LC V_{OUT}" output
+			(at 100.33 180.34 0)
+			(uuid "e4ae85aa-45a0-4002-9289-18539a484712")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(instances
+			(project "LiF_FC-PCB_rev1"
+				(path "/9e3e8da7-e506-46c9-90e5-307e4ad30d29"
+					(page "7")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 68.58 133.35)
+		(size 24.13 29.21)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "77827f91-166d-41e9-a525-15815c2a0550")
+		(property "Sheetname" "CAN"
+			(at 68.58 132.6384 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "LiF_CAN.kicad_sch"
+			(at 68.58 163.1446 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(pin "3V3_{IN}" input
+			(at 68.58 135.89 180)
+			(uuid "cf261262-873c-407f-b0b4-3f702b6568e6")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "5V0_{IN}" input
+			(at 68.58 138.43 180)
+			(uuid "874d0d97-e632-4225-8156-cc40ec573657")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "5V_{out}" output
+			(at 92.71 135.89 0)
+			(uuid "36cfdcf8-5c57-4f8e-bd2b-3869e77ece30")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(pin "CAN_RX" output
+			(at 68.58 147.32 180)
+			(uuid "e4de8ce4-e72a-472b-bde2-8b867b43bf33")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "CAN_TX" input
+			(at 68.58 149.86 180)
+			(uuid "6bc3576b-11d5-498d-995b-1513a0e43e2a")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(instances
+			(project "LiF_FC-PCB_rev1"
+				(path "/9e3e8da7-e506-46c9-90e5-307e4ad30d29"
+					(page "6")
+				)
+			)
+		)
+	)
+	(sheet
 		(at 193.04 100.33)
 		(size 36.83 22.86)
 		(exclude_from_sim no)

@@ -1,4 +1,4 @@
-26680667890876647
+26684236495969175
 Audio_Module
 Reverb_BTDR-1H
 Digital Reverberation Unit, http://www.belton.co.kr/inc/downfile.php?seq=17&file=pdf (footprint from http://www.uk-electronic.de/PDF/BTDR-1.pdf)
@@ -70553,12 +70553,26 @@ Yellow 5381 Series LED
 2
 2
 LiF_PCB_Footprints
+CONN_DB-9 Female KG-T4S_ASM
+
+A-DF 09 A/KG-T4S 
+0
+9
+9
+LiF_PCB_Footprints
 IND_SPM10040T-4R7M
 
 
 0
 2
 2
+LiF_PCB_Footprints
+SW_SLW-883935-2A-D
+
+
+0
+3
+3
 LiF_PCB_Footprints
 WQFN-HR-15
 

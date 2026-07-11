@@ -246,8 +246,13 @@
     }
   },
   "libraries": {
-    "pinned_footprint_libs": [],
-    "pinned_symbol_libs": []
+    "pinned_footprint_libs": [
+      "MatsLibrary",
+      "LiF_PCB_Footprints"
+    ],
+    "pinned_symbol_libs": [
+      "LiF_PCB_Symbols"
+    ]
   },
   "meta": {
     "filename": "LiF_FC-PCB_rev1.kicad_pro",
@@ -428,6 +433,14 @@
     [
       "fa6eb845-b5e3-4a8e-9c24-c1b567f4e987",
       "MCU"
+    ],
+    [
+      "77827f91-166d-41e9-a525-15815c2a0550",
+      "CAN"
+    ],
+    [
+      "17577359-df8d-4d28-9071-787d31b1b6da",
+      "Load Cell"
     ]
   ],
   "text_variables": {}
