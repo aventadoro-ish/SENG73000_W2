@@ -1,0 +1,1916 @@
+<!doctype html>
+<!--
+Author: Nick Kapuka
+-->
+
+<html lang="en">
+  <head>
+    <title>NK Logbook Entry - 2026-07-09</title>
+    <meta charset="UTF-8" />
+    <meta name="author" content="Nick Kapuka" />
+    <meta name="description" content="NK Logbook Entry" />
+    <meta name="robots" content="index, follow" />
+    <meta http-equiv="Pragma" content="no-cache" />
+
+    <link
+      rel="icon"
+      href="../../media/icons/LiF_icon.ico"
+      type="image/x-icon"
+    />
+
+    <!-- shared website styling -->
+    <link rel="stylesheet" href="../../css/base.css" />
+
+    <!-- logbook entry page styling -->
+    <link rel="stylesheet" href="../../css/logbook_entry.css" />
+
+    <!-- Prism syntax highlighting theme -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css"
+    />
+    <link rel="stylesheet" href="../../css/code_formatting.css" />
+  </head>
+
+  <body>
+    <!-- Nav bar loaded by JavaScript -->
+    <div id="navbar-placeholder" data-root="../../"></div>
+    <script src="../../js/navbar.js"></script>
+
+    <main class="page-wrapper">
+      <section class="intro-section logbook-entry-intro" id="page_top">
+        <div class="intro-text">
+          <p class="section-label">Daily Logbook Entry</p>
+          <h1>Logbook Entry, 2026-07-09 by Nick Kapuka</h1>
+
+          <p class="intro-description">
+            Updated the project website with styled PHP pages and members-only
+            navigation, created a visual remote elevator-control interface,
+            improved the Gantt chart using JavaScript, and imported published
+            Google Sheets CSV data into the caffeine-study pages.
+          </p>
+
+          <div class="button-row">
+            <a href="../logbook_NK.html" class="button secondary-button"
+              >My Logbook Cover Page</a
+            >
+            <a href="#log" class="button primary-button">Jump to Entry</a>
+          </div>
+        </div>
+
+        <aside class="summary-card">
+          <h2>Entry Snapshot</h2>
+          <p><b>Date:</b> 2026-07-09</p>
+          <p><b>Author:</b> Nick Kapuka</p>
+          <p>
+            <b>Focus:</b>PHP page styling and member pages, remote elevator
+            controls, JavaScript-based Gantt chart rendering, and live
+            caffeine-study tables loaded from Google Sheets CSV exports.
+          </p>
+        </aside>
+      </section>
+
+      <section class="logbook-entry-content" id="log">
+        <h2>Entry overview</h2>
+        <ul class="clean-list">
+          <li>
+            Updating the PHP in the website
+            <ul class="clean-list">
+              <li>
+                Added member-exclusive pages (after logging in), added an
+                elevator control page, and added a secret page for members
+              </li>
+            </ul>
+          </li>
+          <li>
+            Improved the Gantt chart by changing the handling logic with JS
+            <ul class="clean-list">
+              <li>
+                Wrote a JS function that converts "colspan=8" into td elements
+                and makes the table look pretty
+              </li>
+            </ul>
+          </li>
+          <li>
+            Exported CSVs from our master excel sheet and imported them to the
+            website via JS function
+            <ul class="clean-list">
+              <li>
+                Allows live updates of our caffeine study from our master sheet
+              </li>
+              <li>I hate JS...</li>
+            </ul>
+          </li>
+        </ul>
+        <h3>Key details</h3>
+        <ul class="clean-list">
+          <li>
+            <strong>Purpose:</strong> add HTML styling to PHP pages and a few
+            new PHP files such that there are exclusive members pages
+          </li>
+          <li>
+            <strong>Outstanding:</strong> currently waiting for RY to finish the
+            backend handling... No updates as of this entry regarding it.
+          </li>
+          <li>
+            <strong>Result:</strong> added "elevator_control.php", "logout.php",
+            "members.php", and "super_secret.php"
+          </li>
+        </ul>
+      </section>
+      <section class="logbook-entry-content">
+        <h2>Updating PHP</h2>
+        <h4>Added HTML styling to PHP pages</h4>
+        <p>
+          Previously, the PHP pages would literally load a blank white page that
+          echo'd back what the user entered during the login process. This
+          looked lame to say the least - figured I would update it with newer
+          page styling. One example is the request access page. The general PHP
+          logic (the text before DOCTYPE) stayed the same and I only added HTML
+          elements and custom CSS. Below is an example:
+        </p>
+        <pre
+          class="code-block language-php"
+        ><code class="language-php">&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;
+&lt;head&gt;
+    &lt;title&gt;LiF Team - Access Request Result&lt;/title&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;link rel="icon" href="../media/icons/LiF_icon.ico" type="image/x-icon"&gt;
+    &lt;meta name="author" content="Nick Kapuka"&gt;
+    &lt;meta name="description" content="Access request result page for the LiF Team website."&gt;
+    &lt;meta name="robots" content="index, follow"&gt;
+    &lt;meta http-equiv="Pragma" content="no-cache"&gt;
+    &lt;link rel="stylesheet" href="../css/base.css"&gt;
+    &lt;link rel="stylesheet" href="../css/auth_result.css"&gt;
+&lt;/head&gt;
+
+  
+
+&lt;body&gt;
+    &lt;!-- nav bar --&gt;
+    &lt;div id="navbar-placeholder" data-root="../"&gt;&lt;/div&gt;
+    &lt;script src="../js/navbar.js"&gt;&lt;/script&gt;
+    
+    &lt;main class="page-wrapper"&gt;
+
+        &lt;section class="intro-section auth-result-intro" id="page_top"&gt;
+
+            &lt;div class="intro-text"&gt;
+
+                &lt;p class="section-label"&gt;Access Request Status&lt;/p&gt;
+
+  
+
+                &lt;?php if (!$submitted): ?&gt;
+
+                    &lt;h1&gt;No Request Submitted&lt;/h1&gt;
+
+                    &lt;p class="intro-description"&gt;
+
+                        This page displays the result after the request access form is submitted.
+
+                    &lt;/p&gt;
+
+                &lt;?php elseif (!empty($errors)): ?&gt;
+
+                    &lt;h1&gt;Request Needs Attention&lt;/h1&gt;
+
+                    &lt;p class="intro-description"&gt;
+
+                        The access request was received, but some fields need to be corrected before it can be accepted.
+
+                    &lt;/p&gt;
+
+                &lt;?php else: ?&gt;
+
+                    &lt;h1&gt;Request Submitted&lt;/h1&gt;
+
+                    &lt;p class="intro-description"&gt;
+
+                        Your access request was submitted successfully. The information below summarizes the request.
+
+                    &lt;/p&gt;
+
+                &lt;?php endif; ?&gt;
+
+  
+
+                &lt;div class="button-row"&gt;
+
+                    &lt;a href="../html/request_access.html" class="button secondary-button"&gt;Back to Request Form&lt;/a&gt;
+
+                    &lt;a href="../index.html" class="button primary-button"&gt;Return Home&lt;/a&gt;
+
+                &lt;/div&gt;
+
+            &lt;/div&gt;
+
+  
+
+            &lt;aside class="summary-card"&gt;
+
+                &lt;h2&gt;Request Info&lt;/h2&gt;
+
+                &lt;p&gt;&lt;strong&gt;Project:&lt;/strong&gt; Engineering Project VI&lt;/p&gt;
+
+                &lt;p&gt;&lt;strong&gt;Team:&lt;/strong&gt; Lithium Firefly&lt;/p&gt;
+
+                &lt;p&gt;&lt;strong&gt;Status:&lt;/strong&gt;
+
+                    &lt;?php
+
+                    if (!$submitted) {
+
+                        echo "No form submitted";
+
+                    } elseif (!empty($errors)) {
+
+                        echo "Action required";
+
+                    } else {
+
+                        echo "Submitted";
+
+                    }
+
+                    ?&gt;
+
+                &lt;/p&gt;
+
+            &lt;/aside&gt;
+
+        &lt;/section&gt;
+
+  
+
+        &lt;section class="auth-result-section &lt;?php echo !empty($errors) ? 'auth-error-section' : 'auth-success-section'; ?&gt;"&gt;
+
+            &lt;?php if (!$submitted): ?&gt;
+
+                &lt;p class="section-label"&gt;No Form Data&lt;/p&gt;
+
+                &lt;h2&gt;Please submit the request form&lt;/h2&gt;
+
+                &lt;p&gt;
+
+                    Use the button above to return to the request access page.
+
+                &lt;/p&gt;
+
+            &lt;?php elseif (!empty($errors)): ?&gt;
+
+                &lt;p class="section-label"&gt;Validation Errors&lt;/p&gt;
+
+                &lt;h2&gt;Please fix the following&lt;/h2&gt;
+
+  
+
+                &lt;ul class="auth-message-list"&gt;
+
+                    &lt;?php foreach ($errors as $error): ?&gt;
+
+                        &lt;li&gt;&lt;?php echo htmlspecialchars($error, ENT_QUOTES, 'UTF-8'); ?&gt;&lt;/li&gt;
+
+                    &lt;?php endforeach; ?&gt;
+
+                &lt;/ul&gt;
+
+            &lt;?php else: ?&gt;
+
+                &lt;p class="section-label"&gt;Submitted Values&lt;/p&gt;
+
+                &lt;h2&gt;Access Request Details&lt;/h2&gt;
+
+  
+
+                &lt;div class="auth-detail-grid"&gt;
+
+                    &lt;div class="auth-detail-card"&gt;
+
+                        &lt;h3&gt;First Name&lt;/h3&gt;
+
+                        &lt;p&gt;&lt;?php echo $safeFirstName; ?&gt;&lt;/p&gt;
+
+                    &lt;/div&gt;
+
+  
+
+                    &lt;div class="auth-detail-card"&gt;
+
+                        &lt;h3&gt;Last Name&lt;/h3&gt;
+
+                        &lt;p&gt;&lt;?php echo $safeLastName; ?&gt;&lt;/p&gt;
+
+                    &lt;/div&gt;
+
+  
+
+                    &lt;div class="auth-detail-card"&gt;
+
+                        &lt;h3&gt;Email&lt;/h3&gt;
+
+                        &lt;p&gt;&lt;?php echo $safeEmail; ?&gt;&lt;/p&gt;
+
+                    &lt;/div&gt;
+
+  
+
+                    &lt;div class="auth-detail-card"&gt;
+
+                        &lt;h3&gt;Birthday&lt;/h3&gt;
+
+                        &lt;p&gt;&lt;?php echo $safeBirthday; ?&gt;&lt;/p&gt;
+
+                    &lt;/div&gt;
+
+  
+
+                    &lt;div class="auth-detail-card"&gt;
+
+                        &lt;h3&gt;Faculty/Student&lt;/h3&gt;
+
+                        &lt;p&gt;&lt;?php echo $safeOccupation; ?&gt;&lt;/p&gt;
+
+                    &lt;/div&gt;
+
+  
+
+                    &lt;div class="auth-detail-card"&gt;
+
+                        &lt;h3&gt;Involvement&lt;/h3&gt;
+
+                        &lt;p&gt;&lt;?php echo $safeInvolvement; ?&gt;&lt;/p&gt;
+
+                    &lt;/div&gt;
+
+  
+
+                    &lt;div class="auth-detail-card"&gt;
+
+                        &lt;h3&gt;Drives a Car&lt;/h3&gt;
+
+                        &lt;p&gt;&lt;?php echo $safeDrivesCar; ?&gt;&lt;/p&gt;
+
+                    &lt;/div&gt;
+
+  
+
+                    &lt;div class="auth-detail-card wide-card"&gt;
+
+                        &lt;h3&gt;Other Details&lt;/h3&gt;
+
+                        &lt;p&gt;&lt;?php echo $safeDetails === '' ? 'No additional details provided.' : $safeDetails; ?&gt;&lt;/p&gt;
+
+                    &lt;/div&gt;
+
+                &lt;/div&gt;
+
+            &lt;?php endif; ?&gt;
+
+        &lt;/section&gt;
+
+  
+
+        &lt;p class="top-link"&gt;
+
+            &lt;a href="#page_top"&gt;Go to the top of this page&lt;/a&gt;
+
+        &lt;/p&gt;
+
+    &lt;/main&gt;
+
+  
+
+    &lt;footer class="site-footer"&gt;
+
+        &lt;p&gt;Copyright &amp;copy; 2026 Nick Kapuka&lt;/p&gt;
+
+    &lt;/footer&gt;
+
+&lt;/body&gt;
+
+  
+
+&lt;/html&gt;
+
+</code></pre>
+        <p>The regular request access HTML allows the user to enter text:</p>
+        <figure>
+          <img
+            alt="Request Access page before the form is submitted"
+            class="img_med"
+            src="../../media/images/RequestAccess_HTMLPageView.png"
+          />
+          <figcaption>
+            <b>Request Access page before the form is submitted</b>
+          </figcaption>
+        </figure>
+        <p>
+          But after requesting access, it ultimately created a page that looked
+          like:
+        </p>
+        <figure>
+          <img
+            alt="Styled confirmation page displayed after an access request is submitted"
+            class="img_med"
+            src="../../media/images/RequestAccess_RequestSubmitted.png"
+          />
+          <figcaption>
+            <b
+              >Styled confirmation page displayed after an access request is
+              submitted</b
+            >
+          </figcaption>
+        </figure>
+        <p>With the submitted values below:</p>
+        <figure>
+          <img
+            alt="Organized display of the values entered in the access request form"
+            class="img_med"
+            src="../../media/images/RequestAccess_AccessGranted.png"
+          />
+          <figcaption>
+            <b
+              >Organized display of the values entered in the access request
+              form</b
+            >
+          </figcaption>
+        </figure>
+        <p>Which shows the values you entered back in an organized manner.</p>
+        <p>
+          Later, once RY catches up and adds SQL and authentication (whenever
+          that is...) this can be fully functional.
+        </p>
+        <h4>Added Members-only page (after logging in)</h4>
+        <p>
+          Prior to this, the login would merely echo back what you entered - the
+          same as the request access page. Once again, I improved that by adding
+          styling, and creating a page that you get access to after logging in.
+        </p>
+        <p>
+          Until authentication (RY) is done, it will let anyone in, but I'm
+          mostly doing visual changes. Below are the images of the members-only
+          homepage.
+        </p>
+        <figure>
+          <img
+            alt="Dedicated login page for website members"
+            class="img_med"
+            src="../../media/images/Login_HTMLPageView.png"
+          />
+          <figcaption>
+            <b>Dedicated login page for website members</b>
+          </figcaption>
+        </figure>
+        <p>
+          This image shows the dedicated login page (although users can still
+          log in on the homepage).
+        </p>
+        <p>
+          After successfully logging in (assuming authentication is passed),
+          access is allowed to members page seen below.
+        </p>
+        <figure>
+          <img
+            alt="Members-only landing page displayed after a successful login"
+            class="img_med"
+            src="../../media/images/Login_LoginSuccessful.png"
+          />
+          <figcaption>
+            <b>Members-only landing page displayed after a successful login</b>
+          </figcaption>
+        </figure>
+        <p>From here, there are three buttons.</p>
+        <p>
+          Elevator control - allows the logged in user to control the elevator
+          platform remotely (visual for now)
+        </p>
+        <p>
+          Source code - allows user to view all of our precious source code for
+          free :3
+        </p>
+        <p>Log out - allows user to log out</p>
+        <h4>Elevator Control Page</h4>
+        <p>
+          Once logged in, you may control the elevator remotely. Of course it is
+          entirely visual until authentication and back-end communication is
+          properly established, but even being visual, it does update and allow
+          the elevator car to move/update the page.
+        </p>
+        <p>See the static image of the webpage below:</p>
+        <figure>
+          <img
+            alt="Front-end elevator control room interface"
+            class="img_med"
+            src="../../media/images/RemoteControl_ElevatorControlRoom.png"
+          />
+          <figcaption>
+            <b>Front-end elevator control room interface</b>
+          </figcaption>
+        </figure>
+        <p>
+          Below is a video of the entire process: Login home page, login
+          successful, members only page, elevator control page, elevator control
+          demo, back to members only page, logout
+        </p>
+        <figure>
+          <video class="img_med" controls="" preload="metadata">
+            <source
+              src="../../media/videos/NK_RemoteElevator_FrontEnd 1.mp4"
+              type="video/mp4"
+            />
+            Your browser does not support embedded video.
+          </video>
+          <figcaption>
+            <b
+              >Demonstration of the login, members page, remote elevator
+              controls, and logout flow</b
+            >
+          </figcaption>
+        </figure>
+        <pre
+          class="code-block language-javascript"
+        ><code class="language-javascript">// visual elevator demo
+
+// this does not send commands to hardware yet. It only updates the webpage visuals
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const elevatorCar = document.getElementById("elevatorCar");
+
+    const currentFloorDisplay = document.getElementById("currentFloorDisplay");
+
+    const lastCommandDisplay = document.getElementById("lastCommandDisplay");
+
+    const floorRows = document.querySelectorAll(".floor-row");
+
+    const floorButtons = document.querySelectorAll(".floor-request-button");
+
+    const carButtons = document.querySelectorAll(".car-floor-button");
+
+    const carScreen = document.querySelector(".car-screen");
+
+  
+
+    // these positions match the current desktop tower layout
+
+    // floor 1 is lowest, floor 3 is highest
+
+    const carPositions = {
+
+        "1": "-354px",
+
+        "2": "-177px",
+
+        "3": "0px"
+
+    };
+
+  
+
+    // moves the elevator car to the desired floor based on the floor selected and source (floor controller/cab controller)
+
+    function moveCarToFloor(floor, commandSource) {
+
+        if (!elevatorCar) {
+
+            return;
+
+        }
+
+  
+
+        elevatorCar.style.bottom = carPositions[floor];
+
+        currentFloorDisplay.textContent = floor;
+
+        carScreen.textContent = floor;
+
+  
+
+        // add text to the "last command" box to show who called/moved the elevator
+
+        if (commandSource === "floor") {
+
+            lastCommandDisplay.textContent = "Floor " + floor + " requested the car";
+
+        } else {
+
+            lastCommandDisplay.textContent = "Cab selected Floor " + floor;
+
+        }
+
+  
+
+        floorRows.forEach(function (row) {
+
+            row.classList.remove("active-floor");
+
+  
+
+            if (row.dataset.floor === floor) {
+
+                row.classList.add("active-floor");
+
+            }
+
+        });
+
+  
+
+        carButtons.forEach(function (button) {
+
+            button.classList.remove("active-car-button");
+
+  
+
+            if (button.dataset.floor === floor) {
+
+                button.classList.add("active-car-button");
+
+            }
+
+        });
+
+    }
+
+  
+
+    // move car to floor when a floor button is clicked
+
+    floorButtons.forEach(function (button) {
+
+        button.addEventListener("click", function () {
+
+            moveCarToFloor(button.dataset.floor, "floor");
+
+        });
+
+    });
+
+  
+
+    // move car to floor when a car controller button is clicked
+
+    carButtons.forEach(function (button) {
+
+        button.addEventListener("click", function () {
+
+            moveCarToFloor(button.dataset.floor, "car");
+
+        });
+
+    });
+
+});
+</code></pre>
+      </section>
+      <section class="logbook-entry-content">
+        <h2>Improved Gantt Chart Logic</h2>
+        <p>
+          The Gantt chart logic was improved by making it have an "Excel" style.
+          It had distinct rows but now it has distinct columns.
+        </p>
+        <p>Before:</p>
+        <figure>
+          <img
+            alt="Gantt chart before the column and hover-behaviour improvements"
+            class="img_med"
+            src="../../media/images/GanttChart_BeforeImage.png"
+          />
+          <figcaption>
+            <b
+              >Gantt chart before the column and hover-behaviour improvements</b
+            >
+          </figcaption>
+        </figure>
+        <h4>the issue:</h4>
+        <p>
+          As seen, the rows go across but there are no distinct column markers
+          which looks a bit strange. There was also an issue of when the cursor
+          hovers over an entry, the entire row gets highlighted - this includes
+          the entry, the category (like "set up Raspberry Pi as a server"). The
+          colour was also quite bold - transparency must be reduced.
+        </p>
+        <p>The patch that was made consisted of these changes:</p>
+        <ul class="clean-list">
+          <li>
+            Changing some of the "colspan=X" in the proj_plan.html (where Gantt
+            chart is)
+          </li>
+          <li>
+            Improving/redoing most of the CSS for rendering the Gantt chart
+          </li>
+          <li>
+            Adding a JS function to add "td" elements automatically for
+            formatting.
+          </li>
+        </ul>
+        <p>There were quite a few revisions.</p>
+        <p>
+          The first major one was optimizing it entirely by removing HTML table
+          elements. Currently, it is rendered as:
+        </p>
+        <pre
+          class="code-block language-markup"
+        ><code class="language-markup">&lt;!-- gantt chart main chart --&gt;
+
+        &lt;div class="gantt-table-wrapper"&gt;
+
+          &lt;table id="Gantt"&gt;
+
+            &lt;thead&gt;
+
+              &lt;tr&gt;
+
+                &lt;th&gt;Week →&lt;/th&gt;
+
+                &lt;th&gt;1&lt;/th&gt;
+
+                &lt;th&gt;2&lt;/th&gt;
+
+                &lt;th&gt;3&lt;/th&gt;
+
+                &lt;th&gt;4&lt;/th&gt;
+
+                &lt;th&gt;5&lt;/th&gt;
+
+                &lt;th&gt;6&lt;/th&gt;
+
+                &lt;th&gt;7&lt;/th&gt;
+
+                &lt;th&gt;8&lt;/th&gt;
+
+                &lt;th&gt;9&lt;/th&gt;
+
+                &lt;th&gt;10&lt;/th&gt;
+
+                &lt;th&gt;11&lt;/th&gt;
+
+                &lt;th&gt;12&lt;/th&gt;
+
+                &lt;th&gt;13&lt;/th&gt;
+
+                &lt;th&gt;14&lt;/th&gt;
+
+              &lt;/tr&gt;
+
+            &lt;/thead&gt;
+
+            &lt;tbody&gt;
+
+              &lt;tr&gt;
+
+                &lt;td&gt;&lt;/td&gt;
+
+                &lt;th colspan="2"&gt;N/A&lt;/th&gt;
+
+                &lt;th colspan="4"&gt;Phase 1&lt;/th&gt;
+
+                &lt;th colspan="4"&gt;Phase 2&lt;/th&gt;
+
+                &lt;th colspan="4"&gt;Phase 3&lt;/th&gt;
+
+              &lt;/tr&gt;
+
+              &lt;tr class="gantt-section-row"&gt;
+
+                &lt;th class="main"&gt;1. Project plan&lt;/th&gt;
+
+                &lt;td colspan="14"&gt;&lt;/td&gt;
+
+              &lt;/tr&gt;
+
+              &lt;tr&gt;
+
+                &lt;th class="sub"&gt;Complete and submit a Project Plan&lt;/th&gt;
+
+                &lt;td colspan="2"&gt;&lt;/td&gt;
+
+                &lt;td class="completed"&gt;RY, NK, MR&lt;/td&gt;
+
+                &lt;td colspan="11"&gt;&lt;/td&gt;
+
+              &lt;/tr&gt;
+</code></pre>
+        <p>
+          Which is just a class HTML table with table, thead, th, tr, and td
+          elements. Then, for spacing, "colspawn=X" is used which works and is
+          visually fine, but for column logic it is quite poor.
+        </p>
+        <p>
+          The next revision featured a CSS-based version. This one replaced the
+          entire table with div elements and relied on CSS grids to do the
+          rendering. While very visually clean and quite intuitive, it was a
+          style that needed time to get used to and felt quite "advanced". Below
+          is another snippet of it:
+        </p>
+        <pre
+          class="code-block language-markup"
+        ><code class="language-markup">&lt;!-- gantt chart main chart --&gt;
+
+        &lt;div class="gantt-grid-wrapper"&gt;
+
+          &lt;div class="gantt-grid" id="GanttGrid"&gt;
+
+            &lt;div class="gantt-row gantt-header-row"&gt;
+
+              &lt;div class="gantt-task-header"&gt;Week →&lt;/div&gt;
+
+              &lt;div class="gantt-week-header"&gt;1&lt;/div&gt;
+
+              &lt;div class="gantt-week-header"&gt;2&lt;/div&gt;
+
+              &lt;div class="gantt-week-header"&gt;3&lt;/div&gt;
+
+              &lt;div class="gantt-week-header"&gt;4&lt;/div&gt;
+
+              &lt;div class="gantt-week-header"&gt;5&lt;/div&gt;
+
+              &lt;div class="gantt-week-header"&gt;6&lt;/div&gt;
+
+              &lt;div class="gantt-week-header"&gt;7&lt;/div&gt;
+
+              &lt;div class="gantt-week-header"&gt;8&lt;/div&gt;
+
+              &lt;div class="gantt-week-header"&gt;9&lt;/div&gt;
+
+              &lt;div class="gantt-week-header"&gt;10&lt;/div&gt;
+
+              &lt;div class="gantt-week-header"&gt;11&lt;/div&gt;
+
+              &lt;div class="gantt-week-header"&gt;12&lt;/div&gt;
+
+              &lt;div class="gantt-week-header"&gt;13&lt;/div&gt;
+
+              &lt;div class="gantt-week-header"&gt;14&lt;/div&gt;
+
+            &lt;/div&gt;
+
+            &lt;div class="gantt-row gantt-phase-row"&gt;
+
+              &lt;div class="gantt-phase-label"&gt;&lt;/div&gt;
+
+              &lt;div class="gantt-lane"&gt;&lt;/div&gt;
+
+              &lt;div class="gantt-bar phase-bar" style="--start: 2; --span: 2"&gt;
+
+                N/A
+
+              &lt;/div&gt;
+
+              &lt;div class="gantt-bar phase-bar" style="--start: 4; --span: 4"&gt;
+
+                Phase 1
+
+              &lt;/div&gt;
+
+              &lt;div class="gantt-bar phase-bar" style="--start: 8; --span: 4"&gt;
+
+                Phase 2
+
+              &lt;/div&gt;
+
+              &lt;div class="gantt-bar phase-bar" style="--start: 12; --span: 4"&gt;
+
+                Phase 3
+
+              &lt;/div&gt;
+
+            &lt;/div&gt;
+
+            &lt;div class="gantt-row gantt-group-row"&gt;
+
+              &lt;div class="gantt-group-title"&gt;1. Project plan&lt;/div&gt;
+
+              &lt;div class="gantt-group-fill"&gt;&lt;/div&gt;
+
+            &lt;/div&gt;
+
+            &lt;div class="gantt-row gantt-task-row"&gt;
+
+              &lt;div class="gantt-task-name sub"&gt;
+
+                Complete and submit a Project Plan
+
+              &lt;/div&gt;
+
+              &lt;div class="gantt-lane"&gt;&lt;/div&gt;
+
+              &lt;div class="gantt-bar completed" style="--start: 4; --span: 1"&gt;
+
+                RY, NK, MR
+
+              &lt;/div&gt;
+</code></pre>
+        <p>Although "clean" it is a lot of divs.</p>
+        <p>
+          As MR has been managing most of our Gantt chart so the decision was
+          made to stick with the style he's most comfortable - the classic
+          table.
+        </p>
+        <p>
+          Colspan was still annoying to work with so another version was born
+          that used "td" elements instead of colspan:
+        </p>
+        <pre
+          class="code-block language-markup"
+        ><code class="language-markup">&lt;tr&gt;
+
+                &lt;th class="sub"&gt;Complete and submit a Project Plan&lt;/th&gt;
+
+                &lt;td&gt;&lt;/td&gt;
+
+                &lt;td&gt;&lt;/td&gt;
+
+                &lt;td class="completed"&gt;RY, NK, MR&lt;/td&gt;
+
+                &lt;td&gt;&lt;/td&gt;
+
+                &lt;td&gt;&lt;/td&gt;
+
+                &lt;td&gt;&lt;/td&gt;
+
+                &lt;td&gt;&lt;/td&gt;
+
+                &lt;td&gt;&lt;/td&gt;
+
+                &lt;td&gt;&lt;/td&gt;
+
+                &lt;td&gt;&lt;/td&gt;
+
+                &lt;td&gt;&lt;/td&gt;
+
+                &lt;td&gt;&lt;/td&gt;
+
+                &lt;td&gt;&lt;/td&gt;
+
+                &lt;td&gt;&lt;/td&gt;
+
+              &lt;/tr&gt;
+
+              &lt;tr&gt;
+
+                &lt;th class="sub"&gt;Make About page for the website&lt;/th&gt;
+
+                &lt;td&gt;&lt;/td&gt;
+
+                &lt;td&gt;&lt;/td&gt;
+
+                &lt;td class="completed"&gt;RY&lt;/td&gt;
+
+                &lt;td&gt;&lt;/td&gt;
+
+                &lt;td&gt;&lt;/td&gt;
+
+                &lt;td&gt;&lt;/td&gt;
+
+                &lt;td&gt;&lt;/td&gt;
+
+                &lt;td&gt;&lt;/td&gt;
+
+                &lt;td&gt;&lt;/td&gt;
+
+                &lt;td&gt;&lt;/td&gt;
+
+                &lt;td&gt;&lt;/td&gt;
+
+                &lt;td&gt;&lt;/td&gt;
+
+                &lt;td&gt;&lt;/td&gt;
+
+                &lt;td&gt;&lt;/td&gt;
+
+              &lt;/tr&gt;
+</code></pre>
+        <p>
+          But just from first glance, this would be very annoying to manage and
+          the most recent Gantt chart was almost 1.2k lines of text (compared to
+          ~400) before.
+        </p>
+        <p>
+          So... Td made it look great, but colspan provides less lines and
+          visual clarity. If only there was a way to replace text elements. Oh
+          yeah, Javascript.
+        </p>
+        <p>
+          Needless to say, the approach seemed simple - allow MR to keep using
+          colspan while a JS function renders it as the clean "td" elements for
+          visual clarity. This was done using the function below:
+        </p>
+        <pre
+          class="code-block language-javascript"
+        ><code class="language-javascript">/*
+
+ ---------- Gantt table script----------
+
+this script keeps the source HTML manageable while improving the visual table grid by replacing colspan with td
+
+  
+
+Source HTML can use:
+
+    &lt;td colspan="8"&gt;&lt;/td&gt;
+
+  
+
+After the page loads, this script converts that blank filler cell into:
+
+    &lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;...
+
+*/
+
+  
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    expandBlankGanttCells();
+
+    checkGanttRows();
+
+});
+
+  
+  
+
+// expands blank colspan cells into real empty table cells
+
+function expandBlankGanttCells() {
+
+    // find the Gantt table
+
+    const ganttTable = document.getElementById("Gantt");
+
+  
+
+    // stop if the table is not on this page
+
+    if (!ganttTable) {
+
+        return;
+
+    }
+
+  
+
+    // stop if this script already ran
+
+    if (ganttTable.classList.contains("gantt-expanded")) {
+
+        return;
+
+    }
+
+  
+
+    // mark the table as expanded
+
+    ganttTable.classList.add("gantt-expanded");
+
+  
+
+    // find all rows in the Gantt table body
+
+    const rows = ganttTable.querySelectorAll("tbody tr");
+
+  
+
+    rows.forEach(function (row, rowIndex) {
+
+        // skip the phase rows (3 at the top)
+
+        // N/A | Phase 1 | Phase 2 | Phase 3
+
+        if (rowIndex === 0) {
+
+            return;
+
+        }
+
+  
+
+        // skip major section rows
+
+        // 1. Project plan, 2. Raspberry Pi, etc.
+
+        if (row.classList.contains("gantt-section-row")) {
+
+            return;
+
+        }
+
+  
+
+        // convert row.children into a real array
+
+        const cells = Array.from(row.children);
+
+  
+
+        // first cell is the task name, so timeline cells start after it
+
+        const timelineCells = cells.slice(1);
+
+  
+
+        timelineCells.forEach(function (cell) {
+
+            // only work on normal &lt;td&gt; cells
+
+            if (cell.tagName !== "TD") {
+
+                return;
+
+            }
+
+  
+
+            // get the colspan number; if none exists, default to 1
+
+            const span = Number(cell.getAttribute("colspan") || "1");
+
+  
+
+            // if the cell has no useful colspan, clean it up and stop
+
+            if (span &lt;= 1) {
+
+                cell.removeAttribute("colspan");
+
+                return;
+
+            }
+
+  
+
+            // only expand blank filler cells.
+
+            // do not expand coloured task/status cells.
+
+            if (!isBlankFillerCell(cell)) {
+
+                return;
+
+            }
+
+  
+
+            // create one real blank &lt;td&gt; for each week this blank cell was spanning
+
+            for (let i = 0; i &lt; span; i++) {
+
+                const newCell = document.createElement("td");
+
+                newCell.classList.add("gantt-empty-cell");
+
+  
+
+                // insert the new cell before the old blank colspan cell
+
+                row.insertBefore(newCell, cell);
+
+            }
+
+  
+
+            // remove the old large blank colspan cell
+
+            cell.remove();
+
+        });
+
+    });
+
+}
+
+  
+  
+
+// checks if a cell is just blank filler space
+
+function isBlankFillerCell(cell) {
+
+    // if the cell contains text, it is not blank filler
+
+    if (cell.textContent.trim() !== "") {
+
+        return false;
+
+    }
+
+  
+
+    // these classes (also colour the chart) mean the cell is a real task/status bar
+
+    const statusClasses = ["completed", "ongoing", "behind", "planned", "omitted"];
+
+    // check if classes present (not empty; false)
+
+    for (let i = 0; i &lt; statusClasses.length; i++) {
+
+        if (cell.classList.contains(statusClasses[i])) {
+
+            return false;
+
+        }
+
+    }
+
+  
+
+    // no text and no status class means it is blank filler
+
+    return true;
+
+}
+</code></pre>
+        <p>
+          Essentially, this function grabs various elements, ignores
+          headers/major sections, and then works on the "colspan" attribute by
+          replacing the large colspan with various "td" elements. This
+          ultimately makes the Ganntt chart significantly nicer:
+        </p>
+        <figure>
+          <img
+            alt="Updated Gantt chart with expanded week cells and cleaner column alignment"
+            class="img_med"
+            src="../../media/images/GanttChart_AfterImage_01.png"
+          />
+          <figcaption>
+            <b
+              >Updated Gantt chart with expanded week cells and cleaner column
+              alignment</b
+            >
+          </figcaption>
+        </figure>
+        <p>Then, for phase 2:</p>
+        <figure>
+          <img
+            alt="Updated Gantt chart showing the Phase 2 schedule"
+            class="img_med"
+            src="../../media/images/GanttChart_AfterImage_02.png"
+          />
+          <figcaption>
+            <b>Updated Gantt chart showing the Phase 2 schedule</b>
+          </figcaption>
+        </figure>
+        <p>
+          Now, the Gantt chart has clean columns and everything is neatly
+          aligned. The only thing left to do is paint the major sections, like
+          "8. Server and Database" grey or some other colour to make it stand
+          out as a section row and not be just a single white row... But that's
+          an issue for a later date.
+        </p>
+      </section>
+      <section class="logbook-entry-content">
+        <h2>CSV Export and Import into Website via JS</h2>
+        <p>
+          So... We've been keeping track of the amount of caffeine that our
+          group is consuming via a Google Spreadsheet. We wanted this data to be
+          able to be shown on the website, as well as (ideally) have it
+          dynamically update.
+        </p>
+        <p>
+          After looking into the "share" functionality of a Google Sheet, it can
+          be "published to the web" via a URL (which basically downloads the
+          CSV). Here is how it was done:
+        </p>
+        <h4>logging data:</h4>
+        <figure>
+          <img
+            alt="Energy drink data and spreadsheet calculations in the master Google Sheet"
+            class="img_med"
+            src="../../media/images/CSVImport_EnergyTable.png"
+          />
+          <figcaption>
+            <b
+              >Energy drink data and spreadsheet calculations in the master
+              Google Sheet</b
+            >
+          </figcaption>
+        </figure>
+        <p>
+          This image is in our Spreadsheet and has various functions built in to
+          auto-grab the data and perform calculations to organize it. Like:
+        </p>
+        <pre
+          class="code-block language-excel-formula"
+        ><code class="language-excel-formula">=COUNTIF($E$3:$E$1002, L$32)
+=SUMIF($E:$E, P32, $F:$F) / 1000
+</code></pre>
+        <p>
+          So... An additional sheet was made without this fancy math. This new
+          sheet merely referenced the values that the functions give. This was
+          done because this table sits in an awkward spot (rows 32 - 44; columns
+          K to P) and the functions were giving the CSV some issues for an odd
+          reason.
+        </p>
+        <p>
+          Regardless, it was ported into a separate sheet where the table can
+          start at A1, A2, etc. In each cell, a function referencing that
+          row/col from the original sheet was implemented as such:
+        </p>
+        <pre
+          class="code-block language-excel-formula"
+        ><code class="language-excel-formula">=ARRAYFORMULA(Energy!A3:I)
+</code></pre>
+        <h4>Exporting data:</h4>
+        <p>
+          Which basically grabbed the entire table in question and put it onto
+          another sheet. From there, it can be exported as:
+        </p>
+        <p>File -&gt; share -&gt; publish to web</p>
+        <p>
+          Which opens a menu. From there, the document/sheet can be selected and
+          the style (web page, CSV, TSV, PDF, XLXS).
+        </p>
+        <p>
+          Simply selecting CSV gives a large Google link. Here's one example:
+        </p>
+        <pre
+          class="code-block language-text"
+        ><code class="language-text">https://docs.google.com/spreadsheets/d/e/2PACX-1vTgrDQkB5m1RcpNN90XCUvQruYOJ66Cj6YGTelbLFGnH6iFecsvqMJTCHsVePQC3NKzp-nDvymWFakM/pubhtml?gid=77153223&amp;single=true
+</code></pre>
+        <p>
+          Copy-pasting this into the browser downloads a CSV. Here's a smaller
+          CSV embedded as an image (as I have a colour extension) to see what it
+          looks like when exported:
+        </p>
+        <figure>
+          <img
+            alt="Published CSV lookup table containing drink information"
+            class="img_med"
+            src="../../media/images/CSVImport_LookupTable.png"
+          />
+          <figcaption>
+            <b>Published CSV lookup table containing drink information</b>
+          </figcaption>
+        </figure>
+        <p>It is sorted by type of drink, volume, caffeine per can, etc.</p>
+        <p>
+          From there, the values can be stored into a 2D array and sorted using
+          JS. This was done using many functions for 2-3 separate tables so I
+          will show one commented example.
+        </p>
+        <p>
+          This was for the main log that actually logged each entry. See the
+          Google Sheets preview below:
+        </p>
+        <figure>
+          <img
+            alt="Main caffeine-consumption log in Google Sheets"
+            class="img_med"
+            src="../../media/images/CSVImport_EnergyMainLog.png"
+          />
+          <figcaption>
+            <b>Main caffeine-consumption log in Google Sheets</b>
+          </figcaption>
+        </figure>
+        <p>This table was in the format of:</p>
+        <table class="logbook-table">
+          <thead>
+            <tr>
+              <th>Date Drank</th>
+              <th>Type of Drink</th>
+              <th>Volume of Drink</th>
+              <th>Time Drank</th>
+              <th>Drank By</th>
+              <th>Caffeine content</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+        <h4>Collecting Data:</h4>
+        <p>
+          The three remaining columns are just cumulative counters so they are
+          not too important. Naturally the CSV looks similar when it was
+          exported:
+        </p>
+        <figure>
+          <img
+            alt="CSV export of the caffeine entry log"
+            class="img_med"
+            src="../../media/images/CSVImport_EnergyLog_CSV.png"
+          />
+          <figcaption><b>CSV export of the caffeine entry log</b></figcaption>
+        </figure>
+        <h4>Processing the data:</h4>
+        <p>
+          From there, a JS function was made to utilize 2D arrays and port this
+          data into an HTML based table. See the function below:
+        </p>
+        <pre
+          class="code-block language-javascript"
+        ><code class="language-javascript">// another CSV; ignore for this purpose
+const caffeineCsvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTgrDQkB5m1RcpNN90XCUvQruYOJ66Cj6YGTelbLFGnH6iFecsvqMJTCHsVePQC3NKzp-nDvymWFakM/pub?gid=1029732592&amp;single=true&amp;output=csv";
+
+const caffeineLogCsvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTgrDQkB5m1RcpNN90XCUvQruYOJ66Cj6YGTelbLFGnH6iFecsvqMJTCHsVePQC3NKzp-nDvymWFakM/pub?gid=77153223&amp;single=true&amp;output=csv";
+
+  
+  
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    loadCaffeineData();
+
+    loadCaffeineLog();
+
+});
+});
+
+// global data storage for caffeine log
+
+// can rebuild with re-fetching
+
+let caffeineLogData = [];
+
+  
+
+// loads caffeine log from CSV
+
+function loadCaffeineLog() {
+
+  
+
+    // fetch CSV
+
+    fetch(caffeineLogCsvUrl)
+
+        // convert response into text
+
+        .then(function (response) {
+
+            return response.text();
+
+        })
+
+  
+
+        // parse and build text once loaded
+
+        .then(function (csvText){
+
+            // convert into 2D array
+
+            // tableData[row][column]
+
+            caffeineLogData = cleanTableData(parseCsv(csvText));
+
+  
+
+            // build dropdown filter
+
+            buildPersonFilter(caffeineLogData);
+
+            // build the entire log table
+
+            buildCaffeineLogTable(caffeineLogData);
+
+        })
+
+  
+
+        // if something goes wrong, show error
+
+        .catch(function () {
+
+            document.getElementById("caffeine-log-container").innerHTML = "&lt;p&gt;Could not load caffine log, gg&lt;/p&gt;";
+
+        })
+
+}
+
+  
+
+// builds person filter dropdown
+
+function buildPersonFilter(tableData) {
+
+    // find dropdown
+
+    const filter = document.getElementById("personFilter");
+
+  
+
+    // if not empty
+
+    if(!filter || tableData.length &lt; 2){
+
+        return;
+
+    }
+
+  
+
+    // first row contains column names
+
+    const headerRow = tableData[0];
+
+    const nameColumnIndex = headerRow.indexOf("Name");
+
+  
+
+    if (nameColumnIndex === -1){
+
+        return;
+
+    }
+
+  
+
+    // array for names
+
+    const people = [];
+
+  
+
+    // start at 1 because row 0 is header
+
+    for (let i = 1; i &lt;tableData.length; i++) {
+
+        // grab persons name from current row
+
+        const person = tableData[i][nameColumnIndex];
+
+  
+
+        // if not exist, add it
+
+        if (person &amp;&amp; !people.includes(person)){
+
+            people.push(person);
+
+        }
+
+    }
+
+  
+
+    // sort alphabetically
+
+    people.sort();
+
+  
+
+    // add each person as an option in dropdown
+
+    people.forEach(function (person) {
+
+        // create new option element
+
+        const option = document.createElement("option");
+
+        option.value = person;
+
+        option.textContent = person;
+
+        // add option to dropdown
+
+        filter.appendChild(option);
+
+    });
+
+  
+
+    // rebuild table when user changes dropdown
+
+    filter.addEventListener("change", function (){
+
+        buildCaffeineLogTable(caffeineLogData);
+
+    });
+
+}
+
+  
+
+// builds a large table with log entries
+
+function buildCaffeineLogTable(tableData) {
+
+  
+
+    // find where the table will be placed
+
+    const tableContainer = document.getElementById("caffeine-log-container");
+
+  
+
+    // find dropdown filter (for filtering by person)
+
+    const filter = document.getElementById("personFilter");
+
+  
+
+    // if the container does not exist, stop
+
+    if(!tableContainer || tableData.length === 0) {
+
+        return;
+
+    }
+
+  
+
+    // if no dropdown, default to showing all
+
+    const selectedPerson = filter ? filter.value : "all";
+
+  
+
+    // first row
+
+    const headerRow = tableData[0];
+
+  
+
+    // find which column contains the person's name
+
+    const nameColumnIndex = headerRow.indexOf("Name");
+
+  
+
+    // if there is no "Name" column, show an error and stop
+
+    if (nameColumnIndex === -1) {
+
+        tableContainer.innerHTML = "&lt;p&gt;Could not find the Name column in the caffeine log.&lt;/p&gt;";
+
+        return;
+
+    }
+
+  
+  
+
+    // start building the actual table
+
+    let tableHTML = "&lt;table class='caffeine-table caffeine-log-table'&gt;";
+
+  
+
+    // table header
+
+    tableHTML += "&lt;thead&gt;&lt;tr&gt;";
+
+    headerRow.forEach(function (header) {
+
+        tableHTML += "&lt;th&gt;" + header + "&lt;/th&gt;";
+
+    });
+
+  
+
+    tableHTML += "&lt;/tr&gt;&lt;/thead&gt;";
+
+  
+
+    // build table body
+
+    tableHTML += "&lt;tbody&gt;";
+
+  
+
+    // loop through the table, start at 1 because 0 is header row
+
+    for (let i = 1; i &lt; tableData.length; i++) {
+
+        const row = tableData[i];
+
+  
+
+        // skip empty rows
+
+        if (!row || row.length === 0) {
+
+            continue;
+
+        }
+
+  
+
+        // if a person is selected (not all), skip the rows that do not match that person
+
+        if(selectedPerson !== "all" &amp;&amp; row[nameColumnIndex] !== selectedPerson){
+
+            continue;
+
+        }
+
+  
+
+        // start one table row
+
+        tableHTML += "&lt;tr&gt;";
+
+  
+
+        // add every cell in this row
+
+        row.forEach(function (cell) {
+
+            tableHTML += "&lt;td&gt;" + cell + "&lt;/td&gt;";
+
+        });
+
+        // end row
+
+        tableHTML += "&lt;/tr&gt;";
+
+    }
+
+  
+
+    // close body and table itself
+
+    tableHTML += "&lt;/tbody&gt;";
+
+    tableHTML += "&lt;/table&gt;";
+
+  
+
+    // put table back
+
+    tableContainer.innerHTML = tableHTML;
+
+  
+
+}
+</code></pre>
+        <h4>Displaying the data:</h4>
+        <p>
+          From there, it ultimately generated the final log table after
+          importing it into HTML:
+        </p>
+        <pre
+          class="code-block language-markup"
+        ><code class="language-markup">      &lt;!-- log of the entire caffeine study --&gt;
+
+      &lt;section class="caffeine-log-section"&gt;
+
+        &lt;div class="caffeine-heading"&gt;
+
+          &lt;p class="section-label"&gt;Consumption Log&lt;/p&gt;
+
+          &lt;h2&gt;Caffeine Entry Log&lt;/h2&gt;
+
+          &lt;p&gt;
+
+            This table displays the individual caffeine entries recorded by the
+
+            team. The data is loaded from the published Google Sheets log table.
+
+          &lt;/p&gt;
+
+        &lt;/div&gt;
+
+  
+
+        &lt;div class="log-filter-row"&gt;
+
+          &lt;label for="personFilter"&gt;Filter by person:&lt;/label&gt;
+
+          &lt;select id="personFilter"&gt;
+
+            &lt;option value="all"&gt;All people&lt;/option&gt;
+
+          &lt;/select&gt;
+
+        &lt;/div&gt;
+
+  
+
+        &lt;div id="caffeine-log-container" class="caffeine-table-wrapper"&gt;
+
+          &lt;p&gt;Loading caffeine log...&lt;/p&gt;
+
+        &lt;/div&gt;
+
+      &lt;/section&gt;
+</code></pre>
+        <figure>
+          <img
+            alt="Caffeine entry log rendered as an HTML table"
+            class="img_med"
+            src="../../media/images/CaffeineStudy_Log.png"
+          />
+          <figcaption>
+            <b>Caffeine entry log rendered as an HTML table</b>
+          </figcaption>
+        </figure>
+        <p>
+          Additionally, the main log can be filtered to select by person to see
+          their individual entries:
+        </p>
+        <figure>
+          <img
+            alt="Caffeine entry log filtered to an individual team member"
+            class="img_med"
+            src="../../media/images/CaffeineStudy_LogPerson.png"
+          />
+          <figcaption>
+            <b>Caffeine entry log filtered to an individual team member</b>
+          </figcaption>
+        </figure>
+        <p>Additionally, there were two more tables and a chart.</p>
+        <figure>
+          <img
+            alt="Team caffeine summary and consumption-efficiency table"
+            class="img_med"
+            src="../../media/images/CaffeineStudy_TeamSummary.png"
+          />
+          <figcaption>
+            <b>Team caffeine summary and consumption-efficiency table</b>
+          </figcaption>
+        </figure>
+        <p>
+          Summary of who drank the most caffeine and their efficiency with
+          consuming it. Celcius are more caffeine-efficient while Red Bull fall
+          behind. Notice how Emi who only had one Celcius drink has the highest
+          caffeine efficiency
+        </p>
+        <p>
+          Another table was a lookup table (albeit this one was hard-coded using
+          an HTML table as these values do not change):
+        </p>
+        <figure>
+          <img
+            alt="Hard-coded caffeine drink lookup table"
+            class="img_med"
+            src="../../media/images/CaffeineStudy_LookupTable.png"
+          />
+          <figcaption><b>Hard-coded caffeine drink lookup table</b></figcaption>
+        </figure>
+        <p>
+          Lastly was the visual summary - another Google Spreadsheet "publish to
+          web" export:
+        </p>
+        <figure>
+          <img
+            alt="Published visual summary chart for the caffeine study"
+            class="img_med"
+            src="../../media/images/CaffeineStudy_Chart.png"
+          />
+          <figcaption>
+            <b>Published visual summary chart for the caffeine study</b>
+          </figcaption>
+        </figure>
+        <h3>Technical notes</h3>
+        <p>
+          Nothing major for this entry - it was mostly website
+          updates/improvements.
+        </p>
+      </section>
+      <section class="logbook-entry-content">
+        <h2>Testing, results, or issues</h2>
+        <p>
+          Nothing major for this entry - it was mostly website
+          updates/improvements.
+        </p>
+      </section>
+      <section class="logbook-entry-content">
+        <h2>Current decision and next steps</h2>
+        <p>Summary of the work done this entry:</p>
+        <ul class="clean-list">
+          <li>
+            [x] Add new PHP pages
+            <ul class="clean-list">
+              <li>[x] Members-only page</li>
+              <li>[x] Elevator control page</li>
+              <li>[x] Secret page</li>
+              <li>[x] Logout functionality</li>
+            </ul>
+          </li>
+          <li>
+            [x] Add missing pages from phase 1
+            <ul class="clean-list">
+              <li>[x] Caffeine study and importing tables/charts (NK)</li>
+              <li>[ ] R-Pi Deployment workflow (MR)</li>
+              <li>[ ] BoM - waiting until PCBs are complete (NK &amp; MR)</li>
+            </ul>
+          </li>
+        </ul>
+        <p>Still To-Do (that was not touched):</p>
+        <ul class="clean-list">
+          <li>[ ] R-Pi server setup (RY)</li>
+          <li>[ ] Finish schematics up (NK &amp; MR)</li>
+          <li>[ ] Authentication logic (RY)</li>
+          <li>[ ] Database setup (RY)</li>
+        </ul>
+      </section>
+
+      <p class="top-link">
+        <a href="#page_top">Go to the top of this page</a>
+      </p>
+    </main>
+
+    <footer class="site-footer">
+      <p>Copyright &copy; Nick Kapuka</p>
+    </footer>
+
+    <!-- Prism.js scripts for code formatting -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+  </body>
+</html>

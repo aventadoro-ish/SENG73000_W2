@@ -1,4 +1,3 @@
-
 /* formatting for code blocks within logbook entries
 made by Nick Kapuka
 
@@ -12,25 +11,125 @@ Prism.js uses pre[class*="language-"] so using pre.code-block and class *="langu
 
 */
 pre.code-block[class*="language-"] {
-    background-color: #dedede;
-    color: black;
-    border: 1px solid black;
-    padding: 10px;
-    margin: 15px 0px 15px 0px;
-    overflow-x: auto;
+  background: #2b2d31; /*Discord's code-block theme lol*/
+  color: #dbdee1;
 
-    font-family: Consolas, "Courier New", monospace;
-    font-size: 90%;
-    line-height: 20px;
+  border: 1px solid #3f4147;
+  border-radius: 8px;
 
-    text-align: left;
-    white-space: pre;
-    text-shadow: none;
+  padding: 16px;
+  margin: 18px 0;
+
+  overflow-x: auto;
+
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 0.9rem;
+  line-height: 1.5;
+
+  text-align: left;
+  white-space: pre;
+  text-shadow: none;
+
+  tab-size: 4;
 }
 
+/* code element inside the pre */
 pre.code-block code[class*="language-"] {
-    font-family: Consolas, "Courier New", monospace;
-    font-size: 100%;
-    line-height: 20px;
-    text-align: left;
+  display: block;
+
+  background: transparent;
+  color: inherit;
+
+  padding: 0;
+  margin: 0;
+
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+
+  text-align: left;
+  white-space: inherit;
+  text-shadow: none;
+}
+
+/* general Prism token reset */
+pre.code-block .token {
+  text-shadow: none;
+}
+
+/* comments in coded */
+pre.code-block .token.comment,
+pre.code-block .token.prolog,
+pre.code-block .token.doctype,
+pre.code-block .token.cdata {
+  color: #949ba4;
+  font-style: italic;
+}
+
+/* HTML tags, deleted text, and important syntax (doctype, head, meta, script, h1, if, const, etc.) */
+pre.code-block .token.tag,
+pre.code-block .token.deleted,
+pre.code-block .token.keyword {
+  color: #e62121;
+}
+
+/* HTML attribute names, CSS selectors, function names (id, class, src, href) */
+pre.code-block .token.attr-name,
+pre.code-block .token.selector,
+pre.code-block .token.function {
+  color: #89b4fa;
+}
+
+/* Strings and attribute values ("stylesheet", "../css/___") */
+pre.code-block .token.string,
+pre.code-block .token.attr-value,
+pre.code-block .token.char,
+pre.code-block .token.inserted {
+  color: #a6e3a1;
+}
+
+/* Numbers, booleans, constants */
+pre.code-block .token.number,
+pre.code-block .token.boolean,
+pre.code-block .token.constant,
+pre.code-block .token.symbol {
+  color: #fab387;
+}
+
+/* Operators and punctuation */
+pre.code-block .token.operator,
+pre.code-block .token.entity,
+pre.code-block .token.url {
+  color: #cdd6f4;
+}
+
+pre.code-block .token.punctuation {
+  color: #bac2de;
+}
+
+/* Classes and built-in types */
+pre.code-block .token.class-name,
+pre.code-block .token.builtin {
+  color: #f9e2af;
+}
+
+/* Variables and properties */
+pre.code-block .token.variable,
+pre.code-block .token.property {
+  color: #cba6f7;
+}
+
+/* Regex and special values */
+pre.code-block .token.regex,
+pre.code-block .token.important {
+  color: #f5c2e7;
+}
+
+/* Bold and italic syntax */
+pre.code-block .token.bold {
+  font-weight: bold;
+}
+
+pre.code-block .token.italic {
+  font-style: italic;
 }

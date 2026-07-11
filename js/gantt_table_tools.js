@@ -1,16 +1,13 @@
-// ---------- Gantt Table Helper ----------
-// This script keeps the source HTML manageable while improving the visual table grid.
-//
-// Source HTML can use:
-//     <td colspan="8"></td>
-//
-// After the page loads, this script converts that blank filler cell into:
-//     <td></td><td></td><td></td>...
-//
-// Coloured task bars like:
-//     <td class="planned" colspan="2">NK, MR</td>
-//
-// are left alone so they still visually span multiple weeks.
+/*
+ ---------- Gantt table script----------
+this script keeps the source HTML manageable while improving the visual table grid by replacing colspan with td
+
+Source HTML can use:
+    <td colspan="8"></td>
+
+After the page loads, this script converts that blank filler cell into:
+    <td></td><td></td><td></td>...
+*/
 
 document.addEventListener("DOMContentLoaded", function () {
     expandBlankGanttCells();
