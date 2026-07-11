@@ -20,6 +20,9 @@ constexpr int CAN_stb = PC8;
 constexpr int LimSw_1 = PC6;
 constexpr int LimSw_2 = PC5;
 
+constexpr int I2C2_SDA = PA10;
+constexpr int I2C2_SCL = PA9;
+
 
 #else
 #error "Please, define an embedded platform to be used.Either ESP32_ENV or STM32_ENV flags"

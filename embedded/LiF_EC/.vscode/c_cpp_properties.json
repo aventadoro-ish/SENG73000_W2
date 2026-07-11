@@ -10,6 +10,7 @@
             "includePath": [
                 "C:/Users/Matve/Projects/LithiumFirefly/SENG73000_W2/embedded/LiF_EC/include",
                 "C:/Users/Matve/Projects/LithiumFirefly/SENG73000_W2/embedded/LiF_EC/src",
+                "C:/Users/Matve/Projects/LithiumFirefly/SENG73000_W2/embedded/LiF_EC/.pio/libdeps/nucleo_f303re/DiFinders/src",
                 "C:/Users/Matve/Projects/LithiumFirefly/SENG73000_W2/embedded/LiF_EC/.pio/libdeps/nucleo_f303re/LiquidCrystal I2C Multilingual/src",
                 "C:/Users/Matve/Projects/LithiumFirefly/SENG73000_W2/embedded/LiF_EC/.pio/libdeps/nucleo_f303re/DFRobot_VL53L0X",
                 "C:/Users/Matve/.platformio/packages/framework-arduinoststm32/libraries/Wire/src",
@@ -56,6 +57,7 @@
                 "path": [
                     "C:/Users/Matve/Projects/LithiumFirefly/SENG73000_W2/embedded/LiF_EC/include",
                     "C:/Users/Matve/Projects/LithiumFirefly/SENG73000_W2/embedded/LiF_EC/src",
+                    "C:/Users/Matve/Projects/LithiumFirefly/SENG73000_W2/embedded/LiF_EC/.pio/libdeps/nucleo_f303re/DiFinders/src",
                     "C:/Users/Matve/Projects/LithiumFirefly/SENG73000_W2/embedded/LiF_EC/.pio/libdeps/nucleo_f303re/LiquidCrystal I2C Multilingual/src",
                     "C:/Users/Matve/Projects/LithiumFirefly/SENG73000_W2/embedded/LiF_EC/.pio/libdeps/nucleo_f303re/DFRobot_VL53L0X",
                     "C:/Users/Matve/.platformio/packages/framework-arduinoststm32/libraries/Wire/src",

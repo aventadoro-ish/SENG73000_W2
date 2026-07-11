@@ -1,7 +1,9 @@
 #include <Arduino.h>
-#include <DFRobot_VL53L0X.h>
+// #include <DiFinders.h>
 #include <Wire.h>
+// #include <DFRobot_VL53L0X.h>
 #include <LCDI2C_Multilingual.h>
+#include <VL53L0X.h>
 
 #include "pin_definition.h"
 #include "Motor.h"
@@ -13,8 +15,8 @@
 // -----------------------------------------------------------------------------
 // Compile Settings
 // -----------------------------------------------------------------------------
-#define HOME_ON_STARTUP
-#define ENERGIZE_ON_STARTUP
+// #define HOME_ON_STARTUP
+// #define ENERGIZE_ON_STARTUP
 #define USE_MOTOR_SERIAL
 // #define USE_SIMPLIFIED_CAN_PROTOCOL
 #define USE_HARDCODED_FLOORS
@@ -49,7 +51,8 @@ unsigned long int last_heartbeat_time;
 uint8_t target_floor = 255;     // 255 ensures the initial floor request results in move
 uint8_t current_floor = 0;      // 0 is internally interpreted as moving
 
-DFRobot_VL53L0X tof_sensor;
+// TwoWire myWire;
+VL53L0X tof_sensor;
 unsigned long int last_tof_update;
 LCDI2C_Latin_Symbols lcd(0x27, 16, 2);    // I2C address = 0x27
 
@@ -115,23 +118,80 @@ void setup() {
         ;
     }
     Serial.println("LiF EC - Setup Started");
-    
+    // myWire = TwoWire(I2C2_SDA, I2C2_SCL);
+    // myWire.begin();
+    Wire.setSDA(I2C2_SDA);
+    Wire.setSCL(I2C2_SCL);
+
     // Init I2C bus
     Wire.begin();
+    Wire.setClock(100000);
 
-    // Set I2C sub-device address
-    tof_sensor.begin(0x50);
-    // Set to Back-to-back mode and high precision mode
-    tof_sensor.setMode(tof_sensor.eContinuous, tof_sensor.eHigh);
-    // Laser rangefinder begins to work
-    tof_sensor.start();
+    // Serial.println("Scanning...");
+    // byte error, address;
+    // int nDevices;
+    // nDevices = 0;
+    // for (address = 1; address < 127; address++)
+    // {
+    //     // The i2c_scanner uses the return value of
+    //     // the Write.endTransmisstion to see if
+    //     // a device did acknowledge to the address.
+    //     Wire.beginTransmission(address);
+    //     error = Wire.endTransmission();
+    //     if (error == 0)
+    //     {
+    //         Serial.print("I2C device found at address 0x");
+    //         if (address < 16)
+    //             Serial.print("0");
+    //         Serial.print(address, HEX);
+    //         Serial.println("  !");
+    //         nDevices++;
+    //     }
+    //     else if (error == 4)
+    //     {
+    //         Serial.print("Unknown error at address 0x");
+    //         if (address < 16)
+    //             Serial.print("0");
+    //         Serial.println(address, HEX);
+    //     }
+    // }
+    // if (nDevices == 0)
+    //     Serial.println("No I2C devices found\n");
+    // else
+    //     Serial.println("done\n");
+    // // Set I2C sub-device address
+    // tof_sensor.begin(0x29);
+    // // Set to Back-to-back mode and high precision mode
+    // tof_sensor.setMode(tof_sensor.eSingle, tof_sensor.eHigh);
+    // //Laser rangefinder begins to work
+
+
+    tof_sensor.setTimeout(500);
+    if (!tof_sensor.init())
+    {
+        Serial.println("Failed to detect and initialize sensor!");
+        while (1) {}
+    }
+
+    // lower the return signal rate limit (default is 0.25 MCPS)
+    tof_sensor.setSignalRateLimit(0.1);
+    // increase laser pulse periods (defaults are 14 and 10 PCLKs)
+    tof_sensor.setVcselPulsePeriod(VL53L0X::VcselPeriodPreRange, 18);
+    tof_sensor.setVcselPulsePeriod(VL53L0X::VcselPeriodFinalRange, 14);
+    // increase timing budget to 200 ms
+    tof_sensor.setMeasurementTimingBudget(200000);
+    while (1) {
+        Serial.print(tof_sensor.readRangeSingleMillimeters());
+        if (tof_sensor.timeoutOccurred()) { Serial.print(" TIMEOUT"); }
+
+        Serial.println();
+    }
 
     // Initialize the LCD
-    lcd.init();
-    // Turn on the LCD backlight
-    lcd.backlight();
-
-
+    // lcd.init();
+    // // Turn on the LCD backlight
+    // lcd.backlight();
+    
     LiF_CAN::setup();
     LiF_Motor::setup();
     LiF_Motor::setupMotorControlTimer();
@@ -402,7 +462,15 @@ void update_lcd() {
         fault_mode("invalid EC_State");
         break;
     }
+    // tof_sensor.start();
+    // float dist = tof_sensor.getDistance();
+    // Serial.printf("ToF reads: %f\r\n", dist);
+    // Serial.println(dist);
+
+    // tof_sensor.stop();
     
+    // tof_sensor.getSignalCount();
+
     lcd.setCursor(0, 1);
-    lcd.printf("dist: %f", tof_sensor.getDistance());
+    // lcd.printf("dist: %f", dist);
 }
