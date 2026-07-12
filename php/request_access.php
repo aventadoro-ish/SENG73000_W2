@@ -13,6 +13,11 @@ $involvement = [];
 $details = '';
 $drives_car = '';
 
+$generatedUsername = '';
+$generatedPassword = '';
+$jsonSaved = false;
+$jsonError = '';
+
 if ($submitted) {
 
     // Assign elements (matching your HTML's actual field names)
@@ -72,7 +77,7 @@ if ($submitted) {
         setcookie('fac_or_student', $fac_or_student);
         setcookie('involvement', implode(',', $involvement));
     }
-} 
+}
 
 // Sanitizing...
 $safeFirstName = htmlspecialchars($firstname, ENT_QUOTES, 'UTF-8');
@@ -103,15 +108,149 @@ if (!$submitted) {
         echo "<li>" . htmlspecialchars($error) . "</li>";
     }
     echo "</ul>";
-} else {
-    echo "<h2>Request Submitted</h2>";
-    echo "<p>First Name: $safeFirstName</p>";
-    echo "<p>Last Name: $safeLastName</p>";
-    echo "<p>Email: $safeEmail</p>";
-    echo "<p>Birthday: $safeBirthday</p>";
-    echo "<p>Faculty/Student: $safeOccupation</p>";
-    echo "<p>Involvement: $safeInvolvement</p>";
-    echo "<p>Drives a car: $safeDrivesCar</p>";
-    echo "<p>Other details: $safeDetails</p>";
 }
 ?>
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>LiF Team - Access Request Result</title>
+    <meta charset="UTF-8">
+    <link rel="icon" href="../media/icons/LiF_icon.ico" type="image/x-icon">
+
+    <meta name="author" content="Nick Kapuka">
+    <meta name="description" content="Access request result page for the LiF Team website.">
+    <meta name="robots" content="index, follow">
+    <meta http-equiv="Pragma" content="no-cache">
+
+    <link rel="stylesheet" href="../css/base.css">
+    <link rel="stylesheet" href="../css/auth_result.css">
+</head>
+
+<body>
+    <!-- nav bar -->
+    <div id="navbar-placeholder" data-root="../"></div>
+    <script src="../js/navbar.js"></script>
+
+    <main class="page-wrapper">
+        <section class="intro-section auth-result-intro" id="page_top">
+            <div class="intro-text">
+                <p class="section-label">Access Request Status</p>
+
+                <?php if (!$submitted): ?>
+                    <h1>No Request Submitted</h1>
+                    <p class="intro-description">
+                        This page displays the result after the request access form is submitted.
+                    </p>
+                <?php elseif (!empty($errors)): ?>
+                    <h1>Request Needs Attention</h1>
+                    <p class="intro-description">
+                        The access request was received, but some fields need to be corrected before it can be accepted.
+                    </p>
+                <?php else: ?>
+                    <h1>Request Submitted</h1>
+                    <p class="intro-description">
+                        Your access request was submitted successfully. The information below summarizes the request.
+                    </p>
+                <?php endif; ?>
+
+                <div class="button-row">
+                    <a href="../html/request_access.html" class="button secondary-button">Back to Request Form</a>
+                    <a href="../index.html" class="button primary-button">Return Home</a>
+                </div>
+            </div>
+
+            <aside class="summary-card">
+                <h2>Request Info</h2>
+                <p><strong>Project:</strong> Engineering Project VI</p>
+                <p><strong>Team:</strong> Lithium Firefly</p>
+                <p><strong>Status:</strong>
+                    <?php
+                    if (!$submitted) {
+                        echo "No form submitted";
+                    } elseif (!empty($errors)) {
+                        echo "Action required";
+                    } else {
+                        echo "Submitted";
+                    }
+                    ?>
+                </p>
+            </aside>
+        </section>
+
+        <section class="auth-result-section <?php echo !empty($errors) ? 'auth-error-section' : 'auth-success-section'; ?>">
+            <?php if (!$submitted): ?>
+                <p class="section-label">No Form Data</p>
+                <h2>Please submit the request form</h2>
+                <p>
+                    Use the button above to return to the request access page.
+                </p>
+            <?php elseif (!empty($errors)): ?>
+                <p class="section-label">Validation Errors</p>
+                <h2>Please fix the following</h2>
+
+                <ul class="auth-message-list">
+                    <?php foreach ($errors as $error): ?>
+                        <li><?php echo htmlspecialchars($error, ENT_QUOTES, 'UTF-8'); ?></li>
+                    <?php endforeach; ?>
+                </ul>
+            <?php else: ?>
+                <p class="section-label">Submitted Values</p>
+                <h2>Access Request Details</h2>
+
+                <div class="auth-detail-grid">
+                    <div class="auth-detail-card">
+                        <h3>First Name</h3>
+                        <p><?php echo $safeFirstName; ?></p>
+                    </div>
+
+                    <div class="auth-detail-card">
+                        <h3>Last Name</h3>
+                        <p><?php echo $safeLastName; ?></p>
+                    </div>
+
+                    <div class="auth-detail-card">
+                        <h3>Email</h3>
+                        <p><?php echo $safeEmail; ?></p>
+                    </div>
+
+                    <div class="auth-detail-card">
+                        <h3>Birthday</h3>
+                        <p><?php echo $safeBirthday; ?></p>
+                    </div>
+
+                    <div class="auth-detail-card">
+                        <h3>Faculty/Student</h3>
+                        <p><?php echo $safeOccupation; ?></p>
+                    </div>
+
+                    <div class="auth-detail-card">
+                        <h3>Involvement</h3>
+                        <p><?php echo $safeInvolvement; ?></p>
+                    </div>
+
+                    <div class="auth-detail-card">
+                        <h3>Drives a Car</h3>
+                        <p><?php echo $safeDrivesCar; ?></p>
+                    </div>
+
+                    <div class="auth-detail-card wide-card">
+                        <h3>Other Details</h3>
+                        <p><?php echo $safeDetails === '' ? 'No additional details provided.' : $safeDetails; ?></p>
+                    </div>
+                </div>
+            <?php endif; ?>
+        </section>
+
+        <p class="top-link">
+            <a href="#page_top">Go to the top of this page</a>
+        </p>
+    </main>
+
+    <footer class="site-footer">
+        <p>Copyright &copy; 2026 Nick Kapuka</p>
+    </footer>
+</body>
+
+</html>

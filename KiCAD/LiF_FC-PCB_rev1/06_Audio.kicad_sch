@@ -1,0 +1,26 @@
+(kicad_sch
+	(version 20250114)
+	(generator "eeschema")
+	(generator_version "9.0")
+	(uuid "a22e738a-12d4-4126-a934-c949d53fcf1c")
+	(paper "A4")
+	(title_block
+		(title "LiF - PD, UI, and Audio")
+		(date "2026-07-02")
+		(rev "0")
+		(company "Conestoga College")
+		(comment 1 "Designed by NK")
+	)
+	(lib_symbols)
+	(text "WIP"
+		(exclude_from_sim no)
+		(at 168.656 71.12 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "16db4b54-b6be-4d92-9f6c-a62a7a7f5cb6")
+	)
+)

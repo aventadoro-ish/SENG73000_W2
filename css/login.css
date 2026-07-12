@@ -1,0 +1,97 @@
+/* ---------- new login page styling ---------- */
+
+.login-page-intro {
+  grid-template-columns: 2fr 0.9fr;
+}
+
+.login-page-section {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 24px;
+  margin-top: 28px;
+}
+
+.login-form-card,
+.login-help-card {
+  padding: 28px;
+  background-color: var(--card-bg);
+  border-radius: 14px;
+  box-shadow: 0 4px 14px var(--shadow);
+}
+
+.login-form-card {
+  border-left: 5px solid var(--aqua);
+}
+
+.login-help-card {
+  border-left: 5px solid var(--orange);
+}
+
+.login-form-card h2,
+.login-help-card h2 {
+  margin-top: 0;
+  color: var(--deep-blue);
+}
+
+.login-help-card p,
+.login-form-card p {
+  text-align: left;
+  text-indent: 0;
+  line-height: 1.55;
+}
+
+#login {
+  margin-top: 20px;
+}
+
+.login-form-row {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 18px;
+}
+
+.login-form-row label {
+  margin-bottom: 6px;
+  font-weight: bold;
+  color: var(--ink);
+}
+
+.login-form-row input {
+  width: 100%;
+  max-width: 420px;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  font-family: Georgia, serif;
+  font-size: 1rem;
+  color: var(--ink);
+  background-color: white;
+  border: 1px solid var(--palm);
+  border-radius: 8px;
+}
+
+.login-form-row input:focus {
+  outline: 2px solid var(--aqua);
+  border-color: var(--deep-blue);
+}
+
+#loginMessage {
+  margin-top: 8px;
+  margin-bottom: 0;
+  font-weight: bold;
+  color: var(--ember);
+}
+
+.login-button-row {
+  margin-top: 22px;
+}
+
+#submit_btn {
+  border: none;
+  cursor: pointer;
+  font-family: Georgia, serif;
+  font-size: 1rem;
+}
+
+.login-help-card .button {
+  margin-top: 12px;
+}

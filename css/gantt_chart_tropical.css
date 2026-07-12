@@ -92,6 +92,32 @@
   background-color: #fffdf4;
 }
 
+/* ---------- Tropical Gantt chart with JS ---------- */
+
+/*
+    This file keeps the Gantt chart as a real HTML table.
+    The source HTML can still use compact blank cells like <td colspan="8"></td>.
+    Then ../js/gantt_table_tools.js expands only those blank cells into real
+    individual <td> cells after the page loads.
+
+    Result:
+    - source HTML stays easier to maintain
+    - browser display gets cleaner real grid lines
+    - coloured task bars can still use colspan
+*/
+
+/* Main table */
+#Gantt {
+  width: 100%;
+  min-width: 1150px;
+  table-layout: fixed;
+  border-collapse: collapse;
+  font-family: Georgia, serif;
+  font-size: 0.92rem;
+  background-color: #fffdf4;
+}
+
+/* General cell styling */
 #Gantt th,
 #Gantt td {
   padding: 9px 10px;
@@ -99,32 +125,40 @@
   vertical-align: middle;
 }
 
+/* Sticky header row */
 #Gantt thead th {
+  position: sticky;
+  top: 0;
+  z-index: 50;
   color: white;
   background-color: var(--deep-blue);
   text-align: center;
 }
 
+/* First header cell */
 #Gantt thead th:first-child {
   color: var(--deep-blue);
   background-color: var(--yellow);
   text-align: left;
-  min-width: 330px;
+  width: 330px;
 }
 
+/* Keep the first task column readable */
+#Gantt tbody th:first-child,
+#Gantt tbody td:first-child {
+  width: 330px;
+}
+
+/* Phase row: N/A, Phase 1, Phase 2, Phase 3 */
 #Gantt tbody tr:first-child th,
 #Gantt tbody tr:first-child td {
   color: var(--ink);
   background-color: #fff8df;
   text-align: center;
+  font-weight: bold;
 }
 
-#Gantt tbody tr:hover td,
-#Gantt tbody tr:hover th {
-  background-color: #eb41035b;
-  /* same as --ember but a bit more transparent) */
-}
-
+/* Major section title cell */
 #Gantt .main {
   color: white;
   background-color: var(--deep-blue);
@@ -132,6 +166,7 @@
   font-weight: bold;
 }
 
+/* Normal task label */
 #Gantt .sub {
   padding-left: 3ch;
   color: var(--ink);
@@ -140,6 +175,7 @@
   font-weight: normal;
 }
 
+/* Nested task label */
 #Gantt .sub2 {
   padding-left: 6ch;
   color: var(--ink);
@@ -148,6 +184,30 @@
   font-weight: normal;
 }
 
+/* Blank cells created by the JS helper */
+#Gantt .gantt-empty-cell {
+  background-color: rgba(255, 253, 244, 0.42);
+}
+
+/* Blank colspan cells before JS runs.
+   This gives a decent fallback if JavaScript is disabled. */
+#Gantt
+  td[colspan]:not(.completed):not(.ongoing):not(.behind):not(.planned):not(
+    .omitted
+  ) {
+  background-color: rgba(255, 253, 244, 0.42);
+}
+
+/* Once JS expands the table, do not fake grid lines anymore.
+   Real table cells create the physical grid. */
+#Gantt.gantt-expanded
+  td[colspan]:not(.completed):not(.ongoing):not(.behind):not(.planned):not(
+    .omitted
+  ) {
+  background-image: none;
+}
+
+/* Completed task bar */
 #Gantt .completed {
   color: var(--ink);
   background-color: var(--palm);
@@ -155,6 +215,7 @@
   text-align: center;
 }
 
+/* Ongoing task bar */
 #Gantt .ongoing {
   color: var(--ink);
   background-color: var(--aqua);
@@ -162,6 +223,7 @@
   text-align: center;
 }
 
+/* Behind task bar */
 #Gantt .behind {
   color: var(--ink);
   background-color: var(--coral);
@@ -169,19 +231,22 @@
   text-align: center;
 }
 
+/* Planned task bar */
+#Gantt .planned {
+  color: var(--ink);
+  background-color: var(--yellow);
+  font-weight: bold;
+  text-align: center;
+}
+
+/* Omitted task bar */
 #Gantt .omitted {
   color: #333;
   background-color: #b7b7b7;
   text-decoration: line-through;
 }
 
-#Gantt .planned {
-    color: var(--ink);
-    background-color: var(--yellow);
-    font-weight: bold;
-    text-align: center;
-}
-
+/* Completed but later omitted */
 #Gantt .omitted.completed {
   background: repeating-linear-gradient(
     135deg,
@@ -192,23 +257,112 @@
   );
 }
 
-/* patch to add sticky back */
+/* Disable old full-row hover wash */
+#Gantt tbody tr:hover td,
+#Gantt tbody tr:hover th {
+  background-color: inherit;
+}
+
+/* Better hover:
+   only the task label and empty timeline cells highlight.
+   Coloured task bars keep their status colour. */
+#Gantt tbody tr:not(.gantt-section-row):hover > th.sub,
+#Gantt tbody tr:not(.gantt-section-row):hover > th.sub2,
+#Gantt tbody tr:not(.gantt-section-row):hover > td.gantt-empty-cell,
+#Gantt tbody tr:not(.gantt-section-row):hover > td:not([class]):not([colspan]) {
+  background-color: rgba(235, 66, 3, 0.14);
+}
+
+/* Preserve task bar colours on hover */
+#Gantt tbody tr:hover > td.completed {
+  background-color: var(--palm);
+}
+
+#Gantt tbody tr:hover > td.ongoing {
+  background-color: var(--aqua);
+}
+
+#Gantt tbody tr:hover > td.behind {
+  background-color: var(--coral);
+}
+
+#Gantt tbody tr:hover > td.planned {
+  background-color: var(--yellow);
+}
+
+#Gantt tbody tr:hover > td.omitted {
+  background-color: #b7b7b7;
+}
+
+/* Preserve omitted + completed stripes on hover */
+#Gantt tbody tr:hover > td.omitted.completed,
+#Gantt tbody td.omitted.completed {
+  background: repeating-linear-gradient(
+    135deg,
+    #b7b7b7,
+    #b7b7b7 8px,
+    var(--palm) 8px,
+    var(--palm) 16px
+  );
+}
+
+/* Add a subtle outline to actual task bars on hover */
+#Gantt tbody tr:not(.gantt-section-row):hover > td.completed,
+#Gantt tbody tr:not(.gantt-section-row):hover > td.ongoing,
+#Gantt tbody tr:not(.gantt-section-row):hover > td.behind,
+#Gantt tbody tr:not(.gantt-section-row):hover > td.planned,
+#Gantt tbody tr:not(.gantt-section-row):hover > td.omitted {
+  box-shadow: inset 0 0 0 2px rgba(23, 56, 59, 0.2);
+}
+
+/* Major section rows: locked / non-interactive */
+#Gantt tbody tr.gantt-section-row {
+  pointer-events: none;
+}
+
+/* Section label stays teal */
+#Gantt tbody tr.gantt-section-row > th.main,
+#Gantt tbody tr.gantt-section-row:hover > th.main {
+  color: white;
+  background-color: var(--deep-blue);
+}
+
+/* Section timeline area is greyed out */
+#Gantt tbody tr.gantt-section-row > td,
+#Gantt tbody tr.gantt-section-row:hover > td {
+  background-color: rgba(9, 124, 135, 0.1);
+  background-image: repeating-linear-gradient(
+    to right,
+    transparent 0,
+    transparent calc((100% / 14) - 1px),
+    rgba(9, 124, 135, 0.14) calc((100% / 14) - 1px),
+    rgba(9, 124, 135, 0.14) calc(100% / 14)
+  );
+  box-shadow: none;
+}
+
+/* Wrapper around the chart */
 .gantt-table-wrapper {
-  overflow: visible;
+  overflow-x: auto;
   border-radius: 12px;
   border: 1px solid rgba(9, 124, 135, 0.22);
   box-shadow: 0 4px 14px var(--shadow);
 }
 
-#Gantt thead th {
-  position: sticky;
-  top: 0;
-  z-index: 50;
-  color: white;
-  background-color: var(--deep-blue);
-}
+/* Medium/small screens */
+@media screen and (max-width: 850px) {
+  #Gantt {
+    min-width: 980px;
+    font-size: 0.86rem;
+  }
 
-#Gantt thead th:first-child {
-  color: var(--deep-blue);
-  background-color: var(--yellow);
+  #Gantt thead th {
+    position: static;
+  }
+
+  #Gantt thead th:first-child,
+  #Gantt tbody th:first-child,
+  #Gantt tbody td:first-child {
+    width: 260px;
+  }
 }
