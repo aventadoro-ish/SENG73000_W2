@@ -2101,8 +2101,8 @@
 		)
 	)
 	(rectangle
-		(start 28.575 33.655)
-		(end 242.57 159.385)
+		(start 20.32 33.655)
+		(end 258.445 159.385)
 		(stroke
 			(width 0)
 			(type default)
@@ -2134,6 +2134,17 @@
 		)
 		(uuid "0a063e3c-a71a-40cc-bd72-ad9bc207b0a7")
 	)
+	(text "You'll probably have to add a footprint for this one... (74HCT595)\n\nThere are SOIC-16 and TSSOP-16 options available on DigiKey. Links below:\n\nTSSOP-16:\nhttps://www.digikey.ca/en/products/detail/nexperia-usa-inc/74HCT595PW-118/763165\n\n\nSOIC-16:\nhttps://www.digikey.ca/en/products/detail/nexperia-usa-inc/74HCT595D-118/763163\n\n\nSo use whatever footprint you prefer"
+		(exclude_from_sim no)
+		(at 28.194 175.514 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "6000e412-20b1-4055-8851-9ca1596c7e8b")
+	)
 	(text "From any\nESP GPIO\n"
 		(exclude_from_sim no)
 		(at 36.322 48.26 0)
@@ -2143,6 +2154,17 @@
 			)
 		)
 		(uuid "6a9e8d8e-75d7-46e2-9371-01092845633a")
+	)
+	(text "For resistor array footprints, see the DigiKey part here:\n\n\nhttps://www.digikey.ca/en/products/detail/panasonic-industry/EXB-2HV471JV/285315?s=N4IgTCBcDaIKIA0BCBaMAJAagFgOwEYApTEAXQF8g"
+		(exclude_from_sim no)
+		(at 112.014 40.132 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "c1e871e6-cf12-442c-a1b6-7fa1bd8bc6d6")
 	)
 	(text "Sheet 05 - User Interface\n\nShift Registers and Seven Segment Displays"
 		(exclude_from_sim no)
@@ -2183,6 +2205,10 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "e95604fe-b2b1-4c8f-b5b7-d894f900223d")
+	)
+	(no_connect
+		(at 80.01 142.24)
+		(uuid "a4992036-445f-45b3-9ba1-fbfbeeeee763")
 	)
 	(wire
 		(pts
@@ -2656,16 +2682,6 @@
 	)
 	(wire
 		(pts
-			(xy 80.01 142.24) (xy 80.01 157.48)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "61742cec-a878-4bfa-80a9-70e6b30595d3")
-	)
-	(wire
-		(pts
 			(xy 90.17 72.39) (xy 95.25 72.39)
 		)
 		(stroke
@@ -3073,16 +3089,6 @@
 			(type default)
 		)
 		(uuid "b87948bf-67f3-4dfd-b6b0-30100c4888de")
-	)
-	(wire
-		(pts
-			(xy 78.74 157.48) (xy 80.01 157.48)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "b8aa07da-13af-41f9-9ef1-15d7f55b2861")
 	)
 	(wire
 		(pts
@@ -3646,125 +3652,60 @@
 		)
 		(uuid "99705014-02b5-4ee5-a8d9-342cd80b9285")
 	)
-	(label "Data Chain"
-		(at 78.74 157.48 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right bottom)
-		)
-		(uuid "e349a488-2741-478b-91cc-ba8c97e92112")
-	)
-	(global_label "ESP_CLK"
-		(shape input)
-		(at 46.99 124.46 180)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right)
-		)
-		(uuid "2f53252d-c995-4bc4-9bf6-5692e49b9880")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 35.8406 124.46 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-				(hide yes)
-			)
-		)
-	)
-	(global_label "ESP_LATCH"
-		(shape input)
-		(at 43.18 68.58 180)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right)
-		)
-		(uuid "452cec5e-8ef5-4ada-b0a6-273440e2dc30")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 29.9139 68.58 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-				(hide yes)
-			)
-		)
-	)
-	(global_label "ESP_DATA"
-		(shape input)
-		(at 43.18 55.88 180)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right)
-		)
-		(uuid "66013cfd-0f88-4c2a-82e5-78220fbc6a1f")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 31.1839 55.88 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-				(hide yes)
-			)
-		)
-	)
-	(global_label "ESP_CLK"
+	(hierarchical_label "ESP_SEVSEG_CLK"
 		(shape input)
 		(at 43.18 60.96 180)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
 			(justify right)
 		)
-		(uuid "9c32cc73-09dd-432f-802c-cbee57afb3c5")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 32.0306 60.96 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-				(hide yes)
-			)
-		)
+		(uuid "2fcbec48-d4cf-4096-8a5a-4be2a8a6fc8a")
 	)
-	(global_label "ESP_LATCH"
+	(hierarchical_label "ESP_SEVSEG_LATCH"
+		(shape input)
+		(at 43.18 68.58 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "4d84e80d-6fa2-440a-8c22-86ee3530cb00")
+	)
+	(hierarchical_label "ESP_SEVSEG_DATA"
+		(shape input)
+		(at 43.18 55.88 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "6a564fac-1962-45cf-9f07-42ffaba5689f")
+	)
+	(hierarchical_label "ESP_SEVSEG_LATCH"
 		(shape input)
 		(at 46.99 132.08 180)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
 			(justify right)
 		)
-		(uuid "da54ac52-df3f-4d97-94cd-1d0f4e5279c1")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 33.7239 132.08 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-				(hide yes)
+		(uuid "b45ae7f3-2adb-4bb2-a187-734aa667c961")
+	)
+	(hierarchical_label "ESP_SEVSEG_CLK"
+		(shape input)
+		(at 46.99 124.46 180)
+		(effects
+			(font
+				(size 1.27 1.27)
 			)
+			(justify right)
 		)
+		(uuid "c463fb8d-7fe1-49f9-8fe3-065263415094")
 	)
 	(symbol
 		(lib_id "power:GND")
@@ -3908,7 +3849,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "2e2aa980-00a4-4787-9c5f-a07c8cf8a87e")
-		(property "Reference" "R2"
+		(property "Reference" "R05_Array02"
 			(at 105.41 104.14 0)
 			(effects
 				(font
@@ -4004,7 +3945,7 @@
 		(instances
 			(project "LiF_CustomPCB"
 				(path "/e8d53809-63ab-4a8d-88b7-d7504d15b103/4d480ead-5d90-4d49-ad2d-4ec0e23f6f32"
-					(reference "R2")
+					(reference "R05_Array02")
 					(unit 1)
 				)
 			)
@@ -4020,7 +3961,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "3ba62bb9-570c-40ad-8285-da0c7bfeb22d")
-		(property "Reference" "U3"
+		(property "Reference" "U4"
 			(at 173.99 67.31 0)
 			(effects
 				(font
@@ -4120,7 +4061,7 @@
 		(instances
 			(project "LiF_CustomPCB"
 				(path "/e8d53809-63ab-4a8d-88b7-d7504d15b103/4d480ead-5d90-4d49-ad2d-4ec0e23f6f32"
-					(reference "U3")
+					(reference "U4")
 					(unit 1)
 				)
 			)
@@ -4136,7 +4077,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "6997ce47-8dcc-4d93-b847-cc15312ffbaf")
-		(property "Reference" "R1"
+		(property "Reference" "R05_Array01"
 			(at 101.6 40.64 0)
 			(effects
 				(font
@@ -4232,7 +4173,7 @@
 		(instances
 			(project "LiF_CustomPCB"
 				(path "/e8d53809-63ab-4a8d-88b7-d7504d15b103/4d480ead-5d90-4d49-ad2d-4ec0e23f6f32"
-					(reference "R1")
+					(reference "R05_Array01")
 					(unit 1)
 				)
 			)
@@ -4248,7 +4189,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "73019756-8669-448c-9ae3-901b957549ff")
-		(property "Reference" "U2"
+		(property "Reference" "U3"
 			(at 69.4533 111.76 0)
 			(effects
 				(font
@@ -4344,7 +4285,7 @@
 		(instances
 			(project "LiF_CustomPCB"
 				(path "/e8d53809-63ab-4a8d-88b7-d7504d15b103/4d480ead-5d90-4d49-ad2d-4ec0e23f6f32"
-					(reference "U2")
+					(reference "U3")
 					(unit 1)
 				)
 			)
@@ -4558,7 +4499,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "c2040f62-8a58-4dae-83df-5b0e87ee4b8f")
-		(property "Reference" "U1"
+		(property "Reference" "U2"
 			(at 65.6433 48.26 0)
 			(effects
 				(font
@@ -4654,7 +4595,7 @@
 		(instances
 			(project "LiF_CustomPCB"
 				(path "/e8d53809-63ab-4a8d-88b7-d7504d15b103/4d480ead-5d90-4d49-ad2d-4ec0e23f6f32"
-					(reference "U1")
+					(reference "U2")
 					(unit 1)
 				)
 			)

@@ -669,7 +669,7 @@
 		)
 		(uuid 6683f738-b1c5-43b4-9e31-d735a93c1001)
 	)
-	(text "Configured VBus to be 15V.\n\n6.8k = 9V\n24k = 12V\n56k = 15V\nNC = 20V"
+	(text "Configured VBus to be 15V. \nSee datasheet in my logbook (2026-07-03)\n\n6.8k = 9V\n24k = 12V\n56k = 15V\nNC = 20V"
 		(exclude_from_sim no)
 		(at 142.748 88.646 0)
 		(effects
@@ -692,7 +692,7 @@
 	)
 	(text "DP/DM are D+/D-\n\nUsed by CANbus so NC here"
 		(exclude_from_sim no)
-		(at 95.25 88.138 0)
+		(at 94.742 88.138 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -936,93 +936,49 @@
 		)
 		(uuid "f098ad66-17bd-4b97-b304-1db6f70dda5f")
 	)
-	(global_label "PD_VBus"
+	(hierarchical_label "USBC_IN_CC2"
+		(shape input)
+		(at 66.04 80.01 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "02452af0-16ac-4fa5-9700-f889669e663e")
+	)
+	(hierarchical_label "PD_VBus"
 		(shape input)
 		(at 140.97 55.88 0)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
 			(justify left)
 		)
-		(uuid "0fe621cd-0db9-4fec-b8a3-46e3df42ee8a")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 151.9985 55.88 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-				(hide yes)
-			)
-		)
+		(uuid "121d283f-24d9-48a8-8afd-a2c8095c0909")
 	)
-	(global_label "USBC_IN_CC1"
+	(hierarchical_label "USBC_IN_CC1"
 		(shape input)
 		(at 66.04 77.47 180)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
 			(justify right)
 		)
-		(uuid "963b43d1-2f01-4861-944f-65462336d5c6")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 50.3548 77.47 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-				(hide yes)
-			)
-		)
+		(uuid "8fea2c36-b773-463a-acad-bee8abf97c7b")
 	)
-	(global_label "USBC_IN_VBus"
+	(hierarchical_label "USBC_IN_VBus"
 		(shape input)
 		(at 64.77 55.88 180)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
 			(justify right)
 		)
-		(uuid "a9c41642-08f3-4680-9fcf-491a6aa4af79")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 48.2986 55.88 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-				(hide yes)
-			)
-		)
-	)
-	(global_label "USBC_IN_CC2"
-		(shape input)
-		(at 66.04 80.01 180)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right)
-		)
-		(uuid "ec133467-00b8-43a5-86cc-47ac467d5883")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 50.3548 80.01 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-				(hide yes)
-			)
-		)
+		(uuid "99902ed7-c29a-4f4b-b8d3-0e52b6c8e284")
 	)
 	(symbol
 		(lib_id "Device:R")
@@ -1033,7 +989,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "12641dd9-0e7b-46c3-b198-a3a6a48045bf")
-		(property "Reference" "R6"
+		(property "Reference" "R02_01"
 			(at 83.82 59.944 90)
 			(effects
 				(font
@@ -1085,7 +1041,7 @@
 		(instances
 			(project "LiF_CustomPCB"
 				(path "/e8d53809-63ab-4a8d-88b7-d7504d15b103/8daafc21-1287-4370-9327-711e48673ef9"
-					(reference "R6")
+					(reference "R02_01")
 					(unit 1)
 				)
 			)
@@ -1101,7 +1057,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "4cba32e9-484a-413e-b821-e105f7652a2e")
-		(property "Reference" "C?"
+		(property "Reference" "C02_01"
 			(at 97.79 64.7699 0)
 			(effects
 				(font
@@ -1155,7 +1111,7 @@
 		(instances
 			(project "LiF_CustomPCB"
 				(path "/e8d53809-63ab-4a8d-88b7-d7504d15b103/8daafc21-1287-4370-9327-711e48673ef9"
-					(reference "C?")
+					(reference "C02_01")
 					(unit 1)
 				)
 			)
@@ -1170,8 +1126,8 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "5fde9893-ba7a-424d-99a4-2633aef3340c")
-		(property "Reference" "R7"
-			(at 114.3 65.532 0)
+		(property "Reference" "R02_02"
+			(at 115.316 65.532 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1222,7 +1178,7 @@
 		(instances
 			(project "LiF_CustomPCB"
 				(path "/e8d53809-63ab-4a8d-88b7-d7504d15b103/8daafc21-1287-4370-9327-711e48673ef9"
-					(reference "R7")
+					(reference "R02_02")
 					(unit 1)
 				)
 			)
@@ -1303,8 +1259,8 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "ba34f2ba-9178-473c-94c7-4d48d259689f")
-		(property "Reference" "R8"
-			(at 136.398 89.154 0)
+		(property "Reference" "R02_03"
+			(at 134.874 89.408 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1355,7 +1311,7 @@
 		(instances
 			(project "LiF_CustomPCB"
 				(path "/e8d53809-63ab-4a8d-88b7-d7504d15b103/8daafc21-1287-4370-9327-711e48673ef9"
-					(reference "R8")
+					(reference "R02_03")
 					(unit 1)
 				)
 			)
@@ -1371,7 +1327,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "c2524713-1644-4e03-a7f4-38b080bdf1e2")
-		(property "Reference" "U4"
+		(property "Reference" "U1"
 			(at 110.0933 92.71 0)
 			(effects
 				(font
@@ -1452,7 +1408,7 @@
 		(instances
 			(project "LiF_CustomPCB"
 				(path "/e8d53809-63ab-4a8d-88b7-d7504d15b103/8daafc21-1287-4370-9327-711e48673ef9"
-					(reference "U4")
+					(reference "U1")
 					(unit 1)
 				)
 			)

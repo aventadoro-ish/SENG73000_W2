@@ -668,9 +668,9 @@
 		)
 		(uuid 157f849a-f958-4a4c-adbc-6af0c8dd1d78)
 	)
-	(text "Function (car controller)\nEncoder will be rotated and the value will be updated on the 7-seg display.\nThis will be the floor selector\n\nOnce you picked a floor (say 7), you can click the PB to either send the command directly\nOr this will function as a queue loader (multi-floor select like a real elevator) with the encoder switch being the send command\n\nThe LED flashes once when floor queued but glows when executing commands (like sending CAN out)"
+	(text "Function (car controller)\nEncoder will be rotated and the value will be updated on the 7-seg display.\nThis will behave as a floor selector\n\nDelete if not wanted :("
 		(exclude_from_sim no)
-		(at 42.164 112.522 0)
+		(at 41.148 106.172 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -701,7 +701,7 @@
 	)
 	(text "To any\nESP GPIO"
 		(exclude_from_sim no)
-		(at 138.684 80.518 0)
+		(at 130.81 90.932 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -1057,71 +1057,38 @@
 			"AAAAAAAAAAAAAAA="
 		)
 	)
-	(global_label "ENC_SW"
-		(shape input)
-		(at 121.92 77.47 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left)
-		)
-		(uuid "56c950d8-488a-42a4-ae95-b01bd0091c20")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 132.2832 77.47 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-				(hide yes)
-			)
-		)
-	)
-	(global_label "ENC_B"
-		(shape input)
-		(at 123.19 85.09 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left)
-		)
-		(uuid "a8c27011-2d02-42cd-9bf6-a75ed36166d6")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 132.1623 85.09 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-				(hide yes)
-			)
-		)
-	)
-	(global_label "ENC_A"
+	(hierarchical_label "Selector_ENCA"
 		(shape input)
 		(at 123.19 82.55 0)
-		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
 			(justify left)
 		)
-		(uuid "c182d344-a802-4be5-9348-ebf868c6a523")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 131.9809 82.55 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-				(hide yes)
+		(uuid "5ea7e6c4-26f4-45f6-8b29-52521dc201c6")
+	)
+	(hierarchical_label "Selector_ENC_SW"
+		(shape input)
+		(at 121.92 77.47 0)
+		(effects
+			(font
+				(size 1.27 1.27)
 			)
+			(justify left)
 		)
+		(uuid "c2fd1d59-538c-467a-bf83-511b2e252d28")
+	)
+	(hierarchical_label "Selector_ENCB"
+		(shape input)
+		(at 123.19 85.09 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "e4c959b3-75b4-4d5b-8ed0-7389f78b45ff")
 	)
 	(symbol
 		(lib_id "Device:R")
@@ -1131,10 +1098,9 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(fields_autoplaced yes)
 		(uuid "0af8f1df-f7d3-488c-9afc-e34a2a41e5cd")
-		(property "Reference" "R4"
-			(at 110.49 63.4999 0)
+		(property "Reference" "R03_02"
+			(at 108.712 60.452 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1187,7 +1153,7 @@
 		(instances
 			(project "LiF_CustomPCB"
 				(path "/e8d53809-63ab-4a8d-88b7-d7504d15b103/e00a619c-d9be-4b49-85f4-4e5c1aa00420"
-					(reference "R4")
+					(reference "R03_02")
 					(unit 1)
 				)
 			)
@@ -1201,10 +1167,9 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(fields_autoplaced yes)
 		(uuid "1437121a-dc19-44d4-b603-623ab656d654")
-		(property "Reference" "R3"
-			(at 100.33 63.4999 0)
+		(property "Reference" "R03_01"
+			(at 98.298 60.706 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1213,7 +1178,7 @@
 			)
 		)
 		(property "Value" "10k"
-			(at 100.33 66.0399 0)
+			(at 99.568 66.294 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1257,7 +1222,7 @@
 		(instances
 			(project "LiF_CustomPCB"
 				(path "/e8d53809-63ab-4a8d-88b7-d7504d15b103/e00a619c-d9be-4b49-85f4-4e5c1aa00420"
-					(reference "R3")
+					(reference "R03_01")
 					(unit 1)
 				)
 			)
@@ -1403,10 +1368,9 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(fields_autoplaced yes)
 		(uuid "54a2d238-6437-44b4-8f44-8d0eab8af8c0")
-		(property "Reference" "R5"
-			(at 120.65 63.4999 0)
+		(property "Reference" "R03_03"
+			(at 118.872 60.452 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1459,7 +1423,7 @@
 		(instances
 			(project "LiF_CustomPCB"
 				(path "/e8d53809-63ab-4a8d-88b7-d7504d15b103/e00a619c-d9be-4b49-85f4-4e5c1aa00420"
-					(reference "R5")
+					(reference "R03_03")
 					(unit 1)
 				)
 			)
@@ -1475,7 +1439,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "710156f3-9b52-4b6f-bdf3-afc00cf3fb79")
-		(property "Reference" "MT?"
+		(property "Reference" "MT1"
 			(at 82.55 67.31 0)
 			(effects
 				(font
@@ -1583,7 +1547,7 @@
 		(instances
 			(project "LiF_CustomPCB"
 				(path "/e8d53809-63ab-4a8d-88b7-d7504d15b103/e00a619c-d9be-4b49-85f4-4e5c1aa00420"
-					(reference "MT?")
+					(reference "MT1")
 					(unit 1)
 				)
 			)
