@@ -445,6 +445,10 @@
     [
       "77827f91-166d-41e9-a525-15815c2a0550",
       "CAN"
+    ],
+    [
+      "25eacf96-1a70-4276-a4a6-d0196807ae93",
+      "Accelerometer"
     ]
   ],
   "text_variables": {}

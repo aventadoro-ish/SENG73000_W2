@@ -1848,7 +1848,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "97a2a8d5-ccc4-4899-b1f1-b9eaa11125be")
-		(property "Reference" "U"
+		(property "Reference" "U?"
 			(at 146.05 66.04 0)
 			(effects
 				(font
@@ -1935,6 +1935,10 @@
 		)
 		(instances
 			(project "LiF_FC-PCB_rev1"
+				(path "/9e3e8da7-e506-46c9-90e5-307e4ad30d29/dbf56dc2-3990-4801-b0e0-f59d351af64c/b5f6c072-28d6-4dbf-9d97-d5b17dc4e7a5"
+					(reference "U?")
+					(unit 1)
+				)
 				(path "/9e3e8da7-e506-46c9-90e5-307e4ad30d29/dbf56dc2-3990-4801-b0e0-f59d351af64c/d7dd20e9-8027-4523-a1e0-5e82c0dab821"
 					(reference "U3")
 					(unit 1)

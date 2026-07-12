@@ -294,6 +294,48 @@
 		)
 	)
 	(sheet
+		(at 133.35 27.94)
+		(size 36.83 46.99)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "25eacf96-1a70-4276-a4a6-d0196807ae93")
+		(property "Sheetname" "Accelerometer"
+			(at 133.35 27.2284 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "LiF_ACC.kicad_sch"
+			(at 133.35 75.5146 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project "LiF_FC-PCB_rev1"
+				(path "/9e3e8da7-e506-46c9-90e5-307e4ad30d29"
+					(page "9")
+				)
+			)
+		)
+	)
+	(sheet
 		(at 179.07 102.87)
 		(size 27.94 24.13)
 		(exclude_from_sim no)
