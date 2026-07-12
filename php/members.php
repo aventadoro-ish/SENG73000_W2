@@ -67,7 +67,7 @@ $safeUsername = htmlspecialchars($_SESSION['username'] ?? 'User', ENT_QUOTES, 'U
 
             <div class="member-button-grid">
 
-                <a href="elevator_control.php" class="member-action-card">
+                <a href="dashboard.php" member-action-card">
                     <h3>Elevator Control</h3>
                     <p>Control the elevator from a website!</p>
                 </a>

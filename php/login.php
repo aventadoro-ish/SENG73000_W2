@@ -50,9 +50,6 @@ if ($submitted) {
 $safeUsername = htmlspecialchars($username, ENT_QUOTES, 'UTF-8');
 $safePassword = htmlspecialchars($password, ENT_QUOTES, 'UTF-8');
 
-echo "<p>Username: $safeUsername</p>";
-echo "<p>Password: $safePassword</p>";
-
 if (!empty($errors)) {
 	echo "<ul>";
 	foreach ($errors as $error) {
