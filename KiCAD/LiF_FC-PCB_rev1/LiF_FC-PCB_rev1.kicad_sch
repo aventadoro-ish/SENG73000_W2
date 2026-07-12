@@ -5,9 +5,225 @@
 	(uuid "9e3e8da7-e506-46c9-90e5-307e4ad30d29")
 	(paper "A4")
 	(lib_symbols)
+	(junction
+		(at 127 105.41)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "e4cbd59f-e2e6-463c-b2a7-45a1a6629829")
+	)
+	(wire
+		(pts
+			(xy 74.93 105.41) (xy 80.01 105.41)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "01ef6503-403f-4482-a26b-a05fb357c287")
+	)
+	(wire
+		(pts
+			(xy 213.36 105.41) (xy 213.36 91.44)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "2fb2551f-2f5b-4ed1-9856-2b6090c70d89")
+	)
+	(wire
+		(pts
+			(xy 207.01 105.41) (xy 213.36 105.41)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "31db9d98-27a7-42ac-bb83-21bc438eeb41")
+	)
+	(wire
+		(pts
+			(xy 127 137.16) (xy 179.07 137.16)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "3929df6e-2c82-44ed-bf87-3487f3fae210")
+	)
+	(wire
+		(pts
+			(xy 213.36 91.44) (xy 74.93 91.44)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "423d84a5-93b7-4bbe-a10c-1643a3b2143e")
+	)
+	(wire
+		(pts
+			(xy 121.92 120.65) (xy 116.84 120.65)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "4617c6e0-829b-422d-bc90-0e1a2cae661f")
+	)
+	(wire
+		(pts
+			(xy 74.93 91.44) (xy 74.93 105.41)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "482650b4-febe-4673-9070-7b1d5acff3dd")
+	)
+	(wire
+		(pts
+			(xy 69.85 110.49) (xy 80.01 110.49)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "5dc8cac5-30be-4fc8-8813-c18bdea86a0f")
+	)
+	(wire
+		(pts
+			(xy 179.07 142.24) (xy 121.92 142.24)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "67ebbdc4-e09f-4afa-a5af-683bf48cfbd0")
+	)
+	(wire
+		(pts
+			(xy 116.84 110.49) (xy 179.07 110.49)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "7102ae1d-a13b-48f2-89e7-abecfc0c6e19")
+	)
+	(wire
+		(pts
+			(xy 80.01 72.39) (xy 69.85 72.39)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "84e54c8a-cef1-4d3d-924a-f106bc4bad31")
+	)
+	(wire
+		(pts
+			(xy 121.92 142.24) (xy 121.92 120.65)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "a925d350-0d1d-4204-b8db-d4e6203eeb13")
+	)
+	(wire
+		(pts
+			(xy 116.84 115.57) (xy 179.07 115.57)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "b99350f4-09ad-4490-8b34-b2cd4e713da4")
+	)
+	(wire
+		(pts
+			(xy 127 105.41) (xy 179.07 105.41)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "d802881e-ea73-4eea-917e-d28bd08397b9")
+	)
+	(wire
+		(pts
+			(xy 116.84 105.41) (xy 127 105.41)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "dd60d2a8-08c9-4d94-9042-fd2c70e6490d")
+	)
+	(wire
+		(pts
+			(xy 69.85 72.39) (xy 69.85 110.49)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "f96e7947-6b9f-4136-baa9-416be0f9a14f")
+	)
+	(wire
+		(pts
+			(xy 127 137.16) (xy 127 105.41)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "fcd2ac00-a766-4fad-9a89-1ace763a3cbc")
+	)
+	(label "R3V3"
+		(at 129.54 115.57 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "4097f2f3-64c5-4446-8d0e-332d6d2c1980")
+	)
+	(label "CAN5V0"
+		(at 129.54 110.49 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "4121371b-99ba-434c-a07f-5e4088c4f66d")
+	)
+	(label "A3V3"
+		(at 130.81 142.24 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "4ce81090-a4b3-473e-bacc-9402cdfc9e34")
+	)
+	(label "SYS5V0"
+		(at 129.54 105.41 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "b42cdf64-34b1-44c1-a832-d674f791cd22")
+	)
 	(sheet
-		(at 67.31 171.45)
-		(size 33.02 19.05)
+		(at 179.07 134.62)
+		(size 27.94 10.16)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -22,7 +238,7 @@
 		)
 		(uuid "17577359-df8d-4d28-9071-787d31b1b6da")
 		(property "Sheetname" "Load Cell"
-			(at 67.31 170.7384 0)
+			(at 179.07 133.9084 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -31,7 +247,7 @@
 			)
 		)
 		(property "Sheetfile" "LiF_LoadCell.kicad_sch"
-			(at 67.31 191.0846 0)
+			(at 179.07 145.3646 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -40,7 +256,7 @@
 			)
 		)
 		(pin "3V3_{IN}" input
-			(at 67.31 173.99 180)
+			(at 179.07 142.24 180)
 			(uuid "f028af71-7f9a-49ab-b718-8840ab332811")
 			(effects
 				(font
@@ -50,7 +266,7 @@
 			)
 		)
 		(pin "5V0_{IN}" input
-			(at 67.31 176.53 180)
+			(at 179.07 137.16 180)
 			(uuid "3999dd6c-33ca-4828-91de-1faf580bb9d6")
 			(effects
 				(font
@@ -60,7 +276,7 @@
 			)
 		)
 		(pin "LC V_{OUT}" output
-			(at 100.33 180.34 0)
+			(at 207.01 139.7 0)
 			(uuid "e4ae85aa-45a0-4002-9289-18539a484712")
 			(effects
 				(font
@@ -78,8 +294,8 @@
 		)
 	)
 	(sheet
-		(at 68.58 133.35)
-		(size 24.13 29.21)
+		(at 179.07 102.87)
+		(size 27.94 24.13)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -94,7 +310,7 @@
 		)
 		(uuid "77827f91-166d-41e9-a525-15815c2a0550")
 		(property "Sheetname" "CAN"
-			(at 68.58 132.6384 0)
+			(at 179.07 102.1584 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -103,7 +319,7 @@
 			)
 		)
 		(property "Sheetfile" "LiF_CAN.kicad_sch"
-			(at 68.58 163.1446 0)
+			(at 179.07 127.5846 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -112,7 +328,7 @@
 			)
 		)
 		(pin "3V3_{IN}" input
-			(at 68.58 135.89 180)
+			(at 179.07 115.57 180)
 			(uuid "cf261262-873c-407f-b0b4-3f702b6568e6")
 			(effects
 				(font
@@ -122,7 +338,7 @@
 			)
 		)
 		(pin "5V0_{IN}" input
-			(at 68.58 138.43 180)
+			(at 179.07 105.41 180)
 			(uuid "874d0d97-e632-4225-8156-cc40ec573657")
 			(effects
 				(font
@@ -131,18 +347,8 @@
 				(justify left)
 			)
 		)
-		(pin "5V_{out}" output
-			(at 92.71 135.89 0)
-			(uuid "36cfdcf8-5c57-4f8e-bd2b-3869e77ece30")
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-			)
-		)
 		(pin "CAN_RX" output
-			(at 68.58 147.32 180)
+			(at 179.07 121.92 180)
 			(uuid "e4de8ce4-e72a-472b-bde2-8b867b43bf33")
 			(effects
 				(font
@@ -152,7 +358,7 @@
 			)
 		)
 		(pin "CAN_TX" input
-			(at 68.58 149.86 180)
+			(at 179.07 124.46 180)
 			(uuid "6bc3576b-11d5-498d-995b-1513a0e43e2a")
 			(effects
 				(font
@@ -161,17 +367,37 @@
 				(justify left)
 			)
 		)
+		(pin "CAN5V0_{IN}" input
+			(at 179.07 110.49 180)
+			(uuid "0def10fe-2683-46a5-81d0-e0404561495c")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "CAN5V0_{OUT}" output
+			(at 207.01 105.41 0)
+			(uuid "59fb5cc8-c90a-4307-8c38-22ef9074dab9")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
 		(instances
 			(project "LiF_FC-PCB_rev1"
 				(path "/9e3e8da7-e506-46c9-90e5-307e4ad30d29"
-					(page "6")
+					(page "8")
 				)
 			)
 		)
 	)
 	(sheet
-		(at 193.04 100.33)
-		(size 36.83 22.86)
+		(at 80.01 102.87)
+		(size 36.83 20.32)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -186,7 +412,7 @@
 		)
 		(uuid "dbf56dc2-3990-4801-b0e0-f59d351af64c")
 		(property "Sheetname" "Power Regulation"
-			(at 193.04 99.6184 0)
+			(at 80.01 102.1584 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -195,7 +421,7 @@
 			)
 		)
 		(property "Sheetfile" "LiF_PowerReg.kicad_sch"
-			(at 193.04 123.7746 0)
+			(at 80.01 123.7746 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -203,9 +429,9 @@
 				(justify left top)
 			)
 		)
-		(pin "A3V3" output
-			(at 229.87 120.65 0)
-			(uuid "40b49cfb-d00d-45b7-a8e5-e9cf325c11b7")
+		(pin "A3V3_{OUT}" output
+			(at 116.84 120.65 0)
+			(uuid "ab328ec8-d273-43a5-accb-93bddde6bc5f")
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -213,19 +439,9 @@
 				(justify right)
 			)
 		)
-		(pin "A3V3_{EN}" input
-			(at 193.04 121.92 180)
-			(uuid "3fa433a6-992d-4734-ab9f-2699e0d5720b")
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(pin "R3V3" output
-			(at 229.87 111.76 0)
-			(uuid "d96e202e-0a2f-41a4-8fb0-5d06efb12731")
+		(pin "CAN5V0_{out}" output
+			(at 116.84 110.49 0)
+			(uuid "b5ca7f3d-796b-4498-a006-3e2aa47a6306")
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -233,19 +449,9 @@
 				(justify right)
 			)
 		)
-		(pin "R3V3_{EN}" input
-			(at 193.04 119.38 180)
-			(uuid "0ad87d45-4852-4dfe-ad28-a65f67735fee")
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(pin "R5V0" output
-			(at 229.87 102.87 0)
-			(uuid "de7d872a-6258-4537-a4b0-f2a01e324c03")
+		(pin "R3V3_{OUT}" output
+			(at 116.84 115.57 0)
+			(uuid "60c93b5c-06ad-4cf9-be4b-97744244ff3f")
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -253,9 +459,19 @@
 				(justify right)
 			)
 		)
-		(pin "V_{IN1}" input
-			(at 193.04 102.87 180)
-			(uuid "e7cd3c5d-d679-44a1-8de9-37e4ecf56136")
+		(pin "SYS5V0_{out}" output
+			(at 116.84 105.41 0)
+			(uuid "f8169dfa-196e-41e0-bd9a-2070de40e465")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(pin "V_{CAN_USB}" input
+			(at 80.01 105.41 180)
+			(uuid "7c657a71-4bfb-4cbc-ba8e-ccea5a850815")
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -263,19 +479,9 @@
 				(justify left)
 			)
 		)
-		(pin "V_{IN2}" input
-			(at 193.04 107.95 180)
-			(uuid "6cbd97b7-e02f-49db-aeea-0039079620de")
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(pin "I2C{SCL, SDA}" bidirectional
-			(at 193.04 116.84 180)
-			(uuid "1c49ad83-fea6-465f-8da2-cc0a5d482d05")
+		(pin "V_{PROG_USB}" input
+			(at 80.01 110.49 180)
+			(uuid "73449655-e44f-4e7f-8e44-124610be4d43")
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -286,14 +492,14 @@
 		(instances
 			(project "LiF_FC-PCB_rev1"
 				(path "/9e3e8da7-e506-46c9-90e5-307e4ad30d29"
-					(page "3")
+					(page "2")
 				)
 			)
 		)
 	)
 	(sheet
-		(at 62.23 62.23)
-		(size 44.45 38.1)
+		(at 80.01 26.67)
+		(size 36.83 48.26)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -308,7 +514,7 @@
 		)
 		(uuid "fa6eb845-b5e3-4a8e-9c24-c1b567f4e987")
 		(property "Sheetname" "MCU"
-			(at 62.23 61.5184 0)
+			(at 80.01 25.9584 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -317,7 +523,7 @@
 			)
 		)
 		(property "Sheetfile" "LiF_MCU.kicad_sch"
-			(at 62.23 100.9146 0)
+			(at 80.01 75.5146 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -325,10 +531,20 @@
 				(justify left top)
 			)
 		)
+		(pin "V_{PROG USB}" output
+			(at 80.01 72.39 180)
+			(uuid "516aa840-48b3-4384-8821-60fbed9b4285")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
 		(instances
 			(project "LiF_FC-PCB_rev1"
 				(path "/9e3e8da7-e506-46c9-90e5-307e4ad30d29"
-					(page "5")
+					(page "6")
 				)
 			)
 		)

@@ -419,12 +419,16 @@
       "Root"
     ],
     [
+      "dbf56dc2-3990-4801-b0e0-f59d351af64c",
+      "Power Regulation"
+    ],
+    [
       "b5f6c072-28d6-4dbf-9d97-d5b17dc4e7a5",
       "Power OR-ing"
     ],
     [
-      "dbf56dc2-3990-4801-b0e0-f59d351af64c",
-      "Power Regulation"
+      "d7dd20e9-8027-4523-a1e0-5e82c0dab821",
+      "Power OR-ing1"
     ],
     [
       "18794d3c-1606-4c60-8412-e38df19bc4d8",
@@ -435,12 +439,12 @@
       "MCU"
     ],
     [
-      "77827f91-166d-41e9-a525-15815c2a0550",
-      "CAN"
-    ],
-    [
       "17577359-df8d-4d28-9071-787d31b1b6da",
       "Load Cell"
+    ],
+    [
+      "77827f91-166d-41e9-a525-15815c2a0550",
+      "CAN"
     ]
   ],
   "text_variables": {}

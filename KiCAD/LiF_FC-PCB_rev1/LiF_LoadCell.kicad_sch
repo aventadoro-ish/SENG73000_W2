@@ -1055,7 +1055,7 @@
 			)
 			(embedded_fonts no)
 		)
-		(symbol "power:GND"
+		(symbol "power:GNDA"
 			(power)
 			(pin_numbers
 				(hide yes)
@@ -1076,7 +1076,7 @@
 					(hide yes)
 				)
 			)
-			(property "Value" "GND"
+			(property "Value" "GNDA"
 				(at 0 -3.81 0)
 				(effects
 					(font
@@ -1102,7 +1102,7 @@
 					(hide yes)
 				)
 			)
-			(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(property "Description" "Power symbol creates a global label with name \"GNDA\" , analog ground"
 				(at 0 0 0)
 				(effects
 					(font
@@ -1120,7 +1120,7 @@
 					(hide yes)
 				)
 			)
-			(symbol "GND_0_1"
+			(symbol "GNDA_0_1"
 				(polyline
 					(pts
 						(xy 0 0) (xy 0 -1.27) (xy 1.27 -1.27) (xy 0 -2.54) (xy -1.27 -1.27) (xy 0 -1.27)
@@ -1134,12 +1134,12 @@
 					)
 				)
 			)
-			(symbol "GND_1_1"
+			(symbol "GNDA_1_1"
 				(pin power_in line
 					(at 0 0 270)
 					(length 0)
 					(hide yes)
-					(name "GND"
+					(name "GNDA"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -1220,7 +1220,7 @@
 	)
 	(text "black wire\n"
 		(exclude_from_sim no)
-		(at 39.37 141.224 0)
+		(at 38.1 129.794 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -1242,7 +1242,7 @@
 	)
 	(text "Using YZC-131 1kg load cell\nsource: bc-robotics.com"
 		(exclude_from_sim no)
-		(at 54.102 132.334 0)
+		(at 64.262 121.412 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -1277,7 +1277,7 @@
 	)
 	(text "white wire\n"
 		(exclude_from_sim no)
-		(at 39.116 143.764 0)
+		(at 37.846 132.334 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -1356,7 +1356,7 @@
 	)
 	(text "red wire\n"
 		(exclude_from_sim no)
-		(at 38.354 138.684 0)
+		(at 37.084 127.254 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -1378,7 +1378,7 @@
 	)
 	(text "green wire\n"
 		(exclude_from_sim no)
-		(at 39.116 146.304 0)
+		(at 37.846 134.874 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -1409,7 +1409,7 @@
 	)
 	(text "V_{CM} = 2.5V\nSen_{nom} = 1.0 mV/V\nV_{DM} = 5mV @ 1kg\nSen_{max} = 1.15 mV/V\nV_{DM_{max}} = 5.75 mV @ 1kg"
 		(exclude_from_sim no)
-		(at 54.61 143.002 0)
+		(at 21.59 146.304 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -1432,7 +1432,7 @@
 	)
 	(text "load cell spect:\nhttps://projtronics.com/products/yzc-131-weighing-load-cell-sensor-1kg"
 		(exclude_from_sim no)
-		(at 55.88 152.654 0)
+		(at 55.88 157.734 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -1469,6 +1469,12 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "4d214b02-23b1-4d9e-94cd-b1a71b0ddf38")
+	)
+	(junction
+		(at 53.34 128.27)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "5bbc6d4b-ecc1-40b5-a713-b9b65f40e0d5")
 	)
 	(junction
 		(at 168.91 95.25)
@@ -1511,6 +1517,12 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "a824ad61-f753-4d64-a79f-4c876c1c5978")
+	)
+	(junction
+		(at 45.72 128.27)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "ab7bdf39-af46-48e1-9e3f-30c652b73acd")
 	)
 	(junction
 		(at 176.53 91.44)
@@ -1636,7 +1648,17 @@
 	)
 	(wire
 		(pts
-			(xy 46.99 135.89) (xy 46.99 139.7)
+			(xy 59.69 138.43) (xy 59.69 146.05)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "238afe4d-d5ac-4828-8241-a57bd1a15286")
+	)
+	(wire
+		(pts
+			(xy 45.72 124.46) (xy 45.72 128.27)
 		)
 		(stroke
 			(width 0)
@@ -1663,6 +1685,16 @@
 			(type default)
 		)
 		(uuid "33fc16a6-b156-46e5-85c2-e8e81f42b109")
+	)
+	(wire
+		(pts
+			(xy 53.34 138.43) (xy 53.34 146.05)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "3450bd91-47d1-49b2-87a3-8df6f279544b")
 	)
 	(wire
 		(pts
@@ -1746,6 +1778,16 @@
 	)
 	(wire
 		(pts
+			(xy 53.34 128.27) (xy 53.34 130.81)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "57be697c-872f-420c-b175-d114014b5b27")
+	)
+	(wire
+		(pts
 			(xy 162.56 133.35) (xy 168.91 133.35)
 		)
 		(stroke
@@ -1756,7 +1798,7 @@
 	)
 	(wire
 		(pts
-			(xy 29.21 139.7) (xy 46.99 139.7)
+			(xy 27.94 128.27) (xy 45.72 128.27)
 		)
 		(stroke
 			(width 0)
@@ -1853,6 +1895,16 @@
 			(type default)
 		)
 		(uuid "8417ab3c-dc63-4e22-a713-7faedeb645c8")
+	)
+	(wire
+		(pts
+			(xy 59.69 130.81) (xy 59.69 128.27)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "88a22f5e-7a71-4c23-9ced-28a0aa7830dd")
 	)
 	(wire
 		(pts
@@ -2006,7 +2058,7 @@
 	)
 	(wire
 		(pts
-			(xy 29.21 144.78) (xy 33.02 144.78)
+			(xy 27.94 133.35) (xy 31.75 133.35)
 		)
 		(stroke
 			(width 0)
@@ -2026,7 +2078,7 @@
 	)
 	(wire
 		(pts
-			(xy 49.53 135.89) (xy 46.99 135.89)
+			(xy 48.26 124.46) (xy 45.72 124.46)
 		)
 		(stroke
 			(width 0)
@@ -2136,7 +2188,7 @@
 	)
 	(wire
 		(pts
-			(xy 29.21 142.24) (xy 33.02 142.24)
+			(xy 27.94 130.81) (xy 31.75 130.81)
 		)
 		(stroke
 			(width 0)
@@ -2163,6 +2215,16 @@
 			(type default)
 		)
 		(uuid "dbc32ddb-deb5-4c26-b5d5-8d67a48bbf58")
+	)
+	(wire
+		(pts
+			(xy 53.34 128.27) (xy 45.72 128.27)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "ddc67cca-b040-4cde-bb7f-7f4a068b2620")
 	)
 	(wire
 		(pts
@@ -2216,7 +2278,7 @@
 	)
 	(wire
 		(pts
-			(xy 33.02 147.32) (xy 29.21 147.32)
+			(xy 31.75 135.89) (xy 27.94 135.89)
 		)
 		(stroke
 			(width 0)
@@ -2296,6 +2358,16 @@
 	)
 	(wire
 		(pts
+			(xy 59.69 128.27) (xy 53.34 128.27)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "f9b854cf-f8bc-4a45-9c7d-866d3871e5c6")
+	)
+	(wire
+		(pts
 			(xy 171.45 91.44) (xy 176.53 91.44)
 		)
 		(stroke
@@ -2355,7 +2427,7 @@
 		(uuid "0f48fef8-b004-40c3-a36a-93ba35556fb4")
 	)
 	(label "E+"
-		(at 33.02 139.7 180)
+		(at 31.75 128.27 180)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -2365,7 +2437,7 @@
 		(uuid "0feabac8-88c7-4fa7-b3d9-301b70cd491e")
 	)
 	(label "A+"
-		(at 33.02 144.78 180)
+		(at 31.75 133.35 180)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -2447,7 +2519,7 @@
 		(uuid "ce91358d-8d39-44bb-9612-840b788a4e0b")
 	)
 	(label "A-"
-		(at 33.02 147.32 180)
+		(at 31.75 135.89 180)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -2457,7 +2529,7 @@
 		(uuid "da0d618c-5128-43fc-8958-a08faf05d5cd")
 	)
 	(label "E-"
-		(at 33.02 142.24 180)
+		(at 31.75 130.81 180)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -2477,7 +2549,7 @@
 		(uuid "f9d74a86-6fe9-43c3-bc33-6a00e36c6972")
 	)
 	(label "LC_5V0"
-		(at 49.53 135.89 180)
+		(at 48.26 124.46 180)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -2518,71 +2590,6 @@
 			(justify left)
 		)
 		(uuid "bfc970e9-bcdc-4841-bce1-ad8ba5718199")
-	)
-	(symbol
-		(lib_id "power:GND")
-		(at 168.91 149.86 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "049212d5-98f5-4302-b246-4289d49b0ce6")
-		(property "Reference" "#PWR057"
-			(at 168.91 156.21 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Value" "GND"
-			(at 168.91 153.67 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" ""
-			(at 168.91 149.86 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 168.91 149.86 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" ""
-			(at 168.91 149.86 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "e98a250c-ed79-46aa-aaff-09e95caffe8a")
-		)
-		(instances
-			(project "LiF_FC-PCB_rev1"
-				(path "/9e3e8da7-e506-46c9-90e5-307e4ad30d29/17577359-df8d-4d28-9071-787d31b1b6da"
-					(reference "#PWR057")
-					(unit 1)
-				)
-			)
-		)
 	)
 	(symbol
 		(lib_id "Device:R")
@@ -2646,6 +2653,71 @@
 			(project "LiF_FC-PCB_rev1"
 				(path "/9e3e8da7-e506-46c9-90e5-307e4ad30d29/17577359-df8d-4d28-9071-787d31b1b6da"
 					(reference "R36")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:GNDA")
+		(at 256.54 85.09 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "2c90b6a2-f051-490e-8b9a-04f2bc90d75a")
+		(property "Reference" "#PWR056"
+			(at 256.54 91.44 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "GNDA"
+			(at 256.54 88.9 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 256.54 85.09 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 256.54 85.09 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 256.54 85.09 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "0aadbae2-d66e-48c4-9ae4-657f1a3f0016")
+		)
+		(instances
+			(project "LiF_FC-PCB_rev1"
+				(path "/9e3e8da7-e506-46c9-90e5-307e4ad30d29/17577359-df8d-4d28-9071-787d31b1b6da"
+					(reference "#PWR056")
 					(unit 1)
 				)
 			)
@@ -2760,16 +2832,35 @@
 		)
 	)
 	(symbol
-		(lib_id "power:GND")
-		(at 162.56 149.86 0)
+		(lib_id "Device:C")
+		(at 53.34 134.62 0)
+		(mirror y)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "3943a76e-099f-4f7b-94b7-fc2da619c842")
-		(property "Reference" "#PWR056"
-			(at 162.56 156.21 0)
+		(uuid "42bc907d-4f2a-4698-9984-3d10c635a975")
+		(property "Reference" "C11"
+			(at 49.53 133.3499 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "1u"
+			(at 49.53 135.8899 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric"
+			(at 52.3748 138.43 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2777,16 +2868,8 @@
 				(hide yes)
 			)
 		)
-		(property "Value" "GND"
-			(at 162.56 153.67 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" ""
-			(at 162.56 149.86 0)
+		(property "Datasheet" "~"
+			(at 53.34 134.62 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2794,8 +2877,8 @@
 				(hide yes)
 			)
 		)
-		(property "Datasheet" ""
-			(at 162.56 149.86 0)
+		(property "Description" "Unpolarized capacitor"
+			(at 53.34 134.62 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2803,87 +2886,16 @@
 				(hide yes)
 			)
 		)
-		(property "Description" ""
-			(at 162.56 149.86 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
+		(pin "2"
+			(uuid "24925658-0a7e-4da0-91a9-7a50ffa2f501")
 		)
 		(pin "1"
-			(uuid "35647c96-3271-410d-a5e9-1625326c5adb")
+			(uuid "798c93cc-6541-4d5d-81f8-e7e3b970ab5d")
 		)
 		(instances
 			(project "LiF_FC-PCB_rev1"
 				(path "/9e3e8da7-e506-46c9-90e5-307e4ad30d29/17577359-df8d-4d28-9071-787d31b1b6da"
-					(reference "#PWR056")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "power:GND")
-		(at 153.67 88.9 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "46426147-65f3-47d2-8906-cf8ca8299833")
-		(property "Reference" "#PWR043"
-			(at 153.67 95.25 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Value" "GND"
-			(at 153.67 92.71 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" ""
-			(at 153.67 88.9 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 153.67 88.9 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" ""
-			(at 153.67 88.9 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "3c59268d-a62f-403c-8655-9db2ba958834")
-		)
-		(instances
-			(project "LiF_FC-PCB_rev1"
-				(path "/9e3e8da7-e506-46c9-90e5-307e4ad30d29/17577359-df8d-4d28-9071-787d31b1b6da"
-					(reference "#PWR043")
+					(reference "C11")
 					(unit 1)
 				)
 			)
@@ -3019,71 +3031,6 @@
 			(project "LiF_FC-PCB_rev1"
 				(path "/9e3e8da7-e506-46c9-90e5-307e4ad30d29/17577359-df8d-4d28-9071-787d31b1b6da"
 					(reference "R37")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "power:GND")
-		(at 147.32 57.15 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "5729f89a-e349-4d36-92e9-f0b6520fb643")
-		(property "Reference" "#PWR040"
-			(at 147.32 63.5 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Value" "GND"
-			(at 147.32 60.96 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" ""
-			(at 147.32 57.15 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 147.32 57.15 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" ""
-			(at 147.32 57.15 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "d8d440ac-5467-4f46-b7ab-6f1c14b126bf")
-		)
-		(instances
-			(project "LiF_FC-PCB_rev1"
-				(path "/9e3e8da7-e506-46c9-90e5-307e4ad30d29/17577359-df8d-4d28-9071-787d31b1b6da"
-					(reference "#PWR040")
 					(unit 1)
 				)
 			)
@@ -3300,6 +3247,71 @@
 		)
 	)
 	(symbol
+		(lib_id "power:GNDA")
+		(at 162.56 149.86 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "6d53ad7e-d599-4628-89be-7a07485054c2")
+		(property "Reference" "#PWR054"
+			(at 162.56 156.21 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "GNDA"
+			(at 162.56 153.67 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 162.56 149.86 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 162.56 149.86 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 162.56 149.86 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "420ebdcc-89af-407d-903a-4e080c717a26")
+		)
+		(instances
+			(project "LiF_FC-PCB_rev1"
+				(path "/9e3e8da7-e506-46c9-90e5-307e4ad30d29/17577359-df8d-4d28-9071-787d31b1b6da"
+					(reference "#PWR054")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "Device:C")
 		(at 256.54 76.2 0)
 		(mirror y)
@@ -3364,6 +3376,71 @@
 			(project "LiF_FC-PCB_rev1"
 				(path "/9e3e8da7-e506-46c9-90e5-307e4ad30d29/17577359-df8d-4d28-9071-787d31b1b6da"
 					(reference "C30")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:GNDA")
+		(at 53.34 146.05 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "6f4b9091-3549-4cf9-84cd-69b939c27588")
+		(property "Reference" "#PWR011"
+			(at 53.34 152.4 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "GNDA"
+			(at 53.34 149.86 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 53.34 146.05 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 53.34 146.05 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 53.34 146.05 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "05a47530-217e-4600-a040-91d653ea9208")
+		)
+		(instances
+			(project "LiF_FC-PCB_rev1"
+				(path "/9e3e8da7-e506-46c9-90e5-307e4ad30d29/17577359-df8d-4d28-9071-787d31b1b6da"
+					(reference "#PWR011")
 					(unit 1)
 				)
 			)
@@ -3503,6 +3580,71 @@
 			(project "LiF_FC-PCB_rev1"
 				(path "/9e3e8da7-e506-46c9-90e5-307e4ad30d29/17577359-df8d-4d28-9071-787d31b1b6da"
 					(reference "C28")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:GNDA")
+		(at 130.81 149.86 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "77ed0bf6-fa8a-43fb-b697-7eced7e0082d")
+		(property "Reference" "#PWR052"
+			(at 130.81 156.21 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "GNDA"
+			(at 130.81 153.67 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 130.81 149.86 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 130.81 149.86 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 130.81 149.86 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "91005920-6334-44e2-8549-d928258be782")
+		)
+		(instances
+			(project "LiF_FC-PCB_rev1"
+				(path "/9e3e8da7-e506-46c9-90e5-307e4ad30d29/17577359-df8d-4d28-9071-787d31b1b6da"
+					(reference "#PWR052")
 					(unit 1)
 				)
 			)
@@ -3787,16 +3929,16 @@
 		)
 	)
 	(symbol
-		(lib_id "power:GND")
-		(at 256.54 85.09 0)
+		(lib_id "power:GNDA")
+		(at 59.69 146.05 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "b20d0cdb-3f01-440d-8b88-11d789cfc32c")
-		(property "Reference" "#PWR058"
-			(at 256.54 91.44 0)
+		(uuid "b1528888-8b40-43c1-9c81-2a6f1d05b389")
+		(property "Reference" "#PWR036"
+			(at 59.69 152.4 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3804,8 +3946,8 @@
 				(hide yes)
 			)
 		)
-		(property "Value" "GND"
-			(at 256.54 88.9 0)
+		(property "Value" "GNDA"
+			(at 59.69 149.86 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3813,7 +3955,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 256.54 85.09 0)
+			(at 59.69 146.05 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3822,7 +3964,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 256.54 85.09 0)
+			(at 59.69 146.05 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3831,7 +3973,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 256.54 85.09 0)
+			(at 59.69 146.05 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3840,77 +3982,12 @@
 			)
 		)
 		(pin "1"
-			(uuid "db3cbb20-87cd-4d52-8fe2-415ed4e2b558")
+			(uuid "43f009d2-9ef7-4f42-89d5-6d3cdc590eb2")
 		)
 		(instances
 			(project "LiF_FC-PCB_rev1"
 				(path "/9e3e8da7-e506-46c9-90e5-307e4ad30d29/17577359-df8d-4d28-9071-787d31b1b6da"
-					(reference "#PWR058")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "power:GND")
-		(at 109.22 149.86 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "b57d4aa1-31c1-4a04-8373-bb6415994905")
-		(property "Reference" "#PWR054"
-			(at 109.22 156.21 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Value" "GND"
-			(at 109.22 153.67 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" ""
-			(at 109.22 149.86 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 109.22 149.86 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" ""
-			(at 109.22 149.86 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "66e8c494-8a8a-4cf5-b023-6e22d9a5efdf")
-		)
-		(instances
-			(project "LiF_FC-PCB_rev1"
-				(path "/9e3e8da7-e506-46c9-90e5-307e4ad30d29/17577359-df8d-4d28-9071-787d31b1b6da"
-					(reference "#PWR054")
+					(reference "#PWR036")
 					(unit 1)
 				)
 			)
@@ -3986,16 +4063,16 @@
 		)
 	)
 	(symbol
-		(lib_id "power:GND")
-		(at 149.86 149.86 0)
+		(lib_id "power:GNDA")
+		(at 147.32 57.15 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "dec52fcb-5067-4066-9ee1-c379354b40a8")
-		(property "Reference" "#PWR055"
-			(at 149.86 156.21 0)
+		(uuid "cb486112-08f0-4ea7-8f98-6e8ad0fa17f9")
+		(property "Reference" "#PWR040"
+			(at 147.32 63.5 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4003,8 +4080,8 @@
 				(hide yes)
 			)
 		)
-		(property "Value" "GND"
-			(at 149.86 153.67 0)
+		(property "Value" "GNDA"
+			(at 147.32 60.96 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4012,7 +4089,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 149.86 149.86 0)
+			(at 147.32 57.15 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4021,7 +4098,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 149.86 149.86 0)
+			(at 147.32 57.15 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4030,7 +4107,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 149.86 149.86 0)
+			(at 147.32 57.15 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4039,12 +4116,211 @@
 			)
 		)
 		(pin "1"
-			(uuid "8d488e45-eeb6-43fb-902c-93971eb76782")
+			(uuid "f4997083-90cf-452d-b5bb-be58f409252d")
+		)
+		(instances
+			(project "LiF_FC-PCB_rev1"
+				(path "/9e3e8da7-e506-46c9-90e5-307e4ad30d29/17577359-df8d-4d28-9071-787d31b1b6da"
+					(reference "#PWR040")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:GNDA")
+		(at 168.91 149.86 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "cc063273-7037-4186-9405-73139185d231")
+		(property "Reference" "#PWR055"
+			(at 168.91 156.21 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "GNDA"
+			(at 168.91 153.67 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 168.91 149.86 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 168.91 149.86 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 168.91 149.86 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "17190821-06c2-4fd0-8f29-20fbedaee8e3")
 		)
 		(instances
 			(project "LiF_FC-PCB_rev1"
 				(path "/9e3e8da7-e506-46c9-90e5-307e4ad30d29/17577359-df8d-4d28-9071-787d31b1b6da"
 					(reference "#PWR055")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C")
+		(at 59.69 134.62 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "d6ed8f66-d46b-4928-887c-c93a97840e26")
+		(property "Reference" "C12"
+			(at 63.5 133.3499 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "0.1u"
+			(at 63.5 135.8899 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric"
+			(at 60.6552 138.43 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 59.69 134.62 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Unpolarized capacitor"
+			(at 59.69 134.62 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "95415354-36a6-4998-b276-e79d46a3df7e")
+		)
+		(pin "1"
+			(uuid "c96ba5c3-5f80-45fe-b9c2-d198d26843a0")
+		)
+		(instances
+			(project "LiF_FC-PCB_rev1"
+				(path "/9e3e8da7-e506-46c9-90e5-307e4ad30d29/17577359-df8d-4d28-9071-787d31b1b6da"
+					(reference "C12")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:GNDA")
+		(at 153.67 88.9 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "d7b2e8cd-c21a-4a2f-a3e7-4b79b785a365")
+		(property "Reference" "#PWR043"
+			(at 153.67 95.25 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "GNDA"
+			(at 153.67 92.71 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 153.67 88.9 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 153.67 88.9 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 153.67 88.9 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "4e6916d5-203b-4c43-8c29-973b09d57bb1")
+		)
+		(instances
+			(project "LiF_FC-PCB_rev1"
+				(path "/9e3e8da7-e506-46c9-90e5-307e4ad30d29/17577359-df8d-4d28-9071-787d31b1b6da"
+					(reference "#PWR043")
 					(unit 1)
 				)
 			)
@@ -4191,6 +4467,71 @@
 		)
 	)
 	(symbol
+		(lib_id "power:GNDA")
+		(at 149.86 149.86 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "ef04a3cb-453f-4941-bb79-67167015b8c6")
+		(property "Reference" "#PWR053"
+			(at 149.86 156.21 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "GNDA"
+			(at 149.86 153.67 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 149.86 149.86 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 149.86 149.86 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 149.86 149.86 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "be1c6803-fd10-465c-a2c6-50e569cbd9c2")
+		)
+		(instances
+			(project "LiF_FC-PCB_rev1"
+				(path "/9e3e8da7-e506-46c9-90e5-307e4ad30d29/17577359-df8d-4d28-9071-787d31b1b6da"
+					(reference "#PWR053")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "Regulator_Linear:NCV8114ASN165T1G")
 		(at 130.81 135.89 0)
 		(unit 1)
@@ -4270,7 +4611,7 @@
 	)
 	(symbol
 		(lib_id "Connector_Generic:Conn_01x04")
-		(at 24.13 142.24 0)
+		(at 22.86 130.81 0)
 		(mirror y)
 		(unit 1)
 		(exclude_from_sim no)
@@ -4279,7 +4620,7 @@
 		(dnp no)
 		(uuid "fc00b656-d064-48b1-863b-143f93a13ee2")
 		(property "Reference" "J11"
-			(at 24.13 133.35 0)
+			(at 22.86 121.92 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4287,7 +4628,7 @@
 			)
 		)
 		(property "Value" "Load Cell"
-			(at 24.13 135.89 0)
+			(at 22.86 124.46 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4295,7 +4636,7 @@
 			)
 		)
 		(property "Footprint" "Connector_JST:JST_PH_B4B-PH-K_1x04_P2.00mm_Vertical"
-			(at 24.13 142.24 0)
+			(at 22.86 130.81 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4304,7 +4645,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 24.13 142.24 0)
+			(at 22.86 130.81 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4313,7 +4654,7 @@
 			)
 		)
 		(property "Description" "Generic connector, single row, 01x04, script generated (kicad-library-utils/schlib/autogen/connector/)"
-			(at 24.13 142.24 0)
+			(at 22.86 130.81 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4343,16 +4684,16 @@
 		)
 	)
 	(symbol
-		(lib_id "power:GND")
-		(at 130.81 149.86 0)
+		(lib_id "power:GNDA")
+		(at 109.22 149.86 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "fee01066-18e8-4862-87a9-aa2403c04ed7")
-		(property "Reference" "#PWR053"
-			(at 130.81 156.21 0)
+		(uuid "fd72c411-9499-44b5-a87e-1dab7f590f7f")
+		(property "Reference" "#PWR051"
+			(at 109.22 156.21 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4360,8 +4701,8 @@
 				(hide yes)
 			)
 		)
-		(property "Value" "GND"
-			(at 130.81 153.67 0)
+		(property "Value" "GNDA"
+			(at 109.22 153.67 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4369,7 +4710,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 130.81 149.86 0)
+			(at 109.22 149.86 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4378,7 +4719,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 130.81 149.86 0)
+			(at 109.22 149.86 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4387,7 +4728,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 130.81 149.86 0)
+			(at 109.22 149.86 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4396,12 +4737,12 @@
 			)
 		)
 		(pin "1"
-			(uuid "88309c2e-88ae-4975-a683-85e34bfbfb2c")
+			(uuid "b4044fe9-d101-4d81-924c-101be056f009")
 		)
 		(instances
 			(project "LiF_FC-PCB_rev1"
 				(path "/9e3e8da7-e506-46c9-90e5-307e4ad30d29/17577359-df8d-4d28-9071-787d31b1b6da"
-					(reference "#PWR053")
+					(reference "#PWR051")
 					(unit 1)
 				)
 			)

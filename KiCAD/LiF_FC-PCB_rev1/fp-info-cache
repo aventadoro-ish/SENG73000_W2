@@ -1,4 +1,4 @@
-26684236495969175
+26687804117140028
 Audio_Module
 Reverb_BTDR-1H
 Digital Reverberation Unit, http://www.belton.co.kr/inc/downfile.php?seq=17&file=pdf (footprint from http://www.uk-electronic.de/PDF/BTDR-1.pdf)
@@ -70557,8 +70557,15 @@ CONN_DB-9 Female KG-T4S_ASM
 
 A-DF 09 A/KG-T4S 
 0
-9
-9
+11
+10
+LiF_PCB_Footprints
+GCT_USB4105-GF-A
+
+
+0
+16
+16
 LiF_PCB_Footprints
 IND_SPM10040T-4R7M
 
@@ -70566,6 +70573,13 @@ IND_SPM10040T-4R7M
 0
 2
 2
+LiF_PCB_Footprints
+SOT-5x3_DRL0008A_TEX
+
+TPS629203DRLR 
+0
+8
+8
 LiF_PCB_Footprints
 SW_SLW-883935-2A-D
 
