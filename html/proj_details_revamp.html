@@ -1,307 +1,357 @@
-<!DOCTYPE html>
+<!doctype html>
 <!-- Author: Nick Kapuka (rewrote and formatted + I'm cool and nobody will ever see this >:3)-->
 <html>
-
-<head>
+  <head>
     <title>LiF Team - Project Details</title>
-    <meta charset="UTF-8">
-    <meta name="description" content="LiF project details">
-    <meta name="robots" content="noindex nofollow">
-    <meta name="author" content="LiF Group">
-    <meta http-equiv="pragma" content="no-cache">
-    <link rel="icon" href="../media/icons/LiF_icon.ico" type="image/x-icon">
-    <link rel="stylesheet" href="../css/base.css">
-    <link rel="stylesheet" href="../css/project_details.css">
-</head>
+    <meta charset="UTF-8" />
+    <meta name="description" content="LiF project details" />
+    <meta name="robots" content="noindex nofollow" />
+    <meta name="author" content="LiF Group" />
+    <meta http-equiv="pragma" content="no-cache" />
+    <link rel="icon" href="../media/icons/LiF_icon.ico" type="image/x-icon" />
+    <link rel="stylesheet" href="../css/base.css" />
+    <link rel="stylesheet" href="../css/project_details.css" />
+  </head>
 
-<body>
+  <body>
     <!-- nav bar -->
     <div id="navbar-placeholder" data-root="../"></div>
     <script src="../js/navbar.js"></script>
 
     <!-- main page -->
     <main class="page-wrapper">
+      <!-- intro section-->
+      <section class="intro-section project-details-intro">
+        <div class="intro-text">
+          <p class="section-label">System Overview</p>
 
-        <!-- intro section-->
-        <section class="intro-section project-details-intro">
-            <div class="intro-text">
-                <p class="section-label">System Overview</p>
+          <!-- 'about project' blurb -->
+          <h1>Project Details</h1>
+          <p class="intro-description">
+            The goal for Engineering Project VI is to build and control an
+            elevator using various embedded controllers and establishing a CAN
+            bus communication environment. This system will feature a ToF sensor
+            for motor feedback and positio control (phase 2), CAN bus
+            communication between nodes to relay information and process calls.
+            Lastly, the elevator will be controllable from a network connection
+            (phase 2) and feature a database for logging movements and relevant
+            information.
+          </p>
 
-                <!-- 'about project' blurb -->
-                <h1>Project Details</h1>
-                <p class="intro-description">
-                    The goal for Engineering Project VI is to build and control an elevator using various
-                    embedded controllers and establishing a CAN bus communication environment. This system will feature
-                    a ToF sensor
-                    for motor feedback and positio control (phase 2), CAN bus communication between nodes to relay
-                    information and process calls.
-                    Lastly, the elevator will be controllable from a network connection (phase 2) and feature a database
-                    for logging movements and relevant information.
-                </p>
+          <!-- buttons for  -->
+          <div class="button-row">
+            <a
+              href="../references/Project_Charter.pdf"
+              target="_blank"
+              class="button primary-button"
+              >Open Project Charter</a
+            >
+            <a href="proj_plan.html" class="button secondary-button"
+              >View Project Plan</a
+            >
+          </div>
+        </div>
 
-                <!-- buttons for  -->
-                <div class="button-row">
-                    <a href="../references/Project_Charter.pdf" target="_blank" class="button primary-button">Open
-                        Project Charter</a>
-                    <a href="proj_plan.html" class="button secondary-button">View Project Plan</a>
-                </div>
-            </div>
+        <!-- general summary of the system and its features-->
+        <aside class="summary-card">
+          <h2>Project Focus</h2>
+          <p><b>Phases:</b> 3</p>
+          <p><b>Communication:</b> CAN bus</p>
+          <p><b>Controllers:</b>STM32, Raspberry Pi</p>
+          <p><b>Functionality:</b> Elevator up/down and a cabin switch</p>
+        </aside>
+      </section>
 
-            <!-- general summary of the system and its features-->
-            <aside class="summary-card">
-                <h2>Project Focus</h2>
-                <p><b>Phases:</b> 3</p>
-                <p><b>Communication:</b> CAN bus</p>
-                <p><b>Controllers:</b>STM32, Raspberry Pi</p>
-                <p><b>Functionality:</b> Elevator up/down and a cabin switch</p>
-            </aside>
-        </section>
+      <!-- explain each phase briefly in a small box -->
+      <section class="details-grid">
+        <article class="info-card">
+          <h2>Phase 1</h2>
+          <p>
+            Phase 1 focuses on the physical design and assembly of the elevator
+            platform as we are making our own for this project. It shall focus
+            on programming the embedded controllers to send/receive CAN messages
+            on the bus and implement processing at each node.
+          </p>
+        </article>
 
-        <!-- explain each phase briefly in a small box -->
-        <section class="details-grid">
-            <article class="info-card">
-                <h2>Phase 1</h2>
-                <p>
-                    Phase 1 focuses on the physical design and assembly of the elevator platform as we are making our
-                    own for this project.
-                    It shall focus on programming the embedded controllers to send/receive CAN messages on the bus and
-                    implement processing at each node.
-                </p>
-            </article>
+        <article class="info-card">
+          <h2>Phase 2</h2>
+          <p>
+            Phase 2 will expand the system into the world of LAN and for our
+            specific system, feature various new additions/redesigns. This will
+            allow the elevator to be controlled on a local network and allow for
+            data logging via MySQL.
+          </p>
+        </article>
 
-            <article class="info-card">
-                <h2>Phase 2</h2>
-                <p>
-                    Phase 2 will expand the system into the world of LAN and for our specific system, feature various
-                    new additions/redesigns.
-                    This will allow the elevator to be controlled on a local network and allow for data logging via
-                    MySQL.
-                </p>
-            </article>
+        <article class="info-card">
+          <h2>Phase 3</h2>
+          <p>
+            Phase 3 will act as the final integration phase between the
+            hardware/embedded and software/network modules into a final,
+            completed, elevator system. Lastly, a final demonstration,
+            presentation, and report will be created to outline our successes,
+            challenges, and overall experiences.
+          </p>
+        </article>
+      </section>
 
-            <article class="info-card">
-                <h2>Phase 3</h2>
-                <p>
-                    Phase 3 will act as the final integration phase between the hardware/embedded and software/network
-                    modules into a final, completed, elevator system.
-                    Lastly, a final demonstration, presentation, and report will be created to outline our successes,
-                    challenges, and overall experiences.
-                </p>
-            </article>
-        </section>
+      <section class="project-section">
+        <p class="section-label">Project Description</p>
+        <h2>Elevator Control System</h2>
 
-        <section class="project-section">
-            <p class="section-label">Project Description</p>
-            <h2>Elevator Control System</h2>
-
-            <p>
-
-                The overall project plan is to build a custom elevator platform in a 3D modeling software (SolidWorks),
-                purchase necessary materials,
-                and assemble it. Then, program each microcontroller as needed for its purpose with the Controller Area
-                Network (CAN) acting as the communication standard between nodes.
-                As buttons are pressed at each floor, the Elevator COntroller will direct the car in a safe and
-                controlled manner to its destination.
-            </p>
-
-            <p>
-                The system will use a ToF distance sensor to track the elevator car position, allowing for the use of
-                timeouts and constant feedbpack.
-                Buttons, status indicators (LEDs), displays (LCD), and controllers will exchange information over the
-                CAN bus.
-            </p>
-        </section>
-
-        <section class="project-section two-column-section">
-            <div>
-                <h2>Floor Controllers (STM32)</h2>
-                <p>Each floor controller will consist of:</p>
-
-                <ul class="styled-list">
-                    <li>Purpose: sends a request to the supervisor controller for the car to come the requested floor
-                    </li>
-                    <li>An STM32F303RE and STM shield</li>
-                    <li>Three buttons on each floor controller shield, but only the car controller utilizes all three
-                    </li>
-                    <li>Six LEDs to indicate the button user pressed (3 LEDs; used for floor request) and 3 LEDs to
-                        provide the lcoation of the elevator car at all times.</li>
-                </ul>
-            </div>
-
-            <div>
-                <h2>Car Controller (STM32)</h2>
-                <p>The car controller will include:</p>
-
-                <ul class="styled-list">
-                    <li>Purpose: allows user to request to go to a floor</li>
-                    <li>Floor selection buttons (3 STM shield push-buttons)</li>
-                    <li>An LED for each floor selection button and three status LEDs to show the floor the elevator is
-                        on</li>
-                    <li>Door-open and door-close switch with an associated LED mounted onto the casing of the switch
-                    </li>
-                </ul>
-            </div>
-        </section>
-
-        <section class="project-section two-column-section">
-            <div>
-                <h2>Elevator Controller (STM32 using Arduino Framework (PlatformIO))</h2>
-                <p>The elevator controller will consist of:</p>
-
-                <ul class="styled-list">
-                    <li>Purpose: controls the general elevator movement logic (motor driver + stepper control code) and
-                        sends the elevator position the supervisor controller</li>
-                    <li>An STM32F303RE with two-PCB custom stackup from a previous semester</li>
-                    <li>Used this PCB since it features a CAN transceiver, a stepper motor driver, peripherals for limit
-                        switches, etc.</li>
-                </ul>
-            </div>
-
-            <div>
-                <h2>Supervisor Controller (Raspberry Pi 4)</h2>
-                <p>The supervisor controller will include:</p>
-
-                <ul class="styled-list">
-                    <li>Purpose: host a local server to handle both physical (embedded controller) requests and web
-                        requests (via this website!) and handle the internal logic/handling</li>
-                    <li>Features a Finite State Machine and associated logic to listen to and dispatch commands between
-                        the various microcontrollers</li>
-                    <li>Will later allow for the elevator to be controlled from this website, and feature a MySQL
-                        database</li>
-                </ul>
-            </div>
-        </section>
-
-        <section class="diagram-section">
-            <div class="diagram-text">
-                <h3 class="section-label">Figure 1 - Phase 1</h3>
-                <h2>Embedded Elevator System</h2>
-                <p>
-                    The first phase of this project demonstrates the design, programming, and testing
-                    of this elevator system. Each microcontroller will communicate with each other via CAN in phase 1,
-                    and will allow for website-based commands to control the elevator in later phases.
-                </p>
-            </div>
-
-            <figure class="diagram-card">
-                <img src="../media/images/proj_details_fig1.jpg"
-                    alt="Approximate schematic of the embedded elevator system">
-                <figcaption>
-                    Figure 1 - Approximate schematic of the system. Actual implementation may be different due to our
-                    system being a custom-made one.
-                </figcaption>
-            </figure>
-        </section>
-
-        <section class="project-section">
-            <h3 class="section-label">CAN Message Specification</h3>
-            <h2>Common Communication Standard</h2>
-
-            <p>
-                This elevator system, as per the project requirements, will establish a common CAN messaging protcol.
-                This allows for the various elevators to be added to or communicate with another group's system without
-                requiring embedded software changes.
-            </p>
-
-            <p>
-                The minimal Phase 1 project is a CAN network consisting of the controller, floor
-                controllers, distance sensor, and LCD or 7-segment display. Extra credit extensions may
-                add additional functionality if approved by the faculty team.
-            </p>
-        </section>
-
-        <section class="diagram-section reverse-layout">
-            <div class="diagram-text">
-                <p class="section-label">Figure 2 - Phase 2</p>
-                <h2>Networked Elevator Monitoring</h2>
-                <p>
-                    In Phase 2, the elevator controller will interface to a PC on a Local Area Network (Elevator
-                    Network)
-                    and then to the Internet. Elevator events will be logged into an SQL database
-                    which will store and display diagnostics data.
-                </p>
-            </div>
-
-            <figure class="diagram-card">
-                <img src="../media/images/proj_details_fig2.jpg"
-                    alt="Approximate schematic of the networked elevator monitoring system">
-                <figcaption>
-                    Figure 2 - Approximate schematic of the system. Actual implementation may be different due to our
-                    system being a custom-made one.
-                </figcaption>
-            </figure>
-        </section>
-
-        <section class="project-section">
-            <p class="section-label">Software Components</p>
-            <h2>Monitoring and Diagnostics</h2>
-
-            <ol class="styled-list">
-                <li>
-                    <b>SQL Database and Local Server:</b> monitors and stores data from controllers and CAN network.
-                </li>
-                <li>
-                    <strong>Diagnostics display program:</strong> collects and displays elevator data on the
-                    elevator module or another PC connected through the LAN.
-                </li>
-            </ol>aaa
-
-            <p>
-                An aspect of elevator control, such as shutting the elevator down completely or requesting
-                the elevator from a web or phone interface, may also be included.
-            </p>
-        </section>
-
-        <section class="milestone-section">
-            <div class="milestone-text">
-                <p class="section-label">Timeline</p>
-                <h2>Milestones</h2>
-                <p>
-                    This table summarizes the milestone dates for each phase. A complete breakdown
-                    of detailed phase tasks can be found in the
-                    <a href="../references/Project_Charter.pdf" target="_blank">Project Charter</a>.
-                    Please note that it has been modified slightly due to our project starting in <b>Week 3</b> of the
-                    semester, hence some deadlines are slightly extended.
-                </p>
-            </div>
-
-            <div class="table-card">
-                <table class="milestone-table">
-                    <thead>
-                        <tr>
-                            <th>Deadline</th>
-                            <th>Deliverable</th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-                        <tr>
-                            <td>Beginning of Week 6</td>
-                            <td>Phase 1 Final Demo - Basic elevator functionality</td>
-                        </tr>
-                        <tr>
-                            <td>Beginning of Week 12 - TBC</td>
-                            <td>Phase 2 Final demo - TBC</td>
-                        </tr>
-                        <tr>
-                            <td>End of Week 14</td>
-                            <td>Phase 3/Project Final Demo - TBC</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </section>
-
-        <p class="top-link">
-            <a href="#page_top">Go to the top of this page</a>
+        <p>
+          The overall project plan is to build a custom elevator platform in a
+          3D modeling software (SolidWorks), purchase necessary materials, and
+          assemble it. Then, program each microcontroller as needed for its
+          purpose with the Controller Area Network (CAN) acting as the
+          communication standard between nodes. As buttons are pressed at each
+          floor, the Elevator COntroller will direct the car in a safe and
+          controlled manner to its destination.
         </p>
 
+        <p>
+          The system will use a ToF distance sensor to track the elevator car
+          position, allowing for the use of timeouts and constant feedbpack.
+          Buttons, status indicators (LEDs), displays (LCD), and controllers
+          will exchange information over the CAN bus.
+        </p>
+      </section>
+
+      <section class="project-section two-column-section">
+        <div>
+          <h2>Floor Controllers (STM32)</h2>
+          <p>Each floor controller will consist of:</p>
+
+          <ul class="styled-list">
+            <li>
+              Purpose: sends a request to the supervisor controller for the car
+              to come the requested floor
+            </li>
+            <li>An STM32F303RE and STM shield</li>
+            <li>
+              Three buttons on each floor controller shield, but only the car
+              controller utilizes all three
+            </li>
+            <li>
+              Six LEDs to indicate the button user pressed (3 LEDs; used for
+              floor request) and 3 LEDs to provide the lcoation of the elevator
+              car at all times.
+            </li>
+          </ul>
+        </div>
+
+        <div>
+          <h2>Car Controller (STM32)</h2>
+          <p>The car controller will include:</p>
+
+          <ul class="styled-list">
+            <li>Purpose: allows user to request to go to a floor</li>
+            <li>Floor selection buttons (3 STM shield push-buttons)</li>
+            <li>
+              An LED for each floor selection button and three status LEDs to
+              show the floor the elevator is on
+            </li>
+            <li>
+              Door-open and door-close switch with an associated LED mounted
+              onto the casing of the switch
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="project-section two-column-section">
+        <div>
+          <h2>
+            Elevator Controller (STM32 using Arduino Framework (PlatformIO))
+          </h2>
+          <p>The elevator controller will consist of:</p>
+
+          <ul class="styled-list">
+            <li>
+              Purpose: controls the general elevator movement logic (motor
+              driver + stepper control code) and sends the elevator position the
+              supervisor controller
+            </li>
+            <li>
+              An STM32F303RE with two-PCB custom stackup from a previous
+              semester
+            </li>
+            <li>
+              Used this PCB since it features a CAN transceiver, a stepper motor
+              driver, peripherals for limit switches, etc.
+            </li>
+          </ul>
+        </div>
+
+        <div>
+          <h2>Supervisor Controller (Raspberry Pi 4)</h2>
+          <p>The supervisor controller will include:</p>
+
+          <ul class="styled-list">
+            <li>
+              Purpose: host a local server to handle both physical (embedded
+              controller) requests and web requests (via this website!) and
+              handle the internal logic/handling
+            </li>
+            <li>
+              Features a Finite State Machine and associated logic to listen to
+              and dispatch commands between the various microcontrollers
+            </li>
+            <li>
+              Will later allow for the elevator to be controlled from this
+              website, and feature a MySQL database
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="diagram-section">
+        <div class="diagram-text">
+          <h3 class="section-label">Figure 1 - Phase 1</h3>
+          <h2>Embedded Elevator System</h2>
+          <p>
+            The first phase of this project demonstrates the design,
+            programming, and testing of this elevator system. Each
+            microcontroller will communicate with each other via CAN in phase 1,
+            and will allow for website-based commands to control the elevator in
+            later phases.
+          </p>
+        </div>
+
+        <figure class="diagram-card">
+          <img
+            src="../media/images/proj_details_fig1.jpg"
+            alt="Approximate schematic of the embedded elevator system"
+          />
+          <figcaption>
+            Figure 1 - Approximate schematic of the system. Actual
+            implementation may be different due to our system being a
+            custom-made one.
+          </figcaption>
+        </figure>
+      </section>
+
+      <section class="project-section">
+        <h3 class="section-label">CAN Message Specification</h3>
+        <h2>Common Communication Standard</h2>
+
+        <p>
+          This elevator system, as per the project requirements, will establish
+          a common CAN messaging protcol. This allows for the various elevators
+          to be added to or communicate with another group's system without
+          requiring embedded software changes.
+        </p>
+
+        <p>
+          The minimal Phase 1 project is a CAN network consisting of the
+          controller, floor controllers, distance sensor, and LCD or 7-segment
+          display. Extra credit extensions may add additional functionality if
+          approved by the faculty team.
+        </p>
+      </section>
+
+      <section class="diagram-section reverse-layout">
+        <div class="diagram-text">
+          <p class="section-label">Figure 2 - Phase 2</p>
+          <h2>Networked Elevator Monitoring</h2>
+          <p>
+            In Phase 2, the elevator controller will interface to a PC on a
+            Local Area Network (Elevator Network) and then to the Internet.
+            Elevator events will be logged into an SQL database which will store
+            and display diagnostics data.
+          </p>
+        </div>
+
+        <figure class="diagram-card">
+          <img
+            src="../media/images/proj_details_fig2.jpg"
+            alt="Approximate schematic of the networked elevator monitoring system"
+          />
+          <figcaption>
+            Figure 2 - Approximate schematic of the system. Actual
+            implementation may be different due to our system being a
+            custom-made one.
+          </figcaption>
+        </figure>
+      </section>
+
+      <section class="project-section">
+        <p class="section-label">Software Components</p>
+        <h2>Monitoring and Diagnostics</h2>
+
+        <ol class="styled-list">
+          <li>
+            <b>SQL Database and Local Server:</b> monitors and stores data from
+            controllers and CAN network.
+          </li>
+          <li>
+            <strong>Diagnostics display program:</strong> collects and displays
+            elevator data on the elevator module or another PC connected through
+            the LAN.
+          </li>
+        </ol>
+        aaa
+
+        <p>
+          An aspect of elevator control, such as shutting the elevator down
+          completely or requesting the elevator from a web or phone interface,
+          may also be included.
+        </p>
+      </section>
+
+      <section class="milestone-section">
+        <div class="milestone-text">
+          <p class="section-label">Timeline</p>
+          <h2>Milestones</h2>
+          <p>
+            This table summarizes the milestone dates for each phase. A complete
+            breakdown of detailed phase tasks can be found in the
+            <a href="../references/Project_Charter.pdf" target="_blank"
+              >Project Charter</a
+            >. Please note that it has been modified slightly due to our project
+            starting in <b>Week 3</b> of the semester, hence some deadlines are
+            slightly extended.
+          </p>
+        </div>
+
+        <div class="table-card">
+          <table class="milestone-table">
+            <thead>
+              <tr>
+                <th>Deadline</th>
+                <th>Deliverable</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr>
+                <td>Beginning of Week 6</td>
+                <td>Phase 1 Final Demo - Basic elevator functionality</td>
+              </tr>
+              <tr>
+                <td>Beginning of Week 12 - TBC</td>
+                <td>Phase 2 Final demo - TBC</td>
+              </tr>
+              <tr>
+                <td>End of Week 14</td>
+                <td>Phase 3/Project Final Demo - TBC</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <p class="top-link">
+        <a href="#page_top">Go to the top of this page</a>
+      </p>
     </main>
 
     <footer class="site-footer">
-        <p>Project charter content adapted from the original Project Details page.</p>
-        <p>Copyright &copy; 2026 Lithium Firefly Team</p>
+      <p>
+        Project charter content adapted from the original Project Details page.
+      </p>
+      <p>Copyright &copy; 2026 Lithium Firefly Team</p>
     </footer>
-</body>
-
+  </body>
 </html>

@@ -1,38 +1,191 @@
-<!DOCTYPE html>
-<!-- Author: Nick Kapuka -->
-<html>
-
-<head>
+<!doctype html>
+<html lang="en">
+  <head>
     <title>LiF Team - Caffeine Study</title>
-    <meta charset="UTF-8">
-    <link rel="icon" href="../media/icons/LiF_icon.ico" type="image/x-icon">
-    <meta name="author" content="Nick Kapuka">
-    <meta name="description" content="LiF Caffeine Study.">
-    <meta name="robots" content="index, follow">
-    <meta http-equiv="Pragma" content="no-cache">
+    <meta charset="UTF-8" />
+    <link rel="icon" href="../media/icons/LiF_icon.ico" type="image/x-icon" />
 
-    <link rel="stylesheet" href="../css/tropical.css">
-</head>
+    <meta name="author" content="Nick Kapuka" />
+    <meta
+      name="description"
+      content="Caffeine study data for the LiF Team website."
+    />
+    <meta name="robots" content="index, follow" />
 
-<body>
-    <!-- nav bar -->
+    <link rel="stylesheet" href="../css/base.css" />
+    <link rel="stylesheet" href="../css/caffeine.css" />
+  </head>
+
+  <body>
     <div id="navbar-placeholder" data-root="../"></div>
     <script src="../js/navbar.js"></script>
 
-    <!-- main Page -->
     <main class="page-wrapper">
+      <section class="intro-section caffeine-intro" id="page_top">
+        <div class="intro-text">
+          <p class="section-label">Caffeine Study Project</p>
+          <h1>Caffeine Consumption Study</h1>
 
+          <p class="intro-description">
+            This page displays caffeine consumption data collected by the
+            Lithium Firefly team. The values are pulled from a Google Sheets
+            table and displayed on the website.
+          </p>
+        </div>
 
+        <aside class="summary-card">
+          <h2>Live Sheet Data</h2>
+          <p><strong>Source:</strong> Google Sheets CSV</p>
+          <p><strong>Update:</strong> Refresh page</p>
+          <p><strong>Study:</strong> Caffeine consumption</p>
+        </aside>
+      </section>
 
-        <p class="top-link">
-            <a href="#page_top">Go to the top of this page</a>
-        </p>
+      <section class="caffeine-data-section">
+        <div class="caffeine-heading">
+          <p class="section-label">Team Summary</p>
+          <h2>Caffeine Statistics</h2>
+          <p>The table below is loaded from the published Website_Table tab.</p>
+        </div>
 
+        <div id="caffeine-card-container" class="caffeine-card-grid">
+          <p>Loading caffeine summary cards...</p>
+        </div>
+
+        <div id="caffeine-table-container" class="caffeine-table-wrapper">
+          <p>Loading caffeine table...</p>
+        </div>
+      </section>
+
+      <!-- reference values for various energy drinks -->
+      <section class="caffeine-lookup-section">
+        <div class="caffeine-heading">
+          <p class="section-label">Reference Values</p>
+          <h2>Caffeine Drink Lookup Table</h2>
+          <p>
+            These values are used as the reference data for calculating caffeine
+            intake, sugar intake, and caffeine efficiency in the study
+            (constants; from the can's nutrition facts)
+          </p>
+        </div>
+
+        <div class="caffeine-table-wrapper">
+          <table class="caffeine-table caffeine-lookup-table">
+            <thead>
+              <tr>
+                <th>Drink</th>
+                <th>Volume<br />(mL)</th>
+                <th>Caffeine<br />(mg/can)</th>
+                <th>Caffeine Density<br />(mg/mL)</th>
+                <th>Sugar<br />(g/can)</th>
+                <th>Sugar Density<br />(g/mL)</th>
+                <th>B6<br />(mg)</th>
+                <th>B12<br />(&micro;g)</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr>
+                <td>Red Bull</td>
+                <td>250</td>
+                <td>80</td>
+                <td>0.320</td>
+                <td>27</td>
+                <td>0.108</td>
+                <td>5</td>
+                <td>5</td>
+              </tr>
+
+              <tr>
+                <td>Celsius</td>
+                <td>355</td>
+                <td>140</td>
+                <td>0.394</td>
+                <td>0</td>
+                <td>0</td>
+                <td>2</td>
+                <td>6</td>
+              </tr>
+
+              <tr>
+                <td>Monster</td>
+                <td>473</td>
+                <td>160</td>
+                <td>0.338</td>
+                <td>0</td>
+                <td>0</td>
+                <td>N/A</td>
+                <td>N/A</td>
+              </tr>
+
+              <tr>
+                <td>Red Bull Grapefruit</td>
+                <td>250</td>
+                <td>114</td>
+                <td>0.456</td>
+                <td>0</td>
+                <td>0</td>
+                <td>7</td>
+                <td>7</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="caffeine-chart-section">
+        <div class="caffeine-heading">
+          <p class="section-label">Visual Summary</p>
+          <h2>Caffeine Study Chart</h2>
+          <p>
+            This chart is synced over from Google Sheets. When the sheet
+            updates, the chart can update as well.
+          </p>
+        </div>
+
+        <div class="caffeine-chart-frame">
+          <!-- Paste the Google Sheets published chart iframe here -->
+          <iframe
+            src="https://docs.google.com/spreadsheets/d/e/2PACX-1vTgrDQkB5m1RcpNN90XCUvQruYOJ66Cj6YGTelbLFGnH6iFecsvqMJTCHsVePQC3NKzp-nDvymWFakM/pubchart?oid=603349366&format=interactive"
+            title="Caffeine study chart"
+            loading="lazy"
+          >
+          </iframe>
+        </div>
+      </section>
+
+      <!-- log of the entire caffeine study -->
+      <section class="caffeine-log-section">
+        <div class="caffeine-heading">
+          <p class="section-label">Consumption Log</p>
+          <h2>Caffeine Entry Log</h2>
+          <p>
+            This table displays the individual caffeine entries recorded by the
+            team. The data is loaded from the published Google Sheets log table.
+          </p>
+        </div>
+
+        <div class="log-filter-row">
+          <label for="personFilter">Filter by person:</label>
+          <select id="personFilter">
+            <option value="all">All people</option>
+          </select>
+        </div>
+
+        <div id="caffeine-log-container" class="caffeine-table-wrapper">
+          <p>Loading caffeine log...</p>
+        </div>
+      </section>
+
+      <p class="top-link">
+        <a href="#page_top">Go to the top of this page</a>
+      </p>
     </main>
 
     <footer class="site-footer">
-        <p>Copyright &copy; 2026 Rita Yevtushenko, Matvey Regentov, and Nick Kapuka</p>
+      <p>Copyright &copy; 2026 Nick Kapuka</p>
     </footer>
-</body>
 
+    <script src="../js/caffeine_study.js"></script>
+  </body>
 </html>

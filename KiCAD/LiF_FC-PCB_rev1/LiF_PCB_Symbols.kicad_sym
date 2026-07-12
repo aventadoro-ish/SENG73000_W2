@@ -2,24 +2,52 @@
 	(version 20241209)
 	(generator "kicad_symbol_editor")
 	(generator_version "9.0")
+<<<<<<< HEAD
 	(symbol "LMR14050SDDAR"
+=======
+	(symbol "BMA400"
+		(pin_names
+			(offset 1.016)
+		)
+>>>>>>> main
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(property "Reference" "U"
+<<<<<<< HEAD
 			(at -10.16 13.97 0)
+=======
+			(at -10.16 16.002 0)
+>>>>>>> main
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
+<<<<<<< HEAD
 			)
 		)
 		(property "Value" "LMR14050"
+=======
+				(justify left bottom)
+			)
+		)
+		(property "Value" "BMA400"
+			(at -10.16 -17.78 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Footprint" "BMA400:XDCR_BMA400"
+>>>>>>> main
 			(at 0 0 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
+<<<<<<< HEAD
 			)
 		)
 		(property "Footprint" "Package_SO:Texas_R-PDSO-G8_EP2.95x4.9mm_Mask2.4x3.1mm"
@@ -41,6 +69,13 @@
 			)
 		)
 		(property "Description" "LMR14050 SIMPLE SWITCHER® Power Converter 40V, 5A, 2.2MHz Step-Down"
+=======
+				(justify bottom)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+>>>>>>> main
 			(at 0 0 0)
 			(effects
 				(font
@@ -49,7 +84,11 @@
 				(hide yes)
 			)
 		)
+<<<<<<< HEAD
 		(property "PN" "LMR14050SDDAR"
+=======
+		(property "Description" ""
+>>>>>>> main
 			(at 0 0 0)
 			(effects
 				(font
@@ -58,21 +97,34 @@
 				(hide yes)
 			)
 		)
+<<<<<<< HEAD
 		(property "DKPN" "296-44322-1-ND"
+=======
+		(property "MF" "Bosch Sensortec"
+>>>>>>> main
 			(at 0 0 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
+<<<<<<< HEAD
 				(hide yes)
 			)
 		)
 		(property "ki_keywords" "Switching Voltage Regulator Buck"
+=======
+				(justify bottom)
+				(hide yes)
+			)
+		)
+		(property "DESCRIPTION" "Accelerometer X, Y, Z Axis ±2g, 4g, 8g, 16g 12-LGA _2x2_"
+>>>>>>> main
 			(at 0 0 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
+<<<<<<< HEAD
 				(hide yes)
 			)
 		)
@@ -327,6 +379,56 @@
 			(rectangle
 				(start -10.16 7.62)
 				(end 10.16 -7.62)
+=======
+				(justify bottom)
+				(hide yes)
+			)
+		)
+		(property "PACKAGE" "LGA-12 Bosch Tools"
+			(at 0 0 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify bottom)
+				(hide yes)
+			)
+		)
+		(property "PRICE" "None"
+			(at 0 0 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify bottom)
+				(hide yes)
+			)
+		)
+		(property "MP" "BMA400"
+			(at 0 0 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify bottom)
+				(hide yes)
+			)
+		)
+		(property "AVAILABILITY" "Unavailable"
+			(at 0 0 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify bottom)
+				(hide yes)
+			)
+		)
+		(symbol "BMA400_0_0"
+			(rectangle
+				(start -10.16 -15.24)
+				(end 10.16 15.24)
+>>>>>>> main
 				(stroke
 					(width 0.254)
 					(type default)
@@ -335,6 +437,7 @@
 					(type background)
 				)
 			)
+<<<<<<< HEAD
 		)
 		(symbol "MCP2542FDxMF_1_1"
 			(pin input line
@@ -351,10 +454,27 @@
 					(effects
 						(font
 							(size 1.27 1.27)
+=======
+			(pin input line
+				(at -15.24 5.08 0)
+				(length 5.08)
+				(name "~{CSB}"
+					(effects
+						(font
+							(size 1.016 1.016)
+						)
+					)
+				)
+				(number "10"
+					(effects
+						(font
+							(size 1.016 1.016)
+>>>>>>> main
 						)
 					)
 				)
 			)
+<<<<<<< HEAD
 			(pin output line
 				(at -12.7 2.54 0)
 				(length 2.54)
@@ -369,10 +489,27 @@
 					(effects
 						(font
 							(size 1.27 1.27)
+=======
+			(pin input clock
+				(at -15.24 0 0)
+				(length 5.08)
+				(name "SCX"
+					(effects
+						(font
+							(size 1.016 1.016)
+						)
+					)
+				)
+				(number "12"
+					(effects
+						(font
+							(size 1.016 1.016)
+>>>>>>> main
 						)
 					)
 				)
 			)
+<<<<<<< HEAD
 			(pin input line
 				(at -12.7 -5.08 0)
 				(length 2.54)
@@ -434,18 +571,32 @@
 					(effects
 						(font
 							(size 1.27 1.27)
+=======
+			(pin bidirectional line
+				(at -15.24 -2.54 0)
+				(length 5.08)
+				(name "SDX"
+					(effects
+						(font
+							(size 1.016 1.016)
+>>>>>>> main
 						)
 					)
 				)
 				(number "2"
 					(effects
 						(font
+<<<<<<< HEAD
 							(size 1.27 1.27)
+=======
+							(size 1.016 1.016)
+>>>>>>> main
 						)
 					)
 				)
 			)
 			(pin bidirectional line
+<<<<<<< HEAD
 				(at 12.7 2.54 180)
 				(length 2.54)
 				(name "CANH"
@@ -701,17 +852,30 @@
 					(effects
 						(font
 							(size 1.27 1.27)
+=======
+				(at -15.24 -5.08 0)
+				(length 5.08)
+				(name "SDO"
+					(effects
+						(font
+							(size 1.016 1.016)
+>>>>>>> main
 						)
 					)
 				)
 				(number "1"
 					(effects
 						(font
+<<<<<<< HEAD
 							(size 1.27 1.27)
+=======
+							(size 1.016 1.016)
+>>>>>>> main
 						)
 					)
 				)
 			)
+<<<<<<< HEAD
 			(pin input line
 				(at 12.7 -3.81 180)
 				(length 2.54)
@@ -726,10 +890,27 @@
 					(effects
 						(font
 							(size 1.27 1.27)
+=======
+			(pin power_in line
+				(at 15.24 12.7 180)
+				(length 5.08)
+				(name "VDD"
+					(effects
+						(font
+							(size 1.016 1.016)
+						)
+					)
+				)
+				(number "7"
+					(effects
+						(font
+							(size 1.016 1.016)
+>>>>>>> main
 						)
 					)
 				)
 			)
+<<<<<<< HEAD
 		)
 		(embedded_fonts no)
 	)
@@ -817,17 +998,31 @@
 					(effects
 						(font
 							(size 1.27 1.27)
+=======
+			(pin power_in line
+				(at 15.24 10.16 180)
+				(length 5.08)
+				(name "VDDIO"
+					(effects
+						(font
+							(size 1.016 1.016)
+>>>>>>> main
 						)
 					)
 				)
 				(number "3"
 					(effects
 						(font
+<<<<<<< HEAD
 							(size 1.27 1.27)
+=======
+							(size 1.016 1.016)
+>>>>>>> main
 						)
 					)
 				)
 			)
+<<<<<<< HEAD
 			(pin input line
 				(at -10.16 3.81 0)
 				(length 2.54)
@@ -835,17 +1030,31 @@
 					(effects
 						(font
 							(size 1.27 1.27)
+=======
+			(pin bidirectional line
+				(at 15.24 0 180)
+				(length 5.08)
+				(name "INT1"
+					(effects
+						(font
+							(size 1.016 1.016)
+>>>>>>> main
 						)
 					)
 				)
 				(number "5"
 					(effects
 						(font
+<<<<<<< HEAD
 							(size 1.27 1.27)
+=======
+							(size 1.016 1.016)
+>>>>>>> main
 						)
 					)
 				)
 			)
+<<<<<<< HEAD
 			(pin input line
 				(at -10.16 -2.54 0)
 				(length 2.54)
@@ -871,18 +1080,32 @@
 					(effects
 						(font
 							(size 1.27 1.27)
+=======
+			(pin bidirectional line
+				(at 15.24 -2.54 180)
+				(length 5.08)
+				(name "INT2"
+					(effects
+						(font
+							(size 1.016 1.016)
+>>>>>>> main
 						)
 					)
 				)
 				(number "6"
 					(effects
 						(font
+<<<<<<< HEAD
 							(size 1.27 1.27)
+=======
+							(size 1.016 1.016)
+>>>>>>> main
 						)
 					)
 				)
 			)
 			(pin power_in line
+<<<<<<< HEAD
 				(at 0 -11.43 90)
 				(length 2.54)
 				(name "GND"
@@ -950,6 +1173,39 @@
 					(effects
 						(font
 							(size 1.27 1.27)
+=======
+				(at 15.24 -10.16 180)
+				(length 5.08)
+				(name "GNDIO"
+					(effects
+						(font
+							(size 1.016 1.016)
+						)
+					)
+				)
+				(number "8"
+					(effects
+						(font
+							(size 1.016 1.016)
+						)
+					)
+				)
+			)
+			(pin power_in line
+				(at 15.24 -12.7 180)
+				(length 5.08)
+				(name "GND"
+					(effects
+						(font
+							(size 1.016 1.016)
+						)
+					)
+				)
+				(number "9"
+					(effects
+						(font
+							(size 1.016 1.016)
+>>>>>>> main
 						)
 					)
 				)

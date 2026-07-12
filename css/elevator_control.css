@@ -1,0 +1,271 @@
+/* ---------- elevator control styling (helppp)  ---------- */
+
+.elevator-control-intro {
+  grid-template-columns: 2fr 0.9fr;
+}
+
+.elevator-game-panel {
+  margin-top: 28px;
+  padding: 28px;
+  background:
+    radial-gradient(
+      circle at top left,
+      rgba(0, 206, 200, 0.22),
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at bottom right,
+      rgba(249, 219, 121, 0.25),
+      transparent 30%
+    ),
+    var(--card-bg);
+  border-radius: 16px;
+  border-top: 6px solid var(--aqua);
+  box-shadow: 0 6px 18px var(--shadow);
+}
+
+.control-hud {
+  display: grid;
+  grid-template-columns: 1.2fr 0.45fr 0.9fr;
+  gap: 18px;
+  align-items: center;
+  margin-bottom: 24px;
+  padding: 18px;
+  color: white;
+  background-color: var(--deep-blue);
+  border-radius: 14px;
+  border: 3px solid rgba(249, 219, 121, 0.75);
+  box-shadow: inset 0 0 18px rgba(0, 206, 200, 0.25);
+}
+
+.control-hud .section-label,
+.control-hud h2 {
+  color: white;
+}
+
+.control-hud h2 {
+  margin: 0;
+}
+
+.hud-readout {
+  padding: 12px;
+  background-color: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(249, 219, 121, 0.55);
+  border-radius: 10px;
+}
+
+.hud-label {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--yellow);
+  font-size: 0.85rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.hud-value {
+  display: block;
+  font-size: 1.35rem;
+  font-weight: bold;
+}
+
+.elevator-layout {
+  display: grid;
+  grid-template-columns: 1.25fr 0.75fr;
+  gap: 24px;
+}
+
+.building-tower,
+.car-controller {
+  padding: 24px;
+  background-color: rgba(255, 248, 223, 0.72);
+  border-radius: 14px;
+  box-shadow: 0 4px 14px var(--shadow);
+}
+
+.building-tower {
+  display: grid;
+  grid-template-rows: repeat(3, 150px);
+  gap: 14px;
+  border-left: 5px solid var(--orange);
+}
+
+.floor-row {
+  display: grid;
+  grid-template-columns: 0.7fr 1.35fr 0.75fr;
+  gap: 16px;
+  align-items: center;
+  padding: 16px;
+  background-color: rgba(255, 255, 255, 0.62);
+  border: 2px solid rgba(9, 124, 135, 0.16);
+  border-radius: 12px;
+  transition: 0.25s;
+}
+
+.floor-row.active-floor {
+  border-color: var(--aqua);
+  box-shadow: 0 0 16px rgba(0, 206, 200, 0.42);
+}
+
+.floor-label span {
+  display: block;
+  color: var(--deep-blue);
+  font-size: 1.3rem;
+  font-weight: bold;
+}
+
+.floor-label small {
+  color: var(--ink);
+  font-weight: bold;
+}
+
+.shaft {
+  position: relative;
+  height: 100%;
+  min-height: 92px;
+  background: linear-gradient(
+    90deg,
+    rgba(9, 124, 135, 0.12),
+    rgba(255, 255, 255, 0.85),
+    rgba(9, 124, 135, 0.12)
+  );
+  border: 2px solid rgba(9, 124, 135, 0.28);
+  border-radius: 10px;
+  overflow: visible;
+}
+
+.floor-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 12px;
+  height: 3px;
+  background-color: rgba(9, 124, 135, 0.26);
+}
+
+.elevator-car {
+  position: absolute;
+  left: 50%;
+  bottom: -354px;
+  z-index: 5;
+  width: 82px;
+  height: 86px;
+  transform: translateX(-50%);
+  color: white;
+  background: linear-gradient(
+    90deg,
+    #17484d 0%,
+    var(--deep-blue) 50%,
+    #17484d 100%
+  );
+  border: 3px solid var(--yellow);
+  border-radius: 10px 10px 6px 6px;
+  box-shadow: 0 0 18px rgba(249, 219, 121, 0.75);
+  transition: bottom 0.55s ease-in-out;
+}
+
+.car-screen {
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  padding: 2px 10px;
+  transform: translateX(-50%);
+  color: var(--ink);
+  background-color: var(--yellow);
+  border-radius: 999px;
+  font-weight: bold;
+}
+
+.car-door {
+  position: absolute;
+  left: 50%;
+  bottom: 8px;
+  width: 2px;
+  height: 44px;
+  transform: translateX(-50%);
+  background-color: rgba(255, 255, 255, 0.7);
+}
+
+.floor-request-button,
+.car-floor-button {
+  padding: 11px 14px;
+  color: white;
+  background-color: var(--deep-blue);
+  border: none;
+  border-radius: 10px;
+  font-family: Georgia, serif;
+  font-size: 0.98rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.25s;
+}
+
+.floor-request-button:hover,
+.car-floor-button:hover,
+.active-car-button {
+  color: var(--ink);
+  background-color: var(--yellow);
+  box-shadow: 0 0 14px rgba(249, 219, 121, 0.85);
+}
+
+.car-controller {
+  border-left: 5px solid var(--aqua);
+}
+
+.car-controller h2 {
+  margin-top: 0;
+  color: var(--deep-blue);
+}
+
+.car-controller p {
+  text-align: left;
+  text-indent: 0;
+  line-height: 1.55;
+}
+
+.car-button-stack {
+  display: grid;
+  gap: 14px;
+  margin-top: 20px;
+}
+
+.car-floor-button {
+  min-height: 54px;
+  font-size: 1.08rem;
+}
+
+.controller-note {
+  margin-top: 22px;
+  padding: 14px;
+  background-color: white;
+  border-left: 4px solid var(--orange);
+  border-radius: 10px;
+  line-height: 1.45;
+}
+
+@media screen and (max-width: 950px) {
+  .control-hud,
+  .elevator-layout,
+  .elevator-control-intro {
+    grid-template-columns: 1fr;
+  }
+
+  .building-tower {
+    grid-template-rows: repeat(3, auto);
+  }
+
+  .floor-row {
+    grid-template-columns: 1fr;
+  }
+
+  .shaft {
+    height: 110px;
+  }
+
+  .elevator-car {
+    left: 18px;
+    bottom: -262px;
+    transform: none;
+  }
+}
