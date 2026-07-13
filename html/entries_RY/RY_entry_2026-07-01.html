@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+
+<!--
+Author: Rita Yevtushenko
+-->
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>RY's Logbook - 2026-07-01</title>
+
+    <meta name="author" content="Rita Yevtushenko">
+    <meta name="description" content="Lithium Firefly Logbook Entry">
+
+    <link rel="icon"
+          href="../../media/icons/LiF_icon.ico"
+          type="image/x-icon">
+
+    <link rel="stylesheet" href="../../css/base.css">
+    <link rel="stylesheet" href="../../css/logbook_entry.css">
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css">
+
+    <link rel="stylesheet"
+          href="../../css/code_formatting.css">
+</head>
+
+<body>
+
+<div id="navbar-placeholder" data-root="../../"></div>
+<script src="../../js/navbar.js"></script>
+
+<main class="page-wrapper">
+
+<aside>
+<iframe src="../links.html" title="Navigation"></iframe>
+</aside>
+
+    <section class="logbook-entry-intro">
+
+        <div>
+
+        <h1>Logbook Entry</h1>
+
+        <p>
+
+            <strong>Date:</strong> July 1, 2026<br>
+            <strong>Project:</strong> Lithium Firefly PCB Design<br>
+            <strong>Hours:</strong> 8<br>
+            <strong>Focus:</strong> Initial PCB Research and Schematic Development 
+
+        </p>
+
+        <h2>Summary</h2>
+
+            <p class="logbook_summary">
+
+            Began designing the PCB by researching available load-cell amplifier ICs,
+            selecting replacement components, and creating the initial schematic for
+            the load-cell interface.
+
+            </p>
+
+        <a href="../logbook_RY.html">← Return to Logbook Cover Page</a>
+
+        </div>
+
+    </section>
+
+    <section class="logbook-entry-content">
+
+        <h2>Objective</h2>
+
+        <p>
+        Begin development of the custom PCB and determine the primary analog
+        front-end architecture.
+        </p>
+
+        <h2>Research</h2>
+
+        <p>
+
+        Compared several load-cell amplifier ICs after discovering the HX711
+        was unavailable. Reviewed datasheets, package options,
+        communication interfaces, and firmware support.
+        Later learned that the HX711 would have to involve I2C and that wouldn't
+        be necesary for this project. Using MCP6N11 would be simpler.
+
+        </p>
+
+        <h4>Design Decisions</h4>
+
+        <ul>
+
+        <li>Selected the NAU7802 ADC.</li>
+
+        <li>Verified DigiKey availability.</li>
+
+        <li>Confirmed ESP32-S3 I²C compatibility.</li>
+
+        <li>Reviewed software libraries.</li>
+
+        </ul>
+
+        <h2>Initial Schematic</h2>
+
+        <p>
+
+        Created the first schematic connecting the load cell,
+        power circuitry, and ESP32-S3 interface.
+
+        </p>
+
+        <figure>
+
+        <img src="../../media/images/Load_Cell_Rev_1.png"
+        alt="Initial PCB schematic">
+
+        <figcaption>
+
+        Figure 1. Initial PCB schematic for the Load Cell (Rev 1)
+
+        </figcaption>
+
+        </figure>
+
+        <h2>Next Steps</h2>
+
+        <ul>
+
+        <li>Complete signal conditioning</li>
+
+        <li>Review schematic</li>
+
+        <li>Share the files on Github and the group</li>
+
+        </ul>
+
+    </section>
+
+</main>
+
+<footer class="site-footer">
+<p>Copyright &copy; Rita Yevtushenko</p>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+
+</body>
+</html>
