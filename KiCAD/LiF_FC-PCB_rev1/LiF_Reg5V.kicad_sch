@@ -5,8 +5,11 @@
 	(uuid "d621e562-52a3-422f-bfc4-f362e32669db")
 	(paper "A4")
 	(title_block
+		(title "Lithium Firefly Custom FC/CC PCB")
+		(date "2026-07-11")
 		(rev "1")
 		(company "Lithium Firefly Team")
+		(comment 1 "Designed by MR")
 		(comment 2 "Verified by MR")
 	)
 	(lib_symbols
@@ -1974,7 +1977,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "079ab41c-5177-4cc1-9512-0509ac7f1c56")
-		(property "Reference" "#PWR019"
+		(property "Reference" "#PWR024"
 			(at 217.17 118.11 0)
 			(effects
 				(font
@@ -2024,7 +2027,7 @@
 		(instances
 			(project "LiF_FC-PCB_rev1"
 				(path "/9e3e8da7-e506-46c9-90e5-307e4ad30d29/dbf56dc2-3990-4801-b0e0-f59d351af64c/18794d3c-1606-4c60-8412-e38df19bc4d8"
-					(reference "#PWR019")
+					(reference "#PWR024")
 					(unit 1)
 				)
 			)
@@ -2127,7 +2130,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "160c7a18-86ae-4837-8c9b-1401f3e51af8")
-		(property "Reference" "#PWR022"
+		(property "Reference" "#PWR027"
 			(at 110.49 124.46 0)
 			(effects
 				(font
@@ -2177,7 +2180,7 @@
 		(instances
 			(project "LiF_FC-PCB_rev1"
 				(path "/9e3e8da7-e506-46c9-90e5-307e4ad30d29/dbf56dc2-3990-4801-b0e0-f59d351af64c/18794d3c-1606-4c60-8412-e38df19bc4d8"
-					(reference "#PWR022")
+					(reference "#PWR027")
 					(unit 1)
 				)
 			)
@@ -2298,7 +2301,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "217b7c07-4fcc-4e8c-a921-73a805bc4135")
-		(property "Reference" "#PWR026"
+		(property "Reference" "#PWR031"
 			(at 134.62 132.08 0)
 			(effects
 				(font
@@ -2348,7 +2351,7 @@
 		(instances
 			(project "LiF_FC-PCB_rev1"
 				(path "/9e3e8da7-e506-46c9-90e5-307e4ad30d29/dbf56dc2-3990-4801-b0e0-f59d351af64c/18794d3c-1606-4c60-8412-e38df19bc4d8"
-					(reference "#PWR026")
+					(reference "#PWR031")
 					(unit 1)
 				)
 			)
@@ -2363,7 +2366,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "264bd657-b430-4331-b33f-a1a23140f36b")
-		(property "Reference" "TP11"
+		(property "Reference" "TP10"
 			(at 210.058 85.598 0)
 			(effects
 				(font
@@ -2432,7 +2435,7 @@
 		(instances
 			(project "LiF_FC-PCB_rev1"
 				(path "/9e3e8da7-e506-46c9-90e5-307e4ad30d29/dbf56dc2-3990-4801-b0e0-f59d351af64c/18794d3c-1606-4c60-8412-e38df19bc4d8"
-					(reference "TP11")
+					(reference "TP10")
 					(unit 1)
 				)
 			)
@@ -2447,7 +2450,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "37ee3315-4178-4a92-9320-8cbfa6bb9809")
-		(property "Reference" "#PWR020"
+		(property "Reference" "#PWR025"
 			(at 87.63 124.46 0)
 			(effects
 				(font
@@ -2497,7 +2500,7 @@
 		(instances
 			(project "LiF_FC-PCB_rev1"
 				(path "/9e3e8da7-e506-46c9-90e5-307e4ad30d29/dbf56dc2-3990-4801-b0e0-f59d351af64c/18794d3c-1606-4c60-8412-e38df19bc4d8"
-					(reference "#PWR020")
+					(reference "#PWR025")
 					(unit 1)
 				)
 			)
@@ -2815,7 +2818,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "5322a31d-0107-4bc8-91ea-3db7cad43f49")
-		(property "Reference" "#PWR024"
+		(property "Reference" "#PWR029"
 			(at 171.45 130.81 0)
 			(effects
 				(font
@@ -2865,7 +2868,7 @@
 		(instances
 			(project "LiF_FC-PCB_rev1"
 				(path "/9e3e8da7-e506-46c9-90e5-307e4ad30d29/dbf56dc2-3990-4801-b0e0-f59d351af64c/18794d3c-1606-4c60-8412-e38df19bc4d8"
-					(reference "#PWR024")
+					(reference "#PWR029")
 					(unit 1)
 				)
 			)
@@ -2968,7 +2971,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "65770262-2bbe-45f7-8710-e57e457d15c0")
-		(property "Reference" "#PWR023"
+		(property "Reference" "#PWR028"
 			(at 154.94 130.81 0)
 			(effects
 				(font
@@ -3018,7 +3021,7 @@
 		(instances
 			(project "LiF_FC-PCB_rev1"
 				(path "/9e3e8da7-e506-46c9-90e5-307e4ad30d29/dbf56dc2-3990-4801-b0e0-f59d351af64c/18794d3c-1606-4c60-8412-e38df19bc4d8"
-					(reference "#PWR023")
+					(reference "#PWR028")
 					(unit 1)
 				)
 			)
@@ -3104,7 +3107,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "7aa5b5a9-ee2e-4813-b268-e70e28f184c5")
-		(property "Reference" "#PWR0111"
+		(property "Reference" "#PWR023"
 			(at 208.28 97.79 0)
 			(effects
 				(font
@@ -3154,7 +3157,7 @@
 		(instances
 			(project "LiF_FC-PCB_rev1"
 				(path "/9e3e8da7-e506-46c9-90e5-307e4ad30d29/dbf56dc2-3990-4801-b0e0-f59d351af64c/18794d3c-1606-4c60-8412-e38df19bc4d8"
-					(reference "#PWR0111")
+					(reference "#PWR023")
 					(unit 1)
 				)
 			)
@@ -3484,7 +3487,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "a9f412d5-60f3-4d49-9c6d-e2f6a8a995bc")
-		(property "Reference" "TP10"
+		(property "Reference" "TP11"
 			(at 219.71 86.8679 0)
 			(effects
 				(font
@@ -3553,7 +3556,7 @@
 		(instances
 			(project "LiF_FC-PCB_rev1"
 				(path "/9e3e8da7-e506-46c9-90e5-307e4ad30d29/dbf56dc2-3990-4801-b0e0-f59d351af64c/18794d3c-1606-4c60-8412-e38df19bc4d8"
-					(reference "TP10")
+					(reference "TP11")
 					(unit 1)
 				)
 			)
@@ -3568,7 +3571,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "b525550e-29c0-477f-b207-7c3b13ae136b")
-		(property "Reference" "#PWR021"
+		(property "Reference" "#PWR026"
 			(at 99.06 124.46 0)
 			(effects
 				(font
@@ -3618,7 +3621,7 @@
 		(instances
 			(project "LiF_FC-PCB_rev1"
 				(path "/9e3e8da7-e506-46c9-90e5-307e4ad30d29/dbf56dc2-3990-4801-b0e0-f59d351af64c/18794d3c-1606-4c60-8412-e38df19bc4d8"
-					(reference "#PWR021")
+					(reference "#PWR026")
 					(unit 1)
 				)
 			)
@@ -3721,7 +3724,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "eae8ceaa-fee4-4f4a-90c9-a5c50b590e48")
-		(property "Reference" "#PWR025"
+		(property "Reference" "#PWR030"
 			(at 186.69 130.81 0)
 			(effects
 				(font
@@ -3771,7 +3774,7 @@
 		(instances
 			(project "LiF_FC-PCB_rev1"
 				(path "/9e3e8da7-e506-46c9-90e5-307e4ad30d29/dbf56dc2-3990-4801-b0e0-f59d351af64c/18794d3c-1606-4c60-8412-e38df19bc4d8"
-					(reference "#PWR025")
+					(reference "#PWR030")
 					(unit 1)
 				)
 			)

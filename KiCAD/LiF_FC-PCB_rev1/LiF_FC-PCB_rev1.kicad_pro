@@ -27,60 +27,20 @@
   "erc": {
     "erc_exclusions": [
       [
-        "pin_to_pin|1562100|723900|c898de95-9bf3-4369-8679-70868318e761|df1dc1b8-f556-4663-b150-1cfd51a8b19a|/9e3e8da7-e506-46c9-90e5-307e4ad30d29/dbf56dc2-3990-4801-b0e0-f59d351af64c/b5f6c072-28d6-4dbf-9d97-d5b17dc4e7a5|/9e3e8da7-e506-46c9-90e5-307e4ad30d29/dbf56dc2-3990-4801-b0e0-f59d351af64c/b5f6c072-28d6-4dbf-9d97-d5b17dc4e7a5|/9e3e8da7-e506-46c9-90e5-307e4ad30d29/dbf56dc2-3990-4801-b0e0-f59d351af64c/b5f6c072-28d6-4dbf-9d97-d5b17dc4e7a5",
-        "Pins need to be shorted as per datasheet"
+        "multiple_net_names|1282700|838200|b095d622-e38e-4c5c-852b-e8ce2e89efee|eca73cca-693e-4d69-b4ab-369cd93c1b50|/9e3e8da7-e506-46c9-90e5-307e4ad30d29/fa6eb845-b5e3-4a8e-9c24-c1b567f4e987|/9e3e8da7-e506-46c9-90e5-307e4ad30d29/fa6eb845-b5e3-4a8e-9c24-c1b567f4e987|/9e3e8da7-e506-46c9-90e5-307e4ad30d29/fa6eb845-b5e3-4a8e-9c24-c1b567f4e987",
+        "pin is reused for different board configurations"
       ],
       [
-        "power_pin_not_driven|1320800|863600|fed3cbf6-ea0c-45e0-99d5-d7cab5b211d6|00000000-0000-0000-0000-000000000000|/9e3e8da7-e506-46c9-90e5-307e4ad30d29/dbf56dc2-3990-4801-b0e0-f59d351af64c/18794d3c-1606-4c60-8412-e38df19bc4d8|/9e3e8da7-e506-46c9-90e5-307e4ad30d29/dbf56dc2-3990-4801-b0e0-f59d351af64c/18794d3c-1606-4c60-8412-e38df19bc4d8|",
-        "Driven through a jumper on parent sheet"
+        "multiple_net_names|1282700|863600|b095d622-e38e-4c5c-852b-e8ce2e89efee|ae19d2dc-77be-4746-9ab6-5722619ac5bc|/9e3e8da7-e506-46c9-90e5-307e4ad30d29/fa6eb845-b5e3-4a8e-9c24-c1b567f4e987|/9e3e8da7-e506-46c9-90e5-307e4ad30d29/fa6eb845-b5e3-4a8e-9c24-c1b567f4e987|/9e3e8da7-e506-46c9-90e5-307e4ad30d29/fa6eb845-b5e3-4a8e-9c24-c1b567f4e987",
+        "pin is reused for different board configurations"
       ],
       [
-        "power_pin_not_driven|1358900|508000|7507d4f6-899d-483d-88b2-66cb748281ee|00000000-0000-0000-0000-000000000000|/9e3e8da7-e506-46c9-90e5-307e4ad30d29/d823ad92-d1a3-4f4d-8dfc-d728d5836dc0|/9e3e8da7-e506-46c9-90e5-307e4ad30d29/d823ad92-d1a3-4f4d-8dfc-d728d5836dc0|",
-        "Driven through a jumper on parent sheet"
+        "multiple_net_names|1282700|889000|1d628cb1-9e2e-465b-a5c2-621a479cc652|bd586834-4702-46e1-b459-8aa155d316d7|/9e3e8da7-e506-46c9-90e5-307e4ad30d29/fa6eb845-b5e3-4a8e-9c24-c1b567f4e987|/9e3e8da7-e506-46c9-90e5-307e4ad30d29/fa6eb845-b5e3-4a8e-9c24-c1b567f4e987|/9e3e8da7-e506-46c9-90e5-307e4ad30d29/fa6eb845-b5e3-4a8e-9c24-c1b567f4e987",
+        "pin is reused for different board configurations"
       ],
       [
-        "power_pin_not_driven|1536700|660400|31ec1415-5086-4ae9-8a5c-62d93dd2a46c|00000000-0000-0000-0000-000000000000|/9e3e8da7-e506-46c9-90e5-307e4ad30d29/17577359-df8d-4d28-9071-787d31b1b6da|/9e3e8da7-e506-46c9-90e5-307e4ad30d29/17577359-df8d-4d28-9071-787d31b1b6da|",
-        "Driven through a jumper on parent sheet"
-      ],
-      [
-        "power_pin_not_driven|1651000|939800|748126c8-9e82-41d3-a528-0077714ed422|00000000-0000-0000-0000-000000000000|/9e3e8da7-e506-46c9-90e5-307e4ad30d29/25eacf96-1a70-4276-a4a6-d0196807ae93|/9e3e8da7-e506-46c9-90e5-307e4ad30d29/25eacf96-1a70-4276-a4a6-d0196807ae93|",
-        "Driven through a jumper"
-      ],
-      [
-        "power_pin_not_driven|1866900|1282700|e36874f3-6215-419a-95b7-1e819c264b03|00000000-0000-0000-0000-000000000000|/9e3e8da7-e506-46c9-90e5-307e4ad30d29/dbf56dc2-3990-4801-b0e0-f59d351af64c|/9e3e8da7-e506-46c9-90e5-307e4ad30d29/dbf56dc2-3990-4801-b0e0-f59d351af64c|",
-        "Powered through a jumper"
-      ],
-      [
-        "power_pin_not_driven|2286000|1270000|e959f99b-42bb-4a1e-86e0-7342c98a2f34|00000000-0000-0000-0000-000000000000|/9e3e8da7-e506-46c9-90e5-307e4ad30d29/4a7ab991-4e21-40be-8fbb-bdea455cef2f|/9e3e8da7-e506-46c9-90e5-307e4ad30d29/4a7ab991-4e21-40be-8fbb-bdea455cef2f|",
-        "Driven through a jumper on parent sheet"
-      ],
-      [
-        "power_pin_not_driven|2438400|419100|1b0a5761-0ac4-47c3-8356-1c3beae3f6b9|00000000-0000-0000-0000-000000000000|/9e3e8da7-e506-46c9-90e5-307e4ad30d29/77827f91-166d-41e9-a525-15815c2a0550|/9e3e8da7-e506-46c9-90e5-307e4ad30d29/77827f91-166d-41e9-a525-15815c2a0550|",
-        "Source pin"
-      ],
-      [
-        "power_pin_not_driven|2438400|838200|f89b29ed-7071-4151-b528-b4491d7c37b3|00000000-0000-0000-0000-000000000000|/9e3e8da7-e506-46c9-90e5-307e4ad30d29/77827f91-166d-41e9-a525-15815c2a0550|/9e3e8da7-e506-46c9-90e5-307e4ad30d29/77827f91-166d-41e9-a525-15815c2a0550|",
-        "Driven through a jumper"
-      ],
-      [
-        "power_pin_not_driven|2603500|850900|39788236-2d46-4b0f-9bed-4abb386b8637|00000000-0000-0000-0000-000000000000|/9e3e8da7-e506-46c9-90e5-307e4ad30d29/81d40f08-f8e6-4a28-9c4a-9bb7f4fd1a7f|/9e3e8da7-e506-46c9-90e5-307e4ad30d29/81d40f08-f8e6-4a28-9c4a-9bb7f4fd1a7f|",
-        "Driven through a jumper"
-      ],
-      [
-        "power_pin_not_driven|533400|1282700|ac2304a3-2775-4bc8-b5cf-01bc8043c8d5|00000000-0000-0000-0000-000000000000|/9e3e8da7-e506-46c9-90e5-307e4ad30d29/dbf56dc2-3990-4801-b0e0-f59d351af64c|/9e3e8da7-e506-46c9-90e5-307e4ad30d29/dbf56dc2-3990-4801-b0e0-f59d351af64c|",
-        "Powered through a jumper"
-      ],
-      [
-        "power_pin_not_driven|558800|1397000|7e8b24fc-f5c6-464d-83a0-ab5d5d3804c0|00000000-0000-0000-0000-000000000000|/9e3e8da7-e506-46c9-90e5-307e4ad30d29/81d40f08-f8e6-4a28-9c4a-9bb7f4fd1a7f|/9e3e8da7-e506-46c9-90e5-307e4ad30d29/81d40f08-f8e6-4a28-9c4a-9bb7f4fd1a7f|",
-        "Driven through a jumper"
-      ],
-      [
-        "power_pin_not_driven|698500|1460500|c89acedc-46d8-4c70-a5a6-0ec65e62303b|00000000-0000-0000-0000-000000000000|/9e3e8da7-e506-46c9-90e5-307e4ad30d29/77827f91-166d-41e9-a525-15815c2a0550|/9e3e8da7-e506-46c9-90e5-307e4ad30d29/77827f91-166d-41e9-a525-15815c2a0550|",
-        "Driven through a jumper"
-      ],
-      [
-        "power_pin_not_driven|723900|1460500|27caa68f-d038-4782-b018-530a6d1b4497|00000000-0000-0000-0000-000000000000|/9e3e8da7-e506-46c9-90e5-307e4ad30d29/77827f91-166d-41e9-a525-15815c2a0550|/9e3e8da7-e506-46c9-90e5-307e4ad30d29/77827f91-166d-41e9-a525-15815c2a0550|",
-        "Driven through a jumper"
+        "multiple_net_names|1282700|914400|6b2a0f52-4e1b-43bd-b0dc-3432b23c549b|3dd081ec-2679-46f1-b414-e5ae8e037d11|/9e3e8da7-e506-46c9-90e5-307e4ad30d29/fa6eb845-b5e3-4a8e-9c24-c1b567f4e987|/9e3e8da7-e506-46c9-90e5-307e4ad30d29/fa6eb845-b5e3-4a8e-9c24-c1b567f4e987|/9e3e8da7-e506-46c9-90e5-307e4ad30d29/fa6eb845-b5e3-4a8e-9c24-c1b567f4e987",
+        "pin is reused for different board configurations"
       ]
     ],
     "meta": {
@@ -658,7 +618,7 @@
       "Accelerometer"
     ],
     [
-      "4a7ab991-4e21-40be-8fbb-bdea455cef2f",
+      "75541181-887f-448c-8628-82c2df7284ca",
       "Audio"
     ],
     [
@@ -666,7 +626,7 @@
       "Display"
     ],
     [
-      "81d40f08-f8e6-4a28-9c4a-9bb7f4fd1a7f",
+      "5a2c7040-8854-4895-b7b6-208daa06b69a",
       "Buttons"
     ],
     [
