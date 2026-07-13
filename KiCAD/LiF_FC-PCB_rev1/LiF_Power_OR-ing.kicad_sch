@@ -4,6 +4,11 @@
 	(generator_version "9.0")
 	(uuid "74394fb4-400e-441f-8042-df314a8efcf7")
 	(paper "A4")
+	(title_block
+		(rev "1")
+		(company "Lithium Firefly Team")
+		(comment 2 "Verified by MR")
+	)
 	(lib_symbols
 		(symbol "Device:LED"
 			(pin_numbers
@@ -638,6 +643,18 @@
 			(embedded_fonts no)
 		)
 	)
+	(text "Lithium Firefly - Power OR-ing"
+		(exclude_from_sim no)
+		(at 149.352 22.352 0)
+		(effects
+			(font
+				(size 5.08 5.08)
+				(thickness 0.762)
+				(bold yes)
+			)
+		)
+		(uuid "8244d553-000b-43e1-9f96-c22f56495cc7")
+	)
 	(text "When V_{IN1} < 4V,\nV_{threshold} < 1V = V_{REF}\nswitchover to V_{IN2} occurs"
 		(exclude_from_sim no)
 		(at 113.03 65.278 0)
@@ -1100,7 +1117,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "0b92b858-0cdc-478c-a50d-cebeab21d470")
-		(property "Reference" "#PWR08"
+		(property "Reference" "#PWR014"
 			(at 121.92 142.24 0)
 			(effects
 				(font
@@ -1150,11 +1167,11 @@
 		(instances
 			(project "LiF_FC-PCB_rev1"
 				(path "/9e3e8da7-e506-46c9-90e5-307e4ad30d29/dbf56dc2-3990-4801-b0e0-f59d351af64c/b5f6c072-28d6-4dbf-9d97-d5b17dc4e7a5"
-					(reference "#PWR08")
+					(reference "#PWR014")
 					(unit 1)
 				)
 				(path "/9e3e8da7-e506-46c9-90e5-307e4ad30d29/dbf56dc2-3990-4801-b0e0-f59d351af64c/d7dd20e9-8027-4523-a1e0-5e82c0dab821"
-					(reference "#PWR020")
+					(reference "#PWR018")
 					(unit 1)
 				)
 			)
@@ -1170,7 +1187,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "1086083f-5d74-4e9d-825c-b6a0db8eecae")
-		(property "Reference" "R2"
+		(property "Reference" "R10"
 			(at 121.92 76.1999 0)
 			(effects
 				(font
@@ -1224,11 +1241,11 @@
 		(instances
 			(project "LiF_FC-PCB_rev1"
 				(path "/9e3e8da7-e506-46c9-90e5-307e4ad30d29/dbf56dc2-3990-4801-b0e0-f59d351af64c/b5f6c072-28d6-4dbf-9d97-d5b17dc4e7a5"
-					(reference "R2")
+					(reference "R10")
 					(unit 1)
 				)
 				(path "/9e3e8da7-e506-46c9-90e5-307e4ad30d29/dbf56dc2-3990-4801-b0e0-f59d351af64c/d7dd20e9-8027-4523-a1e0-5e82c0dab821"
-					(reference "R8")
+					(reference "R15")
 					(unit 1)
 				)
 			)
@@ -1243,7 +1260,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "1cf6e580-0af0-4f62-8bff-961814d1e08e")
-		(property "Reference" "#PWR02"
+		(property "Reference" "#PWR012"
 			(at 146.05 101.6 0)
 			(effects
 				(font
@@ -1293,11 +1310,11 @@
 		(instances
 			(project "LiF_FC-PCB_rev1"
 				(path "/9e3e8da7-e506-46c9-90e5-307e4ad30d29/dbf56dc2-3990-4801-b0e0-f59d351af64c/b5f6c072-28d6-4dbf-9d97-d5b17dc4e7a5"
-					(reference "#PWR02")
+					(reference "#PWR012")
 					(unit 1)
 				)
 				(path "/9e3e8da7-e506-46c9-90e5-307e4ad30d29/dbf56dc2-3990-4801-b0e0-f59d351af64c/d7dd20e9-8027-4523-a1e0-5e82c0dab821"
-					(reference "#PWR018")
+					(reference "#PWR016")
 					(unit 1)
 				)
 			)
@@ -1313,7 +1330,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "3cb5fee3-5301-42c1-b460-d820eb26a327")
-		(property "Reference" "D1"
+		(property "Reference" "D4"
 			(at 113.03 115.8874 90)
 			(effects
 				(font
@@ -1331,7 +1348,7 @@
 				(justify right)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "LED_SMD:LED_0805_2012Metric"
 			(at 109.22 115.57 0)
 			(effects
 				(font
@@ -1367,6 +1384,24 @@
 				(hide yes)
 			)
 		)
+		(property "DKPN" "5366-LC170JRCT-U1CT-ND"
+			(at 109.22 115.57 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "PN" "LC170JRCT-U1"
+			(at 109.22 115.57 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "276bc60f-8890-449b-8bb0-864b54cfe80e")
 		)
@@ -1376,11 +1411,11 @@
 		(instances
 			(project "LiF_FC-PCB_rev1"
 				(path "/9e3e8da7-e506-46c9-90e5-307e4ad30d29/dbf56dc2-3990-4801-b0e0-f59d351af64c/b5f6c072-28d6-4dbf-9d97-d5b17dc4e7a5"
-					(reference "D1")
+					(reference "D4")
 					(unit 1)
 				)
 				(path "/9e3e8da7-e506-46c9-90e5-307e4ad30d29/dbf56dc2-3990-4801-b0e0-f59d351af64c/d7dd20e9-8027-4523-a1e0-5e82c0dab821"
-					(reference "D14")
+					(reference "D7")
 					(unit 1)
 				)
 			)
@@ -1395,7 +1430,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "3cb61af5-d95d-492f-8dc7-73827a048f98")
-		(property "Reference" "#PWR04"
+		(property "Reference" "#PWR013"
 			(at 109.22 142.24 0)
 			(effects
 				(font
@@ -1445,11 +1480,11 @@
 		(instances
 			(project "LiF_FC-PCB_rev1"
 				(path "/9e3e8da7-e506-46c9-90e5-307e4ad30d29/dbf56dc2-3990-4801-b0e0-f59d351af64c/b5f6c072-28d6-4dbf-9d97-d5b17dc4e7a5"
-					(reference "#PWR04")
+					(reference "#PWR013")
 					(unit 1)
 				)
 				(path "/9e3e8da7-e506-46c9-90e5-307e4ad30d29/dbf56dc2-3990-4801-b0e0-f59d351af64c/d7dd20e9-8027-4523-a1e0-5e82c0dab821"
-					(reference "#PWR019")
+					(reference "#PWR017")
 					(unit 1)
 				)
 			)
@@ -1465,7 +1500,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "41fa3cb6-ed2d-4851-9fb1-a897a120d0a8")
-		(property "Reference" "R3"
+		(property "Reference" "R14"
 			(at 124.46 125.7299 0)
 			(effects
 				(font
@@ -1474,7 +1509,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "R"
+		(property "Value" "470"
 			(at 124.46 128.2699 0)
 			(effects
 				(font
@@ -1483,7 +1518,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric"
 			(at 120.142 127 90)
 			(effects
 				(font
@@ -1519,11 +1554,11 @@
 		(instances
 			(project "LiF_FC-PCB_rev1"
 				(path "/9e3e8da7-e506-46c9-90e5-307e4ad30d29/dbf56dc2-3990-4801-b0e0-f59d351af64c/b5f6c072-28d6-4dbf-9d97-d5b17dc4e7a5"
-					(reference "R3")
+					(reference "R14")
 					(unit 1)
 				)
 				(path "/9e3e8da7-e506-46c9-90e5-307e4ad30d29/dbf56dc2-3990-4801-b0e0-f59d351af64c/d7dd20e9-8027-4523-a1e0-5e82c0dab821"
-					(reference "R38")
+					(reference "R19")
 					(unit 1)
 				)
 			)
@@ -1538,7 +1573,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "6acd8ca2-dbde-49c5-ac70-9d97ccbc0271")
-		(property "Reference" "#PWR01"
+		(property "Reference" "#PWR011"
 			(at 119.38 101.6 0)
 			(effects
 				(font
@@ -1588,11 +1623,11 @@
 		(instances
 			(project "LiF_FC-PCB_rev1"
 				(path "/9e3e8da7-e506-46c9-90e5-307e4ad30d29/dbf56dc2-3990-4801-b0e0-f59d351af64c/b5f6c072-28d6-4dbf-9d97-d5b17dc4e7a5"
-					(reference "#PWR01")
+					(reference "#PWR011")
 					(unit 1)
 				)
 				(path "/9e3e8da7-e506-46c9-90e5-307e4ad30d29/dbf56dc2-3990-4801-b0e0-f59d351af64c/d7dd20e9-8027-4523-a1e0-5e82c0dab821"
-					(reference "#PWR017")
+					(reference "#PWR015")
 					(unit 1)
 				)
 			)
@@ -1608,7 +1643,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "75fb023a-8e15-4305-8788-a8a5cbf744bd")
-		(property "Reference" "D10"
+		(property "Reference" "D3"
 			(at 175.26 82.8674 90)
 			(effects
 				(font
@@ -1626,7 +1661,7 @@
 				(justify right)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "LED_SMD:LED_0805_2012Metric"
 			(at 171.45 82.55 0)
 			(effects
 				(font
@@ -1662,6 +1697,24 @@
 				(hide yes)
 			)
 		)
+		(property "DKPN" "5366-LC170JRCT-U1CT-ND"
+			(at 171.45 82.55 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "PN" "LC170JRCT-U1"
+			(at 171.45 82.55 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "63d69e53-6b96-440e-b0b4-17b435d03194")
 		)
@@ -1671,11 +1724,11 @@
 		(instances
 			(project "LiF_FC-PCB_rev1"
 				(path "/9e3e8da7-e506-46c9-90e5-307e4ad30d29/dbf56dc2-3990-4801-b0e0-f59d351af64c/b5f6c072-28d6-4dbf-9d97-d5b17dc4e7a5"
-					(reference "D10")
+					(reference "D3")
 					(unit 1)
 				)
 				(path "/9e3e8da7-e506-46c9-90e5-307e4ad30d29/dbf56dc2-3990-4801-b0e0-f59d351af64c/d7dd20e9-8027-4523-a1e0-5e82c0dab821"
-					(reference "D13")
+					(reference "D6")
 					(unit 1)
 				)
 			)
@@ -1691,7 +1744,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "87fac4c2-74c2-4417-91bc-664f1758fcc6")
-		(property "Reference" "D2"
+		(property "Reference" "D5"
 			(at 125.73 115.8874 90)
 			(effects
 				(font
@@ -1709,7 +1762,7 @@
 				(justify right)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "LED_SMD:LED_0805_2012Metric"
 			(at 121.92 115.57 0)
 			(effects
 				(font
@@ -1745,6 +1798,24 @@
 				(hide yes)
 			)
 		)
+		(property "DKPN" "5366-LC170JRCT-U1CT-ND"
+			(at 121.92 115.57 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "PN" "LC170JRCT-U1"
+			(at 121.92 115.57 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "a7aee67d-a04e-46c2-af43-9a1fa7d26adc")
 		)
@@ -1754,11 +1825,11 @@
 		(instances
 			(project "LiF_FC-PCB_rev1"
 				(path "/9e3e8da7-e506-46c9-90e5-307e4ad30d29/dbf56dc2-3990-4801-b0e0-f59d351af64c/b5f6c072-28d6-4dbf-9d97-d5b17dc4e7a5"
-					(reference "D2")
+					(reference "D5")
 					(unit 1)
 				)
 				(path "/9e3e8da7-e506-46c9-90e5-307e4ad30d29/dbf56dc2-3990-4801-b0e0-f59d351af64c/d7dd20e9-8027-4523-a1e0-5e82c0dab821"
-					(reference "D15")
+					(reference "D8")
 					(unit 1)
 				)
 			)
@@ -1774,7 +1845,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "900100e1-4816-4a41-8ca7-0a8a75ef8751")
-		(property "Reference" "R4"
+		(property "Reference" "R11"
 			(at 121.92 86.3599 0)
 			(effects
 				(font
@@ -1828,11 +1899,11 @@
 		(instances
 			(project "LiF_FC-PCB_rev1"
 				(path "/9e3e8da7-e506-46c9-90e5-307e4ad30d29/dbf56dc2-3990-4801-b0e0-f59d351af64c/b5f6c072-28d6-4dbf-9d97-d5b17dc4e7a5"
-					(reference "R4")
+					(reference "R11")
 					(unit 1)
 				)
 				(path "/9e3e8da7-e506-46c9-90e5-307e4ad30d29/dbf56dc2-3990-4801-b0e0-f59d351af64c/d7dd20e9-8027-4523-a1e0-5e82c0dab821"
-					(reference "R10")
+					(reference "R16")
 					(unit 1)
 				)
 			)
@@ -1848,7 +1919,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "97a2a8d5-ccc4-4899-b1f1-b9eaa11125be")
-		(property "Reference" "U?"
+		(property "Reference" "U3"
 			(at 146.05 66.04 0)
 			(effects
 				(font
@@ -1936,11 +2007,11 @@
 		(instances
 			(project "LiF_FC-PCB_rev1"
 				(path "/9e3e8da7-e506-46c9-90e5-307e4ad30d29/dbf56dc2-3990-4801-b0e0-f59d351af64c/b5f6c072-28d6-4dbf-9d97-d5b17dc4e7a5"
-					(reference "U?")
+					(reference "U3")
 					(unit 1)
 				)
 				(path "/9e3e8da7-e506-46c9-90e5-307e4ad30d29/dbf56dc2-3990-4801-b0e0-f59d351af64c/d7dd20e9-8027-4523-a1e0-5e82c0dab821"
-					(reference "U3")
+					(reference "U4")
 					(unit 1)
 				)
 			)
@@ -1956,7 +2027,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "c157a9b9-3b6d-4086-9efc-9ca41319d2fe")
-		(property "Reference" "R1"
+		(property "Reference" "R13"
 			(at 111.76 125.7299 0)
 			(effects
 				(font
@@ -1965,7 +2036,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "R"
+		(property "Value" "470"
 			(at 111.76 128.2699 0)
 			(effects
 				(font
@@ -1974,7 +2045,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric"
 			(at 107.442 127 90)
 			(effects
 				(font
@@ -2010,11 +2081,11 @@
 		(instances
 			(project "LiF_FC-PCB_rev1"
 				(path "/9e3e8da7-e506-46c9-90e5-307e4ad30d29/dbf56dc2-3990-4801-b0e0-f59d351af64c/b5f6c072-28d6-4dbf-9d97-d5b17dc4e7a5"
-					(reference "R1")
+					(reference "R13")
 					(unit 1)
 				)
 				(path "/9e3e8da7-e506-46c9-90e5-307e4ad30d29/dbf56dc2-3990-4801-b0e0-f59d351af64c/d7dd20e9-8027-4523-a1e0-5e82c0dab821"
-					(reference "R12")
+					(reference "R18")
 					(unit 1)
 				)
 			)
@@ -2030,7 +2101,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "eb7030bf-55b3-4830-a095-5940ec0cdb63")
-		(property "Reference" "R9"
+		(property "Reference" "R12"
 			(at 173.99 92.7099 0)
 			(effects
 				(font
@@ -2039,7 +2110,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "R"
+		(property "Value" "470"
 			(at 173.99 95.2499 0)
 			(effects
 				(font
@@ -2048,7 +2119,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric"
 			(at 169.672 93.98 90)
 			(effects
 				(font
@@ -2084,11 +2155,11 @@
 		(instances
 			(project "LiF_FC-PCB_rev1"
 				(path "/9e3e8da7-e506-46c9-90e5-307e4ad30d29/dbf56dc2-3990-4801-b0e0-f59d351af64c/b5f6c072-28d6-4dbf-9d97-d5b17dc4e7a5"
-					(reference "R9")
+					(reference "R12")
 					(unit 1)
 				)
 				(path "/9e3e8da7-e506-46c9-90e5-307e4ad30d29/dbf56dc2-3990-4801-b0e0-f59d351af64c/d7dd20e9-8027-4523-a1e0-5e82c0dab821"
-					(reference "R11")
+					(reference "R17")
 					(unit 1)
 				)
 			)
