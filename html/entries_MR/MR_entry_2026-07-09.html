@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<!--
+Author: Matvey Regentov
+-->
+
+<html lang="en">
+
+<head>
+	<title>MR Logbook Entry - 2026-07-09</title>
+	<meta charset="UTF-8">
+	<meta name="author" content="Matvey Regentov">
+	<meta name="description" content="MR Logbook Entry for 2026-07-09">
+	<meta name="robots" content="index, follow">
+	<meta http-equiv="Pragma" content="no-cache">
+
+	<link rel="icon" href="../../media/icons/LiF_icon.ico" type="image/x-icon">
+	<link rel="stylesheet" href="../../css/base.css">
+	<link rel="stylesheet" href="../../css/logbook_entry.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css">
+	<link rel="stylesheet" href="../../css/code_formatting.css">
+	<script>
+		window.MathJax = {
+			tex: {
+				inlineMath: [['\\(', '\\)'], ['$', '$']],
+				displayMath: [['\\[', '\\]'], ['$$', '$$']]
+			},
+			svg: { fontCache: 'global' }
+		};
+	</script>
+	<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+</head>
+
+<body>
+	<div id="navbar-placeholder" data-root="../../"></div>
+	<script src="../../js/navbar.js"></script>
+
+	<main class="page-wrapper">
+		<section class="intro-section logbook-entry-intro" id="page_top">
+			<div class="intro-text">
+				<p class="section-label">Daily Logbook Entry</p>
+				<h1>Logbook Entry, 2026-07-09 by Matvey Regentov</h1>
+				<p class="intro-description">Motor pulley geometry and material selection</p>
+				<div class="button-row">
+					<a href="../logbook_MR.html" class="button secondary-button">My Logbook Cover Page</a>
+					<a href="#log" class="button primary-button">Jump to Entry</a>
+					<a href="MR_entry_2026-07-06.html" class="button secondary-button">Previous Entry</a>
+					<a href="MR_entry_2026-07-10.html" class="button secondary-button">Next Entry</a>
+				</div>
+			</div>
+			<aside class="summary-card">
+				<h2>Entry Snapshot</h2>
+				<p><b>Date:</b> 2026-07-09</p>
+				<p><b>Author:</b> Matvey Regentov</p>
+				<p><b>Focus:</b> Motor pulley geometry and material selection</p>
+			</aside>
+		</section>
+
+		<section class="logbook-entry-content" id="log">
+			<h2 id="motor-pulley-assembly-redesign">Motor Pulley Assembly Redesign</h2>
+			<p>Motor pulley reference diameter: 33.4 mm
+				Motor pulley inner grove wrap angle: 194.36° × 3
+				Motor pulley outer grove wrap angle: 97.18° × 2
+				Total wrap angle:
+				$$
+				\theta_{total} = 3\times194.36^\circ + 2\times 97.18^\circ = 777.44^\circ
+				$$
+				Total wrap revolutions $n\approx2.16$</p>
+			<p>PLA: white + black, mb green, orange, red
+				PETG: black + clear</p>
+			<figure class="logbook-figure">
+				<img src="../../media/images/LiF-CAD_render_of_Pulley_Mount_assembly_rev_2.png"
+					alt="LiF - CAD render of Pulley Mount assembly rev 2" class="logbook-image centered-image"
+					style="max-width: 100%; height: auto;">
+				<figcaption>LiF - CAD render of Pulley Mount assembly rev 2</figcaption>
+			</figure>
+
+			<p>Finalized part colours and materials:</p>
+			<figure class="logbook-figure">
+				<img src="../../media/images/LiF-CAD_render_of_Pulley_Mount_assembly_rev_2_in_colour.png"
+					alt="LiF - CAD render of Pulley Mount assembly rev 2 in colour" class="logbook-image centered-image"
+					style="max-width: 100%; height: auto;">
+				<figcaption>LiF - CAD render of Pulley Mount assembly rev 2 in colour</figcaption>
+			</figure>
+
+			<p>Added entries to parts print request sheet.</p>
+
+		</section>
+
+		<section class="logbook-entry-content sources-section" id="sources">
+			<h2>Sources</h2>
+			<p>No external sources were cited in this entry.</p>
+		</section>
+
+		<nav class="entry-date-nav" aria-label="Logbook date navigation">
+			<a href="MR_entry_2026-07-06.html" class="button secondary-button">Previous Entry</a>
+			<a href="MR_entry_2026-07-10.html" class="button secondary-button">Next Entry</a>
+		</nav>
+		<p class="top-link"><a href="#page_top">Go to the top of this page</a></p>
+	</main>
+
+	<footer class="site-footer">
+		<p>Copyright &copy; Matvey Regentov</p>
+	</footer>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+</body>
+
+</html>

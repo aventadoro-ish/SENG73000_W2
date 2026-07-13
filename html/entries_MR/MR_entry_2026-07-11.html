@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<!--
+Author: Matvey Regentov
+-->
+
+<html lang="en">
+
+<head>
+	<title>MR Logbook Entry - 2026-07-11</title>
+	<meta charset="UTF-8">
+	<meta name="author" content="Matvey Regentov">
+	<meta name="description" content="MR Logbook Entry for 2026-07-11">
+	<meta name="robots" content="index, follow">
+	<meta http-equiv="Pragma" content="no-cache">
+
+	<link rel="icon" href="../../media/icons/LiF_icon.ico" type="image/x-icon">
+	<link rel="stylesheet" href="../../css/base.css">
+	<link rel="stylesheet" href="../../css/logbook_entry.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css">
+	<link rel="stylesheet" href="../../css/code_formatting.css">
+	<script>
+		window.MathJax = {
+			tex: {
+				inlineMath: [['\\(', '\\)'], ['$', '$']],
+				displayMath: [['\\[', '\\]'], ['$$', '$$']]
+			},
+			svg: { fontCache: 'global' }
+		};
+	</script>
+	<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+</head>
+
+<body>
+	<div id="navbar-placeholder" data-root="../../"></div>
+	<script src="../../js/navbar.js"></script>
+
+	<main class="page-wrapper">
+		<section class="intro-section logbook-entry-intro" id="page_top">
+			<div class="intro-text">
+				<p class="section-label">Daily Logbook Entry</p>
+				<h1>Logbook Entry, 2026-07-11 by Matvey Regentov</h1>
+				<p class="intro-description">Load-cell, CAN, and power-path schematic redesign</p>
+				<div class="button-row">
+					<a href="../logbook_MR.html" class="button secondary-button">My Logbook Cover Page</a>
+					<a href="#log" class="button primary-button">Jump to Entry</a>
+					<a href="MR_entry_2026-07-10.html" class="button secondary-button">Previous Entry</a>
+					<a href="MR_entry_2026-07-12.html" class="button secondary-button">Next Entry</a>
+				</div>
+			</div>
+			<aside class="summary-card">
+				<h2>Entry Snapshot</h2>
+				<p><b>Date:</b> 2026-07-11</p>
+				<p><b>Author:</b> Matvey Regentov</p>
+				<p><b>Focus:</b> Load-cell, CAN, and power-path schematic redesign</p>
+			</aside>
+		</section>
+
+		<section class="logbook-entry-content" id="log">
+			<h3 id="deep-dive-into-rita-s-load-cell-schematics">Deep-dive into Rita&#39;s Load Cell schematics</h3>
+			<p>I reworked Rita&#39;s load cell circuit with the help of ChatGPT. I used it to point me in the right
+				direction on circuit design for load cell signal conditioning since I have never worked with this type
+				of sensor before.</p>
+			<figure class="logbook-figure">
+				<img src="../../media/images/LiF-FC_PCB_Fixed_Load_Cell_Schematic_2026-07-11.png"
+					alt="Revised LC signal conditioning circuit" class="logbook-image centered-image"
+					style="max-width: 100%; height: auto;">
+				<figcaption>Revised LC signal conditioning circuit</figcaption>
+			</figure>
+
+
+
+			<p>Added reference voltage $V_{REF}$ source: <code>NCV8114ASN165T1G</code><sup><a href="#source-4"
+						aria-label="Source 4">[4]</a></sup> LDO
+				Added noise filtering capacitor between $V^{+}$ and $V^{-}$ terminals of the in-amp<sup><a
+						href="#source-3" aria-label="Source 3">[3]</a></sup>. This cap in combination with 47-ohm
+				resistors filters EMI and transient noise
+				Added output filtering using recommended values for ESP32-S3 ADC<sup><a href="#source-5"
+						aria-label="Source 5">[5]</a></sup>.
+				Used JST-PH2.0 connector for load cell. This connector family will be used as standard for this PCB.</p>
+			<p>It was recommended that ideal 47-ohm resistance at input should be implemented using matched resistors,
+				however such components are expensive, and for the purposes of load-presence detection, this is
+				unnecessary.</p>
+			<h3 id="load-cell-parameters">Load Cell Parameters</h3>
+			<p>The load-cell parameters<sup><a href="#source-1" aria-label="Source 1">[1]</a></sup><sup><a
+						href="#source-2" aria-label="Source 2">[2]</a></sup> used were:</p>
+			<ul>
+				<li>Hysteresis: 0.03% F.S</li>
+				<li>Model No.: YZC 131</li>
+				<li>Material: aluminium</li>
+				<li>Dimensions (L × W × H): 75 × 12.6 × 12.6 mm</li>
+				<li>Rated output: 1.0 ± 0.1 mV/V</li>
+				<li>Non-linear output: ±0.03% F.S</li>
+				<li>Output impedance: 1000 ±10% Ω</li>
+				<li>Repeatability: 0.03% F.S</li>
+				<li>Creep (5 minutes): 0.05% F.S</li>
+				<li>Zero balance: ±0.1 mV/V</li>
+				<li>Operating temperature: −20 to 65 °C</li>
+			</ul>
+			<h3 id="can-transceiver">CAN Transceiver</h3>
+			<p>I swapped Rita&#39;s CAN TRX IC to one used in Molybdenum Penguin boards, since her IC can only operate
+				at either 3.3 V or 5 V. This makes it incompatible with our 3.3 V MCU and 5 V CAN bus.
+				<code>MCP2542FD-E/SN</code> is used instead.
+				Vertical USB-C connector was swapped for horizontal connector from MoP boards: <code>USB4105-GF-A</code>
+			</p>
+			<figure class="logbook-figure">
+				<img src="../../media/images/LiF-FC_PCB_Fixed_CAN_TRX_Schematic_2026-07-11.png"
+					alt="LiF - FC PCB Fixed CAN TRX Schematic 2026-07-11" class="logbook-image centered-image"
+					style="max-width: 100%; height: auto;">
+				<figcaption>LiF - FC PCB Fixed CAN TRX Schematic 2026-07-11</figcaption>
+			</figure>
+
+			<h2 id="power-regulation-w-o-usb-pd">Power regulation w/o USB PD</h2>
+			<p>Now that Power Delivery feature is excluded from the project, I need to rethink power distribution. How
+				to place fuses such that fault with a given node does not result in power outages on downstream nodes?
+			</p>
+			<figure class="logbook-figure">
+				<img src="../../media/images/LiF-Cascaded_Power_Distribution_Between_Nodes_wo_USB_PD_2026-07-09.png"
+					alt="High-level Power Path diagram" class="logbook-image centered-image"
+					style="max-width: 100%; height: auto;">
+				<figcaption>High-level Power Path diagram</figcaption>
+			</figure>
+
+
+
+
+			<figure class="logbook-figure">
+				<img src="../../media/images/LiF-FC_PCB_Revised_Power_Path_and_Fault_Modes_2026-07-11.png"
+					alt="Power Path Diagram and Fault Modes" class="logbook-image centered-image"
+					style="max-width: 100%; height: auto;">
+				<figcaption>Power Path Diagram and Fault Modes</figcaption>
+			</figure>
+
+
+
+			<p>The initial approach uses a 3-channel power OR-ing block to switch between 1 of 3 voltage inputs:</p>
+			<ul>
+				<li>Upstream CAN USB port</li>
+				<li>Programming USB port</li>
+				<li>Auxiliary power supply port</li>
+			</ul>
+			<p>The diagram shows 2 possible failure modes:</p>
+			<ul>
+				<li>short in system of the node<ul>
+						<li>fuse to the system is tripped</li>
+						<li>short circuit does not result in cascaded failure</li>
+					</ul>
+				</li>
+				<li>short in power regulation system of the node<ul>
+						<li>fuse on the upstream node is tripped</li>
+						<li>this and downstream node lose power</li>
+					</ul>
+				</li>
+			</ul>
+			<p>The second failure mode considered results in cascaded power outage to downstream nodes. This is deemed
+				to be acceptable in a test PCB, since this mode is deemed to always result in power outage downstream.
+				The only way to avoid it is to bypass the power OR-ing circuit entirely. This would require manual
+				configuration of the power path. This is a valid option, and the PCB will be designed with this in mind:
+				it should be possible to bypass the automatic power path configuration through adding/removing jumpers
+				or 0-ohm resistors.
+				A possible way to mitigate this failure mode is to ensure power OR-ing circuit is thoroughly tested and
+				is made very reliable.</p>
+			<p>Another issue with the current approach is the OR-ing controller itself (<code>LM5050-1</code>), which
+				does not implement priority or arbitration between multiple available voltage sources. It simply picks
+				the one with highest voltage. This means that potentially a programming USB port may be powering not
+				only this PCB, but the downstream PCBs as well. This is dangerous, as the source for that USB is a PC,
+				and it should not be used to source a lot of current. Therefore, 2 changes need to be made:</p>
+			<ul>
+				<li>use priority-based power OR-ing controller</li>
+				<li>set up power path such that programming USB can only power the node it is connected to, and can
+					never power downstream nodes</li>
+			</ul>
+			<figure class="logbook-figure">
+				<img src="../../media/images/LiF-FC_PCB_Power_Path_with_Priority_2026-07-11.png"
+					alt="Priority-based segmented power OR-ing and power path" class="logbook-image centered-image"
+					style="max-width: 100%; height: auto;">
+				<figcaption>Priority-based segmented power OR-ing and power path</figcaption>
+			</figure>
+
+
+
+
+			<p>Using <code>TPS2117DRLR</code> IC in priority mode:</p>
+			<ul>
+				<li>set switchover threshold to 4V</li>
+				<li>switchover occurs when voltage on RP1 pin drops below VREF=1V</li>
+				<li>30k / 10k voltage divider is used</li>
+			</ul>
+			<p><code>TPS2117DRLR</code> is an amazing component for this application:</p>
+			<ul>
+				<li>up to 5.5 V</li>
+				<li>max current of 4 A</li>
+				<li>priority-based mode</li>
+				<li>small package</li>
+				<li>cheap unit cost</li>
+			</ul>
+			<p>The only downside is that the only package this IC comes in is nearly lead-less DRL package. This is
+				considered acceptable, since other ICs don&#39;t fit the application as well as this IC.</p>
+
+		</section>
+
+		<section class="logbook-entry-content sources-section" id="sources">
+			<h2>Sources</h2>
+			<ol class="source-list">
+				<li id="source-1"><span class="citation-label">[1]</span> Projtronics, <em>YZC-131 Weighing Load Cell
+						Sensor, 1 kg</em>. <a
+						href="https://projtronics.com/products/yzc-131-weighing-load-cell-sensor-1kg">https://projtronics.com/products/yzc-131-weighing-load-cell-sensor-1kg</a>
+				</li>
+				<li id="source-2"><span class="citation-label">[2]</span> BC Robotics, <em>Load Cell—1 kg Straight Bar
+						(YZC-131)</em>. <a
+						href="https://bc-robotics.com/shop/load-cell-1kg-straight-bar-yzc-131/">https://bc-robotics.com/shop/load-cell-1kg-straight-bar-yzc-131/</a>
+				</li>
+				<li id="source-3"><span class="citation-label">[3]</span> Microchip Technology, <em>MCP6N11
+						Instrumentation Amplifier Datasheet</em>. <a
+						href="https://ww1.microchip.com/downloads/en/DeviceDoc/25073A.pdf">https://ww1.microchip.com/downloads/en/DeviceDoc/25073A.pdf</a>
+				</li>
+				<li id="source-4"><span class="citation-label">[4]</span> onsemi, <em>NCV8114 300 mA CMOS Low-Iq LDO
+						Datasheet</em>. <a
+						href="https://www.onsemi.com/pdf/datasheet/ncv8114-d.pdf">https://www.onsemi.com/pdf/datasheet/ncv8114-d.pdf</a>
+				</li>
+				<li id="source-5"><span class="citation-label">[5]</span> Espressif Systems, <em>ESP32-S3 Series
+						Datasheet</em>. <a
+						href="https://documentation.espressif.com/esp32-s3_datasheet_en.pdf">https://documentation.espressif.com/esp32-s3_datasheet_en.pdf</a>
+				</li>
+			</ol>
+		</section>
+
+		<nav class="entry-date-nav" aria-label="Logbook date navigation">
+			<a href="MR_entry_2026-07-10.html" class="button secondary-button">Previous Entry</a>
+			<a href="MR_entry_2026-07-12.html" class="button secondary-button">Next Entry</a>
+		</nav>
+		<p class="top-link"><a href="#page_top">Go to the top of this page</a></p>
+	</main>
+
+	<footer class="site-footer">
+		<p>Copyright &copy; Matvey Regentov</p>
+	</footer>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+</body>
+
+</html>
