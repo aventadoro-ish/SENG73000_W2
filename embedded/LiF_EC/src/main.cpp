@@ -9,7 +9,7 @@
 #include "Motor.h"
 #include "CAN.h"
 #include "utils.h"
-
+#include "LiF_LCD.h"
 
 
 // -----------------------------------------------------------------------------
@@ -118,6 +118,43 @@ void setup() {
         ;
     }
     Serial.println("LiF EC - Setup Started");
+
+    if (!LiF_LCD::lcd.begin()) {
+        Serial.println("LCD initialization failed");
+
+        while (true) {
+            delay(1000);
+        }
+    }
+    LiF_LCD::lcd.clear();
+    LiF_LCD::lcd.setCursor(0, 0);
+    LiF_LCD::lcd.print("LiF EC");
+
+    LiF_LCD::lcd.setCursor(0, 1);
+    LiF_LCD::lcd.print("LCD demo");
+    delay(2000);
+
+    LiF_LCD::lcd.clear();
+    LiF_LCD::lcd.setCursor(0, 0);
+
+    int charCnt = 0;
+    while (1) {
+        if (Serial.available()) {
+            char ch = Serial.read();
+            LiF_LCD::lcd.print(ch);
+            charCnt++;
+
+            if (charCnt == 16) {
+                LiF_LCD::lcd.setCursor(0, 1);
+            } else if (charCnt == 32) {
+                LiF_LCD::lcd.clear();
+                LiF_LCD::lcd.setCursor(0, 0);
+                charCnt = 0;
+            }
+        }
+    }
+
+
     // myWire = TwoWire(I2C2_SDA, I2C2_SCL);
     // myWire.begin();
     Wire.setSDA(I2C2_SDA);
