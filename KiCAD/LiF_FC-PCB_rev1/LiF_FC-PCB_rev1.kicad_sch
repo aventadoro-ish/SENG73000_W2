@@ -23,6 +23,18 @@
 		)
 		(uuid "09e22f6e-8a68-4d8c-b4d1-00f69aa7d79e")
 	)
+	(text "Lithium Firefly - Custom FC/CC PCB"
+		(exclude_from_sim no)
+		(at 134.112 17.78 0)
+		(effects
+			(font
+				(size 5.08 5.08)
+				(thickness 0.762)
+				(bold yes)
+			)
+		)
+		(uuid "168c4fde-8f23-4d49-ae87-ed22482ba4ea")
+	)
 	(text "60mA"
 		(exclude_from_sim no)
 		(at 77.724 57.404 0)
@@ -75,10 +87,10 @@
 	)
 	(text "ESP32-S3"
 		(exclude_from_sim no)
-		(at 160.02 30.988 0)
+		(at 97.282 37.084 0)
 		(effects
 			(font
-				(size 3.81 3.81)
+				(size 2.54 2.54)
 				(thickness 0.762)
 				(bold yes)
 			)
@@ -525,7 +537,7 @@
 	)
 	(wire
 		(pts
-			(xy 15.24 53.34) (xy 15.24 26.67)
+			(xy 15.24 53.34) (xy 15.24 29.21)
 		)
 		(stroke
 			(width 0)
@@ -615,7 +627,7 @@
 	)
 	(wire
 		(pts
-			(xy 15.24 26.67) (xy 24.13 26.67)
+			(xy 15.24 29.21) (xy 24.13 29.21)
 		)
 		(stroke
 			(width 0)
@@ -1582,8 +1594,8 @@
 		)
 	)
 	(sheet
-		(at 24.13 22.86)
-		(size 246.38 25.4)
+		(at 24.13 26.67)
+		(size 246.38 21.59)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -1598,7 +1610,7 @@
 		)
 		(uuid "fa6eb845-b5e3-4a8e-9c24-c1b567f4e987")
 		(property "Sheetname" "MCU"
-			(at 24.13 22.1484 0)
+			(at 24.13 25.9584 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1716,7 +1728,7 @@
 			)
 		)
 		(pin "3V3_{IN}" input
-			(at 24.13 26.67 180)
+			(at 24.13 29.21 180)
 			(uuid "aa96b1c4-586d-436b-a772-be58ee351a55")
 			(effects
 				(font
