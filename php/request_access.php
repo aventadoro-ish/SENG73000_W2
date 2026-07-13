@@ -1,9 +1,13 @@
 <?php
 
+require_once __DIR__ . '/db.php';
+
+
 $submitted = $_SERVER['REQUEST_METHOD'] === 'POST';
 
 $errors = [];
 
+// define variables
 $firstname = '';
 $lastname = '';
 $email = '';
@@ -12,15 +16,15 @@ $fac_or_student = '';
 $involvement = [];
 $details = '';
 $drives_car = '';
+$involvementText = '';
 
-$generatedUsername = '';
-$generatedPassword = '';
-$jsonSaved = false;
-$jsonError = '';
+$requestSaved = false;
+$requestId = null;
 
-if ($submitted) {
+if ($submitted) 
+{
 
-    // Assign elements (matching your HTML's actual field names)
+    // match HTML names (from form submmited values)
     $firstname = $_POST['firstName'] ?? '';
     $lastname = $_POST['lastName'] ?? '';
     $email = $_POST['email'] ?? '';
@@ -28,12 +32,12 @@ if ($submitted) {
     $fac_or_student = $_POST['fac_or_student'] ?? '';
     $involvement = $_POST['involvement'] ?? [];
     $details = $_POST['details'] ?? '';
+    $drives_car = $_POST['drives_car'] ?? '';
 
+    // involvement must be an array
     if (!is_array($involvement)) {
         $involvement = [$involvement];
     }
-
-    $drives_car = $_POST['drives_car'] ?? '';
 
     // Validating input
     // First name
@@ -68,16 +72,64 @@ if ($submitted) {
         $errors[] = "Please check at least one box for involvement.";
     }
 
-    // No errors, Yeppie!
-    if (empty($errors)) {
-        setcookie('firstname', $firstname);
-        setcookie('lastname', $lastname);
-        setcookie('email', $email);
-        setcookie('birthday', $birthday);
-        setcookie('fac_or_student', $fac_or_student);
-        setcookie('involvement', implode(',', $involvement));
+    if (strlen($details) > 180) { {
+        $errors[] = "Details cannot exceed 180 characters";
     }
 }
+    // No errors, Yeppie!
+    if (empty($errors)) {
+        $involvementText = implode(', ', $involvement);
+        // format it into SQL using try-catch, my beloved:
+        try {
+            $sql = 
+            "
+            INSERT INTO access_requests (
+                first_name,
+                last_name,
+                email,
+                birthday,
+                person_type,
+                involvement,
+                drives_car,
+                details)
+        
+            VALUES (
+                :first_name,
+                :last_name,
+                :email,
+                :birthday,
+                :person_type,
+                :involvement,
+                :drives_car,
+                :details
+            ) 
+             ";
+
+            $statement = $pdo->prepare($sql);
+
+            $statement->execute([
+                ':first_name' => $firstname,
+                ':last_name' => $lastname,
+                ':email' => $email,
+                ':birthday' => $birthday,
+                ':person_type' => $fac_or_student,
+                ':involvement' => $involvementText,
+                ':drives_car' => $drives_car,
+                ':details' => $details
+            ]);
+
+            $requestId = $pdo->lastInsertId();
+            $requestSaved = true;    
+        } 
+        catch (PDOException $e) 
+        {
+            $errors[] = "The access request could not be saved/failed to load";
+            error_log($e->getMessage());
+        }
+    }
+}
+
+
 
 // Sanitizing...
 $safeFirstName = htmlspecialchars($firstname, ENT_QUOTES, 'UTF-8');
@@ -86,29 +138,9 @@ $safeEmail = htmlspecialchars($email, ENT_QUOTES, 'UTF-8');
 $safeBirthday = htmlspecialchars($birthday, ENT_QUOTES, 'UTF-8');
 $safeOccupation = htmlspecialchars($fac_or_student, ENT_QUOTES, 'UTF-8');
 $safeInvolvement = htmlspecialchars(implode(', ', $involvement), ENT_QUOTES, 'UTF-8');
-$safeDrivesCar = htmlspecialchars(
-    $drives_car,
-    ENT_QUOTES,
-    'UTF-8'
-);
+$safeDrivesCar = htmlspecialchars($drives_car, ENT_QUOTES, 'UTF-8');
+$safeDetails = htmlspecialchars($details, ENT_QUOTES, 'UTF-8');
 
-$safeDetails = htmlspecialchars(
-    $details,
-    ENT_QUOTES,
-    'UTF-8'
-);
-
-// Output
-if (!$submitted) {
-    echo "<p>Please submit the request form.</p>";
-} elseif (!empty($errors)) {
-    echo "<h2>Please fix the following:</h2>";
-    echo "<ul>";
-    foreach ($errors as $error) {
-        echo "<li>" . htmlspecialchars($error) . "</li>";
-    }
-    echo "</ul>";
-}
 ?>
 
 <!DOCTYPE html>
@@ -139,20 +171,20 @@ if (!$submitted) {
                 <p class="section-label">Access Request Status</p>
 
                 <?php if (!$submitted): ?>
-                    <h1>No Request Submitted</h1>
-                    <p class="intro-description">
-                        This page displays the result after the request access form is submitted.
-                    </p>
+                <h1>No Request Submitted</h1>
+                <p class="intro-description">
+                    This page displays the result after the request access form is submitted.
+                </p>
                 <?php elseif (!empty($errors)): ?>
-                    <h1>Request Needs Attention</h1>
-                    <p class="intro-description">
-                        The access request was received, but some fields need to be corrected before it can be accepted.
-                    </p>
+                <h1>Request Needs Attention</h1>
+                <p class="intro-description">
+                    The access request was received, but some fields need to be corrected before it can be accepted.
+                </p>
                 <?php else: ?>
-                    <h1>Request Submitted</h1>
-                    <p class="intro-description">
-                        Your access request was submitted successfully. The information below summarizes the request.
-                    </p>
+                <h1>Request Submitted</h1>
+                <p class="intro-description">
+                    Your access request was submitted successfully. The information below summarizes the request.
+                </p>
                 <?php endif; ?>
 
                 <div class="button-row">
@@ -179,67 +211,68 @@ if (!$submitted) {
             </aside>
         </section>
 
-        <section class="auth-result-section <?php echo !empty($errors) ? 'auth-error-section' : 'auth-success-section'; ?>">
+        <section
+            class="auth-result-section <?php echo !empty($errors) ? 'auth-error-section' : 'auth-success-section'; ?>">
             <?php if (!$submitted): ?>
-                <p class="section-label">No Form Data</p>
-                <h2>Please submit the request form</h2>
-                <p>
-                    Use the button above to return to the request access page.
-                </p>
+            <p class="section-label">No Form Data</p>
+            <h2>Please submit the request form</h2>
+            <p>
+                Use the button above to return to the request access page.
+            </p>
             <?php elseif (!empty($errors)): ?>
-                <p class="section-label">Validation Errors</p>
-                <h2>Please fix the following</h2>
+            <p class="section-label">Validation Errors</p>
+            <h2>Please fix the following</h2>
 
-                <ul class="auth-message-list">
-                    <?php foreach ($errors as $error): ?>
-                        <li><?php echo htmlspecialchars($error, ENT_QUOTES, 'UTF-8'); ?></li>
-                    <?php endforeach; ?>
-                </ul>
+            <ul class="auth-message-list">
+                <?php foreach ($errors as $error): ?>
+                <li><?php echo htmlspecialchars($error, ENT_QUOTES, 'UTF-8'); ?></li>
+                <?php endforeach; ?>
+            </ul>
             <?php else: ?>
-                <p class="section-label">Submitted Values</p>
-                <h2>Access Request Details</h2>
+            <p class="section-label">Submitted Values</p>
+            <h2>Access Request Details</h2>
 
-                <div class="auth-detail-grid">
-                    <div class="auth-detail-card">
-                        <h3>First Name</h3>
-                        <p><?php echo $safeFirstName; ?></p>
-                    </div>
-
-                    <div class="auth-detail-card">
-                        <h3>Last Name</h3>
-                        <p><?php echo $safeLastName; ?></p>
-                    </div>
-
-                    <div class="auth-detail-card">
-                        <h3>Email</h3>
-                        <p><?php echo $safeEmail; ?></p>
-                    </div>
-
-                    <div class="auth-detail-card">
-                        <h3>Birthday</h3>
-                        <p><?php echo $safeBirthday; ?></p>
-                    </div>
-
-                    <div class="auth-detail-card">
-                        <h3>Faculty/Student</h3>
-                        <p><?php echo $safeOccupation; ?></p>
-                    </div>
-
-                    <div class="auth-detail-card">
-                        <h3>Involvement</h3>
-                        <p><?php echo $safeInvolvement; ?></p>
-                    </div>
-
-                    <div class="auth-detail-card">
-                        <h3>Drives a Car</h3>
-                        <p><?php echo $safeDrivesCar; ?></p>
-                    </div>
-
-                    <div class="auth-detail-card wide-card">
-                        <h3>Other Details</h3>
-                        <p><?php echo $safeDetails === '' ? 'No additional details provided.' : $safeDetails; ?></p>
-                    </div>
+            <div class="auth-detail-grid">
+                <div class="auth-detail-card">
+                    <h3>First Name</h3>
+                    <p><?php echo $safeFirstName; ?></p>
                 </div>
+
+                <div class="auth-detail-card">
+                    <h3>Last Name</h3>
+                    <p><?php echo $safeLastName; ?></p>
+                </div>
+
+                <div class="auth-detail-card">
+                    <h3>Email</h3>
+                    <p><?php echo $safeEmail; ?></p>
+                </div>
+
+                <div class="auth-detail-card">
+                    <h3>Birthday</h3>
+                    <p><?php echo $safeBirthday; ?></p>
+                </div>
+
+                <div class="auth-detail-card">
+                    <h3>Faculty/Student</h3>
+                    <p><?php echo $safeOccupation; ?></p>
+                </div>
+
+                <div class="auth-detail-card">
+                    <h3>Involvement</h3>
+                    <p><?php echo $safeInvolvement; ?></p>
+                </div>
+
+                <div class="auth-detail-card">
+                    <h3>Drives a Car</h3>
+                    <p><?php echo $safeDrivesCar; ?></p>
+                </div>
+
+                <div class="auth-detail-card wide-card">
+                    <h3>Other Details</h3>
+                    <p><?php echo $safeDetails === '' ? 'No additional details provided.' : $safeDetails; ?></p>
+                </div>
+            </div>
             <?php endif; ?>
         </section>
 

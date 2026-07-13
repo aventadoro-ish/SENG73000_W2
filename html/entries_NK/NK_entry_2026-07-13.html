@@ -1,0 +1,824 @@
+<!doctype html>
+<!--
+Author: Nick Kapuka
+-->
+
+<html lang="en">
+  <head>
+    <title>NK Logbook Entry - 2026-07-13</title>
+    <meta charset="UTF-8" />
+    <meta name="author" content="Nick Kapuka" />
+    <meta name="description" content="NK Logbook Entry" />
+    <meta name="robots" content="index, follow" />
+    <meta http-equiv="Pragma" content="no-cache" />
+
+    <link rel="icon" href="../../media/icons/LiF_icon.ico" type="image/x-icon" />
+
+    <!-- shared website styling -->
+    <link rel="stylesheet" href="../../css/base.css" />
+
+    <!-- logbook entry page styling -->
+    <link rel="stylesheet" href="../../css/logbook_entry.css" />
+
+    <!-- Prism syntax highlighting theme -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css"
+    />
+    <link rel="stylesheet" href="../../css/code_formatting.css" />
+
+    <!-- MathJax for equations used in this entry -->
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [['\\(', '\\)']],
+          displayMath: [['\\[', '\\]']]
+        },
+        svg: { fontCache: 'global' }
+      };
+    </script>
+    <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+  </head>
+
+  <body>
+    <!-- Nav bar loaded by JavaScript -->
+    <div id="navbar-placeholder" data-root="../../"></div>
+    <script src="../../js/navbar.js"></script>
+
+    <main class="page-wrapper">
+      <section class="intro-section logbook-entry-intro" id="page_top">
+        <div class="intro-text">
+          <p class="section-label">Daily Logbook Entry</p>
+          <h1>Logbook Entry, 2026-07-13 by Nick Kapuka</h1>
+
+          <p class="intro-description">Fully setup 3 SQL tables, linked PHP</p>
+
+          <div class="button-row">
+            <a href="../logbook_NK.html" class="button secondary-button">My Logbook Cover Page</a>
+            <a href="#log" class="button primary-button">Jump to Entry</a>
+          </div>
+        </div>
+
+        <aside class="summary-card">
+          <h2>Entry Snapshot</h2>
+          <p><b>Date:</b> 2026-07-13</p>
+          <p><b>Author:</b> Nick Kapuka</p>
+          <p><b>Focus:</b> SQL, PHP, MariaDB</p>
+        </aside>
+      </section>
+
+      <section class="logbook-entry-content" id="log">
+<h2 id="entry-overview">Entry overview</h2>
+<p>Continue DB setup after receiving RY's work...</p>
+<h3 id="key-details">Key details</h3>
+<ul class="clean-list">
+<li><strong>Purpose:</strong> Adapt/implement/review RY's DB setup and finish the proper setup. Sync to R-Pi.</li>
+<li><strong>Component or tool:</strong> MariaDB</li>
+<li><strong>Result:</strong> Completed the three-table MariaDB structure, tested records and relationships, created a restricted database user, verified PHP connectivity, and connected the access-request form to the database.</li>
+<li><strong>Team contribution:</strong> Received RY's DB and continued to work on my own as it was further ahead.</li>
+</ul>
+<h3 id="reviewing-ry-s-db-work">Reviewing RY's DB work</h3>
+<p>Here is what I received from RY:</p>
+<p>After asking for DB progress over 2-3 days, she provided a zipfile of her work (rather than GitHub like I asked) but this was fine.</p>
+<p>Here are the files I received:</p>
+<pre class="code-block language-sql"><code class="language-sql">-- MySQL dump 10.13  Distrib 8.4.10, for Linux (x86_64)
+
+--
+
+-- Host: localhost    Database: elevatorDB
+
+-- ------------------------------------------------------
+
+-- Server version 8.4.10-0ubuntu0.26.04.1
+
+  
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+
+/*!50503 SET NAMES utf8mb4 */;
+
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+
+/*!40103 SET TIME_ZONE='+00:00' */;
+
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+  
+
+--
+
+-- Table structure for table `access_requests`
+
+--
+
+  
+
+DROP TABLE IF EXISTS `access_requests`;
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+
+/*!50503 SET character_set_client = utf8mb4 */;
+
+CREATE TABLE `access_requests` (
+
+  `id` int NOT NULL AUTO_INCREMENT,
+
+  `first_name` varchar(50) DEFAULT NULL,
+
+  `last_name` varchar(50) DEFAULT NULL,
+
+  `email` varchar(100) NOT NULL,
+
+  `birthday` date DEFAULT NULL,
+
+  `occupation` enum('faculty','student') DEFAULT NULL,
+
+  `involvement` varchar(255) DEFAULT NULL,
+
+  `drives_car` varchar(20) DEFAULT NULL,
+
+  `details` text,
+
+  `status` enum('pending','approved','denied') DEFAULT 'pending',
+
+  `submitted_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+
+  PRIMARY KEY (`id`)
+
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+  
+
+--
+
+-- Table structure for table `users`
+
+--
+
+  
+
+DROP TABLE IF EXISTS `users`;
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+
+/*!50503 SET character_set_client = utf8mb4 */;
+
+CREATE TABLE `users` (
+
+  `id` int NOT NULL AUTO_INCREMENT,
+
+  `username` varchar(50) NOT NULL,
+
+  `password_hash` varchar(255) NOT NULL,
+
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+
+  PRIMARY KEY (`id`),
+
+  UNIQUE KEY `username` (`username`)
+
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+  
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+</code></pre>
+<p>This schema is okay but the one I created in my last entry was slightly further ahead.</p>
+<p>It also runs:</p>
+<pre class="code-block language-sql"><code class="language-sql">DROP TABLE IF EXISTS ...
+</code></pre>
+<p>Which, if imported, can overwrite tables with matching names. Not a deal breaker but there should be other ways to handle this.</p>
+<p>It also features a Window compatability problem via:</p>
+<pre class="code-block language-sql"><code class="language-sql">COLLATE=utf8mb4_0900_ai_ci
+</code></pre>
+<p>This collation belongs to MySQL 8 and  isn’t fully supported by XAMPP MariaDB 10.4 server.</p>
+<p>A google search confirms this:</p>
+<figure>
+  <img alt="Search result confirming the MySQL-only collation compatibility issue" class="img_med" src="../../media/images/SQL_UnsupportedCollation.png" />
+  <figcaption><b>Search result confirming the MySQL-only collation compatibility issue</b></figcaption>
+</figure>
+
+<p>Additionally, I received the following &quot;db.php&quot;:</p>
+<pre class="code-block language-php"><code class="language-php">:&lt;?php
+
+    $host = 'localhost';
+
+    $dbname = 'elevatorDB';
+
+    $dbuser = 'elevator_user';
+
+    $dbpass = 'ChooseAPassword123';
+
+    try {
+
+        <span class="math-inline">\(pdo = new PDO("mysql:host=\)</span>host;dbname=<span class="math-inline">\(dbname;charset=utf8", \)</span>dbuser, $dbpass);
+
+        $pdo-&gt;setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+    } catch (PDOException $e) {
+
+        die("Database connection failed: " . $e-&gt;getMessage());
+
+    }
+
+    ?&gt;
+</code></pre>
+<p>It should work but it needs to be developed further to be functional.</p>
+      </section>
+      <section class="logbook-entry-content">
+<h2 id="db-setup">DB Setup</h2>
+<h3 id="continuing-with-db-setup-from-last-entry">Continuing with DB setup from last entry</h3>
+<p>Last time I created two tables:</p>
+<pre class="code-block language-sql"><code class="language-sql">CREATE TABLE access_requests
+CREATE TABLE users
+</code></pre>
+<p>The first one worked with request_access logic, storing whatever users enter when trying to request access to the website. All the entries come from the form on the website:</p>
+<figure>
+  <img alt="Website access-request form used to collect database values" class="img_med" src="../../media/images/Website_RequestAccessPage.png" />
+  <figcaption><b>Website access-request form used to collect database values</b></figcaption>
+</figure>
+
+<p>The other table, users, is what allows users to log into the website and will be used to reference credentials. It stores usernames, hashed passwords, emails, last logged in dates, etc.</p>
+<p>From here, we need one more table, the actual elevator control and logging table. I created it below:</p>
+<pre class="code-block language-sql"><code class="language-sql">MariaDB [(none)]&gt; use lif_elevator
+Database changed
+MariaDB [lif_elevator]&gt; CREATE TABLE elevator_requests (
+    -&gt;     elevator_request_id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    -&gt;     request_type VARCHAR(20) NOT NULL,
+    -&gt;     requested_floor TINYINT UNSIGNED NOT NULL,
+    -&gt;     requested_by_user_id INT UNSIGNED,
+    -&gt;     source_controller VARCHAR(30) NOT NULL,
+    -&gt;     request_status VARCHAR(20) NOT NULL DEFAULT 'pending',
+    -&gt;     requested_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    -&gt;     accepted_at DATETIME,
+    -&gt;     completed_at DATETIME,
+    -&gt;     failure_reason VARCHAR(255),
+    -&gt;     PRIMARY KEY (elevator_request_id),
+    -&gt;     CONSTRAINT fk_elevator_request_user
+    -&gt;         FOREIGN KEY (requested_by_user_id)
+    -&gt;         REFERENCES users(user_id)
+    -&gt;         ON UPDATE CASCADE
+    -&gt;         ON DELETE SET NULL
+    -&gt; ) ENGINE = InnoDB;
+Query OK, 0 rows affected (0.027 sec)
+
+MariaDB [lif_elevator]&gt; show tables;
++------------------------+
+| Tables_in_lif_elevator |
++------------------------+
+| access_requests        |
+| elevator_requests      |
+| users                  |
++------------------------+
+3 rows in set (0.000 sec)
+
+MariaDB [lif_elevator]&gt; 
+</code></pre>
+<p>This table is essentially all the elevator handling logic. It contains request types (manual vs remote), the floors, where the request came from, when it was requested, if it is pending/completed, etc.</p>
+<p>Here's an example of how it will look:</p>
+<h4 id="website-request-remote">Website request (remote):</h4>
+<pre class="code-block language-text"><code class="language-text">request_type: remote
+requested_floor: 3
+requested_by_user_id: 1
+source_controller: website
+request_status: completed
+</code></pre>
+<h4 id="manual-floor-controller-request">Manual floor-controller request:</h4>
+<pre class="code-block language-text"><code class="language-text">request_type: manual
+requested_floor: 2
+requested_by_user_id: NULL
+source_controller: F2
+request_status: completed
+</code></pre>
+<p>Now we have three database tables.</p>
+<h3 id="querying-and-manipulating-data">Querying and manipulating data</h3>
+<p>Following <a href="../../references/3%20Back-End%20Development%204%20-%20Databases%202%20-%20MySQL.pdf">3 Back-End Development 4 - Databases 2 - MySQL.pdf</a>, the next task is querying and testing data.</p>
+<p>First, I made a dummy entry with a bunch of &quot;test&quot; values to see if the DB logs it properly. Below is the format I used.</p>
+<pre class="code-block language-sql"><code class="language-sql">INSERT INTO access_requests (
+    first_name,
+    last_name,
+    email,
+    birthday,
+    person_type,
+    involvement,
+    drives_car,
+    details
+)
+VALUES (
+    'Test',
+    'User',
+    'test@example.com',
+    '2000-01-01',
+    'student',
+    'software, embedded systems',
+    'yes',
+    'Initial database test'
+);
+</code></pre>
+<p>This inserts the contents between the single quotes into their respective fields.</p>
+<p>'test' -&gt; first_name
+'User' -&gt; last_name</p>
+<p>Some parts were not included here as &quot;request_access&quot; uses:</p>
+<pre class="code-block language-sql"><code class="language-sql">AUTO_INCREMENT 
+</code></pre>
+<p>Entering that data into the DB,</p>
+<pre class="code-block language-sql"><code class="language-sql">Query OK, 1 row affected (0.010 sec)
+
+MariaDB [lif_elevator]&gt; 
+</code></pre>
+<p>It was inserted correctly.</p>
+<p>Although displayed poorly, it did load:</p>
+<pre class="code-block language-sql"><code class="language-sql">MariaDB [lif_elevator]&gt; SELECT * FROM access_requests;
++------------+------------+-----------+------------------+------------+-------------+----------------------------+------------+-----------------------+----------------+---------------------+-------------+
+| request_id | first_name | last_name | email            | birthday   | person_type | involvement                | drives_car | details               | request_status | submitted_at        | reviewed_at |
++------------+------------+-----------+------------------+------------+-------------+----------------------------+------------+-----------------------+----------------+---------------------+-------------+
+|          1 | Test       | User      | test@example.com | 2000-01-01 | student     | software, embedded systems | yes        | Initial database test | pending        | 2026-07-13 11:31:17 | NULL        |
++------------+------------+-----------+------------------+------------+-------------+----------------------------+------------+-----------------------+----------------+---------------------+-------------+
+1 row in set (0.000 sec)
+
+MariaDB [lif_elevator]&gt; 
+</code></pre>
+<figure>
+  <img alt="MariaDB output showing the inserted access-request test entry" class="img_med" src="../../media/images/SQL_TestingEntry.png" />
+  <figcaption><b>MariaDB output showing the inserted access-request test entry</b></figcaption>
+</figure>
+
+<p>This tests entering a new user into the DB. Request_id is 1 as it is the first formal user, username was entered during the login (writing it in), user_role is user since this is a normal user for now.</p>
+<p>created_at was not provided as it is manually set when the table was originally created,</p>
+<pre class="code-block language-sql"><code class="language-sql">    -&gt;     request_status VARCHAR(20) NOT NULL DEFAULT 'pending',
+    -&gt;     submitted_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    -&gt;     reviewed_at DATETIME,
+</code></pre>
+<p>Automatically sets the status to pending, the submitted_at is based on the current time which keeps a nice log of when stuff happens.</p>
+<p>Cleaning up the output a bit  to get the important parts,</p>
+<pre class="code-block language-sql"><code class="language-sql">MariaDB [lif_elevator]&gt; SELECT
+    -&gt;     request_id,
+    -&gt;     first_name,
+    -&gt;     last_name,
+    -&gt;     email,
+    -&gt;     request_status,
+    -&gt;     submitted_at
+    -&gt; FROM access_requests;
++------------+------------+-----------+------------------+----------------+---------------------+
+| request_id | first_name | last_name | email            | request_status | submitted_at        |
++------------+------------+-----------+------------------+----------------+---------------------+
+|          1 | Test       | User      | test@example.com | pending        | 2026-07-13 11:31:17 |
++------------+------------+-----------+------------------+----------------+---------------------+
+1 row in set (0.006 sec)
+
+MariaDB [lif_elevator]&gt; 
+</code></pre>
+<p>Next, let's test a manual elevator request,</p>
+<pre class="code-block language-sql"><code class="language-sql">MariaDB [lif_elevator]&gt; insert into elevator_requests (
+    -&gt; request_type, 
+    -&gt; requested_floor,
+    -&gt; source_controller 
+    -&gt; )
+    -&gt; VALUES (
+    -&gt; 'manual',
+    -&gt; 2,
+    -&gt; 'F2' 
+    -&gt; );
+Query OK, 1 row affected (0.007 sec)
+
+MariaDB [lif_elevator]&gt; 
+</code></pre>
+<p>Since adding the proof via code was formatted poorly, here is a screenshot of the output:</p>
+<figure>
+  <img alt="MariaDB output showing the manual elevator-request logging test" class="img_med" src="../../media/images/SQL_ManualLoggingTest.png" />
+  <figcaption><b>MariaDB output showing the manual elevator-request logging test</b></figcaption>
+</figure>
+
+<h3 id="hashing-and-testing">Hashing and Testing</h3>
+<p>The next thing that was done was hashing a password. For this, we can use PHP's built-in password system. This is done by a few commands:</p>
+<p>password_hash() converts the password into a hash
+PASSWORD_DEFAULT tells PHP to use the default hashing algorithm it has
+echo prints the hash
+PHP_EOL adds a new line
+php.exe -r executes a short php command outside of a dedicated file.</p>
+<p>Combining this together, we get this command:</p>
+<pre class="code-block language-bash"><code class="language-bash">php.exe -r 'echo password_hash("TestPassword123!". PASSWORD_DEFAULT), PHP_EOL;'
+</code></pre>
+<p>It must be ran from the proper path though so the full command is actually:</p>
+<pre class="code-block language-bash"><code class="language-bash">/c/xampp/php/php.exe -r 'echo password_hash("TestPassword123!", PASSWORD_DEFAULT), PHP_EOL;'
+</code></pre>
+<p>Running that command, we get:</p>
+<pre class="code-block language-bash"><code class="language-bash">nicol@Yoga MINGW64 /c/xampp/htdocs/SENG73000_W2 (NK_Logbook)
+$ /c/xampp/php/php.exe -r 'echo password_hash("TestPassword123!", PASSWORD_DEFAULT), PHP_EOL;'
+<span class="math-inline">\(2y\)</span>10$e.zeoAYRlq5vbQizR3EYJ.ZjzlSEuQgtkpROv1Qn/92hhRMVbqToO
+</code></pre>
+<p>Now we have test credentials given by:</p>
+<pre class="code-block language-text"><code class="language-text">Username: testuser
+Password: TestPassword123!
+</code></pre>
+<p>Let's test it:</p>
+<pre class="code-block language-sql"><code class="language-sql">INSERT INTO users (
+    access_request_id,
+    username,
+    password_hash,
+    email,
+    user_role,
+    account_status
+)
+VALUES (
+    1,
+    'testuser',
+    '<span class="math-inline">\(2y\)</span>10$e.zeoAYRlq5vbQizR3EYJ.ZjzlSEuQgtkpROv1Qn/92hhRMVbqToO',
+    'test@example.com',
+    'user',
+    'approved'
+);
+
+Query OK, 1 row affected (0.003 sec)
+</code></pre>
+<p>Next, we'll update it,</p>
+<pre class="code-block language-sql"><code class="language-sql">MariaDB [lif_elevator]&gt; UPDATE access_requests
+    -&gt; SET 
+    -&gt; request_status = 'approved',
+    -&gt; reviewed_at = CURRENT_TIMESTAMP WHERE request_id = 1;
+Query OK, 1 row affected (0.007 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+</code></pre>
+<p>This will update the &quot;pending&quot; to &quot;approved&quot; and show when it was reviewed (approved).</p>
+<p>SET specifies what to change (or what to SET) the values to.</p>
+<p>SET request_status = 'approved' changes it from 'pending'.</p>
+<p>WHERE request_id = 1 is important as it specifies what entry/row should be changed. Without it, it can risk approving every request in the table as it does not have a direct ID to work with. WHERE helps MariaDB know what exactly to change.</p>
+<p>Then, displaying it:</p>
+<pre class="code-block language-sql"><code class="language-sql">MariaDB [lif_elevator]&gt; SELECT
+    -&gt; user_id,
+    -&gt; access_request_id,
+    -&gt; username, 
+    -&gt; email,
+    -&gt; user_role,
+    -&gt; account_status,
+    -&gt; LENGTH(password_hash) AS hash_length,
+    -&gt; created_at
+    -&gt; FROM users;
++---------+-------------------+----------+------------------+-----------+----------------+-------------+---------------------+
+| user_id | access_request_id | username | email            | user_role | account_status | hash_length | created_at          |
++---------+-------------------+----------+------------------+-----------+----------------+-------------+---------------------+
+|       1 |                 1 | testuser | test@example.com | user      | approved       |          60 | 2026-07-13 12:43:34 |
++---------+-------------------+----------+------------------+-----------+----------------+-------------+---------------------+
+1 row in set (0.000 sec)
+
+MariaDB [lif_elevator]&gt; 
+</code></pre>
+<figure>
+  <img alt="User record showing the stored password-hash length" class="img_med" src="../../media/images/SQL_DisplayHashPassword.png" />
+  <figcaption><b>User record showing the stored password-hash length</b></figcaption>
+</figure>
+
+<p>Now, it is formally approved with an active hashed password and the correct entry date - excellent.</p>
+<p>LENGTH(password_hash) prevents it from displaying the full hash and only the length.</p>
+<p>AS hash_length makes it display the proper readable number (60 as seen in the image/code above).</p>
+<p>One last test is testing the relationship via a join operation from the 3rd database lecture,</p>
+<pre class="code-block language-sql"><code class="language-sql">MariaDB [lif_elevator]&gt; SELECT ar.request_id, ar.first_name, ar.last_name, ar.request_status, u.user_id, u.username, u.account_status FROM access_requests AS ar LEFT JOIN users AS u ON ar.request_id = u.access_request_id;
+
++------------+------------+-----------+----------------+---------+----------+----------------+
+| request_id | first_name | last_name | request_status | user_id | username | account_status |
++------------+------------+-----------+----------------+---------+----------+----------------+
+|          1 | Test       | User      | approved       |       1 | testuser | approved       |
++------------+------------+-----------+----------------+---------+----------+----------------+
+1 row in set (0.001 sec)
+</code></pre>
+<figure>
+  <img alt="JOIN query confirming the relationship between access requests and users" class="img_med" src="../../media/images/SQL_TestingJoining.png" />
+  <figcaption><b>JOIN query confirming the relationship between access requests and users</b></figcaption>
+</figure>
+
+<p>the ar. and u. act as aliases.</p>
+<pre class="code-block language-sql"><code class="language-sql">FROM access_requests AS ar LEFT JOIN users AS u
+</code></pre>
+<p>This means
+access_requests = ar</p>
+<p>users = u.</p>
+<p>So, <code class="language-text">ar.first_name</code> is actually <code class="language-text">access_requests.first_name</code></p>
+<p>Additionally, <code class="language-text">u.username</code> becomes <code class="language-text">users.username</code></p>
+<p>This part,</p>
+<pre class="code-block language-sql"><code class="language-sql">ON ar.request_id = u.access_request_id
+</code></pre>
+<p>Allows MariaDB to look for matching values between the tables. Remember, access_requests has:</p>
+<pre class="code-block language-sql"><code class="language-sql"> request_id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+</code></pre>
+<p>While users has:</p>
+<pre class="code-block language-sql"><code class="language-sql">access_request_id INT UNSIGNED,
+</code></pre>
+<p>Both of these values should be the same.</p>
+<table class="logbook-table">
+<thead>
+<tr>
+  <th style="text-align:right"><code class="language-text">access_requests.request_id</code></th>
+  <th style="text-align:right"><code class="language-text">users.access_request_id</code></th>
+  <th>Match?</th>
+  <th>Good?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td style="text-align:right">1</td>
+  <td style="text-align:right">1</td>
+  <td>Yes</td>
+  <td>Yes!</td>
+</tr>
+</tbody>
+</table>
+<h3 id="create-a-username-and-password">Create a username and password</h3>
+<p>Creating a username and password + perms is pretty simple,</p>
+<pre class="code-block language-sql"><code class="language-sql">MariaDB [lif_elevator]&gt; CREATE USER 'LiF_Admin'@'localhost' IDENTIFIED BY 'LiF_ESE';
+Query OK, 0 rows affected (0.011 sec)
+
+</code></pre>
+<p>Grant perms,</p>
+<pre class="code-block language-sql"><code class="language-sql">MariaDB [lif_elevator]&gt; GRANT SELECT, INSERT, UPDATE, DELETE
+    -&gt; ON lif_elevator.*
+    -&gt; TO 'LiF_Admin'@'localhost';    
+Query OK, 0 rows affected (0.008 sec)
+</code></pre>
+<p>Apply,</p>
+<pre class="code-block language-sql"><code class="language-sql">MariaDB [lif_elevator]&gt; FLUSH PRIVILEGES;
+Query OK, 0 rows affected (0.001 sec)
+</code></pre>
+<p>Show perms,</p>
+<pre class="code-block language-sql"><code class="language-sql">MariaDB [lif_elevator]&gt; SHOW GRANTS FOR 'LiF_Admin'@'localhost';
++------------------------------------------------------------------------------------------------------------------+
+| Grants for LiF_Admin@localhost                                                                                   |
++------------------------------------------------------------------------------------------------------------------+
+| GRANT USAGE ON *.* TO `LiF_Admin`@`localhost` IDENTIFIED BY PASSWORD '*408E424C79DA18DC6AE143AB93AD239605AF5957' |
+| GRANT SELECT, INSERT, UPDATE, DELETE ON `lif_elevator`.* TO `LiF_Admin`@`localhost`                              |
++------------------------------------------------------------------------------------------------------------------+
+2 rows in set (0.000 sec)
+</code></pre>
+<p>Now we can test logging in,</p>
+<pre class="code-block language-sql"><code class="language-sql">nicol@Yoga MINGW64 /c/xampp/htdocs/SENG73000_W2 (NK_Logbook)
+$ mysql -u LiF_Admin -p -h localhost -P 3306 lif_elevator
+Enter password: *******
+Welcome to the MariaDB monitor.  Commands end with ; or \g.
+Your MariaDB connection id is 34
+Server version: 10.4.32-MariaDB mariadb.org binary distribution
+
+Copyright (c) 2000, 2018, Oracle, MariaDB Corporation Ab and others.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+MariaDB [lif_elevator]&gt;
+</code></pre>
+<p>Next, let's test if it all saved and actually worked,</p>
+<pre class="code-block language-sql"><code class="language-sql">MariaDB [lif_elevator]&gt; show tables;
++------------------------+
+| Tables_in_lif_elevator |
++------------------------+
+| access_requests        |
+| elevator_requests      |
+| users                  |
++------------------------+
+3 rows in set (0.001 sec)
+
+MariaDB [lif_elevator]&gt; select request_id, email, request_status FROM access_requests;
++------------+------------------+----------------+
+| request_id | email            | request_status |
++------------+------------------+----------------+
+|          1 | test@example.com | approved       |
++------------+------------------+----------------+
+1 row in set (0.001 sec)
+
+MariaDB [lif_elevator]&gt;
+</code></pre>
+<h3 id="testing-db-and-website-connectivity">Testing DB and Website Connectivity</h3>
+<p>With the DB basically setup, we need to set the PHP up to form the website-DB connection. This is done in a small PHP file:</p>
+<pre class="code-block language-php"><code class="language-php">&lt;?php
+
+    $host = 'localhost';
+
+    $dbname = 'lif_elevator';
+
+    $dbuser = 'LiF_Admin';
+
+    $dbpass = 'LiF_ESE';
+
+    try {
+
+        <span class="math-inline">\(pdo = new PDO("mysql:host=\)</span>host;dbname=<span class="math-inline">\(dbname;charset=utf8mb4", \)</span>dbuser, $dbpass);
+
+  
+
+        $pdo-&gt;setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+    } catch (PDOException $e) {
+
+        die("Database connection failed: " . $e-&gt;getMessage());
+
+    }
+</code></pre>
+<p>This sets the DB name (configured above). as well as the password. Then, it utilizes a try-catch to try connecting and catches any mistakes.</p>
+<p>With this, we can make a small &quot;db_test.php&quot; file with just:</p>
+<pre class="code-block language-php"><code class="language-php">&lt;?php
+// load db.php but only once
+// __DIR__ is start from folder containing PHP files
+require_once __DIR__ . '/db.php';
+
+echo "database connection successful!";
+</code></pre>
+<p>Then, connecting to this using localhost should print &quot;database connection successful!&quot;.</p>
+<pre class="code-block language-text"><code class="language-text">http://localhost/SENG73000_W2/php/db_test.php
+</code></pre>
+<figure>
+  <img alt="Successful PHP PDO connection to the MariaDB database" class="img_med" src="../../media/images/DB_ConnectionSuccessful.png" />
+  <figcaption><b>Successful PHP PDO connection to the MariaDB database</b></figcaption>
+</figure>
+
+<p>Excellent! That means:</p>
+<p>Browser --&gt; Apache --&gt; PHP --&gt; PDO --&gt; MariaDB</p>
+<p>This pipeline is functional.</p>
+      </section>
+      <section class="logbook-entry-content">
+<h2 id="rewriting-php-to-interact-with-the-db">Rewriting PHP to interact with the DB</h2>
+<h3 id="request-access">Request access</h3>
+<p>From here, I'll need to modify request_access.php to interact with the DB.</p>
+<pre class="code-block language-php"><code class="language-php">// format it into SQL using try-catch, my beloved:
+
+try {
+
+     $sql =
+
+     "
+
+        INSERT INTO access_requqests (
+
+            first_name,
+
+            last_name,
+
+            email,
+
+            birthday,
+
+            person_type,
+
+            involvement,
+
+            drivers_car,
+
+            details)
+
+        VALUES (
+
+            :first_name,
+
+            :last_name,
+
+            :email,
+
+            :birthday,
+
+            :person_type,
+
+            :involvement,
+
+            :drivers_car,
+
+            :details
+
+        )
+
+    ";
+
+  
+
+    <span class="math-inline">\(statement = \)</span>pdo-&gt;prepare($sql);
+
+  
+
+    $statement-&gt;execute([
+
+        ':first_name' =&gt; $firstname,
+
+        ':last_name' =&gt; $lastname,
+
+        ':email' =&gt; $email,
+
+        ':birthday' =&gt; $birthday,
+
+        ':person_type' =&gt; $fac_or_student,
+
+        ':involvement' =&gt; $involvementText,
+
+        ':drives_car' =&gt; $drives_car,
+
+        ':details' =&gt; $details
+
+    ]);
+
+  
+
+    <span class="math-inline">\(requestId = \)</span>pdo-&gt;lastInsertId();
+
+    $requestSaved = true;    
+
+}
+
+catch (PDOException $e)
+
+{
+
+    $errors[] = "The access request could not be saved/failed to load";
+
+    error_log($e-&gt;getMessage());
+
+}
+</code></pre>
+<p>Instead of storing this login request into cookies like before, it now includes the working PDO connection, receives and validates the form, converts the checkbox array into one string, prepares an &quot;INSERT&quot; statement for SQL, passes the values into that statement, and obtains the generated request ID.</p>
+<p>From here, the entire php code can be quickly compiled and checked:</p>
+<pre class="code-block language-bash"><code class="language-bash">nicol@Yoga MINGW64 /c/xampp/htdocs/SENG73000_W2 (NK_Logbook)
+$ /c/xampp/php/php.exe -l php/request_access.php
+No syntax errors detected in php/request_access.php
+
+</code></pre>
+<p>Looks good, no issues!</p>
+<p>We can then request access from the webpage:</p>
+<figure>
+  <img alt="Completed website access-request form before submission" class="img_med" src="../../media/images/PHP_SubmitRequest.png" />
+  <figcaption><b>Completed website access-request form before submission</b></figcaption>
+</figure>
+
+<p>Then, we go to the request submitted php page:</p>
+<figure>
+  <img alt="Website confirmation after the access request was submitted" class="img_med" src="../../media/images/PHP_RequestSubmitted.png" />
+  <figcaption><b>Website confirmation after the access request was submitted</b></figcaption>
+</figure>
+
+<p>And lastly, we can check if it works in Maria DB itself:</p>
+<pre class="code-block language-sql"><code class="language-sql">MariaDB [lif_elevator]&gt; SELECT
+    -&gt;     request_id,
+    -&gt;     first_name,
+    -&gt;     last_name,
+    -&gt;     email,
+    -&gt;     person_type,
+    -&gt;     involvement,
+    -&gt;     drives_car,
+    -&gt;     request_status,
+    -&gt;     submitted_at
+    -&gt; FROM access_requests
+    -&gt; ORDER BY request_id DESC
+    -&gt; LIMIT 5; 
++------------+------------+-----------+------------------------------+-------------+----------------------------+------------+----------------+---------------------+
+| request_id | first_name | last_name | email                        | person_type | involvement                | drives_car | request_status | submitted_at        |
++------------+------------+-----------+------------------------------+-------------+----------------------------+------------+----------------+---------------------+
+|          2 | Nick       | Kapuka    | nkapuka7637@conestogac.on.ca | student     | Piyush                     | true       | pending        | 2026-07-13 14:11:03 |
+|          1 | Test       | User      | test@example.com             | student     | software, embedded systems | yes        | approved       | 2026-07-13 11:31:17 |
++------------+------------+-----------+------------------------------+-------------+----------------------------+------------+----------------+---------------------+
+2 rows in set (0.000 sec)
+
+</code></pre>
+<p>Image for clarity:</p>
+<figure>
+  <img alt="MariaDB output confirming the website request was stored successfully" class="img_med" src="../../media/images/PHP_ValidRequest.png" />
+  <figcaption><b>MariaDB output confirming the website request was stored successfully</b></figcaption>
+</figure>
+
+<p>Woohoo!!!!</p>
+<h3 id="login">Login</h3>
+<p>Submitting logbook  now, will continue to fill out after.</p>
+      </section>
+
+      <p class="top-link">
+        <a href="#page_top">Go to the top of this page</a>
+      </p>
+    </main>
+
+    <footer class="site-footer">
+      <p>Copyright &copy; Nick Kapuka</p>
+    </footer>
+
+    <!-- Prism.js scripts for code formatting -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+  </body>
+</html>

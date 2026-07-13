@@ -1,0 +1,419 @@
+<!doctype html>
+<!--
+Author: Nick Kapuka
+-->
+
+<html lang="en">
+  <head>
+    <title>NK Logbook Entry - 2026-07-10</title>
+    <meta charset="UTF-8" />
+    <meta name="author" content="Nick Kapuka" />
+    <meta name="description" content="NK Logbook Entry" />
+    <meta name="robots" content="index, follow" />
+    <meta http-equiv="Pragma" content="no-cache" />
+
+    <link
+      rel="icon"
+      href="../../media/icons/LiF_icon.ico"
+      type="image/x-icon"
+    />
+
+    <!-- shared website styling -->
+    <link rel="stylesheet" href="../../css/base.css" />
+
+    <!-- logbook entry page styling -->
+    <link rel="stylesheet" href="../../css/logbook_entry.css" />
+
+    <!-- Prism syntax highlighting theme -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css"
+    />
+    <link rel="stylesheet" href="../../css/code_formatting.css" />
+
+    <!-- MathJax for equations used in this entry -->
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [["\\(", "\\)"]],
+          displayMath: [["\\[", "\\]"]],
+        },
+        svg: { fontCache: "global" },
+      };
+    </script>
+    <script
+      async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
+    ></script>
+  </head>
+
+  <body>
+    <!-- Nav bar loaded by JavaScript -->
+    <div id="navbar-placeholder" data-root="../../"></div>
+    <script src="../../js/navbar.js"></script>
+
+    <main class="page-wrapper">
+      <section class="intro-section logbook-entry-intro" id="page_top">
+        <div class="intro-text">
+          <p class="section-label">Daily Logbook Entry</p>
+          <h1>Logbook Entry, 2026-07-10 by Nick Kapuka</h1>
+
+          <p class="intro-description">
+            Chose Accelerometer IC, looked into ESP32 sound handling and choose
+            amp IC
+          </p>
+
+          <div class="button-row">
+            <a href="../logbook_NK.html" class="button secondary-button"
+              >My Logbook Cover Page</a
+            >
+            <a href="#log" class="button primary-button">Jump to Entry</a>
+          </div>
+        </div>
+
+        <aside class="summary-card">
+          <h2>Entry Snapshot</h2>
+          <p><b>Date:</b> 2026-07-10</p>
+          <p><b>Author:</b> Nick Kapuka</p>
+          <p><b>Focus:</b> Accelerometer and audio amp design</p>
+        </aside>
+      </section>
+
+      <section class="logbook-entry-content" id="log">
+        <h2 id="entry-overview">Entry overview</h2>
+        <p>Audio amp design circuit</p>
+        <h3 id="key-details">Key details</h3>
+        <ul class="clean-list">
+          <li>
+            <strong>Purpose:</strong> Design a functioning audio amp that will
+            amplify the ESP32s output signal
+          </li>
+          <li>
+            <strong>Component or tool:</strong> KiCAD 9.0.4; DigiKey (IC
+            selection)
+          </li>
+          <li><strong>Result:</strong> Built the full audio amp schematic</li>
+          <li>
+            <strong>Team contribution:</strong> Completed what I could before
+            going to work. MR worked on integrating it into the final set of
+            schematics.
+          </li>
+        </ul>
+      </section>
+      <section class="logbook-entry-content">
+        <h2 id="accelerometer-selection-and-schematic-design">
+          Accelerometer Selection and Schematic Design
+        </h2>
+        <p>
+          Unfortunately due to time constraints, I cannot go into detail about
+          it here. I will fully explain all the design justice next week. I
+          completely forgot to fully fill this section out and convert it into
+          HTML as that takes a while, but next week I will fill this out.
+        </p>
+        <p>Here is the final schematic design:</p>
+        <figure>
+          <img
+            alt="Final accelerometer schematic design"
+            class="img_med"
+            src="../../media/images/Accel_FullSchematic.png"
+          />
+          <figcaption><b>Final accelerometer schematic design</b></figcaption>
+        </figure>
+      </section>
+      <section class="logbook-entry-content">
+        <h2 id="audio-design">Audio Design</h2>
+        <h3 id="ic-selections">IC Selections</h3>
+        <h4 id="i2s-ic">I2S IC</h4>
+        <p>
+          There are various ICs that could've been used. As seen in
+          <a href="#technical-notes">Technical notes</a>, the ESP32-<strong
+            >S3</strong
+          >
+          does not have a local DAC as it has been replaced by an I2S module.
+          There is a chip that could have been used:
+        </p>
+        <figure>
+          <img
+            alt="DigiKey listing for the considered I²S audio IC"
+            class="img_med"
+            src="../../media/images/Audio_I2S_Chip_DK.png"
+            style="max-width: 589px; width: 100%"
+          />
+          <figcaption>
+            <b>DigiKey listing for the considered I²S audio IC</b>
+          </figcaption>
+        </figure>
+
+        <p>The reason why this IC is nice:</p>
+        <figure>
+          <img
+            alt="Datasheet features for the considered I²S audio IC"
+            class="img_med"
+            src="../../media/images/Audio_I2S_Chip_DS01.png"
+          />
+          <figcaption>
+            <b>Datasheet features for the considered I²S audio IC</b>
+          </figcaption>
+        </figure>
+
+        <p>
+          As seen this chip supports I2S data as it handles a DAC and everything
+          internally as seen in the block diagram below:
+        </p>
+        <figure>
+          <img
+            alt="Internal block diagram of the considered I²S audio IC"
+            class="img_med"
+            src="../../media/images/Audio_I2S_Chip_DS02.png"
+          />
+          <figcaption>
+            <b>Internal block diagram of the considered I²S audio IC</b>
+          </figcaption>
+        </figure>
+
+        <p>
+          However... One issue was the cost per chip. As on each board we're
+          planning to have one, at $2.8/10 chips is a bit high and a challenge
+          would be preferred, it was decided to use a traditional amplifier with
+          an RC filter and DAC.
+        </p>
+        <p>
+          So, the amplifier was selected first as RC filters were covered
+          heavily in semester 5, and DACs were briefly covered in Semesters 4/5.
+          Amplifiers were covered but I believe that selecting the last piece is
+          more important than a few resistors/capacitors for the filter and a
+          generic DAC chip.
+        </p>
+        <h4 id="amplifier-ic">Amplifier IC</h4>
+        <p>A promising amplifier I found was: PAM8302AADCR</p>
+        <figure>
+          <img
+            alt="DigiKey listing for the PAM8302AADCR amplifier"
+            class="img_med"
+            src="../../media/images/Audio_AmplifierChip.png"
+          />
+          <figcaption>
+            <b>DigiKey listing for the PAM8302AADCR amplifier</b>
+          </figcaption>
+        </figure>
+
+        <p>
+          Firstly, it comes in a 8-TSSOP package with little legs, making it
+          easier to hand-solder (compared to QFN which requires hot air;
+          something we don't have easy access to).
+        </p>
+        <p>
+          Additionally, the cost is very good as it is only
+          <span class="math-inline"
+            >\(4.14 for 10 units - much better than nearly \)</span
+          >30. Even if 10 DACs end up costing $20, it is still more
+          cost-effective to do it this way.
+        </p>
+        <p>
+          For notable features itself, it features a decent 2.5W output on a 4
+          <span class="math-inline">\(\Omega\)</span> load at 5V. Although we're
+          using 3V3, I don't think we require that large of an amplification so
+          it should suffice.
+        </p>
+        <h4 id="rc-filtering">RC Filtering</h4>
+        <p>
+          Next, I decided to implement an RC filter (LPF) to cutoff high
+          frequency switching sound. I aimed for about 15 kHz since 20 kHz is
+          too high. More on this in a second.
+        </p>
+        <p>
+          I decided to start with a 4.7 nF capacitor so I had to find the
+          resistor value. The cutoff formula is given by:
+        </p>
+        <div class="math-block">\[F_c = \frac{1}{2\pi RC}\]</div>
+        <p>Rearranging to solve for R,</p>
+        <div class="math-block">\[2\pi RCF_c = 1\]</div>
+        <div class="math-block">\[R = \frac{1}{2\pi CF_c}\]</div>
+        <p>Plugging our values in,</p>
+        <div class="math-block">\[R = \frac{1}{2\pi (4.7 nF)(15 kHz)}\]</div>
+        <div class="math-block">\[R = ~2.2k\Omega\]</div>
+        <p>
+          I decided to copy this circuit twice over to get a stronger cutoff.
+          Here is the schematic:
+        </p>
+        <figure>
+          <img
+            alt="Dual RC low-pass filter schematic"
+            class="img_med"
+            src="../../media/images/Audio_RC_Filter.png"
+          />
+          <figcaption><b>Dual RC low-pass filter schematic</b></figcaption>
+        </figure>
+
+        <p>The transfer function is roughly:</p>
+        <div class="math-block">\[H(s) = \frac{1}{(RC)^2 + 3(RCs) + 1}\]</div>
+        <p>Looking at datasheet, we get a few useful pieces of information:</p>
+        <figure>
+          <img
+            alt="PAM8302A functional block diagram"
+            class="img_med"
+            src="../../media/images/Audio_FunctionalBlockDiagram.png"
+          />
+          <figcaption><b>PAM8302A functional block diagram</b></figcaption>
+        </figure>
+
+        <p>I used this to make the overall amp schematic</p>
+        <figure>
+          <img
+            alt="PAM8302A typical application circuit"
+            class="img_med"
+            src="../../media/images/Audio_TypicalApp.png"
+            style="max-width: 697px; width: 100%"
+          />
+          <figcaption><b>PAM8302A typical application circuit</b></figcaption>
+        </figure>
+
+        <p>
+          Note, the labels are messed up as this schematic was opened outside of
+          the overall project. MR cleaned up our directory so I took my
+          schematics and moved them to another non-github folder.
+        </p>
+        <figure>
+          <img
+            alt="Audio amplifier schematic before integration into the main project"
+            class="img_med"
+            src="../../media/images/Audio_AmpSchematic.png"
+          />
+          <figcaption>
+            <b
+              >Audio amplifier schematic before integration into the main
+              project</b
+            >
+          </figcaption>
+        </figure>
+
+        <p>
+          The 100 nF caps work together with the internal impedance of the IC,
+          which is 10k as seen by the functional block diagram previously.
+        </p>
+        <p>This gives a DC cutoff frequency:</p>
+        <div class="math-block">\[F_c = \frac{1}{2\pi (10k)(100n)}\]</div>
+        <div class="math-block">\[F_c = 159.15 \;Hz\]</div>
+        <p>The final implemented circuit was given by:</p>
+        <figure>
+          <img
+            alt="Final implemented audio amplifier circuit"
+            class="img_med"
+            src="../../media/images/Audio_AmplifierCircuit.png"
+          />
+          <figcaption>
+            <b>Final implemented audio amplifier circuit</b>
+          </figcaption>
+        </figure>
+
+        <p>
+          There is a potentiometer in the middle, after the RC filter but before
+          the IC input. This is to tweak the gain.
+        </p>
+        <p>The gain is given by:</p>
+        <div class="math-block">
+          \[20log(\frac{150k\Omega}{10k\Omega + R_{in}})\]
+        </div>
+        <p>
+          With a pot, the gain can change. The default gain is decent too, about
+          23.5 dB.
+        </p>
+        <p>
+          With that, the schematic was just about done. I merge my branch with
+          main and it went onto MR to work on it.
+        </p>
+        <h3 id="technical-notes">Technical notes</h3>
+        <h4 id="esp32-s3-s-lack-of-a-local-dac">
+          ESP32-S3's lack of a local DAC
+        </h4>
+        <figure>
+          <img
+            alt="ESP32-S3 functional block diagram"
+            class="img_med"
+            src="../../media/images/ESP32_BlockDiagram.png"
+          />
+          <figcaption><b>ESP32-S3 functional block diagram</b></figcaption>
+        </figure>
+
+        <p>
+          The ESP32-S3 chip, which is the one we plan to use, is lacking a local
+          DAC and is instead using an I2S bus (?) instead. Because of this, the
+          chip options are limited.
+        </p>
+        <p>
+          Using a traditional amplifier works as well since I2S have various
+          configurations.
+        </p>
+        <figure>
+          <img
+            alt="ESP32-S3 I²S audio features, first reference"
+            class="img_med"
+            src="../../media/images/ESP_Audio_I2S_Features_01.png"
+          />
+          <figcaption>
+            <b>ESP32-S3 I²S audio features, first reference</b>
+          </figcaption>
+        </figure>
+
+        <figure>
+          <img
+            alt="ESP32-S3 I²S audio features, second reference"
+            class="img_med"
+            src="../../media/images/ESP_Audio_I2S_Features_02.png"
+          />
+          <figcaption>
+            <b>ESP32-S3 I²S audio features, second reference</b>
+          </figcaption>
+        </figure>
+
+        <p>With the diagram being:</p>
+        <figure>
+          <img
+            alt="ESP32-S3 I²S block diagram"
+            class="img_med"
+            src="../../media/images/ESP_Audio_I2S_BlockDiagram.png"
+          />
+          <figcaption><b>ESP32-S3 I²S block diagram</b></figcaption>
+        </figure>
+      </section>
+
+      <section class="logbook-entry-content">
+        <h2>Sources:</h2>
+        <figure>
+          <iframe
+            title="ESP32 datasheet PDF preview"
+            src="../../references/esp32-s3_technical_reference_manual_en.pdf"
+            width="100%"
+            height="800"
+            style="
+              border: 3px solid rgba(0, 206, 200, 0.28);
+              border-radius: 10px;
+              background-color: white;
+            "
+          >
+          </iframe>
+          <figcaption>
+            <b>Embedded AS1115 datasheet PDF preview</b><br />
+            <a
+              href="../../references/esp32-s3_technical_reference_manual_en.pdf"
+              target="_blank"
+              >Open ESP32 manual PDF in a new tab</a
+            >
+          </figcaption>
+        </figure>
+      </section>
+
+      <p class="top-link">
+        <a href="#page_top">Go to the top of this page</a>
+      </p>
+    </main>
+
+    <footer class="site-footer">
+      <p>Copyright &copy; Nick Kapuka</p>
+    </footer>
+
+    <!-- Prism.js scripts for code formatting -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+  </body>
+</html>

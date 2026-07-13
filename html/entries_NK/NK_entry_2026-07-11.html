@@ -1,0 +1,227 @@
+<!doctype html>
+<!--
+Author: Nick Kapuka
+-->
+
+<html lang="en">
+  <head>
+    <title>NK Logbook Entry - 2026-07-11</title>
+    <meta charset="UTF-8" />
+    <meta name="author" content="Nick Kapuka" />
+    <meta name="description" content="NK Logbook Entry" />
+    <meta name="robots" content="index, follow" />
+    <meta http-equiv="Pragma" content="no-cache" />
+
+    <link rel="icon" href="../../media/icons/LiF_icon.ico" type="image/x-icon" />
+
+    <!-- shared website styling -->
+    <link rel="stylesheet" href="../../css/base.css" />
+
+    <!-- logbook entry page styling -->
+    <link rel="stylesheet" href="../../css/logbook_entry.css" />
+
+    <!-- Prism syntax highlighting theme -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css"
+    />
+    <link rel="stylesheet" href="../../css/code_formatting.css" />
+
+  </head>
+
+  <body>
+    <!-- Nav bar loaded by JavaScript -->
+    <div id="navbar-placeholder" data-root="../../"></div>
+    <script src="../../js/navbar.js"></script>
+
+    <main class="page-wrapper">
+      <section class="intro-section logbook-entry-intro" id="page_top">
+        <div class="intro-text">
+          <p class="section-label">Daily Logbook Entry</p>
+          <h1>Logbook Entry, 2026-07-11 by Nick Kapuka</h1>
+
+          <p class="intro-description">Looked into SQL setup for my own interest. Waiting for RY for full update.</p>
+
+          <div class="button-row">
+            <a href="../logbook_NK.html" class="button secondary-button">My Logbook Cover Page</a>
+            <a href="#log" class="button primary-button">Jump to Entry</a>
+          </div>
+        </div>
+
+        <aside class="summary-card">
+          <h2>Entry Snapshot</h2>
+          <p><b>Date:</b> 2026-07-11</p>
+          <p><b>Author:</b> Nick Kapuka</p>
+          <p><b>Focus:</b> SQL, Database</p>
+        </aside>
+      </section>
+
+      <section class="logbook-entry-content" id="log">
+<h2 id="entry-overview">Entry overview</h2>
+<p>Schema and database setup</p>
+<h3 id="key-details">Key details</h3>
+<ul class="clean-list">
+<li><strong>Purpose:</strong> Look into SQL and DB setup.</li>
+<li><strong>Component or tool:</strong> XAMPP server and DB setup; MariaDB.</li>
+<li><strong>Result:</strong> Setup two out of three tables desired.</li>
+<li><strong>Team contribution:</strong> Working on this solo as I have yet to receive any DB progress from RY at this time.</li>
+</ul>
+      </section>
+      <section class="logbook-entry-content">
+<h2 id="sql-and-mariadb">SQL and MariaDB</h2>
+<p>Began to setup SQL and MariaDB by enabling it in XAMPP:</p>
+<figure>
+  <img alt="MariaDB enabled through the XAMPP control panel" class="img_med" src="../../media/images/SQL_InitialSetup.png" />
+  <figcaption><b>MariaDB enabled through the XAMPP control panel</b></figcaption>
+</figure>
+
+<p>After, enter the DB:</p>
+<pre class="code-block language-sql"><code class="language-sql">mysql -u root -h 127.0.0.1 -P 3306
+</code></pre>
+<p>And create an SQL database:</p>
+<pre class="code-block language-sql"><code class="language-sql">CREATE DATABASE lif_elevator;
+
+USE lif_elevator;
+</code></pre>
+<p>Then, make the the access_requests table/schema</p>
+<pre class="code-block language-sql"><code class="language-sql">MariaDB [lif_elevator]&gt; CREATE TABLE access_requests (
+    -&gt;     request_id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    -&gt;     first_name VARCHAR(50) NOT NULL,
+    -&gt;     last_name VARCHAR(50) NOT NULL,
+    -&gt;     email VARCHAR(254) NOT NULL,
+    -&gt;     birthday DATE NOT NULL,
+    -&gt;     person_type VARCHAR(30) NOT NULL,
+    -&gt;     involvement TEXT NOT NULL,
+    -&gt;     drives_car VARCHAR(20),
+    -&gt;     details TEXT,
+    -&gt;     request_status VARCHAR(20) NOT NULL DEFAULT 'pending',
+    -&gt;     submitted_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    -&gt;     reviewed_at DATETIME,
+    -&gt;     PRIMARY KEY (request_id) 
+    -&gt; ) ENGINE = InnoDB;
+</code></pre>
+<p>After running that, the DB can be checked:</p>
+<pre class="code-block language-sql"><code class="language-sql">Query OK, 0 rows affected (0.047 sec)
+
+MariaDB [lif_elevator]&gt; SHOW TABLES;
++------------------------+
+| Tables_in_lif_elevator |
++------------------------+
+| access_requests        |
++------------------------+
+1 row in set (0.001 sec)
+
+MariaDB [lif_elevator]&gt; 
+</code></pre>
+<p>Then, our entire DB can be seen as a table:</p>
+<pre class="code-block language-sql"><code class="language-sql">MariaDB [lif_elevator]&gt; DESCRIBE access_requests
+    -&gt; ;
++----------------+------------------+------+-----+---------------------+----------------+
+| Field          | Type             | Null | Key | Default             | Extra          |
++----------------+------------------+------+-----+---------------------+----------------+
+| request_id     | int(10) unsigned | NO   | PRI | NULL                | auto_increment |
+| first_name     | varchar(50)      | NO   |     | NULL                |                |
+| last_name      | varchar(50)      | NO   |     | NULL                |                |
+| email          | varchar(254)     | NO   |     | NULL                |                |
+| birthday       | date             | NO   |     | NULL                |                |
+| person_type    | varchar(30)      | NO   |     | NULL                |                |
+| involvement    | text             | NO   |     | NULL                |                |
+| drives_car     | varchar(20)      | YES  |     | NULL                |                |
+| details        | text             | YES  |     | NULL                |                |
+| request_status | varchar(20)      | NO   |     | pending             |                |
+| submitted_at   | datetime         | NO   |     | current_timestamp() |                |
+| reviewed_at    | datetime         | YES  |     | NULL                |                |
++----------------+------------------+------+-----+---------------------+----------------+
+12 rows in set (0.051 sec)
+
+MariaDB [lif_elevator]&gt; 
+</code></pre>
+<p>In-case the formatting is weird, an image is provided:</p>
+<figure>
+  <img alt="MariaDB output confirming the access_requests table structure" class="img_med" src="../../media/images/SQL_InitialSetup_ProofofDB.png" />
+  <figcaption><b>MariaDB output confirming the access_requests table structure</b></figcaption>
+</figure>
+
+<p>After that, a user DB was made:</p>
+<pre class="code-block language-sql"><code class="language-sql">MariaDB [lif_elevator]&gt; CREATE TABLE users (
+    -&gt;     user_id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    -&gt;     access_request_id INT UNSIGNED,
+    -&gt;     username VARCHAR(50) NOT NULL,
+    -&gt;     password_hash VARCHAR(255) NOT NULL,
+    -&gt;     email VARCHAR(254) NOT NULL,
+    -&gt;     user_role VARCHAR(20) NOT NULL DEFAULT 'user',
+    -&gt;     account_status VARCHAR(20) NOT NULL DEFAULT 'approved',
+    -&gt;     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    -&gt;     last_login_at DATETIME,
+    -&gt;     PRIMARY KEY (user_id),
+    -&gt;     UNIQUE (username),
+    -&gt;     UNIQUE (email),
+    -&gt;     CONSTRAINT fk_users_access_request
+    -&gt;         FOREIGN KEY (access_request_id)
+    -&gt;         REFERENCES access_requests(request_id)
+    -&gt;         ON UPDATE CASCADE
+    -&gt;         ON DELETE SET NULL
+    -&gt; ) ENGINE = InnoDB;
+Query OK, 0 rows affected (0.062 sec)
+</code></pre>
+<p>After, the table can be displayed:</p>
+<pre class="code-block language-sql"><code class="language-sql">MariaDB [lif_elevator]&gt; DESCRIBE users;
++-------------------+------------------+------+-----+---------------------+----------------+
+| Field             | Type             | Null | Key | Default             | Extra          |
++-------------------+------------------+------+-----+---------------------+----------------+
+| user_id           | int(10) unsigned | NO   | PRI | NULL                | auto_increment |
+| access_request_id | int(10) unsigned | YES  | MUL | NULL                |                |
+| username          | varchar(50)      | NO   | UNI | NULL                |                |
+| password_hash     | varchar(255)     | NO   |     | NULL                |                |
+| email             | varchar(254)     | NO   | UNI | NULL                |                |
+| user_role         | varchar(20)      | NO   |     | user                |                |
+| account_status    | varchar(20)      | NO   |     | approved            |                |
+| created_at        | datetime         | NO   |     | current_timestamp() |                |
+| last_login_at     | datetime         | YES  |     | NULL                |                |
++-------------------+------------------+------+-----+---------------------+----------------+
+9 rows in set (0.044 sec)
+
+MariaDB [lif_elevator]&gt; 
+</code></pre>
+<p>From this point on, I decided to go to bed and will continue on Monday, July 13th.</p>
+<p>Please see <a href="NK_entry_2026-07-13.html">NK_entry_2026-07-13</a>.</p>
+<h3 id="useful-sql-commands-to-know">useful SQL commands to know:</h3>
+<pre class="code-block language-sql"><code class="language-sql">mysql -u root -h 127.0.0.1 -P 3306
+
+
+CREATE DATABASE lif_elevator;
+
+USE lif_elevator;
+
+SHOW DATABASES;
+
+SHOW TABLES;
+
+DESCRIBE access_requests;
+
+SHOW CREATE TABLE access_requests;
+
+
+</code></pre>
+<h3 id="technical-notes">Technical notes</h3>
+<p>Nothing of note.</p>
+      </section>
+      <section class="logbook-entry-content">
+<h2 id="testing-results-or-issues">Testing, results, or issues</h2>
+<p>Nothing of note; no direct testing in this entry as it was mere setup.</p>
+      </section>
+
+      <p class="top-link">
+        <a href="#page_top">Go to the top of this page</a>
+      </p>
+    </main>
+
+    <footer class="site-footer">
+      <p>Copyright &copy; Nick Kapuka</p>
+    </footer>
+
+    <!-- Prism.js scripts for code formatting -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+  </body>
+</html>
