@@ -180,6 +180,7 @@ void setup() {
     tof_sensor.setVcselPulsePeriod(VL53L0X::VcselPeriodFinalRange, 14);
     // increase timing budget to 200 ms
     tof_sensor.setMeasurementTimingBudget(200000);
+    
     while (1) {
         Serial.print(tof_sensor.readRangeSingleMillimeters());
         if (tof_sensor.timeoutOccurred()) { Serial.print(" TIMEOUT"); }
