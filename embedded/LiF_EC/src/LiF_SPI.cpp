@@ -40,137 +40,138 @@ void selectChannel(uint8_t channel) {
 
 namespace LiF_SPI {
 
-void begin() {
-    if (spiInitialized) {
-        return;
-    }
-
-    pinMode(PIN_CSA0, OUTPUT);
-    pinMode(PIN_CSA1, OUTPUT);
-    pinMode(PIN_CSEN, OUTPUT);
-
-    // Keep all demultiplexer outputs inactive during startup.
-    deselectAll();
-    digitalWrite(PIN_CSA0, LOW);
-    digitalWrite(PIN_CSA1, LOW);
-
-    lifSpi.begin();
-    spiInitialized = true;
-}
-
-void transfer(
-    uint8_t chipSelectChannel,
-    const uint8_t* txData,
-    uint8_t* rxData,
-    size_t length
-) {
-    if (length == 0) {
-        return;
-    }
-
-    begin();
-
-    lifSpi.beginTransaction(lifSpiSettings);
-    selectChannel(chipSelectChannel);
-
-    for (size_t i = 0; i < length; ++i) {
-        const uint8_t outgoing = (txData != nullptr) ? txData[i] : 0xFF;
-        const uint8_t incoming = lifSpi.transfer(outgoing);
-
-        if (rxData != nullptr) {
-            rxData[i] = incoming;
+    void begin() {
+        if (spiInitialized) {
+            return;
         }
+
+        pinMode(PIN_CSA0, OUTPUT);
+        pinMode(PIN_CSA1, OUTPUT);
+        pinMode(PIN_CSEN, OUTPUT);
+
+        // Keep all demultiplexer outputs inactive during startup.
+        deselectAll();
+        digitalWrite(PIN_CSA0, LOW);
+        digitalWrite(PIN_CSA1, LOW);
+
+        lifSpi.begin();
+        spiInitialized = true;
     }
 
-    deselectAll();
-    delayMicroseconds(1);
-    lifSpi.endTransaction();
-}
+    void transfer(
+        uint8_t chipSelectChannel,
+        const uint8_t* txData,
+        uint8_t* rxData,
+        size_t length
+    ) {
+        if (length == 0) {
+            return;
+        }
 
-namespace MCP23S17 {
+        begin();
 
-namespace {
+        lifSpi.beginTransaction(lifSpiSettings);
+        selectChannel(chipSelectChannel);
 
-// BANK = 0 register map.
-constexpr uint8_t REG_IODIRB = 0x01;
-constexpr uint8_t REG_IOCON  = 0x0A;
-constexpr uint8_t REG_GPIOB  = 0x13;
-constexpr uint8_t REG_OLATB  = 0x15;
+        for (size_t i = 0; i < length; ++i) {
+            const uint8_t outgoing = (txData != nullptr) ? txData[i] : 0xFF;
+            const uint8_t incoming = lifSpi.transfer(outgoing);
 
-// HAEN remains disabled, so the MCP23S17 opcode uses address 000.
-constexpr uint8_t OPCODE_WRITE = 0x40;
-constexpr uint8_t OPCODE_READ  = 0x41;
+            if (rxData != nullptr) {
+                rxData[i] = incoming;
+            }
+        }
 
-uint8_t selectedChannel = LCD_EXPANDER_CHANNEL;
-uint8_t portBOutputShadow = 0x00;
+        deselectAll();
+        delayMicroseconds(1);
+        lifSpi.endTransaction();
+    }
 
-}  // namespace
+    namespace MCP23S17 {
 
-bool begin(uint8_t chipSelectChannel) {
-    LiF_SPI::begin();
+        namespace {
 
-    selectedChannel = chipSelectChannel & 0x03;
+            // BANK = 0 register map.
+            constexpr uint8_t REG_IODIRB = 0x01;
+            constexpr uint8_t REG_IOCON  = 0x0A;
+            constexpr uint8_t REG_GPIOB  = 0x13;
+            constexpr uint8_t REG_OLATB  = 0x15;
 
-    // BANK=0, sequential operation enabled, HAEN disabled.
-    writeRegister(REG_IOCON, 0x00);
+            // HAEN remains disabled, so the MCP23S17 opcode uses address 000.
+            constexpr uint8_t OPCODE_WRITE = 0x40;
+            constexpr uint8_t OPCODE_READ  = 0x41;
 
-    // Set the output latch before changing the pins to outputs, avoiding
-    // an unintended pulse on E, RS, or R/W.
-    portBOutputShadow = 0x00;
-    writeRegister(REG_OLATB, portBOutputShadow);
+            uint8_t selectedChannel = LCD_EXPANDER_CHANNEL;
+            uint8_t portBOutputShadow = 0x00;
 
-    // The complete B port is dedicated to the LCD.
-    writeRegister(REG_IODIRB, 0x00);
+        }  // namespace
 
-    return readRegister(REG_IODIRB) == 0x00;
-}
+        bool begin(uint8_t chipSelectChannel) {
+            LiF_SPI::begin();
 
-void writeRegister(uint8_t registerAddress, uint8_t value) {
-    const uint8_t frame[] = {
-        OPCODE_WRITE,
-        registerAddress,
-        value
-    };
+            selectedChannel = chipSelectChannel & 0x03;
 
-    LiF_SPI::write(selectedChannel, frame, sizeof(frame));
-}
+            // BANK=0, sequential operation enabled, HAEN disabled.
+            writeRegister(REG_IOCON, 0x00);
 
-uint8_t readRegister(uint8_t registerAddress) {
-    const uint8_t txFrame[] = {
-        OPCODE_READ,
-        registerAddress,
-        0xFF
-    };
+            // Set the output latch before changing the pins to outputs, avoiding
+            // an unintended pulse on E, RS, or R/W.
+            portBOutputShadow = 0x00;
+            writeRegister(REG_OLATB, portBOutputShadow);
 
-    uint8_t rxFrame[sizeof(txFrame)] = {};
-    LiF_SPI::transfer(
-        selectedChannel,
-        txFrame,
-        rxFrame,
-        sizeof(txFrame)
-    );
+            // The complete B port is dedicated to the LCD.
+            writeRegister(REG_IODIRB, 0x00);
 
-    return rxFrame[2];
-}
+            return readRegister(REG_IODIRB) == 0x00;
+        }
 
-void writePortB(uint8_t value) {
-    portBOutputShadow = value;
-    writeRegister(REG_OLATB, portBOutputShadow);
-}
+        void writeRegister(uint8_t registerAddress, uint8_t value) {
+            const uint8_t frame[] = {
+                OPCODE_WRITE,
+                registerAddress,
+                value
+            };
 
-void updatePortB(uint8_t mask, uint8_t value) {
-    portBOutputShadow =
-        static_cast<uint8_t>(
-            (portBOutputShadow & static_cast<uint8_t>(~mask)) |
-            (value & mask)
-        );
+            LiF_SPI::write(selectedChannel, frame, sizeof(frame));
+        }
 
-    writeRegister(REG_OLATB, portBOutputShadow);
-}
+        uint8_t readRegister(uint8_t registerAddress) {
+            const uint8_t txFrame[] = {
+                OPCODE_READ,
+                registerAddress,
+                0xFF
+            };
 
-uint8_t portBShadow() {
-    return portBOutputShadow;
-}
+            uint8_t rxFrame[sizeof(txFrame)] = {};
+            LiF_SPI::transfer(
+                selectedChannel,
+                txFrame,
+                rxFrame,
+                sizeof(txFrame)
+            );
 
-}  // namespace MCP23S17
+            return rxFrame[2];
+        }
+
+        void writePortB(uint8_t value) {
+            portBOutputShadow = value;
+            writeRegister(REG_OLATB, portBOutputShadow);
+        }
+
+        void updatePortB(uint8_t mask, uint8_t value) {
+            portBOutputShadow =
+                static_cast<uint8_t>(
+                    (portBOutputShadow & static_cast<uint8_t>(~mask)) |
+                    (value & mask)
+                );
+
+            writeRegister(REG_OLATB, portBOutputShadow);
+        }
+
+        uint8_t portBShadow() {
+            return portBOutputShadow;
+        }
+
+    }  // namespace MCP23S17
+    
 }  // namespace LiF_SPI

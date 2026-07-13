@@ -1,8 +1,5 @@
 #include <Arduino.h>
-// #include <DiFinders.h>
 #include <Wire.h>
-// #include <DFRobot_VL53L0X.h>
-#include <LCDI2C_Multilingual.h>
 #include <VL53L0X.h>
 
 #include "pin_definition.h"
@@ -54,8 +51,6 @@ uint8_t current_floor = 0;      // 0 is internally interpreted as moving
 // TwoWire myWire;
 VL53L0X tof_sensor;
 unsigned long int last_tof_update;
-LCDI2C_Latin_Symbols lcd(0x27, 16, 2);    // I2C address = 0x27
-
 
 // -----------------------------------------------------------------------------
 // Function Declarations
@@ -102,11 +97,20 @@ void send_heartbeat();
 /// @param reason (optional) string pointer explaining the reason of the fault
 void fault_mode(const char* reason = nullptr);
 
+/**
+ * @brief Initialize ToF sensor
+ */
+void init_ToF();
 
 /**
  * @brief Erases and rewrites info on the LCD screen.
  */
 void update_lcd();
+
+/**
+ * @brief Small utility to detect I2C device addresses
+ */
+void I2C_scanner();
 
 
 // -----------------------------------------------------------------------------
@@ -120,43 +124,9 @@ void setup() {
     Serial.println("LiF EC - Setup Started");
 
     if (!LiF_LCD::lcd.begin()) {
-        Serial.println("LCD initialization failed");
-
-        while (true) {
-            delay(1000);
-        }
-    }
-    LiF_LCD::lcd.clear();
-    LiF_LCD::lcd.setCursor(0, 0);
-    LiF_LCD::lcd.print("LiF EC");
-
-    LiF_LCD::lcd.setCursor(0, 1);
-    LiF_LCD::lcd.print("LCD demo");
-    delay(2000);
-
-    LiF_LCD::lcd.clear();
-    LiF_LCD::lcd.setCursor(0, 0);
-
-    int charCnt = 0;
-    while (1) {
-        if (Serial.available()) {
-            char ch = Serial.read();
-            LiF_LCD::lcd.print(ch);
-            charCnt++;
-
-            if (charCnt == 16) {
-                LiF_LCD::lcd.setCursor(0, 1);
-            } else if (charCnt == 32) {
-                LiF_LCD::lcd.clear();
-                LiF_LCD::lcd.setCursor(0, 0);
-                charCnt = 0;
-            }
-        }
+        Serial.println("LCD initialization failed!");
     }
 
-
-    // myWire = TwoWire(I2C2_SDA, I2C2_SCL);
-    // myWire.begin();
     Wire.setSDA(I2C2_SDA);
     Wire.setSCL(I2C2_SCL);
 
@@ -164,71 +134,12 @@ void setup() {
     Wire.begin();
     Wire.setClock(100000);
 
-    // Serial.println("Scanning...");
-    // byte error, address;
-    // int nDevices;
-    // nDevices = 0;
-    // for (address = 1; address < 127; address++)
-    // {
-    //     // The i2c_scanner uses the return value of
-    //     // the Write.endTransmisstion to see if
-    //     // a device did acknowledge to the address.
-    //     Wire.beginTransmission(address);
-    //     error = Wire.endTransmission();
-    //     if (error == 0)
-    //     {
-    //         Serial.print("I2C device found at address 0x");
-    //         if (address < 16)
-    //             Serial.print("0");
-    //         Serial.print(address, HEX);
-    //         Serial.println("  !");
-    //         nDevices++;
-    //     }
-    //     else if (error == 4)
-    //     {
-    //         Serial.print("Unknown error at address 0x");
-    //         if (address < 16)
-    //             Serial.print("0");
-    //         Serial.println(address, HEX);
-    //     }
-    // }
-    // if (nDevices == 0)
-    //     Serial.println("No I2C devices found\n");
-    // else
-    //     Serial.println("done\n");
-    // // Set I2C sub-device address
-    // tof_sensor.begin(0x29);
-    // // Set to Back-to-back mode and high precision mode
-    // tof_sensor.setMode(tof_sensor.eSingle, tof_sensor.eHigh);
-    // //Laser rangefinder begins to work
-
-
-    tof_sensor.setTimeout(500);
-    if (!tof_sensor.init())
-    {
-        Serial.println("Failed to detect and initialize sensor!");
-        while (1) {}
-    }
-
-    // lower the return signal rate limit (default is 0.25 MCPS)
-    tof_sensor.setSignalRateLimit(0.1);
-    // increase laser pulse periods (defaults are 14 and 10 PCLKs)
-    tof_sensor.setVcselPulsePeriod(VL53L0X::VcselPeriodPreRange, 18);
-    tof_sensor.setVcselPulsePeriod(VL53L0X::VcselPeriodFinalRange, 14);
-    // increase timing budget to 200 ms
-    tof_sensor.setMeasurementTimingBudget(200000);
-    
     while (1) {
         Serial.print(tof_sensor.readRangeSingleMillimeters());
         if (tof_sensor.timeoutOccurred()) { Serial.print(" TIMEOUT"); }
 
         Serial.println();
     }
-
-    // Initialize the LCD
-    // lcd.init();
-    // // Turn on the LCD backlight
-    // lcd.backlight();
     
     LiF_CAN::setup();
     LiF_Motor::setup();
@@ -472,36 +383,55 @@ void fault_mode(const char* reason) {
     }
 }
 
+void init_ToF() {
+    tof_sensor.setTimeout(500);
+    if (!tof_sensor.init()) {
+        Serial.println("ToF initialization failed!");
+        while (1) {
+            ; 
+            // trying to continue to use ToF after init failed causes MCU to crash
+            // chip erase with ST-LINK utility is required
+        }
 
+    }
+
+    // lower the return signal rate limit (default is 0.25 MCPS)
+    tof_sensor.setSignalRateLimit(0.1);
+    // increase laser pulse periods (defaults are 14 and 10 PCLKs)
+    tof_sensor.setVcselPulsePeriod(VL53L0X::VcselPeriodPreRange, 18);
+    tof_sensor.setVcselPulsePeriod(VL53L0X::VcselPeriodFinalRange, 14);
+    // increase timing budget to 200 ms
+    tof_sensor.setMeasurementTimingBudget(200000);
+}
 
 void update_lcd() {
-    lcd.clear();
-    lcd.home();
-    lcd.print("State: ");
+    LiF_LCD::lcd.clear();
+    LiF_LCD::lcd.home();
+    LiF_LCD::lcd.print("ST: ");
     
     switch (state) {
     case EC_State::INITIALIZE:
-        lcd.print("init");
+        LiF_LCD::lcd.print("init");
         break;
     case EC_State::IDLE:
-        lcd.print("idle");
+        LiF_LCD::lcd.print("idle");
         break;
     case EC_State::MOVING:
-        lcd.print("moving");
+        LiF_LCD::lcd.print("moving");
         break;
     case EC_State::DISABLED:
-        lcd.print("disabled");
+        LiF_LCD::lcd.print("disabled");
         break;
     case EC_State::FAULT:
-        lcd.print("fault");    
+        LiF_LCD::lcd.print("fault");    
         break;
     default:
-        lcd.print("fault");
+        LiF_LCD::lcd.print("fault");
         fault_mode("invalid EC_State");
         break;
     }
     // tof_sensor.start();
-    // float dist = tof_sensor.getDistance();
+    int dist = tof_sensor.readRangeSingleMillimeters();
     // Serial.printf("ToF reads: %f\r\n", dist);
     // Serial.println(dist);
 
@@ -509,6 +439,42 @@ void update_lcd() {
     
     // tof_sensor.getSignalCount();
 
-    lcd.setCursor(0, 1);
-    // lcd.printf("dist: %f", dist);
+    LiF_LCD::lcd.setCursor(0, 1);
+    LiF_LCD::lcd.printf("dist: %d", dist);
+}
+
+
+void I2C_scanner() {
+    Serial.println("Scanning...");
+    byte error, address;
+    int nDevices;
+    nDevices = 0;
+    for (address = 1; address < 127; address++)
+    {
+        // The i2c_scanner uses the return value of
+        // the Write.endTransmisstion to see if
+        // a device did acknowledge to the address.
+        Wire.beginTransmission(address);
+        error = Wire.endTransmission();
+        if (error == 0)
+        {
+            Serial.print("I2C device found at address 0x");
+            if (address < 16)
+                Serial.print("0");
+            Serial.print(address, HEX);
+            Serial.println("  !");
+            nDevices++;
+        }
+        else if (error == 4)
+        {
+            Serial.print("Unknown error at address 0x");
+            if (address < 16)
+                Serial.print("0");
+            Serial.println(address, HEX);
+        }
+    }
+    if (nDevices == 0)
+        Serial.println("No I2C devices found\n");
+    else
+        Serial.println("done\n");
 }
