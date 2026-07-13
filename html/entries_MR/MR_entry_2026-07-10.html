@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<!--
+Author: Matvey Regentov
+-->
+
+<html lang="en">
+
+<head>
+	<title>MR Logbook Entry - 2026-07-10</title>
+	<meta charset="UTF-8">
+	<meta name="author" content="Matvey Regentov">
+	<meta name="description" content="MR Logbook Entry for 2026-07-10">
+	<meta name="robots" content="index, follow">
+	<meta http-equiv="Pragma" content="no-cache">
+
+	<link rel="icon" href="../../media/icons/LiF_icon.ico" type="image/x-icon">
+	<link rel="stylesheet" href="../../css/base.css">
+	<link rel="stylesheet" href="../../css/logbook_entry.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css">
+	<link rel="stylesheet" href="../../css/code_formatting.css">
+	<script>
+		window.MathJax = {
+			tex: {
+				inlineMath: [['\\(', '\\)'], ['$', '$']],
+				displayMath: [['\\[', '\\]'], ['$$', '$$']]
+			},
+			svg: { fontCache: 'global' }
+		};
+	</script>
+	<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+</head>
+
+<body>
+	<div id="navbar-placeholder" data-root="../../"></div>
+	<script src="../../js/navbar.js"></script>
+
+	<main class="page-wrapper">
+		<section class="intro-section logbook-entry-intro" id="page_top">
+			<div class="intro-text">
+				<p class="section-label">Daily Logbook Entry</p>
+				<h1>Logbook Entry, 2026-07-10 by Matvey Regentov</h1>
+				<p class="intro-description">ToF development, ToF mounting, and schematic integration</p>
+				<div class="button-row">
+					<a href="../logbook_MR.html" class="button secondary-button">My Logbook Cover Page</a>
+					<a href="#log" class="button primary-button">Jump to Entry</a>
+					<a href="MR_entry_2026-07-09.html" class="button secondary-button">Previous Entry</a>
+					<a href="MR_entry_2026-07-11.html" class="button secondary-button">Next Entry</a>
+				</div>
+			</div>
+			<aside class="summary-card">
+				<h2>Entry Snapshot</h2>
+				<p><b>Date:</b> 2026-07-10</p>
+				<p><b>Author:</b> Matvey Regentov</p>
+				<p><b>Focus:</b> ToF development, ToF mounting, and schematic integration</p>
+			</aside>
+		</section>
+
+		<section class="logbook-entry-content" id="log">
+			<h2 id="tof-addition">ToF addition</h2>
+			<p>MoP comms PCB uses I2C2 peripheral. This is how I can set <code>Wire</code> to use I2C2</p>
+			<pre><code class="language-c++">Wire.setSDA(I2C2_SDA);
+Wire.setSCL(I2C2_SCL);
+Wire.begin();
+Wire.setClock(100000);
+</code></pre>
+			<p><a
+					href="https://community.platformio.org/t/stm32-how-select-i2c2-how-connect-timer-to-port/53075">https://community.platformio.org/t/stm32-how-select-i2c2-how-connect-timer-to-port/53075</a><sup><a
+						href="#source-1" aria-label="Source 1">[1]</a></sup></p>
+			<p>ToF sensor not working properly. I tried two variants:</p>
+			<ul>
+				<li>main: VL53L0X</li>
+				<li>Nick&#39;s: VL53L1X</li>
+			</ul>
+			<p>Tried several libraries:</p>
+			<ul>
+				<li>DFRobot_VL53L0X</li>
+				<li>DiSensor</li>
+				<li>Interface-TOF-sensor-with-STM32 (VL53L0X library by KMuthumala: <a
+						href="https://github.com/KMuthumala/Interface-TOF-sensor-with-STM32">https://github.com/KMuthumala/Interface-TOF-sensor-with-STM32</a><sup><a
+							href="#source-2" aria-label="Source 2">[2]</a></sup>)</li>
+			</ul>
+			<p>Nothing worked. Nick&#39;s board is outputting all 0s. The main ToF sensor output maximum-range values
+				that were well outside the sensor&#39;s 2 m range.</p>
+			<table>
+				<thead>
+					<tr>
+						<th>Frame</th>
+						<th>Mark</th>
+						<th>Start Time in s</th>
+						<th>Type</th>
+						<th>ID</th>
+						<th>Length</th>
+						<th>Data</th>
+						<th>State</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td>1</td>
+						<td></td>
+						<td>-1.81E-03</td>
+						<td></td>
+						<td>0x00</td>
+						<td>0</td>
+						<td></td>
+						<td>Address Error</td>
+					</tr>
+					<tr>
+						<td>2</td>
+						<td></td>
+						<td>-2.17E-04</td>
+						<td>Write</td>
+						<td>0x29</td>
+						<td>1</td>
+						<td>0xC0</td>
+						<td>Address Error+Data Error+Stop</td>
+					</tr>
+					<tr>
+						<td>3</td>
+						<td></td>
+						<td>-1.92E-08</td>
+						<td>Read</td>
+						<td>0x29</td>
+						<td>1</td>
+						<td>0xEE</td>
+						<td>OK</td>
+					</tr>
+					<tr>
+						<td>4</td>
+						<td></td>
+						<td>2.10E-04</td>
+						<td>Write</td>
+						<td>0x29</td>
+						<td>1</td>
+						<td>0x89</td>
+						<td>Data Error+Stop</td>
+					</tr>
+					<tr>
+						<td>5</td>
+						<td></td>
+						<td>4.23E-04</td>
+						<td>Read</td>
+						<td>0x29</td>
+						<td>1</td>
+						<td>0x00</td>
+						<td>Data Error+Stop</td>
+					</tr>
+					<tr>
+						<td>6</td>
+						<td></td>
+						<td>6.35E-04</td>
+						<td>Write</td>
+						<td>0x29</td>
+						<td>2</td>
+						<td>0x8901</td>
+						<td>OK</td>
+					</tr>
+					<tr>
+						<td>7</td>
+						<td></td>
+						<td>9.41E-04</td>
+						<td>Write</td>
+						<td>0x29</td>
+						<td>2</td>
+						<td>0x8800</td>
+						<td>Data Error+Stop</td>
+					</tr>
+					<tr>
+						<td>8</td>
+						<td></td>
+						<td>1.25E-03</td>
+						<td>Write</td>
+						<td>0x29</td>
+						<td>2</td>
+						<td>0x8001</td>
+						<td>OK</td>
+					</tr>
+					<tr>
+						<td>9</td>
+						<td></td>
+						<td>1.55E-03</td>
+						<td>Write</td>
+						<td>0x29</td>
+						<td>2</td>
+						<td>0xFF01</td>
+						<td>OK</td>
+					</tr>
+					<tr>
+						<td>10</td>
+						<td></td>
+						<td>1.86E-03</td>
+						<td>Write</td>
+						<td>0x29</td>
+						<td>2</td>
+						<td>0x0000</td>
+						<td>OK</td>
+					</tr>
+					<tr>
+						<td>11</td>
+						<td></td>
+						<td>2.17E-03</td>
+						<td>Write</td>
+						<td>0x29</td>
+						<td>1</td>
+						<td>0x91</td>
+						<td>OK</td>
+					</tr>
+					<tr>
+						<td>12</td>
+						<td></td>
+						<td>2.38E-03</td>
+						<td>Read</td>
+						<td>0x29</td>
+						<td>1</td>
+						<td>0x3C</td>
+						<td>OK</td>
+					</tr>
+					<tr>
+						<td>13</td>
+						<td></td>
+						<td>2.59E-03</td>
+						<td>Write</td>
+						<td>0x29</td>
+						<td>2</td>
+						<td>0x0001</td>
+						<td>OK</td>
+					</tr>
+					<tr>
+						<td>14</td>
+						<td></td>
+						<td>2.90E-03</td>
+						<td>Write</td>
+						<td>0x29</td>
+						<td>2</td>
+						<td>0xFF00</td>
+						<td>OK</td>
+					</tr>
+					<tr>
+						<td>15</td>
+						<td></td>
+						<td>3.20E-03</td>
+						<td>Write</td>
+						<td>0x29</td>
+						<td>2</td>
+						<td>0x8000</td>
+						<td>OK</td>
+					</tr>
+					<tr>
+						<td>16</td>
+						<td></td>
+						<td>3.51E-03</td>
+						<td>Write</td>
+						<td>0x29</td>
+						<td>1</td>
+						<td>0x60</td>
+						<td>OK</td>
+					</tr>
+					<tr>
+						<td>17</td>
+						<td></td>
+						<td>3.72E-03</td>
+						<td>Read</td>
+						<td>0x29</td>
+						<td>1</td>
+						<td>0x00</td>
+						<td>OK</td>
+					</tr>
+					<tr>
+						<td>18</td>
+						<td></td>
+						<td>3.94E-03</td>
+						<td>Write</td>
+						<td>0x29</td>
+						<td>2</td>
+						<td>0x6012</td>
+						<td>OK</td>
+					</tr>
+					<tr>
+						<td>19</td>
+						<td></td>
+						<td>4.25E-03</td>
+						<td>Write</td>
+						<td>0x29</td>
+						<td>3</td>
+						<td>0x440020</td>
+						<td>OK</td>
+					</tr>
+					<tr>
+						<td>20</td>
+						<td></td>
+						<td>4.65E-03</td>
+						<td>Write</td>
+						<td>0x29</td>
+						<td>2</td>
+						<td>0x01FF</td>
+						<td>OK</td>
+					</tr>
+					<tr>
+						<td>21</td>
+						<td></td>
+						<td>4.96E-03</td>
+						<td>Write</td>
+						<td>0x29</td>
+						<td>2</td>
+						<td>0x8001</td>
+						<td>OK</td>
+					</tr>
+					<tr>
+						<td>22</td>
+						<td></td>
+						<td>5.27E-03</td>
+						<td>Write</td>
+						<td>0x29</td>
+						<td>2</td>
+						<td>0xFF01</td>
+						<td>OK</td>
+					</tr>
+					<tr>
+						<td>23</td>
+						<td></td>
+						<td>5.58E-03</td>
+						<td>Write</td>
+						<td>0x29</td>
+						<td>2</td>
+						<td>0x0000</td>
+						<td>OK</td>
+					</tr>
+					<tr>
+						<td>24</td>
+						<td></td>
+						<td>5.89E-03</td>
+						<td>Write</td>
+						<td>0x29</td>
+						<td>2</td>
+						<td>0xFF06</td>
+						<td>OK</td>
+					</tr>
+					<tr>
+						<td>25</td>
+						<td></td>
+						<td>6.20E-03</td>
+						<td>Write</td>
+						<td>0x29</td>
+						<td>1</td>
+						<td>0x83</td>
+						<td>OK</td>
+					</tr>
+					<tr>
+						<td>26</td>
+						<td></td>
+						<td>6.42E-03</td>
+						<td>Read</td>
+						<td>0x29</td>
+						<td>1</td>
+						<td>0x01</td>
+						<td>OK</td>
+					</tr>
+					<tr>
+						<td>27</td>
+						<td></td>
+						<td>6.63E-03</td>
+						<td>Write</td>
+						<td>0x29</td>
+						<td>2</td>
+						<td>0x8305</td>
+						<td>OK</td>
+					</tr>
+					<tr>
+						<td>28</td>
+						<td></td>
+						<td>6.94E-03</td>
+						<td>Write</td>
+						<td>0x29</td>
+						<td>2</td>
+						<td>0xFF07</td>
+						<td>OK</td>
+					</tr>
+					<tr>
+						<td>29</td>
+						<td></td>
+						<td>7.25E-03</td>
+						<td>Write</td>
+						<td>0x29</td>
+						<td>2</td>
+						<td>0x8101</td>
+						<td>OK</td>
+					</tr>
+					<tr>
+						<td>30</td>
+						<td></td>
+						<td>7.56E-03</td>
+						<td>Write</td>
+						<td>0x29</td>
+						<td>1</td>
+						<td>0x80</td>
+						<td>Data NACK</td>
+					</tr>
+					<tr>
+						<td>31</td>
+						<td></td>
+						<td>7.77E-03</td>
+						<td>Write</td>
+						<td>0x29</td>
+						<td>0</td>
+						<td></td>
+						<td>Address NACK</td>
+					</tr>
+					<tr>
+						<td>32</td>
+						<td></td>
+						<td>7.89E-03</td>
+						<td>Write</td>
+						<td>0x29</td>
+						<td>0</td>
+						<td></td>
+						<td>Address NACK</td>
+					</tr>
+					<tr>
+						<td>33</td>
+						<td></td>
+						<td>8.01E-03</td>
+						<td>Write</td>
+						<td>0x29</td>
+						<td>0</td>
+						<td></td>
+						<td>Address NACK</td>
+					</tr>
+					<tr>
+						<td>34</td>
+						<td></td>
+						<td>8.13E-03</td>
+						<td>Read</td>
+						<td>0x29</td>
+						<td>0</td>
+						<td></td>
+						<td>Address NACK</td>
+					</tr>
+					<tr>
+						<td>35</td>
+						<td></td>
+						<td>8.25E-03</td>
+						<td>Write</td>
+						<td>0x29</td>
+						<td>0</td>
+						<td></td>
+						<td>Address NACK</td>
+					</tr>
+					<tr>
+						<td>36</td>
+						<td></td>
+						<td>8.36E-03</td>
+						<td>Write</td>
+						<td>0x29</td>
+						<td>0</td>
+						<td></td>
+						<td>Address NACK</td>
+					</tr>
+					<tr>
+						<td>37</td>
+						<td></td>
+						<td>8.48E-03</td>
+						<td>Read</td>
+						<td>0x29</td>
+						<td>0</td>
+						<td></td>
+						<td>Address NACK</td>
+					</tr>
+					<tr>
+						<td>38</td>
+						<td></td>
+						<td>8.60E-03</td>
+						<td>Write</td>
+						<td>0x29</td>
+						<td>0</td>
+						<td></td>
+						<td>Address NACK</td>
+					</tr>
+					<tr>
+						<td>39</td>
+						<td></td>
+						<td>8.72E-03</td>
+						<td>Write</td>
+						<td>0x29</td>
+						<td>0</td>
+						<td></td>
+						<td>Address NACK</td>
+					</tr>
+					<tr>
+						<td>40</td>
+						<td></td>
+						<td>8.84E-03</td>
+						<td>Write</td>
+						<td>0x29</td>
+						<td>0</td>
+						<td></td>
+						<td>Address NACK</td>
+					</tr>
+					<tr>
+						<td>41</td>
+						<td></td>
+						<td>8.96E-03</td>
+						<td>Read</td>
+						<td>0x29</td>
+						<td>0</td>
+						<td></td>
+						<td>Address NACK</td>
+					</tr>
+					<tr>
+						<td>42</td>
+						<td></td>
+						<td>9.08E-03</td>
+						<td>Write</td>
+						<td>0x29</td>
+						<td>0</td>
+						<td></td>
+						<td>Address NACK</td>
+					</tr>
+					<tr>
+						<td>43</td>
+						<td></td>
+						<td>9.19E-03</td>
+						<td>Write</td>
+						<td>0x29</td>
+						<td>0</td>
+						<td></td>
+						<td>Address NACK</td>
+					</tr>
+					<tr>
+						<td>44</td>
+						<td></td>
+						<td>9.31E-03</td>
+						<td>Write</td>
+						<td>0x29</td>
+						<td>0</td>
+						<td></td>
+						<td>Address NACK</td>
+					</tr>
+					<tr>
+						<td>45</td>
+						<td></td>
+						<td>9.43E-03</td>
+						<td>Write</td>
+						<td>0x29</td>
+						<td>0</td>
+						<td></td>
+						<td>Address NACK</td>
+					</tr>
+					<tr>
+						<td>46</td>
+						<td></td>
+						<td>9.55E-03</td>
+						<td>Write</td>
+						<td>0x29</td>
+						<td>0</td>
+						<td></td>
+						<td>Address NACK</td>
+					</tr>
+					<tr>
+						<td>47</td>
+						<td></td>
+						<td>9.67E-03</td>
+						<td>Write</td>
+						<td>0x29</td>
+						<td>0</td>
+						<td></td>
+						<td>Address NACK</td>
+					</tr>
+					<tr>
+						<td>48</td>
+						<td></td>
+						<td>9.78E-03</td>
+						<td>Read</td>
+						<td>0x29</td>
+						<td>0</td>
+						<td></td>
+						<td>Address NACK</td>
+					</tr>
+					<tr>
+						<td>49</td>
+						<td></td>
+						<td>9.90E-03</td>
+						<td>Write</td>
+						<td>0x29</td>
+						<td>0</td>
+						<td></td>
+						<td>Address NACK</td>
+					</tr>
+					<tr>
+						<td>50</td>
+						<td></td>
+						<td>1.00E-02</td>
+						<td>Write</td>
+						<td>0x29</td>
+						<td>0</td>
+						<td></td>
+						<td>Address NACK</td>
+					</tr>
+				</tbody>
+			</table>
+			<p>The initial setup looked okay, but at frame 30 I start getting issues. The waveform looked all right when
+				zoomed in, but voltage drops slightly over time.</p>
+			<p>Inspected I2C connector on the PCB - looks like a bad solder joint on 3.3 V pin. Combined with lack of
+				proper JST PH2.0 connector for DF Robot&#39;s ToF module, power stability issues seem to cause the
+				problem.
+				Swapped I2C connection from port 3 to port 1 and the sensor started working.</p>
+			<figure class="logbook-figure">
+				<img src="../../media/images/LiF_ToF_Sensor_Connected_to_EC.png" alt="ToF Connected to I2C port 1"
+					class="logbook-image centered-image" style="max-width: 100%; height: auto;">
+				<figcaption>ToF Connected to I2C port 1</figcaption>
+			</figure>
+
+
+			<figure>
+				<video class="logbook-figure" controls style="max-width: 100%; height: auto;">
+					<source src="../../media/video/ToF_Demo_Video.MOV" alt="Video demo of ToF sensor working">
+				</video>
+				<figcaption>Video demo of ToF sensor working</figcaption>
+			</figure>
+		</section>
+
+		<section class="logbook-entry-content" id="topic-2">
+			<h2 id="tof-mount">ToF Mount</h2>
+			<p>Designed a mounting bracket for DFRobot VL53L0X distance sensor. No technical drawings were provided, so
+				I used calipers to measure the board.
+				The sensor will measure distance to the counterweight caret and will be mounted at the top of the
+				platform.</p>
+			<figure class="logbook-figure">
+				<img src="../../media/images/LiF_CAD_Render_of_ToF_Mount.png"
+					alt="CAD Render of ToF Mount in the context of the assembly" class="logbook-image centered-image"
+					style="max-width: 100%; height: auto;">
+				<figcaption>CAD Render of ToF Mount in the context of the assembly</figcaption>
+			</figure>
+
+
+		</section>
+
+		<section class="logbook-entry-content" id="topic-3">
+			<h2 id="merging-rita-s-schematics">Merging Rita&#39;s Schematics</h2>
+			<p>As was planned for phase 2, Rita is responsible for several PCB sub-systems:</p>
+			<ul>
+				<li>CAN TRX</li>
+				<li>CAN connectors</li>
+				<li>Load Cell</li>
+			</ul>
+			<p>Today we were supposed to meet in-person to merge the schematics together. We delayed this from last week
+				to make sure schematics have no errors. After arriving to campus, Rita said there are still issues with
+				her schematics, so she was working on resolving those issues rather than merging schematics into the
+				main KiCAD project. She approached me several times to ask for help on certain issues she was having,
+				and I helped her resolve them.
+				Before we got a chance to merge her fixed schematics, she left. The schematics she pushed to GitHub have
+				more errors than last time she showed them to me from her device. Since today was our internal deadline
+				to finish schematics, I am taking over her schematics and merging them into the main project myself. For
+				the purposes of
+				documentation, I marked issues on 3 main sheets that Rita pushed to main.</p>
+			<h3 id="issues-with-rita-s-schematics">Issues with Rita&#39;s schematics</h3>
+			<figure class="logbook-figure">
+				<img src="../../media/images/LiF_Problems_with_Rita's_CAN_TRX_Schematic_2026-07-11.png"
+					alt="LiF Problems with Rita's CAN TRX Schematic 2026-07-11" class="logbook-image centered-image"
+					style="max-width: 100%; height: auto;">
+				<figcaption>LiF Problems with Rita's CAN TRX Schematic 2026-07-11</figcaption>
+			</figure>
+
+			<figure class="logbook-figure">
+				<img src="../../media/images/LiF_Problems_with_Rita's_CAN_Connector_Schematic_2026-07-11.png"
+					alt="LiF Problems with Rita's CAN Connector Schematic 2026-07-11"
+					class="logbook-image centered-image" style="max-width: 100%; height: auto;">
+				<figcaption>LiF Problems with Rita's CAN Connector Schematic 2026-07-11</figcaption>
+			</figure>
+
+			<figure class="logbook-figure">
+				<img src="../../media/images/LiF_Problems_with_Rita's_Load_Cell_Schematic_2026-07-11.png"
+					alt="LiF Problems with Rita's Load Cell Schematic 2026-07-11" class="logbook-image centered-image"
+					style="max-width: 100%; height: auto;">
+				<figcaption>LiF Problems with Rita's Load Cell Schematic 2026-07-11</figcaption>
+			</figure>
+
+			<p>Message to Rita:</p>
+			<blockquote>
+				<p>Hi, it happens :shrug:
+					Happy to help. I already merged the schematics tho, so dw about that. Just, please, try to pull your
+					weight with the project. At the very least communicate more, as you have been asking me and Nick to
+					do. Like Nick was asking earlier today about databases which was a task you took on during the
+					reading week, and as far as messages in the chat and commits on github go, there is nothing done in
+					this regard. Same for FSM from phase 1 - you said you&#39;d do it, but a day before demo there were
+					no updates. And logbooks - last meaningful entry is dated 06-18, which was nearly a month ago.
+					I do want to help you if you have concerns and questions, but sometimes it seems like a lot of help
+					for not that much output/feedback.
+					Finally, what is the status of database/auth? We need to show progress on it + other tasks that are
+					held back by this on Monday. If there&#39;s anything, please, push to github</p>
+			</blockquote>
+			<p>Other issues with the schematics:</p>
+			<ul>
+				<li>Selected CAN TRX chip symbol was improperly imported when KiCAD has a built-in symbol and footprint
+				</li>
+				<li>Selected CAN termination configuration button is out of stock on DigiKey, which is an agreed-upon
+					default component provider. No reason to justify this selection was provided</li>
+				<li><code>SN65HVD230</code> CAN TRX chip is 2.45USD, whereas the suggested schematics use 1.03USD IC
+					(<code>MCP2542FDxMF</code>). No justification for IC selection was provided. Replacing component
+					with a cheaper IC which was tested before<ul>
+						<li>Furthermore, <code>SN65HVD230</code> operates from a single supply voltage, which determines
+							its IO and CAN voltages. For 3.3 V IO necessary for ESP32, CAN voltage will be limited to
+							3.3 V (see section 8.5 of the IC)</li>
+					</ul>
+				</li>
+				<li>Generic DB-9 connector was used. No part number was provided</li>
+				<li>Vertical USB-C connector was used after I asked to replace it with a horizontal variant</li>
+			</ul>
+
+		</section>
+
+		<section class="logbook-entry-content sources-section" id="sources">
+			<h2>Sources</h2>
+			<ol class="source-list">
+				<li id="source-1"><span class="citation-label">[1]</span> PlatformIO Community, “STM32: How to Select
+					I2C2 / Connect a Timer to a Port.” <a
+						href="https://community.platformio.org/t/stm32-how-select-i2c2-how-connect-timer-to-port/53075">https://community.platformio.org/t/stm32-how-select-i2c2-how-connect-timer-to-port/53075</a>
+				</li>
+				<li id="source-2"><span class="citation-label">[2]</span> K. Muthumala, <em>Interface ToF Sensor with
+						STM32</em>, GitHub repository. <a
+						href="https://github.com/KMuthumala/Interface-TOF-sensor-with-STM32">https://github.com/KMuthumala/Interface-TOF-sensor-with-STM32</a>
+				</li>
+			</ol>
+		</section>
+
+		<nav class="entry-date-nav" aria-label="Logbook date navigation">
+			<a href="MR_entry_2026-07-09.html" class="button secondary-button">Previous Entry</a>
+			<a href="MR_entry_2026-07-11.html" class="button secondary-button">Next Entry</a>
+		</nav>
+		<p class="top-link"><a href="#page_top">Go to the top of this page</a></p>
+	</main>
+
+	<footer class="site-footer">
+		<p>Copyright &copy; Matvey Regentov</p>
+	</footer>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+</body>
+
+</html>

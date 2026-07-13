@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<!--
+Author: Matvey Regentov
+-->
+
+<html lang="en">
+
+<head>
+	<title>MR Logbook Entry - 2026-07-12</title>
+	<meta charset="UTF-8">
+	<meta name="author" content="Matvey Regentov">
+	<meta name="description" content="MR Logbook Entry for 2026-07-12">
+	<meta name="robots" content="index, follow">
+	<meta http-equiv="Pragma" content="no-cache">
+
+	<link rel="icon" href="../../media/icons/LiF_icon.ico" type="image/x-icon">
+	<link rel="stylesheet" href="../../css/base.css">
+	<link rel="stylesheet" href="../../css/logbook_entry.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css">
+	<link rel="stylesheet" href="../../css/code_formatting.css">
+	<script>
+		window.MathJax = {
+			tex: {
+				inlineMath: [['\\(', '\\)'], ['$', '$']],
+				displayMath: [['\\[', '\\]'], ['$$', '$$']]
+			},
+			svg: { fontCache: 'global' }
+		};
+	</script>
+	<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+</head>
+
+<body>
+	<div id="navbar-placeholder" data-root="../../"></div>
+	<script src="../../js/navbar.js"></script>
+
+	<main class="page-wrapper">
+		<section class="intro-section logbook-entry-intro" id="page_top">
+			<div class="intro-text">
+				<p class="section-label">Daily Logbook Entry</p>
+				<h1>Logbook Entry, 2026-07-12 by Matvey Regentov</h1>
+				<p class="intro-description">PCB schematic integration and pulley assembly testing</p>
+				<div class="button-row">
+					<a href="../logbook_MR.html" class="button secondary-button">My Logbook Cover Page</a>
+					<a href="#log" class="button primary-button">Jump to Entry</a>
+					<a href="MR_entry_2026-07-11.html" class="button secondary-button">Previous Entry</a>
+					<a href="MR_entry_2026-07-13.html" class="button secondary-button">Next Entry</a>
+				</div>
+			</div>
+			<aside class="summary-card">
+				<h2>Entry Snapshot</h2>
+				<p><b>Date:</b> 2026-07-12</p>
+				<p><b>Author:</b> Matvey Regentov</p>
+				<p><b>Focus:</b> PCB schematic integration and pulley assembly testing</p>
+			</aside>
+		</section>
+
+		<section class="logbook-entry-content" id="log">
+			<h2 id="merging-nick-s-schematics">Merging Nick&#39;s Schematics</h2>
+			<p>Merged Nick&#39;s schematics sheets for:</p>
+			<ul>
+				<li>Encoder</li>
+				<li>7 segment display</li>
+				<li>Buttons and LEDs</li>
+				<li>Accelerometer</li>
+				<li>Audio amplifier</li>
+			</ul>
+			<p>Fixed merge conflict in symbols library for symbols that Nick added to the project library. GitHub fails
+				to resolve this type of merge, it tries to chop up the symbol entry and splice 2 symbols together rather
+				than putting 1 symbol after another. I ended up manually copying Nick&#39;s version of the library into
+				my file then deleting duplicate symbols. Example merge conflict:</p>
+			<pre><code class="language-json">(kicad_symbol_lib
+	(version 20241209)
+	(generator &quot;kicad_symbol_editor&quot;)
+	(generator_version &quot;9.0&quot;)
+&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD
+	(symbol &quot;LMR14050SDDAR&quot;
+=======
+	(symbol &quot;BMA400&quot;
+		(pin_names
+			(offset 1.016)
+		)
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; main
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(property &quot;Reference&quot; &quot;U&quot;
+&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD
+			(at -10.16 13.97 0)
+=======
+			(at -10.16 16.002 0)
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; main
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD
+			)
+		)
+		(property &quot;Value&quot; &quot;LMR14050&quot;
+=======
+				(justify left bottom)
+			)
+		)
+</code></pre>
+			<p>Fixed some symbols and footprints which weren&#39;t added to the project library. Added 3D models to all
+				new footprints.</p>
+			<p>Formatted schematics to look coherent with the rest. Added jumpers and 0-ohm resistors for selectively
+				enabling parts of the board.</p>
+			<p>Added debounce circuit using Schmitt trigger ICs. Selected RC values based on an article from TI: the TI
+				application report <em>SCEA094 – Debounce a Switch</em><sup><a href="#source-1"
+						aria-label="Source 1">[1]</a></sup> (October 2020).</p>
+
+		</section>
+
+		<section class="logbook-entry-content" id="topic-2">
+			<h2 id="assembling-the-new-pulley-system">Assembling the new pulley system</h2>
+			<p>Yesterday I received the last batch of parts from Nick for the new pulley assembly.</p>
+			<figure class="logbook-figure">
+				<img src="../../media/images/LiF-Pulley_Mount_Assembly_rev_2_printed_parts.png"
+					alt="LiF - Pulley Mount Assembly rev 2 printed parts" class="logbook-image centered-image"
+					style="max-width: 100%; height: auto;">
+				<figcaption>LiF - Pulley Mount Assembly rev 2 printed parts</figcaption>
+			</figure>
+
+			<p>During assembly I found several issues.</p>
+			<figure class="logbook-figure">
+				<img src="../../media/images/LiF-Pulley_Mount_rev_2_tight_nut_clearance.png"
+					alt="LiF - Pulley Mount rev 2 tight nut clearance" class="logbook-image centered-image"
+					style="max-width: 100%; height: auto;">
+				<figcaption>LiF - Pulley Mount rev 2 tight nut clearance</figcaption>
+			</figure>
+
+			<p>Nuts which are inserted into pulley mount plates have a really tight fit, and special care is required to
+				insert them at the right angle. Otherwise the nuts get stuck.</p>
+			<figure class="logbook-figure">
+				<img src="../../media/images/LiF-Pulley_Mount_rev_2_PETG_issues.png"
+					alt="LiF - Pulley Mount rev 2 PETG issues" class="logbook-image centered-image"
+					style="max-width: 100%; height: auto;">
+				<figcaption>LiF - Pulley Mount rev 2 PETG issues</figcaption>
+			</figure>
+
+			<p>Due to material properties of PETG and moisture content in the filament, the PETG pulley shafts have a
+				really tight fit with the pulley wheels. PETG pulley shafts were scrapped as the result.
+				Erroneously-printed PLA shafts were used. They still needed to be filed down. Future revisions of the
+				assembly will need to use higher tolerances for this interface.</p>
+			<figure class="logbook-figure">
+				<img src="../../media/images/LiF-Pulley_Mount_rev_2_tool_access_issue.png"
+					alt="LiF - Pulley Mount rev 2 tool access issue" class="logbook-image centered-image"
+					style="max-width: 100%; height: auto;">
+				<figcaption>LiF - Pulley Mount rev 2 tool access issue</figcaption>
+			</figure>
+
+			<p>The motor plate that mounts the stepper to the pulley plate blocks access to tighten bottom bearing
+				mount. Tight fit between bearing hole and motor shaft prevents the motor from being installed after the
+				bearing is mounted. Furthermore, the motor mount blocks any fasteners from being used with the bottom
+				bearing bracket. </p>
+			<figure class="logbook-figure">
+				<img src="../../media/images/LiF-Pulley_Assembly_rev_2_installation_with_LAB_assistat.png"
+					alt="LiF - Pulley Assembly rev 2 installation with LAB assistat"
+					class="logbook-image centered-image" style="max-width: 100%; height: auto;">
+				<figcaption>LiF - Pulley Assembly rev 2 installation with LAB assistat</figcaption>
+			</figure>
+
+			<p>My roommate&#39;s lab assistant helped me install the new pulley mount assembly by providing tension to
+				the rope.</p>
+			<p>Finally, the new pulley mount assembly was installed. However, testing showed that the pulley failed to
+				guide the rope, which results in rope sliding side-to-side and getting caught on itself, which locks the
+				mechanism. By driving the rope manually, I found that there is a lot of friction in the system, which
+				may also be problematic for the stepper motor.</p>
+			<figure>
+				<video class="logbook-figure" controls style="max-width: 100%; height: auto;">
+					<source src="../../media/video/Pulley_mnt_asm_rev2_test.MOV"
+						alt="Manual driving test of Pulley Mount assembly rev 2">
+				</video>
+				<figcaption>Manual testing of the new pulley mount assembly</figcaption>
+			</figure>
+
+
+			<p>Finally, the top PLA pulley shaft broke during testing. This part either needs to be reprinted from PETG,
+				or the entire assembly needs to be redesigned.</p>
+			<figure class="logbook-figure"><img
+					src="../../media/images/LiF-Pulley_Mount_Assembly_rev2_broken_pulley_shaft.png"
+					alt="LiF - Pulley Mount Assembly rev2 broken pulley shaft" class="logbook-image centered-image"
+					style="max-width: 100%; height: auto;"></figure>
+
+
+		</section>
+
+		<section class="logbook-entry-content sources-section" id="sources">
+			<h2>Sources</h2>
+			<ol class="source-list">
+				<li id="source-1"><span class="citation-label">[1]</span> Texas Instruments, <em>Debounce a Switch</em>,
+					application report SCEA094, October 2020. <a
+						href="https://www.ti.com/lit/an/scea094/scea094.pdf">https://www.ti.com/lit/an/scea094/scea094.pdf</a>
+				</li>
+			</ol>
+		</section>
+
+		<nav class="entry-date-nav" aria-label="Logbook date navigation">
+			<a href="MR_entry_2026-07-11.html" class="button secondary-button">Previous Entry</a>
+			<a href="MR_entry_2026-07-13.html" class="button secondary-button">Next Entry</a>
+		</nav>
+		<p class="top-link"><a href="#page_top">Go to the top of this page</a></p>
+	</main>
+
+	<footer class="site-footer">
+		<p>Copyright &copy; Matvey Regentov</p>
+	</footer>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+</body>
+
+</html>

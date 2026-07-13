@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<!--
+Author: Matvey Regentov
+-->
+
+<html lang="en">
+
+<head>
+	<title>MR Logbook Entry - 2026-07-06</title>
+	<meta charset="UTF-8">
+	<meta name="author" content="Matvey Regentov">
+	<meta name="description" content="MR Logbook Entry for 2026-07-06">
+	<meta name="robots" content="index, follow">
+	<meta http-equiv="Pragma" content="no-cache">
+
+	<link rel="icon" href="../../media/icons/LiF_icon.ico" type="image/x-icon">
+	<link rel="stylesheet" href="../../css/base.css">
+	<link rel="stylesheet" href="../../css/logbook_entry.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css">
+	<link rel="stylesheet" href="../../css/code_formatting.css">
+	<script>
+		window.MathJax = {
+			tex: {
+				inlineMath: [['\\(', '\\)'], ['$', '$']],
+				displayMath: [['\\[', '\\]'], ['$$', '$$']]
+			},
+			svg: { fontCache: 'global' }
+		};
+	</script>
+	<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+</head>
+
+<body>
+	<div id="navbar-placeholder" data-root="../../"></div>
+	<script src="../../js/navbar.js"></script>
+
+	<main class="page-wrapper">
+		<section class="intro-section logbook-entry-intro" id="page_top">
+			<div class="intro-text">
+				<p class="section-label">Daily Logbook Entry</p>
+				<h1>Logbook Entry, 2026-07-06 by Matvey Regentov</h1>
+				<p class="intro-description">Project planning, PCB mounting, and USB-C power distribution</p>
+				<div class="button-row">
+					<a href="../logbook_MR.html" class="button secondary-button">My Logbook Cover Page</a>
+					<a href="#log" class="button primary-button">Jump to Entry</a>
+					<a href="MR_entry_2026-07-05.html" class="button secondary-button">Previous Entry</a>
+					<a href="MR_entry_2026-07-09.html" class="button secondary-button">Next Entry</a>
+				</div>
+			</div>
+			<aside class="summary-card">
+				<h2>Entry Snapshot</h2>
+				<p><b>Date:</b> 2026-07-06</p>
+				<p><b>Author:</b> Matvey Regentov</p>
+				<p><b>Focus:</b> Project planning, PCB mounting, and USB-C power distribution</p>
+			</aside>
+		</section>
+
+		<section class="logbook-entry-content" id="log">
+			<h2 id="project-planning-and-debrief-preparation">Project Planning and Debrief Preparation</h2>
+			<p>Preparing for debrief. Updating Gantt Chart. Asked team members about their tasks and estimated
+				completion times:</p>
+			<ul>
+				<li>Nick<ul>
+						<li>Update pages weeks 9-10:<ul>
+								<li>Caffeine study</li>
+								<li>BOM (MR, NK)</li>
+							</ul>
+						</li>
+						<li>week 10<ul>
+								<li>GUI - start of next week</li>
+							</ul>
+						</li>
+					</ul>
+				</li>
+				<li>Rita:<ul>
+						<li>database setup, weeks 9-10</li>
+						<li>website-side of authentication 10</li>
+						<li>code for speaker: week 10</li>
+					</ul>
+				</li>
+				<li>Matvey:<ul>
+						<li>ToF, LCD, speaker - week 9</li>
+						<li>merge and finalize schematics - end of this week (week 9)</li>
+						<li>route PCB - end of week 9</li>
+					</ul>
+				</li>
+				<li>all <ul>
+						<li>schematics - done by the end of the week,</li>
+						<li>order PCBs end of this week</li>
+					</ul>
+				</li>
+			</ul>
+			<h2 id="usb-c-connector-follow-up">USB-C Connector Follow-up</h2>
+			<p>Emailing the professor to justify the USB-C connector selection for our PCB:</p>
+			<blockquote>
+				<p>Hi professor,
+					I wanted to follow up on the debrief we had today regarding the use of USB-C connectors for CAN bus.
+					I want to expand my justification of the idea, express some concerns that arose after the
+					debriefing.
+					The key point of this approach is simplified wiring for small-scale projects. I acknowledge that
+					this solution would not work for an industrial environment, but I think this might be a useful
+					technique for wiring components inside a single machine. Furthermore, PCB mounts can be designed in
+					such a way to reduce strain on the connectors and increase the longevity.
+					Your point about single node failing and causing other nodes to go down got me thinking. Since USB-C
+					Power Delivery negotiation requires </p>
+			</blockquote>
+			<p>I did not end up sending the email. See <a href="#thoughts-on-pd-feature">Project Lithium Firefly - Topic
+					- Custom Floor Controller PCB#Thoughts on PD feature</a> for more info.</p>
+
+		</section>
+
+		<section class="logbook-entry-content" id="topic-2">
+			<h2 id="ec-pcb-mount">EC PCB mount</h2>
+			<p>Designed a mounting bracket for Elevator Controller PCB Stackup. Used PC104 Standard PCB Drawings as a
+				reference.</p>
+			<figure class="logbook-figure">
+				<img src="../../media/images/LiF_CAD_Render_of_EC_Mount.png"
+					alt="CAD Render of EC Mount in the context of the assembly" class="logbook-image centered-image"
+					style="max-width: 100%; height: auto;">
+				<figcaption>CAD Render of EC Mount in the context of the assembly</figcaption>
+			</figure>
+
+
+		</section>
+
+		<section class="logbook-entry-content" id="topic-3">
+			<h2 id="thoughts-on-pd-feature">Thoughts on PD feature</h2>
+			<p>After the debrief, I wanted to email the professor to confirm our use of USB-C connector for CAN bus.
+				Since the professor said that USB-C is unsuitable for industrial applications, I wanted to justify the
+				design decision of using this type of connector in our project.
+				In order to properly articulate my argument and explain how safety features, such as fuses, will be
+				integrated in our system, I tried to consider ways to prevent cascaded power failures, i.e. how to add a
+				fuse to the USB PD subsystem such that failure of one node which results in a blown fuse won&#39;t
+				result in cascaded power outages in nodes downstream. I looked into how to organize power regulators in
+				a way which will facilitate this. But research into PD source controller ICs showed that they are
+				designed to be used with either two set voltage levels: 1) 5 V bus 2) one of the supported PD voltages;
+				or use a controlled power regulator, which can be configured to output 5 V or requested PD voltage
+				level. List of considered ICs:</p>
+			<ul>
+				<li><code>STUSB4710</code></li>
+				<li><code>TI TPS25740B</code></li>
+				<li><code>Infineon/Cypress CCG3PA</code></li>
+				<li><code>Microchip MCP22301</code></li>
+			</ul>
+			<p>Design of a configurable power supply would prove to be difficult, especially considering that it will
+				need to be redundant/separate from the main 5-20V to 5 V regulator.
+				As a result of my research and discussion with Nick, who is responsible for PD subsystem of the PCB, we
+				decided to drop the PD idea. This will have to be implemented in a future project.
+				We will only use 5 V which is used in a standard USB connection. We will utilize higher amperage to
+				allow more power to be delivered to a branch. Furthermore, previous 5 V buck converter design will be
+				used with a secondary high voltage power input to the board to allow 1 branch to use more than 15 W of
+				power.</p>
+			<figure class="logbook-figure">
+				<img src="../../media/images/LiF-Cascaded_Power_Distribution_Between_Nodes_wo_USB_PD_2026-07-09.png"
+					alt="Power Path Diagram without PD" class="logbook-image centered-image"
+					style="max-width: 100%; height: auto;">
+				<figcaption>Power Path Diagram without PD</figcaption>
+			</figure>
+
+
+		</section>
+
+		<section class="logbook-entry-content sources-section" id="sources">
+			<h2>Sources</h2>
+			<p>No external sources were cited in this entry.</p>
+		</section>
+
+		<nav class="entry-date-nav" aria-label="Logbook date navigation">
+			<a href="MR_entry_2026-07-05.html" class="button secondary-button">Previous Entry</a>
+			<a href="MR_entry_2026-07-09.html" class="button secondary-button">Next Entry</a>
+		</nav>
+		<p class="top-link"><a href="#page_top">Go to the top of this page</a></p>
+	</main>
+
+	<footer class="site-footer">
+		<p>Copyright &copy; Matvey Regentov</p>
+	</footer>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+</body>
+
+</html>
