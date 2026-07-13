@@ -3,6 +3,10 @@ embedded/LiF_STM/Debug/**
 .vscode/*
 !.vscode/tasks.json
 embedded/LiF_STM/.settings/language.settings.xml
+embedded/LiF_STM/.vscode/c_cpp_properties.json
+
+embedded/LiF_EC/.settings/language.settings.xml
+embedded/LiF_EC/.vscode/c_cpp_properties.json
 **/.settings/language.settings.xml
 RPi/LiF_SC/obj/*
 RPi/LiF_SC/main
@@ -24,4 +28,3 @@ KiCAD/LiF_FC-PCB_rev1/~LiF_FC-PCB_rev1.kicad_sch.lck
 
 KiCAD/LiF_FC-PCB_rev1/LiF_CustomPCB-backups/*.zip
 KiCAD/LiF_FC-PCB_rev1/LiF_CustomPCB-backups/
-
