@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+
+<!--
+Author: Rita Yevtushenko
+-->
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>RY's Logbook - 2026-07-03</title>
+
+    <meta name="author" content="Rita Yevtushenko">
+    <meta name="description" content="Lithium Firefly Logbook Entry">
+
+    <link rel="icon"
+          href="../../media/icons/LiF_icon.ico"
+          type="image/x-icon">
+
+    <link rel="stylesheet" href="../../css/base.css">
+    <link rel="stylesheet" href="../../css/logbook_entry.css">
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css">
+
+    <link rel="stylesheet"
+          href="../../css/code_formatting.css">
+</head>
+
+<body>
+
+    <div id="navbar-placeholder" data-root="../../"></div>
+    <script src="../../js/navbar.js"></script>
+
+    <main class="page-wrapper">
+
+    <aside>
+    <iframe src="../links.html" title="Navigation"></iframe>
+    </aside>
+
+    <section class="logbook-entry-intro">
+
+    <div>
+
+    <h1>Logbook Entry</h1>
+
+    <p>
+
+    <strong>Date:</strong> July 3, 2026<br>
+    <strong>Project:</strong> Lithium Firefly PCB Design<br>
+    <strong>Hours:</strong> 7<br>
+    <strong>Focus:</strong> Schematic Refinement Before Meeting
+
+    </p>
+
+    <h2>Summary</h2>
+
+    <p class="logbook_summary">
+
+    Began designing the PCB by researching available load-cell amplifier ICs,
+    selecting replacement components, and creating the initial schematic for
+    the load-cell interface.
+
+    </p>
+
+    <a href="../logbook_RY.html">← Return to Logbook Cover Page</a>
+
+    </div>
+
+        </section>
+
+        <section class="logbook-entry-content">
+            <h2>Objective</h2>
+            <p>
+            Continue refining the PCB schematic by incorporating feedback and improving
+            the analog signal path. Start working on the CAN connector circuit.
+            </p>
+
+            <h2>Schematic Improvements</h2>
+
+            <p>
+
+            Reorganized the schematic, verified component footprints,
+            and improved the readability of the analog and digital sections.
+            A couple of components were missing footprints.
+
+            </p>
+
+            <h4>Changes Made</h4>
+
+            <ul>
+
+            <li>Substituted NAU78025GI with </li>
+
+            <li>Added bypass capacitors.</li>
+
+            <li>Verified ESP32 pin assignments.</li>
+
+            <li>Improved connector organization.</li>
+
+            </ul>
+
+            <h2>Updated Schematic</h2>
+
+            <figure>
+
+            <img src="../../media/images/Load Cell.png">
+
+            <figcaption>
+
+            Figure 1. Revised Load Cell Amplifier from NAU7802SG1 to MCP6N11
+
+            </figcaption>
+
+            </figure>
+            <p>
+                I had to design a symbol for a MCP6N11 becauase there were no good visuals for it 
+                on DigiKey.
+            </p>
+            <h2>CAN Communication Circuit (Revision 1)</h2>
+
+            <p>
+            Began designing the CAN communication circuit for the custom PCB using the
+            <strong>Texas Instruments SN65HVD230</strong> CAN transceiver. This device was
+            selected because it operates from a 3.3&nbsp;V supply, making it directly
+            compatible with the ESP32-S3 while implementing the physical layer of the
+            CAN bus.
+            </p>
+
+            <p>
+            The initial schematic focused on establishing the basic communication
+            interface by connecting the transmit (TXD) and receive (RXD) signals between
+            the ESP32-S3 and the transceiver, along with the CANH and CANL differential
+            bus outputs.
+            </p>
+
+            <figure>
+
+            <img src="../../media/images/CAN circuit.png"
+                alt="Revision 1 CAN communication schematic">
+
+            <figcaption>
+
+            Figure 2. Revision 1 of the CAN communication circuit using the SN65HVD230
+            transceiver.
+
+            </figcaption>
+
+            </figure>
+
+            <h4>Design Decisions</h4>
+
+            <ul>
+
+            <li>
+            Added a <code>PWR_FLAG</code> symbol to indicate that the 3.3&nbsp;V rail is
+            powered externally, eliminating ERC (Electrical Rules Check) power warnings
+            within KiCad.
+            </li>
+
+            <li>
+            Placed a <strong>100 nF decoupling capacitor</strong> directly across the
+            transceiver's VCC and GND pins. This capacitor acts as a local bypass
+            capacitor, filtering high-frequency noise and providing transient current
+            during switching.
+            </li>
+
+            <li>
+            Included a <strong>NUP2105L</strong> transient voltage suppressor (TVS) diode
+            to protect the CANH and CANL differential pair from electrostatic discharge
+            (ESD) and voltage transients that may occur on the CAN bus.
+            </li>
+
+            <li>
+            Added optional split termination components consisting of two
+            <strong>62&nbsp;Ω</strong> resistors and a
+            <strong>4.7&nbsp;nF</strong> capacitor (currently marked DNP – Do Not Populate).
+            These components were included so the board can support split termination if
+            required during testing.
+            </li>
+
+            <figure>
+
+            <img src="../../media/images/CAN TVS protection circuit.png"
+                alt="Revision 1 CAN communication schematic">
+
+            <figcaption>
+
+            Figure 3. Split termination component for CAN from the Article.
+
+            </figcaption>
+
+            </figure>
+
+            <li>
+            Added screw terminal connectors to simplify wiring between the intermediate
+            elevator controller boards, allowing CAN communication to continue both
+            upward and downward through the elevator network.
+            </li>
+
+            </ul>
+
+            <h2>Split Termination Research</h2>
+
+            <p>
+
+            While a traditional CAN network typically uses a single 120&nbsp;Ω
+            termination resistor, I researched split termination techniques. Split
+            termination replaces the 120&nbsp;Ω resistor with two 62&nbsp;Ω resistors and
+            a capacitor connected to ground. This approach helps reduce common-mode
+            noise, improves EMC performance, and provides additional filtering on the
+            differential pair.
+
+            </p>
+
+            <h2>References</h2>
+
+            <ul>
+
+            <li>
+            Texas Instruments,
+            <a href="https://www.ti.com/lit/ds/symlink/sn65hvd230.pdf?ts=1783891193810&ref_url=https%253A%252F%252Fwww.snapeda.com%252F"
+            target="_blank">
+            SN65HVD230 CAN Transceiver Datasheet
+            </a>
+            </li>
+
+            <li>
+            MEMS Magazine,
+            <a href="https://www.memsmag.com/the-significance-of-can-bus-split-termination"
+            target="_blank">
+            The Significance of CAN Bus Split Termination
+            </a>
+            </li>
+
+            </ul>
+
+            <h2>Challenges</h2>
+
+            <p>
+
+            Spent additional time verifying component footprints and
+            manufacturer recommendations before beginning PCB layout.
+            I also researched on CAN connectors. As a group, we decided
+            to use a USB-C for data transmission with one DB9 connector 
+            present on each circuit in case of non-functional transmission
+            through USB-C.
+
+            </p>
+
+            <h2>Next Steps</h2>
+
+            <ul>
+
+            <li>Upgrade the CAN circuit:         
+            Continue refining the CAN communication circuitry by verifying component
+            selection, reviewing PCB layout recommendations from the datasheet, and
+            integrating the CAN interface into the overall ESP32-S3 schematic.
+
+            </li>
+
+            <li>Organzize the CAN circuit.</li>
+
+            <li>Run ERC.</li>
+
+            </ul>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+    <p>Copyright &copy; Rita Yevtushenko</p>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+
+    </body>
+</html>

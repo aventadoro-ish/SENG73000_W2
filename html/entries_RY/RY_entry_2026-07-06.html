@@ -5,42 +5,193 @@ Author: Rita Yevtushenko
 -->
 
 <html lang="en">
-    <head>
-        <title>RY's Logbook</title>
-        <meta charset="UTF-8">
-        <meta name="description">
-        <link rel="stylesheet" href="../css/logbook_person.css">
-        <link rel="stylesheet" href="../../css/master.css">
-        <link rel="icon" href="../../media/icons/LiF_icon.ico" type="image/x-icon">
-        
-		<!--[if lt IE 9]>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js"></script>
-		<![endif]-->
-		
-        <meta name="author" content="Rita Yevtushenko">
-        <meta name="description" content="This is a daily logbook entry page for Rita Yevtushenko as part of Engineering Project VI, ESE at Conestoga College.">
-        <meta name="robots" content="index, follow">
-        <meta http-equiv="Pragma" content="no-cache">
-    </head>
-    <body>
-        <aside><iframe src="../links.html" title="Navigation"></iframe></aside>
-        <section id="page_top">
-            <h1>Logbook Entry, 2026-07-06 by Rita Yevtushenko</h1>
-            <h2>Summary of work performed</h2>
-            <p class="logbook_summary">Researching MCP2515 CAN transceiver specifications.</p>
-            <a href="../logbook_RY.html">My logbook cover page</a>
-        </section>
-        
-        <section id="log">
-            <h2>Meeting notes with Matvey on the New Shield</h2>
-            <h3>Revision 2.0</h3>
 
-        </section>
-        
-        <footer>
-            <p><a href="#page_top">Go to the top of this page</a></p>
-            <p>Copyright &copy; 2026 Rita Yevtushenko</p>
-        </footer>
-        
-    </body>
+<head>
+
+    <meta charset="UTF-8">
+
+    <title>RY's Logbook - 2026-07-06</title>
+
+    <meta name="author" content="Rita Yevtushenko">
+
+    <meta name="description"
+        content="Lithium Firefly Logbook Entry">
+
+    <meta name="robots" content="index, follow">
+
+    <link rel="icon"
+          href="../../media/icons/LiF_icon.ico"
+          type="image/x-icon">
+
+    <!-- Shared website styling -->
+    <link rel="stylesheet" href="../../css/base.css">
+
+    <!-- Logbook page styling -->
+    <link rel="stylesheet" href="../../css/logbook_entry.css">
+
+</head>
+
+<body>
+
+<div id="navbar-placeholder" data-root="../../"></div>
+<script src="../../js/navbar.js"></script>
+
+<main class="page-wrapper">
+
+<aside>
+
+<iframe src="../links.html"
+        title="Navigation"></iframe>
+
+</aside>
+
+<!-- ======================================================= -->
+
+<section class="logbook-entry-intro">
+
+<div>
+
+<h1>Logbook Entry</h1>
+
+<p>
+
+<strong>Date:</strong> July 6, 2026<br>
+
+<strong>Project:</strong> Lithium Firefly PCB Design<br>
+
+<strong>Hours:</strong> 5<br>
+
+<strong>Focus:</strong> PCB Revision Planning & Design Review
+
+</p>
+
+<h2>Summary</h2>
+
+<p class="logbook_summary">
+
+Met with Matvey to review Revision 1 of the PCB design and discuss
+improvements before beginning Revision 2. The meeting focused on PCB
+organization, future expandability, connector placement, and improving
+documentation of the design decisions.
+
+</p>
+
+<a href="../logbook_RY.html">
+
+← Return to Logbook Cover Page
+
+</a>
+
+</div>
+
+</section>
+
+<!-- ======================================================= -->
+
+<section class="logbook-entry-content">
+
+<h2>Design Review Meeting</h2>
+
+<p>
+
+Held a design review meeting to evaluate the first PCB revision and
+identify improvements before continuing schematic development.
+Feedback from the meeting will be incorporated into Revision 2 of the
+board.
+
+</p>
+
+<h4>Revision 2 Improvements</h4>
+
+<ul>
+
+<li>Add three USB-C connectors for integration with Nick's external power supply.</li>
+
+<li>Connect the project databases to the website authentication system.</li>
+
+<li>Investigate the speaker interface between the Raspberry Pi 4 and ESP32-S3 using I²S (details to be provided by Matvey).</li>
+
+<li>Reorganize the schematic using hierarchical sheets to improve readability.</li>
+
+<li>Create a custom KiCad symbol for the MCP6N11 instrumentation amplifier.</li>
+
+<li>Separate major functional blocks into reusable subcircuits.</li>
+
+<li>Create a dedicated project symbol and footprint library.</li>
+
+<li>Add USB-C data lines (D+ and D−) to all three USB-C connectors.</li>
+
+<li>Document the engineering justification for using split CAN termination (2 × 62 Ω resistors) instead of a single 120 Ω resistor.</li>
+
+<li>Replace the optional DNP termination resistors with a selectable termination switch for easier testing.</li>
+
+</ul>
+
+<h2>Revision 1 Reference</h2>
+
+<p>
+
+The existing Revision 1 schematic was reviewed to identify areas that
+could be simplified before beginning the next PCB revision.
+
+</p>
+
+<figure>
+
+<img src="../../media/images/Rev1_RY_Before_Jul6.png"
+     alt="Revision 1 PCB schematic">
+
+<figcaption>
+
+Figure 1. Revision 1 load-cell PCB schematic reviewed during the
+design meeting.
+
+</figcaption>
+
+</figure>
+
+<h2>Discussion</h2>
+
+<p>
+
+Most of the feedback focused on improving long-term maintainability of
+the PCB rather than correcting electrical issues. By organizing the
+project into hierarchical blocks, creating reusable symbols, and
+improving connector placement, the design will be significantly easier
+to modify as additional hardware is integrated into the system.
+
+</p>
+
+<h2>Next Steps</h2>
+
+<ul>
+
+<li>Begin implementing Revision 2 of the PCB schematic.</li>
+
+<li>Create the custom MCP6N11 symbol.</li>
+
+<li>Restructure the project into hierarchical sheets.</li>
+
+<li>Update the CAN termination circuit.</li>
+
+<li>Add the USB-C connectors and associated circuitry.</li>
+
+</ul>
+
+</section>
+
+</main>
+
+<footer class="site-footer">
+
+<p>
+
+Copyright &copy; Rita Yevtushenko
+
+</p>
+
+</footer>
+
+</body>
+
 </html>

@@ -5,55 +5,261 @@ Author: Rita Yevtushenko
 -->
 
 <html lang="en">
-    <head>
-        <title>RY's Logbook</title>
-        <meta charset="UTF-8">
-        <meta name="description">
-        <link rel="stylesheet" href="../css/logbook_person.css">
-        <link rel="stylesheet" href="../../css/master.css">
-        <link rel="icon" href="../../media/icons/LiF_icon.ico" type="image/x-icon">
-        
-		<!--[if lt IE 9]>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js"></script>
-		<![endif]-->
-		
-        <meta name="author" content="Rita Yevtushenko">
-        <meta name="description" content="This is a daily logbook entry page for Rita Yevtushenko as part of Engineering Project VI, ESE at Conestoga College.">
-        <meta name="robots" content="index, follow">
-        <meta http-equiv="Pragma" content="no-cache">
-    </head>
-    <body>
-        <aside><iframe src="../links.html" title="Navigation"></iframe></aside>
-        <section id="page_top">
-            <h1>Logbook Entry, 2026-06-12 by Rita Yevtushenko</h1>
-            <h2>Summary of work performed</h2>
-            <p class="logbook_summary">Researching MCP2515 CAN transceiver specifications.</p>
-            <a href="../logbook_RY.html">My logbook cover page</a>
-        </section>
-        
-        <section id="log">
-            <h2>Continued working on the RPi4 integration</h2>
-            <p>I researched the MCP2515 CAN transceiver specifications and began integrating it with the RPi4.</p>
+<head>
+    <meta charset="UTF-8">
+    <title>RY's Logbook - 2026-06-18</title>
 
-            <h2>Modified the SC code</h2>
-            <p>I reviewed the code for the Supervisor Controller and identified areas for improvement.</p>
-            <p>Added the <i>HexFromFloor()</i> function and <i>FloorFromHex()</i>. Those acted as helped functions to translate between floor numbers and CAN message data</p>
-            <p>Additionally added modes to the SC:</p><br>
+    <meta name="author" content="Rita Yevtushenko">
+    <meta name="description" content="Lithium Firefly Logbook Entry">
+    <meta name="robots" content="index, follow">
+
+    <link rel="icon"
+          href="../../media/icons/LiF_icon.ico"
+          type="image/x-icon">
+
+    <!-- Main Styles -->
+    <link rel="stylesheet" href="../../css/base.css">
+    <link rel="stylesheet" href="../../css/logbook_entry.css">
+
+    <!-- Prism -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css">
+
+    <link rel="stylesheet"
+          href="../../css/code_formatting.css">
+</head>
+
+<body>
+
+<!-- Navigation -->
+<div id="navbar-placeholder" data-root="../../"></div>
+<script src="../../js/navbar.js"></script>
+
+<main class="page-wrapper">
+
+    <!-- Sidebar -->
+    <aside>
+        <iframe src="../links.html" title="Navigation"></iframe>
+    </aside>
+
+    <!-- ===================== INTRO ===================== -->
+
+    <section class="logbook-entry-intro">
+
+        <div>
+
+            <h1>Logbook Entry</h1>
+
+            <p>
+                <strong>Date:</strong> June 18, 2026
+                <br>
+
+                <strong>Project:</strong> Lithium Firefly Elevator
+
+                <br>
+
+                <strong>Hours:</strong> 8
+
+                <br>
+
+                <strong>Focus:</strong> Supervisor Controller Integration
+            </p>
+
+            <h2>Summary</h2>
+
+            <p class="logbook_summary">
+
+                Continued integrating the Raspberry Pi 4 with the MCP2515
+                CAN controller, improved the Supervisor Controller FSM,
+                implemented queue management, and added helper functions
+                for CAN message processing.
+
+            </p>
+
+            <a href="../logbook_RY.html">
+                ← Return to Logbook Cover Page
+            </a>
+
+        </div>
+
+    </section>
+
+    <!-- ===================== CONTENT ===================== -->
+
+    <section class="logbook-entry-content">
+
+        <!-- =============================================== -->
+
+        <h2>Research</h2>
+
+        <p>
+
+            Investigated the MCP2515 CAN transceiver specifications,
+            SPI communication requirements, and initialization
+            sequence before integrating the controller with the
+            Raspberry Pi 4.
+
+        </p>
+
+        <!-- =============================================== -->
+
+        <h2>Supervisor Controller Improvements</h2>
+
+        <p>
+
+            Reviewed the existing Supervisor Controller code and
+            refactored several sections to simplify message
+            handling and floor management.
+
+        </p>
+
+        <h4>Functions Added</h4>
+
+        <ul>
+
+            <li><code>HexFromFloor()</code></li>
+
+            <li><code>FloorFromHex()</code></li>
+
+        </ul>
+
+        <p>
+
+            These helper functions translate between floor numbers
+            and CAN message data.
+
+        </p>
+
+        <!-- =============================================== -->
+
+        <h4>FSM Modes</h4>
+
+        <ul>
+
             <li>Idle</li>
+
             <li>Moving</li>
+
             <li>Arrived</li>
-            <li>Fault</li><br>
-            <p>Implemented a circular queue to manage multiple floor requests in the order they are recieved (FIFO).</p>
 
-            <h2>Modified the SC code</h2>
-            <p>I reviewed the code for the Supervisor Controller and identified areas for improvement.</p>
+            <li>Fault</li>
 
-        </section>
-        
-        <footer>
-            <p><a href="#page_top">Go to the top of this page</a></p>
-            <p>Copyright &copy; 2026 Rita Yevtushenko</p>
-        </footer>
-        
-    </body>
+        </ul>
+
+        <!-- =============================================== -->
+
+        <h4>Queue Implementation</h4>
+
+        <p>
+
+            Implemented a circular FIFO queue allowing the
+            Supervisor Controller to process multiple floor
+            requests in the order they are received.
+
+        </p>
+
+        <!-- =============================================== -->
+
+        <h2>Code Block Developed</h2>
+
+<pre class="code-block language-cpp"><code class="language-cpp">
+int HexFromFloor(int floorVal) {
+
+	switch(floorVal) {
+		case 1:
+			return(GO_TO_FLOOR1);
+			break;
+		case 2:
+			return(GO_TO_FLOOR2);
+			break;
+		case 3: 
+			return(GO_TO_FLOOR3);
+			break;
+		default:
+			return(GO_TO_FLOOR1);			// Default is to reset to floor 1 on bad input
+		}
+}
+
+int FloorFromHex(int Hex){
+		
+	switch(Hex) {
+		case GO_TO_FLOOR1:
+			return(1);
+			break;
+		case GO_TO_FLOOR2:
+			return(2);
+			break;
+		case GO_TO_FLOOR3:
+			return(3);
+			break;
+		default:
+			return(1);							// Default is to reset to floor 1 on bad input
+		}
+}
+</code></pre>
+
+        <!-- =============================================== -->
+
+        <h2>Testing</h2>
+
+        <p>
+
+            Verified successful compilation after integrating
+            the new helper functions and FSM logic.
+
+            Additional CAN communication testing will be completed
+            once the Raspberry Pi and STM32 are connected.
+
+        </p>
+
+        <h2>Problems Encountered</h2>
+
+        <p>
+
+            Encountered several integration issues while
+            configuring the CAN controller and verifying
+            message transmission between nodes.
+
+        </p>
+
+        <!-- =============================================== -->
+
+        <h2>Next Steps</h2>
+
+        <ul>
+
+            <li>Finish CAN communication testing.</li>
+
+            <li>Connect STM32 controller.</li>
+
+            <li>Verify queue operation.</li>
+
+            <li>Test complete FSM transitions.</li>
+
+        </ul>
+
+    </section>
+
+</main>
+
+<footer class="site-footer">
+
+    <p>
+        Copyright &copy; Rita Yevtushenko
+    </p>
+
+</footer>
+
+<!-- Prism -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markup.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+
+</body>
 </html>
