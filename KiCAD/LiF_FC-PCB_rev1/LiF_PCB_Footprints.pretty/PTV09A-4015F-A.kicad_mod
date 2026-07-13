@@ -1,0 +1,200 @@
+(footprint "PTV09A-4015F-A"
+	(version 20241229)
+	(generator "pcbnew")
+	(generator_version "9.0")
+	(layer "F.Cu")
+	(property "Reference" "REF**"
+		(at 0 -8.8 0)
+		(unlocked yes)
+		(layer "F.SilkS")
+		(uuid "3088dbb0-8e4f-4526-98ab-c7ea125f897f")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.1)
+			)
+		)
+	)
+	(property "Value" "UNTESTED PTV09A-4015F-A103 UNTESTED"
+		(at 0 8.8 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(uuid "7d80ac02-eaeb-4b18-b411-bc2b5095f80d")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "3297a45f-52c5-4c2e-9470-d212cbfb1a74")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Description" "10k Ohm 1 Gang Logarithmic Through Hole, Snap In Potentiometer 1.0 Turns Carbon 0.05W, 1/20W PC Pins, Board Locks"
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "d4301b73-d8ad-4ac5-a2b7-a242a59e274c")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(attr smd)
+	(fp_line
+		(start -5.5 -6)
+		(end 5.5 -6)
+		(stroke
+			(width 0.1)
+			(type default)
+		)
+		(layer "F.SilkS")
+		(uuid "2dd186d4-3eaf-4198-93df-3e7e534e114c")
+	)
+	(fp_line
+		(start -5.5 -2)
+		(end -5.5 -6)
+		(stroke
+			(width 0.1)
+			(type default)
+		)
+		(layer "F.SilkS")
+		(uuid "bc99aa3c-b5f6-42ae-8afe-a4cda92765a9")
+	)
+	(fp_line
+		(start -5.5 6)
+		(end -5.5 2)
+		(stroke
+			(width 0.1)
+			(type default)
+		)
+		(layer "F.SilkS")
+		(uuid "074ff849-7cfa-465d-9776-9afe2ca46f11")
+	)
+	(fp_line
+		(start -4.5 6)
+		(end -5.5 6)
+		(stroke
+			(width 0.1)
+			(type default)
+		)
+		(layer "F.SilkS")
+		(uuid "be5dfdfe-0eac-43d3-a7d9-6b040a085bc7")
+	)
+	(fp_line
+		(start 5.5 -6)
+		(end 5.5 -2)
+		(stroke
+			(width 0.1)
+			(type default)
+		)
+		(layer "F.SilkS")
+		(uuid "db44242e-719a-4df9-8d7c-fb0e033be7b6")
+	)
+	(fp_line
+		(start 5.5 2)
+		(end 5.5 6)
+		(stroke
+			(width 0.1)
+			(type default)
+		)
+		(layer "F.SilkS")
+		(uuid "8c3405f7-8862-47fa-998b-144473a13885")
+	)
+	(fp_line
+		(start 5.5 6)
+		(end 4.5 6)
+		(stroke
+			(width 0.1)
+			(type default)
+		)
+		(layer "F.SilkS")
+		(uuid "e437532c-c108-424b-9a28-61c1a986427c")
+	)
+	(fp_circle
+		(center 0 0)
+		(end 2.6 0)
+		(stroke
+			(width 0.1)
+			(type default)
+		)
+		(fill no)
+		(layer "F.SilkS")
+		(uuid "027f7297-aa4d-40c2-8166-6adfd6038d0c")
+	)
+	(fp_rect
+		(start -5 -5.5)
+		(end 5 5.5)
+		(stroke
+			(width 0.1)
+			(type default)
+		)
+		(fill no)
+		(layer "F.Fab")
+		(uuid "f1f02ce7-14ee-4b0d-a804-df88d709e468")
+	)
+	(fp_text user "${REFERENCE}"
+		(at 0 10.3 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(uuid "b98865c6-30a1-4401-969e-e951b41c9bf8")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(pad "" np_thru_hole circle
+		(at -5.7 0)
+		(size 2.5 2.5)
+		(drill 2)
+		(layers "F&B.Cu" "*.Mask")
+		(uuid "db9fe706-9d2e-4c0f-9b3d-1a6bb8dba5c6")
+	)
+	(pad "" np_thru_hole circle
+		(at 5.7 0)
+		(size 2.5 2.5)
+		(drill 2)
+		(layers "F&B.Cu" "*.Mask")
+		(uuid "0d6abbb9-f0cc-4518-8de1-13473af31f5b")
+	)
+	(pad "1" thru_hole circle
+		(at -2.5 7)
+		(size 2.1 2.1)
+		(drill 1.6)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "8ab2c6f6-c864-4320-a447-ba9ae18013d4")
+	)
+	(pad "1" thru_hole circle
+		(at 0 7)
+		(size 2.1 2.1)
+		(drill 1.6)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "b05bab8a-6cac-4e59-a098-a3b864f6df33")
+	)
+	(pad "1" thru_hole circle
+		(at 2.5 7)
+		(size 2.1 2.1)
+		(drill 1.6)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "bf94c3ce-f6c8-47cf-b1e6-e442d1193c21")
+	)
+	(embedded_fonts no)
+)

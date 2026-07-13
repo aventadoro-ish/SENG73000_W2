@@ -173,6 +173,113 @@
 			)
 			(embedded_fonts no)
 		)
+		(symbol "Connector:TestPoint"
+			(pin_numbers
+				(hide yes)
+			)
+			(pin_names
+				(offset 0.762)
+				(hide yes)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "TP"
+				(at 0 6.858 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "TestPoint"
+				(at 0 5.08 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at 5.08 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Datasheet" "~"
+				(at 5.08 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Description" "test point"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_keywords" "test point tp"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_fp_filters" "Pin* Test*"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(symbol "TestPoint_0_1"
+				(circle
+					(center 0 3.302)
+					(radius 0.762)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(symbol "TestPoint_1_1"
+				(pin passive line
+					(at 0 0 90)
+					(length 2.54)
+					(name "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
 		(symbol "Connector_Generic:Conn_01x04"
 			(pin_names
 				(offset 1.016)
@@ -1458,6 +1565,12 @@
 		(uuid "fd69d227-2bf5-4eaf-ab92-f43a97504499")
 	)
 	(junction
+		(at 199.39 69.85)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "0dc4dc10-1a70-421c-80c9-6aae82fa12e9")
+	)
+	(junction
 		(at 129.54 63.5)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -1468,6 +1581,12 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "209ffe10-2556-4b9c-81e0-070fc2cb240d")
+	)
+	(junction
+		(at 269.24 69.85)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "31822ecd-2e17-4614-b828-aa98e3ee21e1")
 	)
 	(junction
 		(at 129.54 78.74)
@@ -1506,10 +1625,22 @@
 		(uuid "87788c3f-db09-49c5-93e4-6e465b248b0e")
 	)
 	(junction
+		(at 135.89 78.74)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "9a076633-b5ac-4c22-b856-c2be97fdd595")
+	)
+	(junction
 		(at 115.57 133.35)
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "9e39185e-3a27-41f9-9a1b-9d20bdf4b96a")
+	)
+	(junction
+		(at 135.89 63.5)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "a3c62810-2e70-4c0d-b125-9b6085220a4a")
 	)
 	(junction
 		(at 58.42 82.55)
@@ -1528,6 +1659,12 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "ab7bdf39-af46-48e1-9e3f-30c652b73acd")
+	)
+	(junction
+		(at 158.75 133.35)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "babb74a9-ec8e-46ba-8b35-324c51c25beb")
 	)
 	(junction
 		(at 176.53 91.44)
@@ -1600,6 +1737,16 @@
 			(type default)
 		)
 		(uuid "114b31db-d45b-490e-abbb-e65db4b6cd76")
+	)
+	(wire
+		(pts
+			(xy 135.89 78.74) (xy 135.89 82.55)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "13b75673-8a29-413e-9cb3-0f4b7845404c")
 	)
 	(wire
 		(pts
@@ -1733,7 +1880,17 @@
 	)
 	(wire
 		(pts
-			(xy 176.53 69.85) (xy 242.57 69.85)
+			(xy 158.75 125.73) (xy 158.75 133.35)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "3c9a2f5d-4921-4731-b3fb-cd3bf7b23583")
+	)
+	(wire
+		(pts
+			(xy 176.53 69.85) (xy 199.39 69.85)
 		)
 		(stroke
 			(width 0)
@@ -2023,6 +2180,16 @@
 	)
 	(wire
 		(pts
+			(xy 199.39 64.77) (xy 199.39 69.85)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "a5284003-aae7-4070-a5c4-5435b7fa2ac1")
+	)
+	(wire
+		(pts
 			(xy 57.15 82.55) (xy 58.42 82.55)
 		)
 		(stroke
@@ -2083,6 +2250,26 @@
 	)
 	(wire
 		(pts
+			(xy 199.39 69.85) (xy 242.57 69.85)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "afd490fd-af29-41d5-8b7d-3eb034bf6526")
+	)
+	(wire
+		(pts
+			(xy 135.89 62.23) (xy 135.89 63.5)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "b29fcde9-79c5-4c04-957d-6b6ff3c4fab3")
+	)
+	(wire
+		(pts
 			(xy 48.26 124.46) (xy 45.72 124.46)
 		)
 		(stroke
@@ -2133,6 +2320,16 @@
 	)
 	(wire
 		(pts
+			(xy 204.47 62.23) (xy 204.47 63.5)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "c442c507-88df-4433-89f9-94c1a5942db6")
+	)
+	(wire
+		(pts
 			(xy 256.54 69.85) (xy 256.54 72.39)
 		)
 		(stroke
@@ -2143,6 +2340,16 @@
 	)
 	(wire
 		(pts
+			(xy 269.24 64.77) (xy 269.24 69.85)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "ca3f127a-e91f-4aab-8f8d-b2b07da73131")
+	)
+	(wire
+		(pts
 			(xy 124.46 63.5) (xy 129.54 63.5)
 		)
 		(stroke
@@ -2150,6 +2357,16 @@
 			(type default)
 		)
 		(uuid "cb8a9d3e-d700-4165-b153-8fb71ae6ecb0")
+	)
+	(wire
+		(pts
+			(xy 158.75 133.35) (xy 162.56 133.35)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "cca65ff1-001f-46e0-9883-947bf3b3be01")
 	)
 	(wire
 		(pts
@@ -2173,7 +2390,7 @@
 	)
 	(wire
 		(pts
-			(xy 149.86 133.35) (xy 162.56 133.35)
+			(xy 149.86 133.35) (xy 158.75 133.35)
 		)
 		(stroke
 			(width 0)
@@ -2233,6 +2450,16 @@
 	)
 	(wire
 		(pts
+			(xy 176.53 119.38) (xy 176.53 120.65)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "e2ff4dab-d9b4-455a-9433-eddba5adf2db")
+	)
+	(wire
+		(pts
 			(xy 57.15 66.04) (xy 58.42 66.04)
 		)
 		(stroke
@@ -2253,7 +2480,7 @@
 	)
 	(wire
 		(pts
-			(xy 256.54 69.85) (xy 271.78 69.85)
+			(xy 256.54 69.85) (xy 269.24 69.85)
 		)
 		(stroke
 			(width 0)
@@ -2370,6 +2597,16 @@
 			(type default)
 		)
 		(uuid "f9b854cf-f8bc-4a45-9c7d-866d3871e5c6")
+	)
+	(wire
+		(pts
+			(xy 269.24 69.85) (xy 271.78 69.85)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "fbc302ca-d063-4f8a-a2e4-d47d7df7d8a6")
 	)
 	(wire
 		(pts
@@ -2597,6 +2834,90 @@
 		(uuid "bfc970e9-bcdc-4841-bce1-ad8ba5718199")
 	)
 	(symbol
+		(lib_id "Connector:TestPoint")
+		(at 135.89 62.23 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "0ba0e680-0519-4414-8628-3b161e603694")
+		(property "Reference" "TP19"
+			(at 137.668 57.658 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "V^{-}"
+			(at 137.668 60.198 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "TestPoint:TestPoint_Bridge_Pitch2.54mm_Drill1.0mm"
+			(at 140.97 62.23 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 140.97 62.23 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "test point"
+			(at 135.89 62.23 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "PN" "5002"
+			(at 135.89 62.23 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "DKPN" "36-5002-ND"
+			(at 135.89 62.23 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "7b5f314b-c912-4b39-bea4-6314525a849f")
+		)
+		(instances
+			(project "LiF_FC-PCB_rev1"
+				(path "/9e3e8da7-e506-46c9-90e5-307e4ad30d29/17577359-df8d-4d28-9071-787d31b1b6da"
+					(reference "TP19")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "Device:R")
 		(at 53.34 66.04 270)
 		(unit 1)
@@ -2658,6 +2979,239 @@
 			(project "LiF_FC-PCB_rev1"
 				(path "/9e3e8da7-e506-46c9-90e5-307e4ad30d29/17577359-df8d-4d28-9071-787d31b1b6da"
 					(reference "R34")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Connector:TestPoint")
+		(at 204.47 62.23 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "0f1f4a91-95eb-4c48-a18f-cc564302623c")
+		(property "Reference" "TP25"
+			(at 206.248 57.658 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "GND"
+			(at 206.248 60.198 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "TestPoint:TestPoint_Bridge_Pitch2.54mm_Drill1.0mm"
+			(at 209.55 62.23 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 209.55 62.23 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "test point"
+			(at 204.47 62.23 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "PN" "5002"
+			(at 204.47 62.23 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "DKPN" "36-5002-ND"
+			(at 204.47 62.23 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "3a76912e-0c51-4674-966f-6a0eb57f6f2f")
+		)
+		(instances
+			(project "LiF_FC-PCB_rev1"
+				(path "/9e3e8da7-e506-46c9-90e5-307e4ad30d29/17577359-df8d-4d28-9071-787d31b1b6da"
+					(reference "TP25")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:GNDA")
+		(at 176.53 120.65 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "1a88d537-9ab2-4ec1-8995-46001a7f375f")
+		(property "Reference" "#PWR0116"
+			(at 176.53 127 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "GNDA"
+			(at 176.53 124.46 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 176.53 120.65 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 176.53 120.65 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 176.53 120.65 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "8f728e96-6c9a-44e0-be58-988a1516ba77")
+		)
+		(instances
+			(project "LiF_FC-PCB_rev1"
+				(path "/9e3e8da7-e506-46c9-90e5-307e4ad30d29/17577359-df8d-4d28-9071-787d31b1b6da"
+					(reference "#PWR0116")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Connector:TestPoint")
+		(at 269.24 64.77 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "1d4d97bf-494d-41fe-bc8c-090616699e25")
+		(property "Reference" "TP22"
+			(at 271.018 60.198 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "FLT"
+			(at 271.018 62.738 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "TestPoint:TestPoint_Bridge_Pitch2.54mm_Drill1.0mm"
+			(at 274.32 64.77 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 274.32 64.77 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "test point"
+			(at 269.24 64.77 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "PN" "5002"
+			(at 269.24 64.77 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "DKPN" "36-5002-ND"
+			(at 269.24 64.77 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "6aae820a-9181-4637-8ef5-ffaa451f3e3b")
+		)
+		(instances
+			(project "LiF_FC-PCB_rev1"
+				(path "/9e3e8da7-e506-46c9-90e5-307e4ad30d29/17577359-df8d-4d28-9071-787d31b1b6da"
+					(reference "TP22")
 					(unit 1)
 				)
 			)
@@ -2919,6 +3473,90 @@
 			(project "LiF_FC-PCB_rev1"
 				(path "/9e3e8da7-e506-46c9-90e5-307e4ad30d29/17577359-df8d-4d28-9071-787d31b1b6da"
 					(reference "C28")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Connector:TestPoint")
+		(at 176.53 119.38 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "47ec1cb4-0187-41c2-931b-ea33796c00b0")
+		(property "Reference" "TP24"
+			(at 178.308 114.808 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "GND"
+			(at 178.308 117.348 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "TestPoint:TestPoint_Bridge_Pitch2.54mm_Drill1.0mm"
+			(at 181.61 119.38 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 181.61 119.38 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "test point"
+			(at 176.53 119.38 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "PN" "5002"
+			(at 176.53 119.38 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "DKPN" "36-5002-ND"
+			(at 176.53 119.38 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "46548d66-231a-4e53-830d-d30dbd591479")
+		)
+		(instances
+			(project "LiF_FC-PCB_rev1"
+				(path "/9e3e8da7-e506-46c9-90e5-307e4ad30d29/17577359-df8d-4d28-9071-787d31b1b6da"
+					(reference "TP24")
 					(unit 1)
 				)
 			)
@@ -3212,6 +3850,156 @@
 			(project "LiF_FC-PCB_rev1"
 				(path "/9e3e8da7-e506-46c9-90e5-307e4ad30d29/17577359-df8d-4d28-9071-787d31b1b6da"
 					(reference "R36")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Connector:TestPoint")
+		(at 199.39 64.77 0)
+		(mirror y)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "63b577fe-db5b-4cc9-94f7-2c08635be4aa")
+		(property "Reference" "TP21"
+			(at 197.612 60.198 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "LC"
+			(at 197.612 62.738 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "TestPoint:TestPoint_Bridge_Pitch2.54mm_Drill1.0mm"
+			(at 194.31 64.77 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 194.31 64.77 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "test point"
+			(at 199.39 64.77 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "PN" "5002"
+			(at 199.39 64.77 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "DKPN" "36-5002-ND"
+			(at 199.39 64.77 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "dc7a4d18-bf22-42be-bf88-987247ae4373")
+		)
+		(instances
+			(project "LiF_FC-PCB_rev1"
+				(path "/9e3e8da7-e506-46c9-90e5-307e4ad30d29/17577359-df8d-4d28-9071-787d31b1b6da"
+					(reference "TP21")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:GNDA")
+		(at 204.47 63.5 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "6806132f-2f14-43b7-a5f0-dd26953d63ad")
+		(property "Reference" "#PWR0117"
+			(at 204.47 69.85 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "GNDA"
+			(at 204.47 67.31 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 204.47 63.5 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 204.47 63.5 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 204.47 63.5 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "7a06e340-9bcc-46ab-bc11-28a986d03c29")
+		)
+		(instances
+			(project "LiF_FC-PCB_rev1"
+				(path "/9e3e8da7-e506-46c9-90e5-307e4ad30d29/17577359-df8d-4d28-9071-787d31b1b6da"
+					(reference "#PWR0117")
 					(unit 1)
 				)
 			)
@@ -3816,6 +4604,91 @@
 		)
 	)
 	(symbol
+		(lib_id "Connector:TestPoint")
+		(at 158.75 125.73 0)
+		(mirror y)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "8012be1a-668d-4291-8766-ad86fa2746e7")
+		(property "Reference" "TP23"
+			(at 156.972 121.158 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "V_{REF}"
+			(at 156.972 123.698 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "TestPoint:TestPoint_Bridge_Pitch2.54mm_Drill1.0mm"
+			(at 153.67 125.73 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 153.67 125.73 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "test point"
+			(at 158.75 125.73 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "PN" "5002"
+			(at 158.75 125.73 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "DKPN" "36-5002-ND"
+			(at 158.75 125.73 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "46588492-58fe-4d46-beeb-69e26c179743")
+		)
+		(instances
+			(project "LiF_FC-PCB_rev1"
+				(path "/9e3e8da7-e506-46c9-90e5-307e4ad30d29/17577359-df8d-4d28-9071-787d31b1b6da"
+					(reference "TP23")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "Device:C")
 		(at 149.86 139.7 0)
 		(mirror y)
@@ -3898,6 +4771,91 @@
 			(project "LiF_FC-PCB_rev1"
 				(path "/9e3e8da7-e506-46c9-90e5-307e4ad30d29/17577359-df8d-4d28-9071-787d31b1b6da"
 					(reference "C31")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Connector:TestPoint")
+		(at 135.89 82.55 0)
+		(mirror x)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "89209675-721a-40bb-8f7b-64a80af95833")
+		(property "Reference" "TP20"
+			(at 137.668 87.122 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "V^{+}"
+			(at 137.668 84.582 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "TestPoint:TestPoint_Bridge_Pitch2.54mm_Drill1.0mm"
+			(at 140.97 82.55 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 140.97 82.55 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "test point"
+			(at 135.89 82.55 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "PN" "5002"
+			(at 135.89 82.55 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "DKPN" "36-5002-ND"
+			(at 135.89 82.55 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "2acefd65-72a9-4b60-8cde-9522426b8f7d")
+		)
+		(instances
+			(project "LiF_FC-PCB_rev1"
+				(path "/9e3e8da7-e506-46c9-90e5-307e4ad30d29/17577359-df8d-4d28-9071-787d31b1b6da"
+					(reference "TP20")
 					(unit 1)
 				)
 			)
@@ -4726,6 +5684,24 @@
 			)
 		)
 		(property "Description" "300mA, Low Noise, Linear Regulator with output active discharge function, 1.7-5.5V input voltage range, 1.65V fixed positive output, TSOT-23-5"
+			(at 130.81 135.89 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "DKPN" "488-NCV8114ASN165T1GCT-ND"
+			(at 130.81 135.89 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "PN" "NCV8114ASN165T1G"
 			(at 130.81 135.89 0)
 			(effects
 				(font

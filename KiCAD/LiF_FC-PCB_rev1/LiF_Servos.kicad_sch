@@ -173,6 +173,113 @@
 			)
 			(embedded_fonts no)
 		)
+		(symbol "Connector:TestPoint"
+			(pin_numbers
+				(hide yes)
+			)
+			(pin_names
+				(offset 0.762)
+				(hide yes)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "TP"
+				(at 0 6.858 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "TestPoint"
+				(at 0 5.08 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at 5.08 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Datasheet" "~"
+				(at 5.08 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Description" "test point"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_keywords" "test point tp"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_fp_filters" "Pin* Test*"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(symbol "TestPoint_0_1"
+				(circle
+					(center 0 3.302)
+					(radius 0.762)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(symbol "TestPoint_1_1"
+				(pin passive line
+					(at 0 0 90)
+					(length 2.54)
+					(name "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
 		(symbol "Connector_Generic:Conn_01x03"
 			(pin_names
 				(offset 1.016)
@@ -661,6 +768,12 @@
 		(uuid "3a850565-a78f-4fc9-bcc4-7d3ff684cad4")
 	)
 	(junction
+		(at 147.32 114.3)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "463638e6-b90f-4dc4-8512-c4ec0444b6fd")
+	)
+	(junction
 		(at 72.39 91.44)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -671,6 +784,12 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "6cd5a60e-3706-44c8-8164-ab0dc1b493f5")
+	)
+	(junction
+		(at 147.32 100.33)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "74e8caae-e5f5-431a-9855-491573b88945")
 	)
 	(junction
 		(at 82.55 91.44)
@@ -738,13 +857,33 @@
 	)
 	(wire
 		(pts
-			(xy 152.4 95.25) (xy 138.43 95.25)
+			(xy 147.32 107.95) (xy 147.32 114.3)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "5dff1444-6e2b-48c8-830e-3df6c78ed708")
+	)
+	(wire
+		(pts
+			(xy 158.75 95.25) (xy 138.43 95.25)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
 		(uuid "667533d3-6edd-4e5f-b5e0-6af75ac37a44")
+	)
+	(wire
+		(pts
+			(xy 147.32 100.33) (xy 158.75 100.33)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "75f1bc34-18bf-4215-bb64-4a8cb79d3b7b")
 	)
 	(wire
 		(pts
@@ -768,7 +907,7 @@
 	)
 	(wire
 		(pts
-			(xy 152.4 109.22) (xy 138.43 109.22)
+			(xy 158.75 109.22) (xy 138.43 109.22)
 		)
 		(stroke
 			(width 0)
@@ -788,7 +927,7 @@
 	)
 	(wire
 		(pts
-			(xy 130.81 100.33) (xy 152.4 100.33)
+			(xy 130.81 100.33) (xy 147.32 100.33)
 		)
 		(stroke
 			(width 0)
@@ -818,7 +957,17 @@
 	)
 	(wire
 		(pts
-			(xy 152.4 97.79) (xy 143.51 97.79)
+			(xy 147.32 114.3) (xy 158.75 114.3)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "b11625bb-6196-45dc-90ba-ba0640a26753")
+	)
+	(wire
+		(pts
+			(xy 158.75 97.79) (xy 143.51 97.79)
 		)
 		(stroke
 			(width 0)
@@ -828,7 +977,7 @@
 	)
 	(wire
 		(pts
-			(xy 130.81 114.3) (xy 152.4 114.3)
+			(xy 130.81 114.3) (xy 147.32 114.3)
 		)
 		(stroke
 			(width 0)
@@ -868,7 +1017,7 @@
 	)
 	(wire
 		(pts
-			(xy 152.4 111.76) (xy 143.51 111.76)
+			(xy 158.75 111.76) (xy 143.51 111.76)
 		)
 		(stroke
 			(width 0)
@@ -906,8 +1055,18 @@
 		)
 		(uuid "fae62bed-b3c8-4b36-a7fb-8d302ab76661")
 	)
+	(wire
+		(pts
+			(xy 147.32 91.44) (xy 147.32 100.33)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "fea0219a-8a8c-4ce7-b8d2-456dcb599e87")
+	)
 	(label "SRV.A"
-		(at 151.13 100.33 180)
+		(at 158.75 100.33 180)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -917,7 +1076,7 @@
 		(uuid "16cdfb22-e7c0-4f55-b878-8d6f672a909a")
 	)
 	(label "SRV.B"
-		(at 151.13 114.3 180)
+		(at 158.75 114.3 180)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -960,7 +1119,7 @@
 	)
 	(symbol
 		(lib_id "Connector_Generic:Conn_01x03")
-		(at 157.48 111.76 0)
+		(at 163.83 111.76 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -969,7 +1128,7 @@
 		(fields_autoplaced yes)
 		(uuid "056c999f-c613-451c-836a-6e26281fa446")
 		(property "Reference" "J39"
-			(at 160.02 110.4899 0)
+			(at 166.37 110.4899 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -978,7 +1137,7 @@
 			)
 		)
 		(property "Value" "Servo B"
-			(at 160.02 113.0299 0)
+			(at 166.37 113.0299 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -987,7 +1146,7 @@
 			)
 		)
 		(property "Footprint" "Connector_JST:JST_PH_B3B-PH-K_1x03_P2.00mm_Vertical"
-			(at 157.48 111.76 0)
+			(at 163.83 111.76 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -996,7 +1155,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 157.48 111.76 0)
+			(at 163.83 111.76 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1005,7 +1164,7 @@
 			)
 		)
 		(property "Description" "Generic connector, single row, 01x03, script generated (kicad-library-utils/schlib/autogen/connector/)"
-			(at 157.48 111.76 0)
+			(at 163.83 111.76 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1026,6 +1185,90 @@
 			(project "LiF_FC-PCB_rev1"
 				(path "/9e3e8da7-e506-46c9-90e5-307e4ad30d29/a8743cf2-df76-4292-9b13-dfab84e92b69"
 					(reference "J39")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Connector:TestPoint")
+		(at 147.32 91.44 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "19eca03d-27de-41b8-a615-d03f24f9c366")
+		(property "Reference" "TP6"
+			(at 149.86 86.8679 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "SRV_{A}"
+			(at 149.86 89.4079 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "TestPoint:TestPoint_Bridge_Pitch2.54mm_Drill1.0mm"
+			(at 152.4 91.44 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 152.4 91.44 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "test point"
+			(at 147.32 91.44 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "PN" "5002"
+			(at 147.32 91.44 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "DKPN" "36-5002-ND"
+			(at 147.32 91.44 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "4240ccd5-117f-4f9f-9d0d-ee0fbcb83904")
+		)
+		(instances
+			(project "LiF_FC-PCB_rev1"
+				(path "/9e3e8da7-e506-46c9-90e5-307e4ad30d29/a8743cf2-df76-4292-9b13-dfab84e92b69"
+					(reference "TP6")
 					(unit 1)
 				)
 			)
@@ -1102,7 +1345,7 @@
 	)
 	(symbol
 		(lib_id "Connector_Generic:Conn_01x03")
-		(at 157.48 97.79 0)
+		(at 163.83 97.79 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -1111,7 +1354,7 @@
 		(fields_autoplaced yes)
 		(uuid "679ed19e-b0cf-4ceb-9bdb-73652e26c713")
 		(property "Reference" "J38"
-			(at 160.02 96.5199 0)
+			(at 166.37 96.5199 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1120,7 +1363,7 @@
 			)
 		)
 		(property "Value" "Servo A"
-			(at 160.02 99.0599 0)
+			(at 166.37 99.0599 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1129,7 +1372,7 @@
 			)
 		)
 		(property "Footprint" "Connector_JST:JST_PH_B3B-PH-K_1x03_P2.00mm_Vertical"
-			(at 157.48 97.79 0)
+			(at 163.83 97.79 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1138,7 +1381,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 157.48 97.79 0)
+			(at 163.83 97.79 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1147,7 +1390,7 @@
 			)
 		)
 		(property "Description" "Generic connector, single row, 01x03, script generated (kicad-library-utils/schlib/autogen/connector/)"
-			(at 157.48 97.79 0)
+			(at 163.83 97.79 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1301,6 +1544,90 @@
 			(project "LiF_FC-PCB_rev1"
 				(path "/9e3e8da7-e506-46c9-90e5-307e4ad30d29/a8743cf2-df76-4292-9b13-dfab84e92b69"
 					(reference "R60")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Connector:TestPoint")
+		(at 147.32 107.95 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "ec9e8773-ad4b-4685-9aba-c22f30293861")
+		(property "Reference" "TP7"
+			(at 149.86 103.3779 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "SRV_{B}"
+			(at 149.86 105.9179 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "TestPoint:TestPoint_Bridge_Pitch2.54mm_Drill1.0mm"
+			(at 152.4 107.95 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 152.4 107.95 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "test point"
+			(at 147.32 107.95 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "PN" "5002"
+			(at 147.32 107.95 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "DKPN" "36-5002-ND"
+			(at 147.32 107.95 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "f19a9743-2525-49de-a825-2d749b666568")
+		)
+		(instances
+			(project "LiF_FC-PCB_rev1"
+				(path "/9e3e8da7-e506-46c9-90e5-307e4ad30d29/a8743cf2-df76-4292-9b13-dfab84e92b69"
+					(reference "TP7")
 					(unit 1)
 				)
 			)

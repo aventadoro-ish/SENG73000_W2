@@ -1787,6 +1787,12 @@
 		(uuid "51fca0f6-738b-459a-912d-14da5fcad379")
 	)
 	(junction
+		(at 246.38 115.57)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "5641e96e-4f5f-498e-b82f-ba335686127a")
+	)
+	(junction
 		(at 90.17 132.08)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -1815,6 +1821,12 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "81a6f57e-5eb6-46b9-9c8a-090a6e3f7c23")
+	)
+	(junction
+		(at 248.92 118.11)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "82b93b0a-a033-4329-a8e0-1c2d795e1257")
 	)
 	(junction
 		(at 228.6 96.52)
@@ -1863,6 +1875,12 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "e4ffc8c8-a405-4da6-9a63-8a2d7aeda3f6")
+	)
+	(junction
+		(at 177.8 132.08)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "f2359c1a-1392-4a97-a003-dcf3a893099a")
 	)
 	(bus_entry
 		(at 38.1 91.44)
@@ -2071,6 +2089,16 @@
 			(type default)
 		)
 		(uuid "3736ce08-52b4-4897-8459-450b39fb08e6")
+	)
+	(wire
+		(pts
+			(xy 246.38 101.6) (xy 246.38 115.57)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "3f30710d-a240-4af5-b366-3f9b8636bb43")
 	)
 	(wire
 		(pts
@@ -2344,6 +2372,16 @@
 	)
 	(wire
 		(pts
+			(xy 177.8 125.73) (xy 177.8 132.08)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "8766042b-4107-4597-8c77-fa01c104ed42")
+	)
+	(wire
+		(pts
 			(xy 90.17 121.92) (xy 90.17 132.08)
 		)
 		(stroke
@@ -2354,7 +2392,7 @@
 	)
 	(wire
 		(pts
-			(xy 170.18 132.08) (xy 218.44 132.08)
+			(xy 170.18 132.08) (xy 177.8 132.08)
 		)
 		(stroke
 			(width 0)
@@ -2431,6 +2469,16 @@
 			(type default)
 		)
 		(uuid "9a66d141-ba6f-4ab2-b785-98e4046f58b3")
+	)
+	(wire
+		(pts
+			(xy 177.8 132.08) (xy 218.44 132.08)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "9abb2415-a8a4-4644-9eae-1789ac8a5515")
 	)
 	(wire
 		(pts
@@ -2571,6 +2619,16 @@
 			(type default)
 		)
 		(uuid "be6cdefc-0a2c-4f16-ac5a-16dc18d5ebd4")
+	)
+	(wire
+		(pts
+			(xy 248.92 107.95) (xy 248.92 118.11)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "bedfeb41-c0c0-4b0e-9482-1b5ab57f08f1")
 	)
 	(wire
 		(pts
@@ -3654,6 +3712,174 @@
 		)
 	)
 	(symbol
+		(lib_id "Connector:TestPoint")
+		(at 246.38 101.6 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "5a80f071-f1ee-430a-88b9-3ed5e6d3b903")
+		(property "Reference" "TP3"
+			(at 248.92 97.0279 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "Audio_{OUT}"
+			(at 248.92 99.5679 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "TestPoint:TestPoint_Bridge_Pitch2.54mm_Drill1.0mm"
+			(at 251.46 101.6 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 251.46 101.6 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "test point"
+			(at 246.38 101.6 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "PN" "5002"
+			(at 246.38 101.6 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "DKPN" "36-5002-ND"
+			(at 246.38 101.6 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "59e2cad7-2ad8-48da-8148-c3c4ba2a7bc8")
+		)
+		(instances
+			(project "LiF_FC-PCB_rev1"
+				(path "/9e3e8da7-e506-46c9-90e5-307e4ad30d29/4a7ab991-4e21-40be-8fbb-bdea455cef2f"
+					(reference "TP3")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Connector:TestPoint")
+		(at 177.8 125.73 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "65c25fa9-4aac-4d12-8a40-b6e0200bc19f")
+		(property "Reference" "TP5"
+			(at 180.34 121.1579 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "Audio_{IN}"
+			(at 180.34 123.6979 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "TestPoint:TestPoint_Bridge_Pitch2.54mm_Drill1.0mm"
+			(at 182.88 125.73 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 182.88 125.73 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "test point"
+			(at 177.8 125.73 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "PN" "5002"
+			(at 177.8 125.73 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "DKPN" "36-5002-ND"
+			(at 177.8 125.73 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "ebae6fb9-9cdb-4c41-94ac-48250ee2c31c")
+		)
+		(instances
+			(project "LiF_FC-PCB_rev1"
+				(path "/9e3e8da7-e506-46c9-90e5-307e4ad30d29/4a7ab991-4e21-40be-8fbb-bdea455cef2f"
+					(reference "TP5")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "Device:C")
 		(at 209.55 107.95 0)
 		(unit 1)
@@ -3803,6 +4029,90 @@
 			(project "LiF_FC-PCB_rev1"
 				(path "/9e3e8da7-e506-46c9-90e5-307e4ad30d29/4a7ab991-4e21-40be-8fbb-bdea455cef2f"
 					(reference "R06_2")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Connector:TestPoint")
+		(at 248.92 107.95 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "8ff4a0e1-03a8-4d13-90e9-36bd0fb05ddb")
+		(property "Reference" "TP4"
+			(at 251.46 103.3779 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "Audio_{REF}"
+			(at 251.46 105.9179 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "TestPoint:TestPoint_Bridge_Pitch2.54mm_Drill1.0mm"
+			(at 254 107.95 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 254 107.95 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "test point"
+			(at 248.92 107.95 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "PN" "5002"
+			(at 248.92 107.95 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "DKPN" "36-5002-ND"
+			(at 248.92 107.95 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "4af777c9-923e-42e1-9406-961d56ce30f3")
+		)
+		(instances
+			(project "LiF_FC-PCB_rev1"
+				(path "/9e3e8da7-e506-46c9-90e5-307e4ad30d29/4a7ab991-4e21-40be-8fbb-bdea455cef2f"
+					(reference "TP4")
 					(unit 1)
 				)
 			)
@@ -4142,6 +4452,24 @@
 			)
 		)
 		(property "Description" "test point"
+			(at 33.02 125.73 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "PN" "5002"
+			(at 33.02 125.73 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "DKPN" "36-5002-ND"
 			(at 33.02 125.73 0)
 			(effects
 				(font
@@ -4544,7 +4872,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "TestPoint:TestPoint_Bridge_Pitch2.54mm_Drill1.0mm"
+		(property "Footprint" "TestPoint:TestPoint_Loop_D1.80mm_Drill1.0mm_Beaded"
 			(at 41.91 125.73 0)
 			(effects
 				(font
@@ -4563,6 +4891,24 @@
 			)
 		)
 		(property "Description" "test point"
+			(at 36.83 125.73 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "PN" "5002"
+			(at 36.83 125.73 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "DKPN" "36-5002-ND"
 			(at 36.83 125.73 0)
 			(effects
 				(font
@@ -4759,7 +5105,7 @@
 				(justify right)
 			)
 		)
-		(property "Value" "R_Potentiometer"
+		(property "Value" "10k"
 			(at 124.46 138.4299 0)
 			(effects
 				(font
@@ -4768,7 +5114,7 @@
 				(justify right)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Potentiometer_SMD:Potentiometer_Bourns_TC33X_Vertical"
 			(at 127 137.16 0)
 			(effects
 				(font
@@ -4787,6 +5133,24 @@
 			)
 		)
 		(property "Description" "Potentiometer"
+			(at 127 137.16 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "PN" "TC33X-2-103E"
+			(at 127 137.16 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "DKPN" "TC33X-103ECT-ND"
 			(at 127 137.16 0)
 			(effects
 				(font
