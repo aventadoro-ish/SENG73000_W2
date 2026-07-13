@@ -1,0 +1,235 @@
+(footprint "SW_TL3301PF160QG"
+	(version 20241229)
+	(generator "pcbnew")
+	(generator_version "9.0")
+	(layer "F.Cu")
+	(property "Reference" "REF**"
+		(at -0.635 -4.699 0)
+		(layer "F.SilkS")
+		(uuid "2f95a215-18a6-4179-8e8a-87803661a928")
+		(effects
+			(font
+				(size 1.4 1.4)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Value" "SW_TL3301PF160QG"
+		(at 9.144 4.191 0)
+		(layer "F.Fab")
+		(uuid "3803f16d-2139-4bec-8797-86a008133718")
+		(effects
+			(font
+				(size 1.4 1.4)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "97f53571-c81d-476a-a356-f20d165988d2")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Description" "SWITCH TACTILE SPST-NO 0.05A 12V"
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "6197d1ac-4df9-4d50-b716-ab6590487db6")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(attr smd)
+	(fp_line
+		(start -3 -3)
+		(end -3 3)
+		(stroke
+			(width 0.127)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "e74d6b67-914c-4ae0-ac1e-7bb0f6372831")
+	)
+	(fp_line
+		(start -3 3)
+		(end 3 3)
+		(stroke
+			(width 0.127)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "2e2880cb-b216-4aae-b558-43faf64c0826")
+	)
+	(fp_line
+		(start 3 -3)
+		(end -3 -3)
+		(stroke
+			(width 0.127)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "874e2a14-dad6-45de-8916-4ca79de087a4")
+	)
+	(fp_line
+		(start 3 3)
+		(end 3 -3)
+		(stroke
+			(width 0.127)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "0b60fd3a-4c8e-48bf-8d0c-adb6073151aa")
+	)
+	(fp_circle
+		(center -6.25 2.25)
+		(end -6.15 2.25)
+		(stroke
+			(width 0.2)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.SilkS")
+		(uuid "9b39a8be-119a-4785-ae94-7ba6ebe32605")
+	)
+	(fp_line
+		(start -5.85 -3.25)
+		(end 5.85 -3.25)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "1e3492b4-09f0-4164-86eb-9ec8c6ca5ea9")
+	)
+	(fp_line
+		(start -5.85 3.25)
+		(end -5.85 -3.25)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "9b152f12-1410-4504-9c46-004a82f6934f")
+	)
+	(fp_line
+		(start 5.85 -3.25)
+		(end 5.85 3.25)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "57231cc2-8b05-4ffc-9ef4-27eb1ff9c7eb")
+	)
+	(fp_line
+		(start 5.85 3.25)
+		(end -5.85 3.25)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "63e1a2b5-a096-4aae-a83a-40230f959fa0")
+	)
+	(fp_line
+		(start -3 -3)
+		(end 3 -3)
+		(stroke
+			(width 0.127)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "1742593e-bb2d-4a35-a047-052a7de5086c")
+	)
+	(fp_line
+		(start -3 3)
+		(end -3 -3)
+		(stroke
+			(width 0.127)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "4fbc712a-44cc-4d62-9919-108dd6dda028")
+	)
+	(fp_line
+		(start 3 -3)
+		(end 3 3)
+		(stroke
+			(width 0.127)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "9d2a3708-23d1-433e-b05d-a1763b3e6c86")
+	)
+	(fp_line
+		(start 3 3)
+		(end -3 3)
+		(stroke
+			(width 0.127)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "37310350-e31e-4849-b183-9318664845e9")
+	)
+	(fp_circle
+		(center -6.25 2.25)
+		(end -6.15 2.25)
+		(stroke
+			(width 0.2)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.Fab")
+		(uuid "13ed5626-1c64-44b0-bd26-8ed91c3cbbf5")
+	)
+	(pad "1" smd rect
+		(at -4.55 2.25)
+		(size 2.1 1.4)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(solder_mask_margin 0.102)
+		(uuid "5a4301cf-7f1f-44ac-b31f-2ef48046fdc2")
+	)
+	(pad "2" smd rect
+		(at 4.55 2.25)
+		(size 2.1 1.4)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(solder_mask_margin 0.102)
+		(uuid "ab772671-57f4-4888-8fb5-88db1cfbf376")
+	)
+	(pad "3" smd rect
+		(at -4.55 -2.25)
+		(size 2.1 1.4)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(solder_mask_margin 0.102)
+		(uuid "123b45fd-d85d-42c7-84bd-538c1ecf4ab0")
+	)
+	(pad "4" smd rect
+		(at 4.55 -2.25)
+		(size 2.1 1.4)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(solder_mask_margin 0.102)
+		(uuid "5e28f1f5-93d4-494d-83e6-9427963d590a")
+	)
+	(embedded_fonts no)
+	(model "${KIPRJMOD}/3D/TL3301PF160QG.step"
+		(offset
+			(xyz 0 0 0.5)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz -0 -0 -0)
+		)
+	)
+)
