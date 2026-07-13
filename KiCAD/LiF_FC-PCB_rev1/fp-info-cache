@@ -1,4 +1,4 @@
-26680667890876647
+26698507969811789
 Audio_Module
 Reverb_BTDR-1H
 Digital Reverberation Unit, http://www.belton.co.kr/inc/downfile.php?seq=17&file=pdf (footprint from http://www.uk-electronic.de/PDF/BTDR-1.pdf)
@@ -70553,6 +70553,27 @@ Yellow 5381 Series LED
 2
 2
 LiF_PCB_Footprints
+CONN_DB-9 Female KG-T4S_ASM
+
+A-DF 09 A/KG-T4S 
+0
+11
+10
+LiF_PCB_Footprints
+GCT_USB4105-GF-A
+
+
+0
+16
+16
+LiF_PCB_Footprints
+IND_BOURNS_SRU1038
+
+SRU1038-3R8Y 
+0
+2
+2
+LiF_PCB_Footprints
 IND_SPM10040T-4R7M
 
 
@@ -70560,12 +70581,61 @@ IND_SPM10040T-4R7M
 2
 2
 LiF_PCB_Footprints
+PTV09A-4015F-A
+
+
+0
+3
+1
+LiF_PCB_Footprints
+RESCAXE50P380X160X55-16N
+
+
+0
+16
+16
+LiF_PCB_Footprints
+SOT-5x3_DRL0008A_TEX
+
+TPS629203DRLR  TPS2117 
+0
+8
+8
+LiF_PCB_Footprints
+SW_SLW-883935-2A-D
+
+
+0
+3
+3
+LiF_PCB_Footprints
+SW_TL3301PF160QG
+
+
+0
+4
+4
+LiF_PCB_Footprints
 WQFN-HR-15
 
 TPS55285VALR WQFN-HR-15 15-PowerWQFN
 0
 15
 15
+LiF_PCB_Footprints
+XDCR_BMA400
+
+
+0
+12
+12
+LiF_PCB_Footprints
+XDCR_PEC11R-4215F-S0024
+
+
+0
+7
+7
 MatsKiLib_Connectors
 918-118A2021Y40006
 -40℃~+105℃ 1 10000 times 16P 3A 8.65mm Black Male Surface Mount,Vertical Type-C USB 2.0 SMD USB Connectors ROHS

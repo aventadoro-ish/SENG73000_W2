@@ -1,3 +1,4 @@
+<!--
 <!DOCTYPE html>
 <html>
 
@@ -8,14 +9,14 @@
     <link rel="stylesheet" href="../css/auth_forms.css">
     <link rel="icon" href="../media/icons/LiF_icon.ico" type="image/x-icon">
 
-    <!--[if lt IE 9]>
+    [if lt IE 9]>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js"></script>
-        <![endif]-->
+        <![endif]
 
     <meta name="author" content="Matvey Regentov">
     <meta name="description" content="Request access to hidden contents of the website.">
     <meta name="robots" content="index, follow">
-    <!-- bootstrap functions -->
+    <!-- bootstrap functions 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
@@ -105,4 +106,213 @@
     </footer>
 </body>
 
+</html>
+
+-->
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>LiF Team - Request Access</title>
+    <meta charset="UTF-8" />
+    <link rel="icon" href="../media/icons/LiF_icon.ico" type="image/x-icon" />
+
+    <meta name="author" content="Matvey Regentov" />
+    <meta
+      name="description"
+      content="Request access to hidden contents of the LiF Team website."
+    />
+    <meta name="robots" content="index, follow" />
+    <meta http-equiv="Pragma" content="no-cache" />
+
+    <link rel="stylesheet" href="../css/base.css" />
+    <link rel="stylesheet" href="../css/request_access_style.css" />
+  </head>
+
+  <body>
+    <!-- nav bar -->
+    <div id="navbar-placeholder" data-root="../"></div>
+    <script src="../js/navbar.js"></script>
+
+    <main class="page-wrapper">
+      <section class="intro-section request-access-intro" id="page_top">
+        <div class="intro-text">
+          <p class="section-label">Website Access</p>
+
+          <h1>Request Access</h1>
+
+          <p class="intro-description">
+            Use this form to request access to restricted or hidden areas of the
+            Lithium Firefly project website. Required fields must be completed
+            before the request can be submitted.
+          </p>
+        </div>
+
+        <aside class="summary-card">
+          <h2>Request Info</h2>
+          <p><strong>Project:</strong> Engineering Project VI</p>
+          <p><strong>Team:</strong> Lithium Firefly</p>
+          <p><strong>Purpose:</strong> Access request form</p>
+        </aside>
+      </section>
+
+      <section class="request-access-section">
+        <div class="request-access-heading">
+          <p class="section-label">Access Form</p>
+          <h2>Contact and Request Details</h2>
+          <p>
+            Please enter your contact information, involvement, and any
+            additional details that may help the team review your request.
+          </p>
+        </div>
+
+        <form
+          action="../php/request_access.php"
+          method="post"
+          class="access-form"
+        >
+          <p class="required-note">
+            Fields marked as required must be completed.
+          </p>
+
+          <fieldset>
+            <legend>Contact Information</legend>
+
+            <div class="form-grid">
+              <div class="form-row">
+                <label for="firstName">First Name:</label>
+                <input type="text" id="firstName" name="firstName" />
+              </div>
+
+              <div class="form-row">
+                <label for="lastName">Last Name:</label>
+                <input type="text" id="lastName" name="lastName" />
+              </div>
+
+              <div class="form-row">
+                <label for="email"
+                  >Email: <span class="required-marker">*</span></label
+                >
+                <input type="email" id="email" name="email" required />
+              </div>
+
+              <div class="form-row">
+                <label for="birthday"
+                  >Birthday: <span class="required-marker">*</span></label
+                >
+                <input type="date" id="birthday" name="birthday" required />
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>Occupation and Involvement</legend>
+
+            <div class="option-group">
+              <p>Occupation:</p>
+              <div class="option-row">
+                <label
+                  ><input
+                    type="radio"
+                    name="fac_or_student"
+                    value="faculty"
+                  />Faculty</label
+                >
+                <label
+                  ><input type="radio" name="fac_or_student" value="student" />
+                  Student</label
+                >
+              </div>
+            </div>
+
+            <div class="option-group">
+              <p>Currently, I am ... (select all that apply)</p>
+              <div class="option-row">
+                <label
+                  ><input type="checkbox" name="involvement[]" value="None" />
+                  Nobody</label
+                >
+                <label
+                  ><input
+                    type="checkbox"
+                    name="involvement[]"
+                    value="Instructor"
+                  />
+                  Instructor</label
+                >
+                <label
+                  ><input type="checkbox" name="involvement[]" value="Boss" />
+                  Boss</label
+                >
+                <label
+                  ><input
+                    type="checkbox"
+                    name="involvement[]"
+                    value="Investor"
+                  />
+                  Investor</label
+                >
+
+                <label
+                  ><input type="checkbox" name="involvement[]" value="PM" />
+                  Project Manager</label
+                >
+
+                <label
+                  ><input type="checkbox" name="involvement[]" value="Piyush" />
+                  Piyush</label
+                >
+              </div>
+            </div>
+
+            <div class="form-row compact-row">
+              <label for="drives_car">Do you drive a car?</label>
+              <select id="drives_car" name="drives_car">
+                <option value="no_answer" selected>Prefer not to say</option>
+                <option value="true">Yes</option>
+                <option value="false">No</option>
+              </select>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>Additional Details</legend>
+
+            <div class="form-row">
+              <label for="details">Tell us about yourself:</label>
+              <textarea
+                id="details"
+                name="details"
+                placeholder="Other details"
+              ></textarea>
+            </div>
+
+            <p id="character_count">180 characters remaining</p>
+            <p id="character_error" role="alert" hidden>
+              You have exceeded the maximum number of 180 characters allowed.
+            </p>
+          </fieldset>
+
+          <div class="form-button-row">
+            <input
+              id="request_access_btn"
+              class="button primary-button"
+              type="submit"
+              value="Submit Request"
+            />
+          </div>
+        </form>
+      </section>
+
+      <p class="top-link">
+        <a href="#page_top">Go to the top of this page</a>
+      </p>
+    </main>
+
+    <footer class="site-footer">
+      <p>Copyright &copy; 2026 Matvey Regentov</p>
+    </footer>
+
+    <script src="../js/request_access.js"></script>
+  </body>
 </html>

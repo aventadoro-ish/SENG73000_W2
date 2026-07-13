@@ -246,8 +246,13 @@
     }
   },
   "libraries": {
-    "pinned_footprint_libs": [],
-    "pinned_symbol_libs": []
+    "pinned_footprint_libs": [
+      "MatsLibrary",
+      "LiF_PCB_Footprints"
+    ],
+    "pinned_symbol_libs": [
+      "LiF_PCB_Symbols"
+    ]
   },
   "meta": {
     "filename": "LiF_FC-PCB_rev1.kicad_pro",
@@ -358,13 +363,163 @@
           "group_by": false,
           "label": "Datasheet",
           "name": "Datasheet",
+          "show": false
+        },
+        {
+          "group_by": false,
+          "label": "CREATOR",
+          "name": "CREATOR",
+          "show": false
+        },
+        {
+          "group_by": false,
+          "label": "Check_prices",
+          "name": "Check_prices",
+          "show": false
+        },
+        {
+          "group_by": false,
+          "label": "DK#",
+          "name": "DK#",
+          "show": false
+        },
+        {
+          "group_by": false,
+          "label": "DKPN",
+          "name": "DKPN",
           "show": true
+        },
+        {
+          "group_by": false,
+          "label": "Description_1",
+          "name": "Description_1",
+          "show": false
+        },
+        {
+          "group_by": false,
+          "label": "DigiKey_Part_Number",
+          "name": "DigiKey_Part_Number",
+          "show": false
+        },
+        {
+          "group_by": false,
+          "label": "MANUFACTURER",
+          "name": "MANUFACTURER",
+          "show": false
+        },
+        {
+          "group_by": false,
+          "label": "MAXIMUM_PACKAGE_HEIGHT",
+          "name": "MAXIMUM_PACKAGE_HEIGHT",
+          "show": false
+        },
+        {
+          "group_by": false,
+          "label": "MF",
+          "name": "MF",
+          "show": false
+        },
+        {
+          "group_by": false,
+          "label": "MP",
+          "name": "MP",
+          "show": false
+        },
+        {
+          "group_by": false,
+          "label": "PACKAGE",
+          "name": "PACKAGE",
+          "show": false
+        },
+        {
+          "group_by": false,
+          "label": "PARTREV",
+          "name": "PARTREV",
+          "show": false
+        },
+        {
+          "group_by": false,
+          "label": "PN",
+          "name": "PN",
+          "show": true
+        },
+        {
+          "group_by": false,
+          "label": "PRICE",
+          "name": "PRICE",
+          "show": false
+        },
+        {
+          "group_by": false,
+          "label": "Package",
+          "name": "Package",
+          "show": false
+        },
+        {
+          "group_by": false,
+          "label": "Part#",
+          "name": "Part#",
+          "show": false
+        },
+        {
+          "group_by": false,
+          "label": "SNAPEDA_PN",
+          "name": "SNAPEDA_PN",
+          "show": false
+        },
+        {
+          "group_by": false,
+          "label": "STANDARD",
+          "name": "STANDARD",
+          "show": false
+        },
+        {
+          "group_by": false,
+          "label": "Sim.Device",
+          "name": "Sim.Device",
+          "show": false
+        },
+        {
+          "group_by": false,
+          "label": "Sim.Pins",
+          "name": "Sim.Pins",
+          "show": false
+        },
+        {
+          "group_by": false,
+          "label": "SnapEDA_Link",
+          "name": "SnapEDA_Link",
+          "show": false
+        },
+        {
+          "group_by": false,
+          "label": "VERIFIER",
+          "name": "VERIFIER",
+          "show": false
+        },
+        {
+          "group_by": false,
+          "label": "AVAILABILITY",
+          "name": "AVAILABILITY",
+          "show": false
+        },
+        {
+          "group_by": false,
+          "label": "Description",
+          "name": "Description",
+          "show": false
+        },
+        {
+          "group_by": false,
+          "label": "#",
+          "name": "${ITEM_NUMBER}",
+          "show": false
         }
       ],
       "filter_string": "",
       "group_symbols": true,
       "include_excluded_from_bom": true,
-      "name": "Default Editing",
+      "name": "",
       "sort_asc": true,
       "sort_field": "Reference"
     },
@@ -414,12 +569,16 @@
       "Root"
     ],
     [
+      "dbf56dc2-3990-4801-b0e0-f59d351af64c",
+      "Power Regulation"
+    ],
+    [
       "b5f6c072-28d6-4dbf-9d97-d5b17dc4e7a5",
       "Power OR-ing"
     ],
     [
-      "dbf56dc2-3990-4801-b0e0-f59d351af64c",
-      "Power Regulation"
+      "d7dd20e9-8027-4523-a1e0-5e82c0dab821",
+      "Power OR-ing1"
     ],
     [
       "18794d3c-1606-4c60-8412-e38df19bc4d8",
@@ -428,6 +587,38 @@
     [
       "fa6eb845-b5e3-4a8e-9c24-c1b567f4e987",
       "MCU"
+    ],
+    [
+      "17577359-df8d-4d28-9071-787d31b1b6da",
+      "Load Cell"
+    ],
+    [
+      "77827f91-166d-41e9-a525-15815c2a0550",
+      "CAN"
+    ],
+    [
+      "25eacf96-1a70-4276-a4a6-d0196807ae93",
+      "Accelerometer"
+    ],
+    [
+      "75541181-887f-448c-8628-82c2df7284ca",
+      "Audio"
+    ],
+    [
+      "d823ad92-d1a3-4f4d-8dfc-d728d5836dc0",
+      "Display"
+    ],
+    [
+      "5a2c7040-8854-4895-b7b6-208daa06b69a",
+      "Buttons"
+    ],
+    [
+      "42a8ae4d-a2ee-470b-ba60-96ca330bd4df",
+      "Encoder"
+    ],
+    [
+      "a8743cf2-df76-4292-9b13-dfab84e92b69",
+      "Servos"
     ]
   ],
   "text_variables": {}

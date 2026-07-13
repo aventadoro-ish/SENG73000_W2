@@ -1,0 +1,13 @@
+(kicad_sch
+	(version 20241209)
+	(generator "eeschema")
+	(generator_version "9.0")
+	(uuid "5014553e-c533-4007-b739-37e7482facf4")
+	(paper "A4")
+	(title_block
+		(title "USB-C")
+		(date "2026-07-10")
+		(rev "3.0")
+	)
+	(lib_symbols)
+)
