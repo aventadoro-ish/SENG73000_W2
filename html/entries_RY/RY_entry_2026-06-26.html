@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+
+<!--
+Author: Rita Yevtushenko
+-->
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>RY's Logbook - 2026-06-26</title>
+
+    <meta name="author" content="Rita Yevtushenko">
+    <meta name="description" content="Lithium Firefly Logbook Entry">
+    <meta name="robots" content="index, follow">
+
+    <link rel="icon"
+          href="../../media/icons/LiF_icon.ico"
+          type="image/x-icon">
+
+    <!-- Main Styles -->
+    <link rel="stylesheet" href="../../css/base.css">
+    <link rel="stylesheet" href="../../css/logbook_entry.css">
+
+    <!-- Prism -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css">
+
+    <link rel="stylesheet"
+          href="../../css/code_formatting.css">
+</head>
+
+<body>
+
+<!-- Navigation -->
+<div id="navbar-placeholder" data-root="../../"></div>
+<script src="../../js/navbar.js"></script>
+
+<main class="page-wrapper">
+
+    <!-- Sidebar -->
+    <aside>
+        <iframe src="../links.html" title="Navigation"></iframe>
+    </aside>
+
+    <section class="logbook-entry-intro">
+
+        <div>
+
+            <h1>Logbook Entry</h1>
+
+            <p>
+                <strong>Date:</strong> June 26, 2026
+                <br>
+
+                <strong>Project:</strong> Lithium Firefly Elevator
+
+                <br>
+
+                <strong>Hours:</strong> 7
+
+                <br>
+
+                <strong>Focus:</strong> Supervisor Controller Integration
+            </p>
+
+            <h2>Summary</h2>
+
+            <p class="logbook_summary">
+                Continued integrating the Raspberry Pi 4 with the MCP2515
+                CAN controller, improved the Supervisor Controller FSM,
+                implemented queue management, and added helper functions
+                for CAN message processing (PART1).
+            </p>
+
+            <a href="../logbook_RY.html">
+                ← Return to Logbook Cover Page
+            </a>
+
+        </div>
+
+    </section>
+
+    <section class="logbook-entry-content">
+        <h2>Research</h2>
+
+        <p>
+            Investigated the MCP2515 CAN transceiver specifications,
+            SPI communication requirements, and initialization
+            sequence before integrating the controller with the
+            Raspberry Pi 4.
+        </p>
+
+        <h2>Supervisor Controller Improvements</h2>
+
+        <p>
+            Reviewed the existing Supervisor Controller code and
+            refactored several sections to simplify message
+            handling and floor management.
+        </p>
+
+        <h4>Functions Added</h4>
+
+        <ul>
+            <li><code>HexFromFloor()</code></li>
+            <li><code>FloorFromHex()</code></li>
+        </ul>
+
+        <p>
+            These helper functions translate between floor numbers
+            and CAN message data.
+        </p>
+
+
+    <h2>Finite State Machine Implementation</h2>
+
+        <p>
+        The Supervisor Controller was expanded into a finite state machine (FSM)
+        that manages elevator movement and communication between the Raspberry Pi,
+        Cab Controller, Elevator Controller, and Floor Controllers. Rather than
+        reacting to individual CAN messages independently, the controller now
+        maintains its operating state and transitions only when predefined
+        conditions are satisfied.
+        </p>
+
+    <h4>Implemented States</h4>
+
+    <ul>
+        <li><strong>Idle</strong> – Waits until the cab doors are closed and a floor request is available in the queue.</li>
+        <li><strong>Moving</strong> – Commands the Elevator Controller to travel to the requested destination while monitoring movement progress.</li>
+        <li><strong>Arrived</strong> – Confirms that the requested floor has been reached before returning to the idle state.</li>
+        <li><strong>Fault</strong> – Entered whenever movement exceeds the allowable timeout or an unexpected operating condition occurs.</li>
+    </ul>
+
+        <h4>Queue Implementation</h4>
+        <p>
+            Implemented a circular FIFO queue allowing the
+            Supervisor Controller to process multiple floor
+            requests in the order they are received.
+        </p>
+
+
+    <h2>Initial Supervisor Controller Initialization</h2>
+
+        <p>
+        After integrating the CAN communication libraries and database functions,
+        the Supervisor Controller was initialized by synchronizing the elevator's
+        starting position with both the Elevator Controller and the project
+        database. The controller begins in the <code>STATE_IDLE</code> state and
+        waits for floor requests before commanding elevator movement.
+        </p>
+
+    <pre class="code-block language-cpp"><code class="language-cpp">
+    // Synchronize elevator position and initialize FSM
+
+    pcanTx(ID_SC_TO_EC, GO_TO_FLOOR1);
+    db_setFloorNum(1);
+
+    currentState = STATE_IDLE;
+
+    TPCANMsg incoming;
+    int targetFloor = 1;
+    time_t moveStartTime = 0;
+
+    while (1)
+    {
+        int pendingFloor = -1;
+        bool newRequest = false;
+
+        floorNumber = db_getFloorNum();
+
+        if (prev_floorNumber != floorNumber)
+        {
+            pendingFloor = floorNumber;
+            enqueueFloor(floorNumber);
+        }
+
+        prev_floorNumber = floorNumber;
+
+        int gotMessage = pcanRxState(&incoming);
+    </code></pre>
+
+    <h2>Code Block Developed</h2>
+
+<pre class="code-block language-cpp"><code class="language-cpp">
+int HexFromFloor(int floorVal) {
+
+	switch(floorVal) {
+		case 1:
+			return(GO_TO_FLOOR1);
+			break;
+		case 2:
+			return(GO_TO_FLOOR2);
+			break;
+		case 3: 
+			return(GO_TO_FLOOR3);
+			break;
+		default:
+			return(GO_TO_FLOOR1);			// Default is to reset to floor 1 on bad input
+		}
+}
+
+int FloorFromHex(int Hex){
+		
+	switch(Hex) {
+		case GO_TO_FLOOR1:
+			return(1);
+			break;
+		case GO_TO_FLOOR2:
+			return(2);
+			break;
+		case GO_TO_FLOOR3:
+			return(3);
+			break;
+		default:
+			return(1);							// Default is to reset to floor 1 on bad input
+		}
+}
+</code></pre>
+    <h5> To be continued...</h5>
+
+    </section>
+
+</main>
+
+<footer class="site-footer">
+
+    <p>
+        Copyright &copy; Rita Yevtushenko
+    </p>
+
+</footer>
+
+<!-- Prism -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markup.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+
+</body>
+</html>
