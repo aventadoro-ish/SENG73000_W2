@@ -1841,6 +1841,26 @@
 		)
 		(uuid "8cbec54c-3317-455e-bcd6-c15b9cf5d30d")
 	)
+	(label "SW"
+		(at 147.32 100.33 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "8db5afd3-28fd-4f82-b253-316f8b792f6a")
+	)
+	(label "Boot"
+		(at 147.32 90.17 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "bf9f4e91-58e3-45b8-87cd-f026f75b1aea")
+	)
 	(label "REG5V_in"
 		(at 91.44 83.82 0)
 		(effects
@@ -2384,7 +2404,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "TestPoint:TestPoint_Bridge_Pitch2.54mm_Drill1.0mm"
+		(property "Footprint" "TestPoint:TestPoint_Loop_D1.80mm_Drill1.0mm_Beaded"
 			(at 213.36 90.17 0)
 			(effects
 				(font
@@ -3505,7 +3525,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "TestPoint:TestPoint_Bridge_Pitch2.54mm_Drill1.0mm"
+		(property "Footprint" "TestPoint:TestPoint_Loop_D1.80mm_Drill1.0mm_Beaded"
 			(at 222.25 91.44 0)
 			(effects
 				(font

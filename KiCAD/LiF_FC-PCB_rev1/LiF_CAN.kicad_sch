@@ -4956,7 +4956,7 @@
 		)
 		(uuid "06456b51-7227-493e-8aa4-284b65e70293")
 	)
-	(label "CANL"
+	(label "CAN-"
 		(at 92.71 158.75 180)
 		(effects
 			(font
@@ -4996,7 +4996,7 @@
 		)
 		(uuid "3b37e6a0-cef9-4497-89a6-12bd9fc24ceb")
 	)
-	(label "CANL"
+	(label "CAN-"
 		(at 252.73 100.33 180)
 		(effects
 			(font
@@ -5006,7 +5006,7 @@
 		)
 		(uuid "45171e0f-7def-4ecb-bae2-8f915fde2435")
 	)
-	(label "CANH"
+	(label "CAN+"
 		(at 92.71 153.67 180)
 		(effects
 			(font
@@ -5046,7 +5046,7 @@
 		)
 		(uuid "5de2f5bd-566e-41d9-899a-f47d218a3d87")
 	)
-	(label "CANH"
+	(label "CAN+"
 		(at 212.09 138.43 0)
 		(effects
 			(font
@@ -5056,7 +5056,7 @@
 		)
 		(uuid "61432dde-3d8a-4957-9c5f-3393fd49b600")
 	)
-	(label "CANH"
+	(label "CAN+"
 		(at 252.73 52.07 180)
 		(effects
 			(font
@@ -5086,7 +5086,7 @@
 		)
 		(uuid "80289e44-9c64-4a6d-a9a6-0be26be508a9")
 	)
-	(label "CANH"
+	(label "CAN+"
 		(at 252.73 93.98 180)
 		(effects
 			(font
@@ -5116,7 +5116,7 @@
 		)
 		(uuid "e45b7974-13c5-4e40-9478-a644edd0bc6c")
 	)
-	(label "CANL"
+	(label "CAN-"
 		(at 252.73 58.42 180)
 		(effects
 			(font
@@ -5126,7 +5126,7 @@
 		)
 		(uuid "ef879a9c-fa9b-43f5-bc06-47d658d83e3d")
 	)
-	(label "CANL"
+	(label "CAN-"
 		(at 212.09 135.89 0)
 		(effects
 			(font
@@ -5947,7 +5947,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "TestPoint:TestPoint_Bridge_Pitch2.54mm_Drill1.0mm"
+		(property "Footprint" "TestPoint:TestPoint_Loop_D1.80mm_Drill1.0mm_Beaded"
 			(at 146.05 137.16 0)
 			(effects
 				(font
@@ -6711,7 +6711,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "TestPoint:TestPoint_Bridge_Pitch2.54mm_Drill1.0mm"
+		(property "Footprint" "TestPoint:TestPoint_Loop_D1.80mm_Drill1.0mm_Beaded"
 			(at 135.89 137.16 0)
 			(effects
 				(font
@@ -8031,7 +8031,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "TestPoint:TestPoint_Bridge_Pitch2.54mm_Drill1.0mm"
+		(property "Footprint" "TestPoint:TestPoint_Loop_D1.80mm_Drill1.0mm_Beaded"
 			(at 120.65 137.16 0)
 			(effects
 				(font
