@@ -1,4 +1,4 @@
-26698508829032564
+26705645523983545
 Audio_Module
 Reverb_BTDR-1H
 Digital Reverberation Unit, http://www.belton.co.kr/inc/downfile.php?seq=17&file=pdf (footprint from http://www.uk-electronic.de/PDF/BTDR-1.pdf)
@@ -70553,6 +70553,13 @@ Yellow 5381 Series LED
 2
 2
 LiF_PCB_Footprints
+450404015514
+Slide Switch SPDT Surface Mount 0.3A 5V Actuator Length	1.50mm{return} Würth Elektronik Series WS-SLSU Non-Shorting (BBM) Switch Travel 1.50mm{return}
+
+0
+7
+4
+LiF_PCB_Footprints
 CONN_DB-9 Female KG-T4S_ASM
 
 A-DF 09 A/KG-T4S 
@@ -70595,12 +70602,26 @@ RESCAXE50P380X160X55-16N
 16
 16
 LiF_PCB_Footprints
+SON4_PTS526 SM15 SMTR2 LFS_CNK
+Tactile Switch SPST-NO Top Actuated Surface Mount Series PTS526 C&K
+PTS526 SM15 SMTR2 LFS 
+0
+4
+4
+LiF_PCB_Footprints
 SOT-5x3_DRL0008A_TEX
 
 TPS629203DRLR  TPS2117 
 0
 8
 8
+LiF_PCB_Footprints
+SW_JS202011JCQN
+Slide Switch DPDT Surface Mount C&K Switch Travel 2.00mm{return}
+
+0
+6
+6
 LiF_PCB_Footprints
 SW_SLW-883935-2A-D
 
@@ -70615,6 +70636,13 @@ SW_TL3301PF160QG
 0
 4
 4
+LiF_PCB_Footprints
+Texas_R-PDSO-G8_EP2.95x4.9mm_Mask2.4x3.1mm
+HSOIC, 8 Pin (http://www.ti.com/lit/ds/symlink/lmr14030.pdf#page=28, http://www.ti.com/lit/ml/msoi002j/msoi002j.pdf), generated with kicad-footprint-generator ipc_gullwing_generator.py
+HSOIC SO
+0
+16
+9
 LiF_PCB_Footprints
 WQFN-HR-15
 

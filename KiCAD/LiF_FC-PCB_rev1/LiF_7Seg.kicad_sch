@@ -3939,7 +3939,7 @@
 		)
 	)
 	(label "DIG2_F"
-		(at 268.1351 105.5316 180)
+		(at 267.97 105.41 180)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -3989,7 +3989,7 @@
 		(uuid "1caca4cf-61ec-4ad6-8f73-2b440b4621b5")
 	)
 	(label "DIG1_F"
-		(at 172.5549 105.5316 0)
+		(at 172.72 105.41 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -3999,7 +3999,7 @@
 		(uuid "3185cf00-b7d9-4e66-a160-024314cd83f0")
 	)
 	(label "DIG2_F"
-		(at 144.9451 123.3116 180)
+		(at 144.78 123.19 180)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -4189,7 +4189,7 @@
 		(uuid "8ebd939d-3c3f-4521-938f-f3bbe755c489")
 	)
 	(label "DIG1_F"
-		(at 144.9451 100.4516 180)
+		(at 144.78 100.33 180)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -4697,16 +4697,16 @@
 	)
 	(symbol
 		(lib_id "LiF_PCB_Symbols:EXB-2HV471JV")
-		(at 191.77 100.33 0)
+		(at 191.77 102.87 0)
+		(mirror x)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(fields_autoplaced yes)
 		(uuid "6997ce47-8dcc-4d93-b847-cc15312ffbaf")
 		(property "Reference" "RN1"
-			(at 191.77 85.09 0)
+			(at 191.77 118.11 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4714,7 +4714,7 @@
 			)
 		)
 		(property "Value" "8x 470"
-			(at 191.77 87.63 0)
+			(at 191.77 115.57 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4722,7 +4722,7 @@
 			)
 		)
 		(property "Footprint" "LiF_PCB_Footprints:RESCAXE50P380X160X55-16N"
-			(at 188.976 84.836 0)
+			(at 188.976 118.364 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4732,7 +4732,7 @@
 			)
 		)
 		(property "Datasheet" "https://industrial.panasonic.com/cdbs/www-data/pdf/AOC0000/AOC0000C14.pdf"
-			(at 191.77 100.33 0)
+			(at 191.77 102.87 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4741,7 +4741,7 @@
 			)
 		)
 		(property "Description" "RES ARRAY 8 RES 470 OHM 1506"
-			(at 191.77 100.33 0)
+			(at 191.77 102.87 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4750,7 +4750,7 @@
 			)
 		)
 		(property "PN" "EXB-2HV471JV"
-			(at 191.77 100.33 0)
+			(at 191.77 102.87 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4759,7 +4759,7 @@
 			)
 		)
 		(property "DKPN" "Y1471CT-ND"
-			(at 191.77 100.33 0)
+			(at 191.77 102.87 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4768,7 +4768,7 @@
 			)
 		)
 		(property "DigiKey_Part_Number" ""
-			(at 191.77 100.33 0)
+			(at 191.77 102.87 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4778,7 +4778,7 @@
 			)
 		)
 		(property "SnapEDA_Link" "https://www.snapeda.com/parts/EXB-2HV471JV/Panasonic/view-part/?ref=snap"
-			(at 188.976 84.836 0)
+			(at 188.976 118.364 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4788,7 +4788,7 @@
 			)
 		)
 		(property "MAXIMUM_PACKAGE_HEIGHT" "0.55mm"
-			(at 191.77 100.33 0)
+			(at 191.77 102.87 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4798,7 +4798,7 @@
 			)
 		)
 		(property "CREATOR" "ASHISH"
-			(at 191.77 100.33 0)
+			(at 191.77 102.87 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4808,7 +4808,7 @@
 			)
 		)
 		(property "Package" "1506 Panasonic"
-			(at 191.77 100.33 0)
+			(at 191.77 102.87 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4818,7 +4818,7 @@
 			)
 		)
 		(property "Check_prices" "https://www.snapeda.com/parts/EXB-2HV471JV/Panasonic/view-part/?ref=eda"
-			(at 188.976 84.836 0)
+			(at 188.976 118.364 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4828,7 +4828,7 @@
 			)
 		)
 		(property "STANDARD" "IPC-7351B"
-			(at 191.77 100.33 0)
+			(at 191.77 102.87 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4838,7 +4838,7 @@
 			)
 		)
 		(property "PARTREV" "1-Mar-20"
-			(at 191.77 100.33 0)
+			(at 191.77 102.87 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4848,7 +4848,7 @@
 			)
 		)
 		(property "VERIFIER" ""
-			(at 191.77 100.33 0)
+			(at 191.77 102.87 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4858,7 +4858,7 @@
 			)
 		)
 		(property "MF" "Panasonic Electronic"
-			(at 191.77 100.33 0)
+			(at 191.77 102.87 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4868,7 +4868,7 @@
 			)
 		)
 		(property "MP" "EXB-2HV471JV"
-			(at 191.77 100.33 0)
+			(at 191.77 102.87 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4878,7 +4878,7 @@
 			)
 		)
 		(property "Description_1" "470 Ohm ±5% 62.5mW Power Per Element Isolated 8 Resistor Network/Array ±200ppm/°C 1506, Convex, Long Side Terminals"
-			(at 188.976 84.836 0)
+			(at 188.976 118.364 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4888,7 +4888,7 @@
 			)
 		)
 		(property "MANUFACTURER" "Panasonic"
-			(at 191.77 100.33 0)
+			(at 191.77 102.87 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5326,17 +5326,15 @@
 	)
 	(symbol
 		(lib_id "LiF_PCB_Symbols:EXB-2HV471JV")
-		(at 248.92 100.33 0)
-		(mirror y)
+		(at 248.92 102.87 180)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(fields_autoplaced yes)
 		(uuid "ca0032da-2b25-4a47-8927-790c0de5926d")
 		(property "Reference" "RN2"
-			(at 248.92 85.09 0)
+			(at 248.92 118.11 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5344,7 +5342,7 @@
 			)
 		)
 		(property "Value" "8x 470"
-			(at 248.92 87.63 0)
+			(at 248.92 115.57 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5352,7 +5350,7 @@
 			)
 		)
 		(property "Footprint" "LiF_PCB_Footprints:RESCAXE50P380X160X55-16N"
-			(at 251.714 84.836 0)
+			(at 251.714 118.364 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5362,7 +5360,7 @@
 			)
 		)
 		(property "Datasheet" "https://industrial.panasonic.com/cdbs/www-data/pdf/AOC0000/AOC0000C14.pdf"
-			(at 248.92 100.33 0)
+			(at 248.92 102.87 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5371,7 +5369,7 @@
 			)
 		)
 		(property "Description" "RES ARRAY 8 RES 470 OHM 1506"
-			(at 248.92 100.33 0)
+			(at 248.92 102.87 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5380,7 +5378,7 @@
 			)
 		)
 		(property "PN" "EXB-2HV471JV"
-			(at 248.92 100.33 0)
+			(at 248.92 102.87 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5389,7 +5387,7 @@
 			)
 		)
 		(property "DKPN" "Y1471CT-ND"
-			(at 248.92 100.33 0)
+			(at 248.92 102.87 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5398,7 +5396,7 @@
 			)
 		)
 		(property "DigiKey_Part_Number" ""
-			(at 248.92 100.33 0)
+			(at 248.92 102.87 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5408,7 +5406,7 @@
 			)
 		)
 		(property "SnapEDA_Link" "https://www.snapeda.com/parts/EXB-2HV471JV/Panasonic/view-part/?ref=snap"
-			(at 251.714 84.836 0)
+			(at 251.714 118.364 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5418,7 +5416,7 @@
 			)
 		)
 		(property "MAXIMUM_PACKAGE_HEIGHT" "0.55mm"
-			(at 248.92 100.33 0)
+			(at 248.92 102.87 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5428,7 +5426,7 @@
 			)
 		)
 		(property "CREATOR" "ASHISH"
-			(at 248.92 100.33 0)
+			(at 248.92 102.87 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5438,7 +5436,7 @@
 			)
 		)
 		(property "Package" "1506 Panasonic"
-			(at 248.92 100.33 0)
+			(at 248.92 102.87 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5448,7 +5446,7 @@
 			)
 		)
 		(property "Check_prices" "https://www.snapeda.com/parts/EXB-2HV471JV/Panasonic/view-part/?ref=eda"
-			(at 251.714 84.836 0)
+			(at 251.714 118.364 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5458,7 +5456,7 @@
 			)
 		)
 		(property "STANDARD" "IPC-7351B"
-			(at 248.92 100.33 0)
+			(at 248.92 102.87 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5468,7 +5466,7 @@
 			)
 		)
 		(property "PARTREV" "1-Mar-20"
-			(at 248.92 100.33 0)
+			(at 248.92 102.87 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5478,7 +5476,7 @@
 			)
 		)
 		(property "VERIFIER" ""
-			(at 248.92 100.33 0)
+			(at 248.92 102.87 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5488,7 +5486,7 @@
 			)
 		)
 		(property "MF" "Panasonic Electronic"
-			(at 248.92 100.33 0)
+			(at 248.92 102.87 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5498,7 +5496,7 @@
 			)
 		)
 		(property "MP" "EXB-2HV471JV"
-			(at 248.92 100.33 0)
+			(at 248.92 102.87 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5508,7 +5506,7 @@
 			)
 		)
 		(property "Description_1" "470 Ohm ±5% 62.5mW Power Per Element Isolated 8 Resistor Network/Array ±200ppm/°C 1506, Convex, Long Side Terminals"
-			(at 251.714 84.836 0)
+			(at 251.714 118.364 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5518,7 +5516,7 @@
 			)
 		)
 		(property "MANUFACTURER" "Panasonic"
-			(at 248.92 100.33 0)
+			(at 248.92 102.87 0)
 			(effects
 				(font
 					(size 1.27 1.27)

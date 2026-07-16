@@ -12676,151 +12676,6 @@
 		)
 	)
 	(symbol
-		(lib_id "LiF_PCB_Symbols:TL3301PF160QG")
-		(at 208.28 151.13 90)
-		(mirror x)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "70349e28-b0de-41e5-83cb-75739fff65f9")
-		(property "Reference" "SW2"
-			(at 215.646 149.86 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "Reset"
-			(at 215.646 151.892 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" "LiF_PCB_Footprints:SW_TL3301PF160QG"
-			(at 196.596 150.114 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify bottom)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "https://configured-product-images.s3.amazonaws.com/Datasheets/TL3301.pdf"
-			(at 200.406 149.098 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Tactile Switch SPST-NO Top Actuated Surface Mount"
-			(at 200.406 149.098 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "PARTREV" "E"
-			(at 192.532 151.13 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify bottom)
-				(hide yes)
-			)
-		)
-		(property "STANDARD" "Manufacturer Recommendations"
-			(at 196.596 150.114 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify bottom)
-				(hide yes)
-			)
-		)
-		(property "MANUFACTURER" "E-Switch"
-			(at 194.31 151.384 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify bottom)
-				(hide yes)
-			)
-		)
-		(property "MAXIMUM_PACKAGE_HEIGHT" "5 mm"
-			(at 192.532 151.13 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify bottom)
-				(hide yes)
-			)
-		)
-		(property "SNAPEDA_PN" "TL3301AF160QG"
-			(at 194.31 151.384 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify bottom)
-				(hide yes)
-			)
-		)
-		(property "PN" "TL3301PF160QG"
-			(at 199.644 150.622 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "DKPN" "EG4562CT-ND"
-			(at 199.644 150.622 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "3"
-			(uuid "e5d41fb2-7d93-45d0-ba7d-ee4f2026c566")
-		)
-		(pin "4"
-			(uuid "084934e5-7ed1-4316-9e1b-6827f7ba477d")
-		)
-		(pin "1"
-			(uuid "efb8dc32-a5c6-4ff2-9c3e-22b7b16a5f9b")
-		)
-		(pin "2"
-			(uuid "7012a241-3124-46c1-af29-f6c49a264965")
-		)
-		(instances
-			(project "LiF_FC-PCB_rev1"
-				(path "/9e3e8da7-e506-46c9-90e5-307e4ad30d29/fa6eb845-b5e3-4a8e-9c24-c1b567f4e987"
-					(reference "SW2")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "Diode:ESD9B5.0ST5G")
 		(at 78.74 110.49 270)
 		(mirror x)
@@ -13596,7 +13451,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "LiF_PCB_Footprints:SW_TL3301PF160QG"
+		(property "Footprint" "LiF_PCB_Footprints:SON4_PTS526 SM15 SMTR2 LFS_CNK"
 			(at 171.196 148.844 0)
 			(effects
 				(font
@@ -13624,57 +13479,7 @@
 				(hide yes)
 			)
 		)
-		(property "PARTREV" "E"
-			(at 167.132 149.86 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify bottom)
-				(hide yes)
-			)
-		)
-		(property "STANDARD" "Manufacturer Recommendations"
-			(at 171.196 148.844 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify bottom)
-				(hide yes)
-			)
-		)
-		(property "MANUFACTURER" "E-Switch"
-			(at 168.91 150.114 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify bottom)
-				(hide yes)
-			)
-		)
-		(property "MAXIMUM_PACKAGE_HEIGHT" "5 mm"
-			(at 167.132 149.86 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify bottom)
-				(hide yes)
-			)
-		)
-		(property "SNAPEDA_PN" "TL3301AF160QG"
-			(at 168.91 150.114 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify bottom)
-				(hide yes)
-			)
-		)
-		(property "PN" "TL3301PF160QG"
+		(property "PN" "PTS526SM15SMTR2 LFS"
 			(at 174.244 149.352 0)
 			(effects
 				(font
@@ -13683,7 +13488,7 @@
 				(hide yes)
 			)
 		)
-		(property "DKPN" "EG4562CT-ND"
+		(property "DKPN" "CKN12220-1-ND"
 			(at 174.244 149.352 0)
 			(effects
 				(font
@@ -13775,6 +13580,101 @@
 			(project "LiF_FC-PCB_rev1"
 				(path "/9e3e8da7-e506-46c9-90e5-307e4ad30d29/fa6eb845-b5e3-4a8e-9c24-c1b567f4e987"
 					(reference "R25")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "LiF_PCB_Symbols:TL3301PF160QG")
+		(at 208.28 151.13 90)
+		(mirror x)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "930751a8-e5d6-411c-87de-9f05b6fa7492")
+		(property "Reference" "SW2"
+			(at 215.646 149.86 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "Reset"
+			(at 215.646 151.892 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "LiF_PCB_Footprints:SON4_PTS526 SM15 SMTR2 LFS_CNK"
+			(at 196.596 150.114 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify bottom)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "https://configured-product-images.s3.amazonaws.com/Datasheets/TL3301.pdf"
+			(at 200.406 149.098 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Tactile Switch SPST-NO Top Actuated Surface Mount"
+			(at 200.406 149.098 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "PN" "PTS526SM15SMTR2 LFS"
+			(at 199.644 150.622 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "DKPN" "CKN12220-1-ND"
+			(at 199.644 150.622 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "3"
+			(uuid "6e8f6732-f679-4b7b-9d04-815b66fb5569")
+		)
+		(pin "4"
+			(uuid "78d36694-50ce-48a9-936a-39f316079063")
+		)
+		(pin "1"
+			(uuid "d524b699-5120-45db-b28b-9c96e25d8dea")
+		)
+		(pin "2"
+			(uuid "b1fa6ade-561e-412a-9035-c17afe6ef4b8")
+		)
+		(instances
+			(project "LiF_FC-PCB_rev1"
+				(path "/9e3e8da7-e506-46c9-90e5-307e4ad30d29/fa6eb845-b5e3-4a8e-9c24-c1b567f4e987"
+					(reference "SW2")
 					(unit 1)
 				)
 			)

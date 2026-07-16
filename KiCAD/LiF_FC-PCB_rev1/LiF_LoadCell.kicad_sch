@@ -3005,7 +3005,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "GND"
+		(property "Value" "GNDA"
 			(at 206.248 60.198 0)
 			(effects
 				(font
@@ -3154,7 +3154,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "FLT"
+		(property "Value" "LC_FLT"
 			(at 271.018 62.738 0)
 			(effects
 				(font
@@ -3499,7 +3499,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "GND"
+		(property "Value" "GNDA"
 			(at 178.308 117.348 0)
 			(effects
 				(font
