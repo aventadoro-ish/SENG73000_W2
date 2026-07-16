@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+
+<!--
+Author: Rita Yevtushenko
+-->
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <title>RY's Logbook - 2026-07-15</title>
+    <meta name="author" content="Rita Yevtushenko">
+    <meta name="description"
+          content="Lithium Firefly Logbook Entry">
+    <meta name="robots"
+          content="index, follow">
+    <meta http-equiv="Pragma"
+          content="no-cache">
+    <link rel="icon"
+          href="../../media/icons/LiF_icon.ico"
+          type="image/x-icon">
+    <link rel="stylesheet"
+          href="../../css/base.css">
+    <link rel="stylesheet"
+          href="../../css/logbook_entry.css">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css">
+    <link rel="stylesheet"
+          href="../../css/code_formatting.css">
+</head>
+
+<body>
+
+<div id="navbar-placeholder"
+     data-root="../../"></div>
+
+<script src="../../js/navbar.js"></script>
+
+<main class="page-wrapper">
+
+<aside>
+
+<iframe src="../links.html"
+        title="Navigation"></iframe>
+
+</aside>
+
+
+<section class="logbook-entry-intro">
+
+<div>
+
+<h1>Logbook Entry</h1>
+
+<p>
+
+<strong>Date:</strong> July 15, 2026<br>
+
+<strong>Project:</strong> Lithium Firefly Elevator<br>
+
+<strong>Hours:</strong> 2 <br>
+
+<strong>Focus:</strong> I²S Audio Architecture Investigation
+
+</p>
+
+<h2>Summary</h2>
+
+<p class="logbook_summary">
+
+Investigated several approaches for implementing floor announcement
+audio within the Lithium Firefly elevator. Compared multiple I²S
+architectures involving the Raspberry Pi 4 and ESP32-S3 before selecting
+a distributed solution that best matches the existing CAN-based system.
+
+</p>
+
+<a href="../logbook_RY.html">
+
+← Return to Logbook Cover Page
+
+</a>
+
+</div>
+
+</section>
+
+<section class="logbook-entry-content">
+
+<h2>Objective</h2>
+
+<p>
+
+Investigated possible methods of implementing floor announcement audio
+for the Lithium Firefly elevator project. The objective was to determine
+how I²S could be incorporated into the existing Raspberry Pi 4
+Supervisory Controller (SC), CAN network, and ESP32-S3 Car Controller
+(CC) while maintaining the modular architecture already developed for
+the project.
+
+</p>
+
+<h2>Research and Design Investigation</h2>
+
+<p>
+
+Several implementation options were evaluated for generating audio
+announcements whenever the elevator finite state machine enters the
+<code>STATE_ARRIVED</code> state.
+
+</p>
+
+<h4>Option 1 — ESP32-S3 Using Its Native I²S Peripheral</h4>
+
+<ul>
+
+<li>Use the ESP32-S3 as the dedicated audio controller.</li>
+
+<li>The Raspberry Pi transmits a CAN message after arriving at a floor.</li>
+
+<li>The ESP32-S3 receives the CAN message.</li>
+
+<li>The floor number is decoded.</li>
+
+<li>The corresponding audio file is selected.</li>
+
+<li>The ESP32 outputs digital audio through its integrated I²S peripheral.</li>
+
+<li>An external amplifier drives the speaker.</li>
+
+</ul>
+
+<h4>Advantages</h4>
+
+<ul>
+
+<li>Uses the existing CAN architecture.</li>
+
+<li>Keeps the Supervisory Controller focused on elevator control.</li>
+
+<li>Maintains the distributed embedded design.</li>
+
+<li>Demonstrates integration of CAN communication and I²S.</li>
+
+</ul>
+
+<h4>Option 2 — Raspberry Pi Audio Output</h4>
+
+<ul>
+
+<li>Connect a powered speaker directly to the Raspberry Pi.</li>
+
+<li>Execute the following command when entering <code>STATE_ARRIVED</code>.</li>
+
+</ul>
+
+<pre class="code-block language-bash"><code class="language-bash">
+aplay floor2.wav
+</code></pre>
+
+<h4>Advantages</h4>
+
+<ul>
+
+<li>Simple implementation.</li>
+
+<li>Requires very little software development.</li>
+
+<li>No additional embedded hardware.</li>
+
+</ul>
+
+<h4>Disadvantages</h4>
+
+<ul>
+
+<li>Does not demonstrate I²S communication.</li>
+
+<li>Depends on the Linux audio subsystem.</li>
+
+<li>Less representative of an embedded implementation.</li>
+
+</ul>
+
+<h4>Option 3 — Raspberry Pi with MAX98357 I²S DAC</h4>
+
+<ul>
+
+<li>Use the Raspberry Pi's native I²S peripheral.</li>
+
+<li>Connect GPIO I²S pins to a MAX98357 DAC/amplifier.</li>
+
+<li>Execute <code>aplay</code> after entering <code>STATE_ARRIVED</code>.</li>
+
+<li>The DAC converts the digital I²S stream into amplified speaker output.</li>
+
+</ul>
+
+<h4>Advantages</h4>
+
+<ul>
+
+<li>Uses true I²S communication.</li>
+
+<li>Excellent digital audio quality.</li>
+
+<li>Relatively little software complexity.</li>
+
+</ul>
+
+<h2>Architecture Considerations</h2>
+
+<p>
+
+The current elevator architecture already follows a distributed embedded
+design where the Raspberry Pi executes the elevator finite state machine
+while communicating with subsystem controllers over CAN.
+
+</p>
+
+<pre class="code-block language-text"><code class="language-text">
+RPi4 (Supervisory Controller)
+            |
+            | CAN
+            |
+     ESP32-S3 (Car Controller)
+            |
+           I²S
+            |
+    Audio Amplifier
+            |
+         Speaker
+</code></pre>
+
+<p>
+
+This architecture allows the Supervisory Controller to remain
+responsible for elevator operation while the Car Controller manages
+passenger-facing features such as floor announcements.
+
+</p>
+
+<h2>Recommended Design</h2>
+
+<p>
+
+After comparing the available approaches, the preferred solution is to
+use the ESP32-S3 as the dedicated audio controller.
+
+</p>
+
+<h4>Proposed Sequence of Operation</h4>
+
+<ul>
+
+<li>The FSM transitions into <code>STATE_ARRIVED</code>.</li>
+
+<li>The Raspberry Pi sends the destination floor over CAN.</li>
+
+<li>The ESP32-S3 receives the CAN message.</li>
+
+<li>The correct audio file is selected.</li>
+
+<li>The ESP32 transmits digital audio through I²S.</li>
+
+<li>The amplifier drives the speaker.</li>
+
+</ul>
+
+<p>
+
+This solution preserves the modular architecture of the elevator while
+demonstrating integration between CAN communication, finite state
+machine control, and digital I²S audio.
+
+</p>
+
+<h2>Next Steps</h2>
+
+<ul>
+
+<li>Select the final audio amplifier hardware.</li>
+
+<li>Determine GPIO and I²S pin assignments.</li>
+
+<li>Create a CAN message format for audio announcements.</li>
+
+<li>Prototype audio playback on the ESP32-S3.</li>
+
+<li>Integrate the audio system into the FSM <code>STATE_ARRIVED</code> transition.</li>
+
+</ul>
+
+</section>
+
+</main>
+
+<footer class="site-footer">
+
+<p>
+
+Copyright &copy; Rita Yevtushenko
+
+</p>
+
+</footer>
+
+<!-- Prism -->
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markup.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+
+</body>
+
+</html>
