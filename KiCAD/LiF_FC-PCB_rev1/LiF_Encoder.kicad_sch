@@ -1007,192 +1007,6 @@
 			)
 			(embedded_fonts no)
 		)
-		(symbol "Jumper:SolderJumper_2_Open"
-			(pin_numbers
-				(hide yes)
-			)
-			(pin_names
-				(offset 0)
-				(hide yes)
-			)
-			(exclude_from_sim no)
-			(in_bom no)
-			(on_board yes)
-			(property "Reference" "JP"
-				(at 0 2.032 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Value" "SolderJumper_2_Open"
-				(at 0 -2.54 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Footprint" ""
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "Datasheet" "~"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "Description" "Solder Jumper, 2-pole, open"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "ki_keywords" "solder jumper SPST"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "ki_fp_filters" "SolderJumper*Open*"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(symbol "SolderJumper_2_Open_0_1"
-				(polyline
-					(pts
-						(xy -0.254 1.016) (xy -0.254 -1.016)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(arc
-					(start -0.254 -1.016)
-					(mid -1.2656 0)
-					(end -0.254 1.016)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(arc
-					(start -0.254 -1.016)
-					(mid -1.2656 0)
-					(end -0.254 1.016)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type outline)
-					)
-				)
-				(arc
-					(start 0.254 1.016)
-					(mid 1.2656 0)
-					(end 0.254 -1.016)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(arc
-					(start 0.254 1.016)
-					(mid 1.2656 0)
-					(end 0.254 -1.016)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type outline)
-					)
-				)
-				(polyline
-					(pts
-						(xy 0.254 1.016) (xy 0.254 -1.016)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-			)
-			(symbol "SolderJumper_2_Open_1_1"
-				(pin passive line
-					(at -3.81 0 0)
-					(length 2.54)
-					(name "A"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "1"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at 3.81 0 180)
-					(length 2.54)
-					(name "B"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "2"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-			)
-			(embedded_fonts no)
-		)
 		(symbol "LiF_PCB_Symbols:PEC11R-4215F-S0024"
 			(pin_names
 				(offset 1.016)
@@ -1988,7 +1802,7 @@
 	)
 	(wire
 		(pts
-			(xy 228.6 76.2) (xy 231.14 76.2)
+			(xy 228.6 76.2) (xy 246.38 76.2)
 		)
 		(stroke
 			(width 0)
@@ -2025,16 +1839,6 @@
 			(type default)
 		)
 		(uuid "4292f29d-d8dc-4731-a9b0-aff71d929c3b")
-	)
-	(wire
-		(pts
-			(xy 238.76 76.2) (xy 246.38 76.2)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "43a24c66-00b2-4a0b-8a8d-8d2b2812cdf3")
 	)
 	(wire
 		(pts
@@ -2078,7 +1882,7 @@
 	)
 	(wire
 		(pts
-			(xy 227.33 135.89) (xy 229.87 135.89)
+			(xy 227.33 135.89) (xy 243.84 135.89)
 		)
 		(stroke
 			(width 0)
@@ -2138,7 +1942,7 @@
 	)
 	(wire
 		(pts
-			(xy 227.33 101.6) (xy 231.14 101.6)
+			(xy 227.33 101.6) (xy 246.38 101.6)
 		)
 		(stroke
 			(width 0)
@@ -2275,16 +2079,6 @@
 			(type default)
 		)
 		(uuid "b9212c22-da3a-4c4d-b71f-e6d39defedae")
-	)
-	(wire
-		(pts
-			(xy 238.76 101.6) (xy 246.38 101.6)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "bb3c273f-b126-4370-bcc2-3ee2fbedae26")
 	)
 	(bus
 		(pts
@@ -2425,16 +2219,6 @@
 			(type default)
 		)
 		(uuid "fadb5c0d-cf8e-4d64-8922-373a7336eda9")
-	)
-	(wire
-		(pts
-			(xy 237.49 135.89) (xy 243.84 135.89)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "fc97c73f-b12d-4c27-859d-88b0b2d3d3ba")
 	)
 	(image
 		(at 276.86 173.99)
@@ -2981,74 +2765,6 @@
 			(project "LiF_FC-PCB_rev1"
 				(path "/9e3e8da7-e506-46c9-90e5-307e4ad30d29/42a8ae4d-a2ee-470b-ba60-96ca330bd4df"
 					(reference "R71")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Jumper:SolderJumper_2_Open")
-		(at 234.95 76.2 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "3fe04c68-9939-497a-b94f-031eda87cffc")
-		(property "Reference" "JP4"
-			(at 234.95 69.85 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "ENC SW"
-			(at 234.95 72.39 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" "Jumper:SolderJumper-2_P1.3mm_Open_RoundedPad1.0x1.5mm"
-			(at 234.95 76.2 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 234.95 76.2 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Solder Jumper, 2-pole, open"
-			(at 234.95 76.2 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "2"
-			(uuid "6614db2a-e70b-4ae0-9ff2-83db121320ba")
-		)
-		(pin "1"
-			(uuid "1d287565-17d3-45bb-991a-249d837fd939")
-		)
-		(instances
-			(project "LiF_FC-PCB_rev1"
-				(path "/9e3e8da7-e506-46c9-90e5-307e4ad30d29/42a8ae4d-a2ee-470b-ba60-96ca330bd4df"
-					(reference "JP4")
 					(unit 1)
 				)
 			)
@@ -3778,74 +3494,6 @@
 		)
 	)
 	(symbol
-		(lib_id "Jumper:SolderJumper_2_Open")
-		(at 234.95 101.6 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "b591d23a-e49f-4fac-bbbf-44e3c07385d5")
-		(property "Reference" "JP5"
-			(at 234.95 95.25 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "ENC A"
-			(at 234.95 97.79 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" "Jumper:SolderJumper-2_P1.3mm_Open_RoundedPad1.0x1.5mm"
-			(at 234.95 101.6 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 234.95 101.6 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Solder Jumper, 2-pole, open"
-			(at 234.95 101.6 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "2"
-			(uuid "e507f22d-d19e-4fbb-b71c-204431fd4c01")
-		)
-		(pin "1"
-			(uuid "75a85b9b-9f0e-4216-b384-592d189bf16c")
-		)
-		(instances
-			(project "LiF_FC-PCB_rev1"
-				(path "/9e3e8da7-e506-46c9-90e5-307e4ad30d29/42a8ae4d-a2ee-470b-ba60-96ca330bd4df"
-					(reference "JP5")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "power:GND")
 		(at 208.28 87.63 0)
 		(unit 1)
@@ -4029,74 +3677,6 @@
 				(path "/9e3e8da7-e506-46c9-90e5-307e4ad30d29/42a8ae4d-a2ee-470b-ba60-96ca330bd4df"
 					(reference "U16")
 					(unit 5)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Jumper:SolderJumper_2_Open")
-		(at 233.68 135.89 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "f465ef34-54f8-4fb1-8f7e-576ad54256c5")
-		(property "Reference" "JP6"
-			(at 233.68 129.54 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "ENC B"
-			(at 233.68 132.08 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" "Jumper:SolderJumper-2_P1.3mm_Open_RoundedPad1.0x1.5mm"
-			(at 233.68 135.89 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 233.68 135.89 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Solder Jumper, 2-pole, open"
-			(at 233.68 135.89 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "2"
-			(uuid "576dd82a-a57f-4cf1-bb56-c6bf40ef59db")
-		)
-		(pin "1"
-			(uuid "6c9a6a22-c8b2-490e-9758-6abcbdaebb7a")
-		)
-		(instances
-			(project ""
-				(path "/9e3e8da7-e506-46c9-90e5-307e4ad30d29/42a8ae4d-a2ee-470b-ba60-96ca330bd4df"
-					(reference "JP6")
-					(unit 1)
 				)
 			)
 		)
