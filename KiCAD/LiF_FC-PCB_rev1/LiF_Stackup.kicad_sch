@@ -2982,7 +2982,7 @@
 		)
 		(uuid "42e1c5e3-bdb2-4358-b00b-8f8e10be2555")
 	)
-	(hierarchical_label "IO[16..22]"
+	(hierarchical_label "IO[16..23]"
 		(shape bidirectional)
 		(at 93.98 132.08 180)
 		(effects
