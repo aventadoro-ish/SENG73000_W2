@@ -5089,16 +5089,6 @@
 		)
 		(uuid "456ac7e1-c75d-4ff3-b325-77f7d951ce19")
 	)
-	(text "free to use"
-		(exclude_from_sim no)
-		(at 237.744 112.268 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-		)
-		(uuid "4eb3ae72-589b-4ee5-8bb2-1d057c2f033f")
-	)
 	(text "PSRAM"
 		(exclude_from_sim no)
 		(at 206.502 86.868 0)
@@ -8218,7 +8208,7 @@
 	)
 	(wire
 		(pts
-			(xy 201.93 113.03) (xy 231.14 113.03)
+			(xy 201.93 113.03) (xy 242.57 113.03)
 		)
 		(stroke
 			(width 0)
@@ -8355,6 +8345,16 @@
 			(type default)
 		)
 		(uuid "f2cf7f37-9d8c-4b2d-875c-21fd848e99aa")
+	)
+	(wire
+		(pts
+			(xy 243.84 26.67) (xy 254 26.67)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "f34e593c-834d-4669-8830-ab81eb4f9972")
 	)
 	(wire
 		(pts
@@ -8996,6 +8996,16 @@
 		)
 		(uuid "4f650738-8f01-42ac-901b-cbafc561751b")
 	)
+	(label "IA_{EN}"
+		(at 254 26.67 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "52331512-7169-4956-915f-689ccec83080")
+	)
 	(label "ESP32_28"
 		(at 231.14 85.09 180)
 		(effects
@@ -9095,6 +9105,16 @@
 			(justify right bottom)
 		)
 		(uuid "632f6830-3dbc-40c8-bbc8-62c7d8c211e2")
+	)
+	(label "IA_{EN}"
+		(at 242.57 113.03 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "639627b9-6ad5-4222-816f-bb4bc9461466")
 	)
 	(label "DTR"
 		(at 95.25 165.1 180)
@@ -10053,6 +10073,17 @@
 			(justify right)
 		)
 		(uuid "c28f2895-da40-45f0-94f3-4eb32a5696dd")
+	)
+	(hierarchical_label "IA_EN"
+		(shape output)
+		(at 243.84 26.67 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "c53aa24c-6112-4c3a-a0ef-623d2632d683")
 	)
 	(hierarchical_label "V_{PROG USB}"
 		(shape output)
