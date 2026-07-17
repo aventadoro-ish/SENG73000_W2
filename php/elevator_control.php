@@ -1,10 +1,48 @@
 <?php
 session_start();
 
+// DB connection
+require_once __DIR__ . '/db.php';
+
 if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
     header("Location: ../html/login.html");
     exit;
 }
+
+// elevator_control JS sends a POST request when an elevator button is pressed
+// read it here
+if($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // tell JS that PHP will return a JSON file instead of HTML:
+    header('Content-Type: application/json');
+
+    // receive JS values
+    $submittedFloor = $_POST['requested_floor'] ?? '';
+    $sourceController = $_POST['source_controller'] ?? '';
+
+    // temporary test response
+    echo json_encode([
+        'success' => true,
+        'requested_floor' => $submittedFloor,
+        'source_controller' => $sourceController
+    ]);
+
+    // don't render the rest of elevator_control.php
+    exit;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 $safeUsername = htmlspecialchars($_SESSION['username'] ?? 'Member', ENT_QUOTES, 'UTF-8');
 ?>
@@ -39,8 +77,10 @@ $safeUsername = htmlspecialchars($_SESSION['username'] ?? 'Member', ENT_QUOTES, 
                 <h1>Elevator Control Room</h1>
 
                 <p class="intro-description">
-                    Welcome, <?php echo $safeUsername; ?>. This page allows you, yes YOU, to control the humble elevator platform!
-                    The floor stations can request the car to go to them, while the car controller can send the cab to any floor.
+                    Welcome, <?php echo $safeUsername; ?>. This page allows you, yes YOU, to control the humble elevator
+                    platform!
+                    The floor stations can request the car to go to them, while the car controller can send the cab to
+                    any floor.
                 </p>
 
                 <div class="button-row">
@@ -57,6 +97,7 @@ $safeUsername = htmlspecialchars($_SESSION['username'] ?? 'Member', ENT_QUOTES, 
             </aside>
         </section>
 
+        <!-- main page -->
         <section class="elevator-game-panel">
             <div class="control-hud">
                 <div>

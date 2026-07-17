@@ -70,3 +70,11 @@
 .logout-card {
   border-top-color: var(--ember);
 }
+
+.elevator-card {
+  border-top-color: var(--deep-blue);
+}
+
+.manage-req {
+  border-top-color: rgb(115, 0, 255);
+}
