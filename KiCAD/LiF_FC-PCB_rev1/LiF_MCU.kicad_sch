@@ -8646,16 +8646,6 @@
 		)
 		(uuid "1884e53d-d5cb-4c17-a9d3-6cc8466599f2")
 	)
-	(label "ESP32_37"
-		(at 231.14 69.85 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right bottom)
-		)
-		(uuid "189abba8-696e-455a-88dd-1264d677ec52")
-	)
 	(label "ENC.A"
 		(at 254 41.91 180)
 		(effects
@@ -8926,7 +8916,7 @@
 		)
 		(uuid "42799e10-fc77-4306-9d2c-1ef537753451")
 	)
-	(label "D-"
+	(label "USB.D-"
 		(at 74.93 101.6 0)
 		(effects
 			(font
@@ -8935,16 +8925,6 @@
 			(justify left bottom)
 		)
 		(uuid "46f50cbd-4051-425f-b515-1ea66db843fc")
-	)
-	(label "ESP32_36"
-		(at 231.14 67.31 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right bottom)
-		)
-		(uuid "48e5b48e-b5a4-41be-8daa-037095aab1b5")
 	)
 	(label "ESP_3V3"
 		(at 166.37 139.7 180)
@@ -9066,6 +9046,16 @@
 		)
 		(uuid "5aed1f96-1bac-4d1d-875f-9a87d8784a27")
 	)
+	(label "ESP32_37"
+		(at 231.14 67.31 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "5b188454-5a91-4be8-bea5-9ae376d81221")
+	)
 	(label "ESP32_39"
 		(at 137.16 74.93 0)
 		(effects
@@ -9186,7 +9176,7 @@
 		)
 		(uuid "77326a9c-ba7e-4c92-8c88-e9c0fd00d250")
 	)
-	(label "D+"
+	(label "USB.D+"
 		(at 49.53 149.86 0)
 		(effects
 			(font
@@ -9666,6 +9656,16 @@
 		)
 		(uuid "c74935a9-0985-4b22-aeb9-c346bd8fc59a")
 	)
+	(label "ESP32_36"
+		(at 231.14 69.85 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "c8b8625b-6264-4843-ab52-25412b974e32")
+	)
 	(label "ESP32_5"
 		(at 262.89 50.8 0)
 		(effects
@@ -9686,7 +9686,7 @@
 		)
 		(uuid "cc9aa3bf-7856-4354-b9f5-646cdd04b968")
 	)
-	(label "D-"
+	(label "USB.D-"
 		(at 49.53 152.4 0)
 		(effects
 			(font
@@ -9906,7 +9906,7 @@
 		)
 		(uuid "f2a3762d-2ce0-43a5-aa22-c13bd10bf077")
 	)
-	(label "D+"
+	(label "USB.D+"
 		(at 74.93 95.25 0)
 		(effects
 			(font
