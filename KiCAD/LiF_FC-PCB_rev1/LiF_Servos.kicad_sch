@@ -1130,7 +1130,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "056c999f-c613-451c-836a-6e26281fa446")
-		(property "Reference" "J42"
+		(property "Reference" "J44"
 			(at 166.37 110.4899 0)
 			(effects
 				(font
@@ -1259,7 +1259,7 @@
 		(instances
 			(project "LiF_FC-PCB_rev1"
 				(path "/9e3e8da7-e506-46c9-90e5-307e4ad30d29/a8743cf2-df76-4292-9b13-dfab84e92b69"
-					(reference "J42")
+					(reference "J44")
 					(unit 1)
 				)
 			)
@@ -1430,7 +1430,7 @@
 		(on_board no)
 		(dnp yes)
 		(uuid "240a3a13-6d0a-444a-9937-c0eb0975ed0c")
-		(property "Reference" "J40"
+		(property "Reference" "J42"
 			(at 79.502 81.534 90)
 			(effects
 				(font
@@ -1556,7 +1556,7 @@
 		(instances
 			(project "LiF_FC-PCB_rev1"
 				(path "/9e3e8da7-e506-46c9-90e5-307e4ad30d29/a8743cf2-df76-4292-9b13-dfab84e92b69"
-					(reference "J40")
+					(reference "J42")
 					(unit 1)
 				)
 			)
@@ -1572,7 +1572,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "679ed19e-b0cf-4ceb-9bdb-73652e26c713")
-		(property "Reference" "J41"
+		(property "Reference" "J43"
 			(at 166.37 96.5199 0)
 			(effects
 				(font
@@ -1701,7 +1701,7 @@
 		(instances
 			(project ""
 				(path "/9e3e8da7-e506-46c9-90e5-307e4ad30d29/a8743cf2-df76-4292-9b13-dfab84e92b69"
-					(reference "J41")
+					(reference "J43")
 					(unit 1)
 				)
 			)
@@ -1717,7 +1717,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "c2a2f88e-5dd0-448c-b942-c6ed1b1021e0")
-		(property "Reference" "#PWR0113"
+		(property "Reference" "#PWR093"
 			(at 143.51 128.27 0)
 			(effects
 				(font
@@ -1767,7 +1767,7 @@
 		(instances
 			(project "LiF_FC-PCB_rev1"
 				(path "/9e3e8da7-e506-46c9-90e5-307e4ad30d29/a8743cf2-df76-4292-9b13-dfab84e92b69"
-					(reference "#PWR0113")
+					(reference "#PWR093")
 					(unit 1)
 				)
 			)
@@ -1782,7 +1782,7 @@
 		(on_board yes)
 		(dnp yes)
 		(uuid "d854dc47-edbc-4368-8752-5fd503abac51")
-		(property "Reference" "R75"
+		(property "Reference" "R66"
 			(at 77.47 93.98 90)
 			(effects
 				(font
@@ -1906,7 +1906,7 @@
 		(instances
 			(project "LiF_FC-PCB_rev1"
 				(path "/9e3e8da7-e506-46c9-90e5-307e4ad30d29/a8743cf2-df76-4292-9b13-dfab84e92b69"
-					(reference "R75")
+					(reference "R66")
 					(unit 1)
 				)
 			)
