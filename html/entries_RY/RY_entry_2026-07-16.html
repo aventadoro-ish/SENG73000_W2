@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+
+<!--
+Author: Rita Yevtushenko
+-->
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <title>RY's Logbook - 2026-07-17</title>
+
+    <meta name="author" content="Rita Yevtushenko">
+
+    <meta name="description"
+          content="Lithium Firefly Logbook Entry">
+
+    <meta name="robots"
+          content="index, follow">
+
+    <meta http-equiv="Pragma"
+          content="no-cache">
+
+    <link rel="icon"
+          href="../../media/icons/LiF_icon.ico"
+          type="image/x-icon">
+
+    <!-- Shared website styling -->
+    <link rel="stylesheet"
+          href="../../css/base.css">
+
+    <!-- Logbook styling -->
+    <link rel="stylesheet"
+          href="../../css/logbook_entry.css">
+
+    <!-- Prism Syntax Highlighting -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css">
+
+    <link rel="stylesheet"
+          href="../../css/code_formatting.css">
+
+</head>
+
+<body>
+
+<div id="navbar-placeholder" data-root="../../"></div>
+<script src="../../js/navbar.js"></script>
+
+<main class="page-wrapper">
+
+<aside>
+
+<iframe src="../links.html"
+        title="Navigation"></iframe>
+
+</aside>
+
+<!-- ======================================================= -->
+
+<section class="logbook-entry-intro">
+
+<div>
+
+<h1>Logbook Entry</h1>
+
+<p>
+
+<strong>Date:</strong> July 17, 2026<br>
+
+<strong>Project:</strong> Lithium Firefly Elevator<br>
+
+<strong>Hours:</strong> 7<br>
+
+<strong>Focus:</strong> I²S Audio Integration and Platform Investigation
+
+</p>
+
+<h2>Summary</h2>
+
+<p class="logbook_summary">
+
+Researched and attempted implementation of I²S audio floor announcements
+using a MAX98357A amplifier connected to a Raspberry Pi 5. Although the
+hardware wiring and software configuration were completed, investigation
+identified a compatibility issue with Raspberry Pi OS Trixie. A decision
+was made to continue implementation on the project Raspberry Pi 4 running
+Bookworm.
+
+</p>
+
+<a href="../logbook_RY.html">
+
+← Return to Logbook Cover Page
+
+</a>
+
+</div>
+
+</section>
+
+<!-- ======================================================= -->
+
+<section class="logbook-entry-content">
+
+<h2>Objective</h2>
+
+<p>
+
+Investigate how digital floor announcements can be integrated into the
+Lithium Firefly elevator using I²S audio. The objective was to configure
+a MAX98357A I²S amplifier module and evaluate whether the Supervisory
+Controller could play floor announcements whenever the finite state
+machine enters <code>STATE_ARRIVED</code>.
+
+</p>
+
+<!-- ======================================================= -->
+
+<h2>Hardware Setup</h2>
+
+<p>
+
+A Raspberry Pi 5 was used as a temporary development platform while
+waiting for access to the team's Raspberry Pi 4 Supervisory Controller.
+The MAX98357A digital I²S amplifier was wired according to the following
+connections.
+
+</p>
+
+<h4>MAX98357A Connections</h4>
+
+<ul>
+
+<li>BCLK → GPIO18 (Pin 12)</li>
+
+<li>LRC → GPIO19 (Pin 35)</li>
+
+<li>DIN → GPIO21 (Pin 40)</li>
+
+<li>GND → Pin 6</li>
+
+<li>VIN → Pin 2 (5 V)</li>
+
+</ul>
+
+<!-- Optional Figure -->
+
+<!--
+<figure>
+
+<img src="../../media/images/MAX98357A_Wiring.png"
+     alt="MAX98357A wiring">
+
+<figcaption>
+
+Figure 1. MAX98357A wiring used for I²S audio testing.
+
+</figcaption>
+
+</figure>
+-->
+
+<!-- ======================================================= -->
+
+<h2>Software Configuration</h2>
+
+<p>
+
+Several software configurations were investigated while attempting to
+enable the MAX98357A under Raspberry Pi OS.
+
+</p>
+
+<h4>Configuration Attempts</h4>
+
+<ul>
+
+<li>Initially configured <code>dtoverlay=hifiberry-dac</code>, which was determined to be the incorrect device overlay.</li>
+
+<li>Updated the configuration to use <code>dtparam=i2s=on</code> together with <code>dtoverlay=max98357a,no-sdmode</code>.</li>
+
+<li>Attempted configuration using <code>raspi-config</code>, but encountered conflicts between PipeWire and PulseAudio.</li>
+
+<li>Attempted both the legacy Lua configuration and the new WirePlumber 0.5 configuration format.</li>
+
+<li>Verified available audio devices using <code>pw-cli list-objects</code>.</li>
+
+</ul>
+
+<!-- ======================================================= -->
+
+<h2>Troubleshooting</h2>
+
+<p>
+
+Although the hardware wiring was verified, the MAX98357A audio device
+never appeared within PipeWire. Only the Raspberry Pi's HDMI audio
+device was detected.
+
+</p>
+
+<pre class="code-block language-bash"><code class="language-bash">
+pw-cli list-objects
+</code></pre>
+
+<p>
+
+This indicated that the operating system was not successfully loading
+the MAX98357A device tree overlay.
+
+</p>
+
+<!-- ======================================================= -->
+
+<h2>Root Cause Investigation</h2>
+
+<p>
+
+Further research identified that Raspberry Pi OS Trixie (Debian 13.5,
+Kernel 6.18.33) currently contains a known regression affecting
+MAX98357A I²S audio initialization. Community reports indicate that
+PipeWire and WirePlumber 0.5 do not correctly initialize the overlay,
+preventing the audio device from appearing within ALSA or PipeWire.
+
+</p>
+
+<p>
+
+Since this issue is platform-specific rather than application-specific,
+continuing development on the Raspberry Pi 5 would provide little
+benefit until the operating system bug is resolved.
+
+</p>
+
+<!-- ======================================================= -->
+
+<h2>Engineering Decision</h2>
+
+<p>
+
+Rather than spending additional time troubleshooting an operating system
+regression, I chose to visit the lab the next day and try operating with the RPi4.
+The project Raspberry Pi is running Raspberry Pi OS Bookworm, where the MAX98357A 
+overlay has been verified to operate correctly.
+
+</p>
+
+<!-- ======================================================= -->
+
+<h2>Implementation Plan for Raspberry Pi 4</h2>
+
+<p>
+
+Prepared a complete deployment procedure so the audio subsystem can be
+configured immediately once access to the project Raspberry Pi is
+available.
+
+</p>
+
+<h4>Planned Tasks</h4>
+
+<ul>
+
+<li>Verify Raspberry Pi OS Bookworm installation.</li>
+
+<li>Enable I²S within <code>config.txt</code>.</li>
+
+<li>Load the MAX98357A device tree overlay.</li>
+
+<li>Verify audio device detection using <code>aplay -l</code>.</li>
+
+<li>Install ALSA utilities and speech synthesis packages.</li>
+
+<li>Generate WAV floor announcements using <code>espeak</code>.</li>
+
+<li>Verify playback through the MAX98357A amplifier.</li>
+
+<li>Integrate audio playback into the FSM <code>STATE_ARRIVED</code> state.</li>
+
+<li>Record floor announcements within the project MySQL database.</li>
+
+</ul>
+
+<!-- ======================================================= -->
+
+<h2>Future Software Integration</h2>
+
+<p>
+
+Once the hardware is operating correctly on the Raspberry Pi 4, the
+Supervisor Controller FSM will automatically play the appropriate floor
+announcement whenever the elevator reaches its destination.
+
+</p>
+
+<pre class="code-block language-cpp"><code class="language-cpp">
+void announceFloor(int floor)
+{
+    std::string cmd =
+        "aplay /home/pi/audio/floor" +
+        std::to_string(floor) +
+        ".wav &";
+
+    system(cmd.c_str());
+}
+</code></pre>
+
+<p>
+
+The function will be called immediately after entering
+<code>STATE_ARRIVED</code>, ensuring that the announcement is played
+without blocking the elevator finite state machine.
+
+</p>
+
+<!-- ======================================================= -->
+
+<h2>Lessons Learned</h2>
+
+<p>
+
+This investigation demonstrated the importance of separating hardware
+issues from software implementation problems. Although the I²S hardware
+and application design were valid, platform-specific operating system
+changes prevented successful deployment. Identifying the root cause
+early prevented unnecessary debugging and allowed a practical decision
+to continue development on supported hardware.
+
+</p>
+
+<!-- ======================================================= -->
+
+<h2>Next Steps</h2>
+
+<ul>
+
+<li>Configure I²S on the Raspberry Pi 4 running Bookworm.</li>
+
+<li>Verify MAX98357A detection using ALSA.</li>
+
+<li>Generate floor announcement audio files.</li>
+
+<li>Integrate the audio playback routine into the elevator FSM.</li>
+
+<li>Log completed floor announcements to the MySQL database.</li>
+
+</ul>
+
+</section>
+
+</main>
+
+<footer class="site-footer">
+
+<p>
+
+Copyright &copy; Rita Yevtushenko
+
+</p>
+
+</footer>
+
+<!-- Prism -->
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markup.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+
+</body>
+
+</html>
