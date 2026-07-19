@@ -1610,10 +1610,22 @@
 		(uuid "7899c416-7484-49d9-9550-fe4d99f55cab")
 	)
 	(junction
+		(at 62.23 82.55)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "828b9232-7ae3-42f8-8337-2f0441fec171")
+	)
+	(junction
 		(at 149.86 133.35)
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "87788c3f-db09-49c5-93e4-6e465b248b0e")
+	)
+	(junction
+		(at 44.45 82.55)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "963c7c74-1a90-4118-a018-7ad3620206e2")
 	)
 	(junction
 		(at 132.08 78.74)
@@ -1743,6 +1755,16 @@
 	)
 	(wire
 		(pts
+			(xy 62.23 82.55) (xy 73.66 82.55)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "124fe59c-f32a-46fe-a138-1ef158cc5829")
+	)
+	(wire
+		(pts
 			(xy 127 78.74) (xy 132.08 78.74)
 		)
 		(stroke
@@ -1793,7 +1815,7 @@
 	)
 	(wire
 		(pts
-			(xy 41.91 82.55) (xy 48.26 82.55)
+			(xy 41.91 82.55) (xy 44.45 82.55)
 		)
 		(stroke
 			(width 0)
@@ -1810,6 +1832,16 @@
 			(type default)
 		)
 		(uuid "238afe4d-d5ac-4828-8241-a57bd1a15286")
+	)
+	(wire
+		(pts
+			(xy 44.45 90.17) (xy 44.45 82.55)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "24f3d5b9-dc20-4c3e-9f46-5d1a43c27d4c")
 	)
 	(wire
 		(pts
@@ -1963,6 +1995,16 @@
 	)
 	(wire
 		(pts
+			(xy 44.45 82.55) (xy 48.26 82.55)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "597ec431-878b-43a2-882d-ee8268f5ad78")
+	)
+	(wire
+		(pts
 			(xy 162.56 133.35) (xy 168.91 133.35)
 		)
 		(stroke
@@ -2103,7 +2145,7 @@
 	)
 	(wire
 		(pts
-			(xy 58.42 82.55) (xy 73.66 82.55)
+			(xy 58.42 82.55) (xy 62.23 82.55)
 		)
 		(stroke
 			(width 0)
@@ -2353,6 +2395,16 @@
 	)
 	(wire
 		(pts
+			(xy 62.23 90.17) (xy 44.45 90.17)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "cae81087-c74a-4286-afa4-65640cb85183")
+	)
+	(wire
+		(pts
 			(xy 120.65 63.5) (xy 127 63.5)
 		)
 		(stroke
@@ -2540,6 +2592,16 @@
 			(type default)
 		)
 		(uuid "ea783e1c-9595-40b4-bbc6-bb72b73d1e47")
+	)
+	(wire
+		(pts
+			(xy 62.23 82.55) (xy 62.23 90.17)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "eb59a2b8-8e0e-47a3-94aa-6b0f015138fd")
 	)
 	(wire
 		(pts
@@ -4085,8 +4147,8 @@
 		(at 53.34 82.55 270)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
+		(in_bom no)
+		(on_board no)
 		(dnp yes)
 		(uuid "51f1bdb1-0436-4e4c-8ca1-c333798ed2d1")
 		(property "Reference" "R39"
