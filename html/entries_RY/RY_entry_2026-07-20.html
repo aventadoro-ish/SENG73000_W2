@@ -292,97 +292,10 @@ the Raspberry Pi recognized the amplifier hardware.
 
 <h2>Speaker Testing</h2>
 
-<p>
-
-To verify that the amplifier and speaker were operating correctly, ALSA's
-speaker test utility was executed.
-
-</p>
-
-<pre class="code-block language-bash"><code class="language-bash">
-speaker-test -c2 -t wav
-</code></pre>
-
-<p>
-
-The speaker successfully alternated between the left and right channels,
-confirming proper audio playback through the MAX98357A.
-
-</p>
-
-<video controls width="500" height="692">
-
-    <source src="../../media/video/AudioTesting.mp4"
-            type="video/mp4">
-
-</video>
-
-<p>
-
-<b>Video 1.</b> Verification of floor announcement playback through the
-MAX98357A speaker.
-
-</p>
-
-<!-- ======================================================= -->
-
-<h2>Preparing Floor Announcement Audio</h2>
-
-<p>
-
-The required floor announcement audio files were added to the Raspberry Pi
-project directory.
-
-</p>
-
-<pre class="code-block language-text"><code class="language-text">
-/home/rita/LiF_SC/pi/audio
-</code></pre>
-
-<ul>
-
-<li>floor1.wav</li>
-
-<li>floor2.wav</li>
-
-<li>floor3.wav</li>
-
-<li>floor4.wav</li>
-
-<li>floor5.wav</li>
-
-<li>floor6.wav</li>
-
-</ul>
-
-These audio files will later be called directly by the Supervisory
-Controller whenever the elevator arrives at a floor.
-
 <!-- ======================================================= -->
 
 <h2>Next Software Integration</h2>
 
-<p>
-
-The remaining work is integrating the audio playback into the elevator
-finite state machine. Once the elevator enters
-<code>STATE_ARRIVED</code>, the Supervisory Controller will execute
-<code>aplay</code> to play the appropriate floor announcement while
-continuing normal operation.
-
-</p>
-
-<pre class="code-block language-cpp"><code class="language-cpp">
-void announceFloor(int floor)
-{
-    std::string cmd =
-        "aplay /home/rita/LiF_SC/pi/audio/floor"
-        + std::to_string(floor)
-        + ".wav &";
-
-    system(cmd.c_str());
-}
-</code></pre>
 
 <!-- ======================================================= -->
 
@@ -390,36 +303,18 @@ void announceFloor(int floor)
 
 <p>
 
-Unlike the Raspberry Pi 5 development environment, the Raspberry Pi 4
-successfully recognized the MAX98357A hardware after modifying the
-firmware configuration. Speaker testing confirmed that the amplifier was
-operating correctly, and the required floor announcement audio files
-have been prepared for integration into the elevator Supervisory
-Controller.
-
 </p>
 
 <!-- ======================================================= -->
 
 <h2>Next Steps</h2>
 
-<ul>
-
-<li>Integrate <code>announceFloor()</code> into the FSM.</li>
-
-<li>Trigger audio playback inside <code>STATE_ARRIVED</code>.</li>
-
-<li>Record floor announcements within the MySQL database.</li>
-
-<li>Test complete elevator operation with synchronized audio playback.</li>
-
-</ul>
 
 </section>
 
 		<nav class="entry-date-nav" aria-label="Logbook date navigation">
-			<a href="RY_entry_2026-07-16.html" class="button secondary-button">Previous Entry</a>
-			<a href="RY_entry_2026-07-19.html" class="button secondary-button">Next Entry</a>
+			<a href="RY_entry_2026-07-19.html" class="button secondary-button">Previous Entry</a>
+			<a href="RY_entry_2026-07-21.html" class="button secondary-button">Next Entry</a>
 		</nav>
 		<p class="top-link"><a href="#page_top">Go to the top of this page</a></p>
 	</main>
