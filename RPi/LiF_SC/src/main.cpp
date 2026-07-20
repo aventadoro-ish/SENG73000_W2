@@ -2,7 +2,10 @@
 #include "../include/databaseFunctions.h"
 #include "../include/mainFunctions.h"
 
+
 #include <stdio.h>
+#include <string>
+#include <cstdlib>
 #include <stdlib.h>
 #include <unistd.h> 
 #include <iostream>
@@ -172,7 +175,8 @@ int main() {
 						case STATE_ARRIVED:
 #ifdef DO_USE_DB
 							db_setFloorNum(targetFloor);
-#endif
+#endif						
+							announceFloor(targetFloor);
 							currentState = STATE_IDLE;
 							break;
 

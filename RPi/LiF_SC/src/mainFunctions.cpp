@@ -2,6 +2,8 @@
 #include "../include/databaseFunctions.h"
 #include "../include/mainFunctions.h"
 
+#include <string>
+#include <cstdlib>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h> 
@@ -136,8 +138,10 @@ int main() {
 
 						case STATE_ARRIVED:
 							db_setFloorNum(targetFloor);
+							announceFloor(targetFloor);
 							currentState = STATE_IDLE;
 							break;
+					
 
 						// Error handler
 						case STATE_FAULT:
@@ -175,6 +179,18 @@ int main() {
 	return(0);
 }
 
+///////NEW AUDIO FUNCTION/////////
+void announceFloor(int floor)
+{
+    std::string cmd =
+        std::string("/usr/bin/aplay ") +
+        AUDIO_PATH +
+        "floor" +
+        std::to_string(floor) +
+        ".wav &";
+    system(cmd.c_str());
+
+}
 
 
 
