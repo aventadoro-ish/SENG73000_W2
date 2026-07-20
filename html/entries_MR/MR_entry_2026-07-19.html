@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<!--
+Author: Matvey Regentov
+-->
+
+<html lang="en">
+
+<head>
+	<title>MR Logbook Entry - 2026-07-19</title>
+	<meta charset="UTF-8">
+	<meta name="author" content="Matvey Regentov">
+	<meta name="description" content="MR Logbook Entry for 2026-07-19">
+	<meta name="robots" content="index, follow">
+	<meta http-equiv="Pragma" content="no-cache">
+
+	<link rel="icon" href="../../media/icons/LiF_icon.ico" type="image/x-icon">
+	<link rel="stylesheet" href="../../css/base.css">
+	<link rel="stylesheet" href="../../css/logbook_entry.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css">
+	<link rel="stylesheet" href="../../css/code_formatting.css">
+	<script>
+		window.MathJax = {
+			tex: {
+				inlineMath: [['\\(', '\\)'], ['$', '$']],
+				displayMath: [['\\[', '\\]'], ['$$', '$$']]
+			},
+			svg: { fontCache: 'global' }
+		};
+	</script>
+	<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+</head>
+
+<body>
+	<div id="navbar-placeholder" data-root="../../"></div>
+	<script src="../../js/navbar.js"></script>
+
+	<main class="page-wrapper">
+		<section class="intro-section logbook-entry-intro" id="page_top">
+			<div class="intro-text">
+				<p class="section-label">Daily Logbook Entry</p>
+				<h1>Logbook Entry, 2026-07-19 by Matvey Regentov</h1>
+				<p class="intro-description">Service PCB completion, DRC cleanup, silkscreen design, and I/O PCB routing
+				</p>
+				<div class="button-row">
+					<a href="../logbook_MR.html" class="button secondary-button">My Logbook Cover Page</a>
+					<a href="#log" class="button primary-button">Jump to Entry</a>
+					<a href="MR_entry_2026-07-18.html" class="button secondary-button">Previous Entry</a>
+					<a href="MR_entry_2026-07-20.html" class="button secondary-button">Next Entry</a>
+				</div>
+			</div>
+			<aside class="summary-card">
+				<h2>Entry Snapshot</h2>
+				<p><b>Date:</b> 2026-07-19</p>
+				<p><b>Author:</b> Matvey Regentov</p>
+				<p><b>Focus:</b> Service PCB completion, DRC cleanup, silkscreen design, and I/O PCB routing</p>
+			</aside>
+		</section>
+
+		<section class="logbook-entry-content" id="log">
+			<h2 id="pcb-layout-session-6">PCB Layout Session 6</h2>
+			<p>I continued routing the Service PCB. The component layout was nearly complete, and most subcircuits had
+				been routed. The remaining work was to connect each subcircuit to the ESP32-S3 MCU.</p>
+			<figure class="logbook-figure">
+				<img src="../../media/images/Service_PCB_layout_2026-07-19.png"
+					alt="Service PCB layout and routing progress on 2026-07-19" class="logbook-image centered-image"
+					style="max-width: 100%; height: auto;">
+				<figcaption>Service PCB layout and routing progress on 2026-07-19</figcaption>
+			</figure>
+
+
+
+			<p>I reassigned several ESP32-S3 pins to simplify the final GPIO routing. In particular, I swapped the GPIO
+				assignments for the AUX and SYS power OR-ing status signals.</p>
+			<p>I then completed the initial routing.</p>
+			<figure class="logbook-figure">
+				<img src="../../media/images/Service_PCB_finished_layout_2026-07-19.png"
+					alt="Service PCB layout and routing progress after completing the initial routing"
+					class="logbook-image centered-image" style="max-width: 100%; height: auto;">
+				<figcaption>Service PCB layout and routing progress after completing the initial routing</figcaption>
+			</figure>
+
+
+
+			<p>The first design-rule check reported 87 errors and 394 warnings. Based on previous manufacturing
+				experience, I modified the custom silkscreen rule as follows:</p>
+			<pre><code>(rule &quot;Silkscreen text&quot;
+	(layer &quot;?.Silkscreen&quot;)
+	(condition &quot;A.Type == &#39;Text&#39; || A.Type == &#39;Text Box&#39;&quot;)
+	(constraint text_thickness (min 0.13mm))
+	(constraint text_height (min 0.8mm))
+</code></pre>
+			<p>After this change, the number of DRC warnings decreased to 123. I resolved all remaining DRC issues and
+				added copper pours on the top and bottom layers to use the available copper more effectively. I did not
+				add stitching vias.</p>
+			<p>I then began working on the silkscreen:</p>
+			<ul>
+				<li>The front silkscreen primarily contains reference designators used during PCB assembly.</li>
+				<li>The rear silkscreen identifies the configuration resistors, stack-up-header pinout, and connector
+					names and functions.</li>
+			</ul>
+			<figure class="logbook-figure">
+				<img src="../../media/images/Service_PCB_back_silkscreen_2026-07-19.png"
+					alt="Service PCB rear silkscreen progress" class="logbook-image centered-image"
+					style="max-width: 100%; height: auto;">
+				<figcaption>Service PCB rear silkscreen progress</figcaption>
+			</figure>
+
+
+
+			<figure class="logbook-figure">
+				<img src="../../media/images/Service_PCB_front_silkscreen_2026-07-19.png"
+					alt="Service PCB front silkscreen progress" class="logbook-image centered-image"
+					style="max-width: 100%; height: auto;">
+				<figcaption>Service PCB front silkscreen progress</figcaption>
+			</figure>
+
+
+
+			<p>I traced the project logo in the Obsidian Excalidraw plugin and converted it into an SVG file for the PCB
+				silkscreen.</p>
+			<figure class="logbook-figure">
+				<img src="../../media/images/LiF_Vector_Logo_2026-07-19.png"
+					alt="Traced SVG version of the project logo" class="logbook-image centered-image"
+					style="max-width: 100%; height: auto;">
+				<figcaption>Traced SVG version of the project logo</figcaption>
+			</figure>
+
+
+
+			<h3 id="i-o-pcb-design-and-layout">I/O PCB Design and Layout</h3>
+			<p>I started working on the I/O PCB by correcting its schematic diagram, which had previously been imported
+				quickly and contained many issues.</p>
+			<p>TODO: Add a link to the finalized schematic PDF document.</p>
+			<figure class="logbook-figure">
+				<img src="../../media/images/LiF_IO_PCB_Schematics.png" alt="Finalized I/O PCB schematic"
+					class="logbook-image centered-image" style="max-width: 100%; height: auto;">
+				<figcaption>Finalized I/O PCB schematic</figcaption>
+			</figure>
+
+
+
+			<p>After correcting the schematic, I completed the I/O PCB layout and routing.</p>
+			<figure class="logbook-figure">
+				<img src="../../media/images/LiF_IO_PCB_Front_Render.png" alt="Finished I/O PCB render—front side"
+					class="logbook-image centered-image" style="max-width: 100%; height: auto;">
+				<figcaption>Finished I/O PCB render—front side</figcaption>
+			</figure>
+
+
+
+			<figure class="logbook-figure">
+				<img src="../../media/images/LiF_IO_PCB_back_render.png" alt="Finished I/O PCB render—rear side"
+					class="logbook-image centered-image" style="max-width: 100%; height: auto;">
+				<figcaption>Finished I/O PCB render—rear side</figcaption>
+			</figure>
+
+
+
+			<p>The 7-segment display slightly overlaps the clearance hole for the M3 socket-head cap screw. However, the
+				hole diameter is 6 mm, while the screw-head diameter is 5.4 mm, so the available clearance should be
+				sufficient.</p>
+
+		</section>
+
+		<section class="logbook-entry-content sources-section" id="sources">
+			<h2>Sources</h2>
+			<p>No external sources were cited in this entry.</p>
+		</section>
+
+		<nav class="entry-date-nav" aria-label="Logbook date navigation">
+			<a href="MR_entry_2026-07-18.html" class="button secondary-button">Previous Entry</a>
+			<a href="MR_entry_2026-07-20.html" class="button secondary-button">Next Entry</a>
+		</nav>
+		<p class="top-link"><a href="#page_top">Go to the top of this page</a></p>
+	</main>
+
+	<footer class="site-footer">
+		<p>Copyright &copy; Matvey Regentov</p>
+	</footer>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+</body>
+
+</html>

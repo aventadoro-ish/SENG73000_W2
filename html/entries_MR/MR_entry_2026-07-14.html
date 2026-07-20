@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<!--
+Author: Matvey Regentov
+-->
+
+<html lang="en">
+
+<head>
+	<title>MR Logbook Entry - 2026-07-14</title>
+	<meta charset="UTF-8">
+	<meta name="author" content="Matvey Regentov">
+	<meta name="description" content="MR Logbook Entry for 2026-07-14">
+	<meta name="robots" content="index, follow">
+	<meta http-equiv="Pragma" content="no-cache">
+
+	<link rel="icon" href="../../media/icons/LiF_icon.ico" type="image/x-icon">
+	<link rel="stylesheet" href="../../css/base.css">
+	<link rel="stylesheet" href="../../css/logbook_entry.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css">
+	<link rel="stylesheet" href="../../css/code_formatting.css">
+	<script>
+		window.MathJax = {
+			tex: {
+				inlineMath: [['\\(', '\\)'], ['$', '$']],
+				displayMath: [['\\[', '\\]'], ['$$', '$$']]
+			},
+			svg: { fontCache: 'global' }
+		};
+	</script>
+	<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+</head>
+
+<body>
+	<div id="navbar-placeholder" data-root="../../"></div>
+	<script src="../../js/navbar.js"></script>
+
+	<main class="page-wrapper">
+		<section class="intro-section logbook-entry-intro" id="page_top">
+			<div class="intro-text">
+				<p class="section-label">Daily Logbook Entry</p>
+				<h1>Logbook Entry, 2026-07-14 by Matvey Regentov</h1>
+				<p class="intro-description">Schematic corrections, PCB design-rule setup, and initial component
+					placement</p>
+				<div class="button-row">
+					<a href="../logbook_MR.html" class="button secondary-button">My Logbook Cover Page</a>
+					<a href="#log" class="button primary-button">Jump to Entry</a>
+					<a href="MR_entry_2026-07-13.html" class="button secondary-button">Previous Entry</a>
+					<a href="MR_entry_2026-07-15.html" class="button secondary-button">Next Entry</a>
+				</div>
+			</div>
+			<aside class="summary-card">
+				<h2>Entry Snapshot</h2>
+				<p><b>Date:</b> 2026-07-14</p>
+				<p><b>Author:</b> Matvey Regentov</p>
+				<p><b>Focus:</b> Schematic corrections, PCB design-rule setup, and initial component placement</p>
+			</aside>
+		</section>
+
+		<section class="logbook-entry-content" id="log">
+			<h2 id="corrections-to-the-finalized-schematics">Corrections to the Finalized Schematics</h2>
+			<p>I corrected the issues identified on <em>2026-07-13</em>. I added the door-limit-switch connector and its
+				debounce circuit to the Buttons sheet, connected the circuit to GPIO47 of the ESP32-S3, and fixed the
+				I2C pull-up resistors.</p>
+			<h2 id="pcb-layout-and-routing">PCB Layout and Routing</h2>
+			<h3 id="board-setup">Board Setup</h3>
+			<p>I began routing the PCB and configured the design-rule checker using the JLCPCB rules from the <a
+					href="https://github.com/labtroll/KiCad-DesignRules/blob/main/JLCPCB/JLCPCB.kicad_dru">LabTroll
+					KiCad Design Rules repository</a><sup><a href="#source-1" aria-label="Source 1">[1]</a></sup>.</p>
+			<p>The rule set also references the <a
+					href="https://docs.kicad.org/master/id/pcbnew/pcbnew_advanced.html#custom_design_rules">KiCad
+					custom-design-rule documentation</a><sup><a href="#source-3" aria-label="Source 3">[3]</a></sup>, as
+				well as examples by <a
+					href="https://gist.github.com/darkxst/f713268e5469645425eed40115fb8b49">darkxst</a><sup><a
+						href="#source-4" aria-label="Source 4">[4]</a></sup> and <a
+					href="https://gist.github.com/denniskupec/e163d13b0a64c2044bd259f64659485e">Dennis Kupec</a><sup><a
+						href="#source-5" aria-label="Source 5">[5]</a></sup>.</p>
+			<pre><code>(version 1)
+# Custom Design Rules (DRC) for KiCAD 7.0 (Stored in &#39;&lt;project&gt;.kicad_dru&#39; file).
+#
+# Matching JLCPCB capabilities: https://jlcpcb.com/capabilities/pcb-capabilities
+#
+# KiCad documentation: https://docs.kicad.org/master/id/pcbnew/pcbnew_advanced.html#custom_design_rules
+#
+# Inspiration
+# - https://gist.github.com/darkxst/f713268e5469645425eed40115fb8b49 (with comments)
+# - https://gist.github.com/denniskupec/e163d13b0a64c2044bd259f64659485e (with comments)
+
+# TODO new rule: NPTH pads.
+# Inner diameter of pad should be 0.4-0.5 mm larger than NPTH drill diameter.
+# JLCPCB: &quot;We make NPTH via dry sealing film process, if customer would like a NPTH but around with pad/copper, 
+# our engineer will dig out around pad/copper about 0.2mm-0.25mm, otherwise the metal potion will be flowed into the 
+# hole and it becomes a PTH. (there will be no copper dig out optimization for single board).&quot;
+
+# TODO: new rule for plated slots: min diameter/width 0.5mm
+# JLCPCB: &quot;The minimum plated slot width is 0.5mm, which is drawn with a pad.&quot;
+
+# TODO new rule: non-plated slots: min diameter/width 1.0mm
+# JLCPCB: &quot;The minimum Non-Plated Slot Width is 1.0mm, please draw the slot outline in the mechanical layer(GML or GKO)&quot;&quot;
+
+(rule &quot;Track width, outer layer (1oz copper)&quot;
+	(layer outer)
+	(condition &quot;A.Type == &#39;track&#39;&quot;)
+	(constraint track_width (min 0.127mm))
+)
+
+(rule &quot;Track spacing, outer layer (1oz copper)&quot;
+	(layer outer)
+	(condition &quot;A.Type == &#39;track&#39; &amp;&amp; B.Type == A.Type&quot;)
+	(constraint clearance (min 0.127mm))
+)
+
+(rule &quot;Track width, inner layer&quot;
+	(layer inner)
+	(condition &quot;A.Type == &#39;track&#39;&quot;)
+	(constraint track_width (min 0.09mm))
+)
+
+(rule &quot;Track spacing, inner layer&quot;
+	(layer inner)
+	(condition &quot;A.Type == &#39;track&#39; &amp;&amp; B.Type == A.Type&quot;)
+	(constraint clearance (min 0.09mm))
+)
+
+(rule &quot;Silkscreen text&quot;
+	(layer &quot;?.Silkscreen&quot;)
+	(condition &quot;A.Type == &#39;Text&#39; || A.Type == &#39;Text Box&#39;&quot;)
+	(constraint text_thickness (min 0.15mm))
+	(constraint text_height (min 1mm))
+)
+
+(rule &quot;Pad to Silkscreen&quot;
+	(layer outer)
+	(condition &quot;A.Type == &#39;pad&#39; &amp;&amp; B.Layer == &#39;?.Silkscreen&#39;&quot;)
+	(constraint silk_clearance (min 0.15mm))
+)
+
+(rule &quot;Edge (routed) to track clearance&quot;
+	(condition &quot;A.Type == &#39;track&#39;&quot;)
+	(constraint edge_clearance (min 0.3mm))
+)
+
+#(rule &quot;Edge (v-cut) to track clearance&quot;
+#	(condition &quot;A.Type == &#39;track&#39;&quot;)
+#	(constraint edge_clearance (min 0.4mm))
+#)
+
+# JLCPCB restrictions ambiguous:
+# Illustration: 0.2 mm, 1&amp;2 layer: 0.3 mm, multilayer: &quot;(0.15mm more costly)&quot;
+# This rule handles diameter minimum and maximum for ALL holes.
+# Other specialized rules handle restrictions (e.g. Via, PTH, NPTH) 
+(rule &quot;Hole diameter&quot;
+	(constraint hole_size (min 0.2mm) (max 6.3mm))
+)
+
+(rule &quot;Hole (NPTH) diameter&quot;
+	(layer outer)
+	(condition &quot;!A.isPlated()&quot;)
+	(constraint hole_size (min 0.5mm))
+)
+
+# TODO: Hole to board edge ≥ 1 mm. Min. board size 10 × 10 mm
+(rule &quot;Hole (castellated) diameter&quot;
+	(layer outer)
+	(condition &quot;A.Type == &#39;pad&#39; &amp;&amp; A.Fabrication_Property == &#39;Castellated pad&#39;&quot;)
+	(constraint hole_size (min 0.6mm))
+)
+
+# JLCPCB: &quot;Via diameter should be 0.1mm(0.15mm preferred) larger than Via hole size&quot; (illustration shows diameters for both dimensions)
+# JLCPCB: PTH: &quot;The annular ring size will be enlarged to 0.15mm in production.&quot;
+(rule &quot;Annular ring width (via and PTH)&quot;
+	(layer outer)
+	(condition &quot;A.isPlated()&quot;)
+	(constraint annular_width (min 0.075mm))
+)
+
+(rule &quot;Clearance: hole to hole (perimeter), different nets&quot;
+	(layer outer)
+	(condition &quot;A.Net != B.Net&quot;)
+	(constraint hole_to_hole (min 0.5mm))
+)
+
+(rule &quot;Clearance: hole to hole (perimeter), same net&quot;
+	(layer outer)
+	(condition &quot;A.Net == B.Net&quot;)
+	(constraint hole_to_hole (min 0.254mm))
+)
+
+(rule &quot;Clearance: track to NPTH hole (perimeter)&quot;
+#	(condition &quot;A.Pad_Type == &#39;NPTH, mechanical&#39; &amp;&amp; B.Type == &#39;track&#39; &amp;&amp; A.Net != B.Net&quot;)
+	(condition &quot;!A.isPlated() &amp;&amp; B.Type == &#39;track&#39; &amp;&amp; A.Net != B.Net&quot;)
+	(constraint hole_clearance (min 0.254mm))
+)
+
+(rule &quot;Clearance: track to PTH hole perimeter&quot;
+	(condition &quot;A.isPlated() &amp;&amp; B.Type == &#39;track&#39; &amp;&amp; A.Net != B.Net&quot;)
+	(constraint hole_clearance (min 0.33mm))
+)
+
+# TODO: try combining with rule &quot;Clearance: PTH to track, different nets&quot;
+(rule &quot;Clearance: track to pad&quot;
+	(condition &quot;A.Type == &#39;pad&#39; &amp;&amp; B.Type == &#39;track&#39; &amp;&amp;  A.Net != B.Net&quot;)
+	(constraint clearance (min 0.2mm))
+)
+
+(rule &quot;Clearance: pad/via to pad/via&quot;
+	(layer outer)
+#	(condition &quot;(A.Type == &#39;Pad&#39; || A.Type == &#39;Via&#39;) &amp;&amp; (B.Type == &#39;Pad&#39; || B.Type == &#39;Via&#39;) &amp;&amp; A.Net != B.Net&quot;)	
+	(condition &quot;A.isPlated() &amp;&amp; B.isPlated() &amp;&amp; A.Net != B.Net&quot;)
+	(constraint clearance (min 0.127mm))
+)
+</code></pre>
+			<h3 id="board-stack-up">Board Stack-up</h3>
+			<p>I configured the following four-layer board stack-up:</p>
+			<pre><code>layer &quot;F.Silkscreen&quot; type &quot;Top Silk Screen&quot; Color &quot;Not specified&quot; Material &quot;Not specified&quot;
+layer &quot;F.Paste&quot; type &quot;Top Solder Paste&quot;
+layer &quot;F.Mask&quot; type &quot;Top Solder Mask&quot; Color &quot;Not specified&quot; Thickness 0.01 mm Material &quot;Not specified&quot; EpsilonR 3.3 LossTg 0
+layer &quot;F.Cu&quot; type &quot;copper&quot; Thickness 0.035 mm
+layer &quot;Dielectric 1&quot; type &quot;prepreg&quot;
+  sublayer &quot;1/1&quot; Color &quot;Not specified&quot; Thickness 0.2104 mm Material &quot;FR4&quot; EpsilonR 4.5 LossTg 0.02
+layer &quot;In1.Cu&quot; type &quot;copper&quot; Thickness 0.0152 mm
+layer &quot;Dielectric 2&quot; type &quot;core&quot;
+  sublayer &quot;1/1&quot; Color &quot;Not specified&quot; Thickness 1.065 mm Material &quot;FR4&quot; EpsilonR 4.5 LossTg 0.02
+layer &quot;In2.Cu&quot; type &quot;copper&quot; Thickness 0.0152 mm
+layer &quot;Dielectric 3&quot; type &quot;prepreg&quot;
+  sublayer &quot;1/1&quot; Color &quot;Not specified&quot; Thickness 0.2104 mm Material &quot;FR4&quot; EpsilonR 4.5 LossTg 0.02
+layer &quot;B.Cu&quot; type &quot;copper&quot; Thickness 0.035 mm
+layer &quot;B.Mask&quot; type &quot;Bottom Solder Mask&quot; Color &quot;Not specified&quot; Thickness 0.01 mm Material &quot;Not specified&quot; EpsilonR 3.3 LossTg 0
+layer &quot;B.Paste&quot; type &quot;Bottom Solder Paste&quot;
+layer &quot;B.Silkscreen&quot; type &quot;Bottom Silk Screen&quot; Color &quot;Not specified&quot; Material &quot;Not specified&quot;
+Finish &quot;None&quot;
+</code></pre>
+			<p>The stack-up is based on the JLCPCB <a href="https://jlcpcb.com/impedance">Controlled
+					Impedance</a><sup><a href="#source-6" aria-label="Source 6">[6]</a></sup> page. The board is 1.6 mm
+				thick, with 1 oz outer copper and 0.5 oz inner copper.</p>
+			<h3 id="via-sizes">Via Sizes</h3>
+			<p>The standard signal vias use a 0.30 mm hole with a 0.40–0.45 mm finished diameter, based on the <a
+					href="https://cart.jlcpcb.com/quote?stencilLayer=2&stencilWidth=100&stencilLength=100&stencilCounts=5&plateType=1">JLCPCB
+					order configuration</a><sup><a href="#source-8" aria-label="Source 8">[8]</a></sup>. Larger
+				power-trace vias use a 0.50 mm hole with a 0.65 mm diameter.</p>
+			<h3 id="trace-widths">Trace Widths</h3>
+			<p>The available trace widths are:</p>
+			<ul>
+				<li>The 0.10 mm width is the minimum permitted by the <a
+						href="https://jlcpcb.com/capabilities/pcb-capabilities">JLCPCB PCB capabilities</a><sup><a
+							href="#source-2" aria-label="Source 2">[2]</a></sup>.</li>
+				<li>A 0.20 mm width is used for general signal routing.</li>
+				<li>A 0.50 mm width is used where greater current capacity is required.</li>
+			</ul>
+			<h3 id="differential-pairs">Differential Pairs</h3>
+			<p>The differential-pair geometry is based on the <a
+					href="https://jlcpcb.com/pcb-impedance-calculator">JLCPCB Impedance Calculator</a><sup><a
+						href="#source-7" aria-label="Source 7">[7]</a></sup>. I used a dielectric constant of 4.4 for
+				7628 prepreg. The USB differential pair targets 90 Ω, while the CAN bus differential pair targets 120 Ω.
+			</p>
+			<figure class="logbook-figure">
+				<img src="../../media/images/LiF_PCB_USB_Diff_pair_impedance_calculations.png"
+					alt="LiF PCB USB Diff pair impedance calculations" class="logbook-image centered-image"
+					style="max-width: 100%; height: auto;">
+				<figcaption>LiF PCB USB Diff pair impedance calculations</figcaption>
+			</figure>
+
+			<figure class="logbook-figure">
+				<img src="../../media/images/LiF_PCB_CAN_Diff_pair_impedance_calculations.png"
+					alt="LiF PCB CAN Diff pair impedance calculations" class="logbook-image centered-image"
+					style="max-width: 100%; height: auto;">
+				<figcaption>LiF PCB CAN Diff pair impedance calculations</figcaption>
+			</figure>
+
+			<p>I renamed the <code>CANH</code> and <code>CANL</code> nets to <code>CAN+</code> and <code>CAN-</code> so
+				that KiCad recognizes them as a differential pair.</p>
+			<h3 id="pcb-layout-session-1">PCB Layout Session 1</h3>
+			<p>I started the component layout by placing the 5 V regulator, the power OR-ing circuit, and part of the
+				load-cell instrumentation-amplifier circuit.</p>
+
+		</section>
+
+		<section class="logbook-entry-content sources-section" id="sources">
+			<h2>Sources</h2>
+			<ol class="source-list">
+				<li id="source-1"><span class="citation-label">[1]</span> LabTroll, <em>JLCPCB Custom Design Rules for
+						KiCad</em>, GitHub repository. <a
+						href="https://github.com/labtroll/KiCad-DesignRules/blob/main/JLCPCB/JLCPCB.kicad_dru">https://github.com/labtroll/KiCad-DesignRules/blob/main/JLCPCB/JLCPCB.kicad_dru</a>
+				</li>
+				<li id="source-2"><span class="citation-label">[2]</span> JLCPCB, <em>PCB Capabilities</em>. <a
+						href="https://jlcpcb.com/capabilities/pcb-capabilities">https://jlcpcb.com/capabilities/pcb-capabilities</a>
+				</li>
+				<li id="source-3"><span class="citation-label">[3]</span> KiCad Documentation, <em>Custom Design
+						Rules</em>. <a
+						href="https://docs.kicad.org/master/id/pcbnew/pcbnew_advanced.html#custom_design_rules">https://docs.kicad.org/master/id/pcbnew/pcbnew_advanced.html#custom_design_rules</a>
+				</li>
+				<li id="source-4"><span class="citation-label">[4]</span> darkxst, <em>KiCad Custom Design Rules
+						Example</em>, GitHub Gist. <a
+						href="https://gist.github.com/darkxst/f713268e5469645425eed40115fb8b49">https://gist.github.com/darkxst/f713268e5469645425eed40115fb8b49</a>
+				</li>
+				<li id="source-5"><span class="citation-label">[5]</span> Dennis Kupec, <em>KiCad Custom Design Rules
+						Example</em>, GitHub Gist. <a
+						href="https://gist.github.com/denniskupec/e163d13b0a64c2044bd259f64659485e">https://gist.github.com/denniskupec/e163d13b0a64c2044bd259f64659485e</a>
+				</li>
+				<li id="source-6"><span class="citation-label">[6]</span> JLCPCB, <em>Controlled Impedance</em>. <a
+						href="https://jlcpcb.com/impedance">https://jlcpcb.com/impedance</a></li>
+				<li id="source-7"><span class="citation-label">[7]</span> JLCPCB, <em>PCB Impedance Calculator</em>. <a
+						href="https://jlcpcb.com/pcb-impedance-calculator">https://jlcpcb.com/pcb-impedance-calculator</a>
+				</li>
+				<li id="source-8"><span class="citation-label">[8]</span> JLCPCB, <em>PCB Order Configuration</em>. <a
+						href="https://cart.jlcpcb.com/quote?stencilLayer=2&stencilWidth=100&stencilLength=100&stencilCounts=5&plateType=1">https://cart.jlcpcb.com/quote?stencilLayer=2&stencilWidth=100&stencilLength=100&stencilCounts=5&plateType=1</a>
+				</li>
+			</ol>
+		</section>
+
+		<nav class="entry-date-nav" aria-label="Logbook date navigation">
+			<a href="MR_entry_2026-07-13.html" class="button secondary-button">Previous Entry</a>
+			<a href="MR_entry_2026-07-15.html" class="button secondary-button">Next Entry</a>
+		</nav>
+		<p class="top-link"><a href="#page_top">Go to the top of this page</a></p>
+	</main>
+
+	<footer class="site-footer">
+		<p>Copyright &copy; Matvey Regentov</p>
+	</footer>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+</body>
+
+</html>
