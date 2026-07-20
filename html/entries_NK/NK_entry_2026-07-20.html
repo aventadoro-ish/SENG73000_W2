@@ -15,7 +15,11 @@ Author: Nick Kapuka
     <meta name="robots" content="index, follow" />
     <meta http-equiv="Pragma" content="no-cache" />
 
-    <link rel="icon" href="../../media/icons/LiF_icon.ico" type="image/x-icon" />
+    <link
+      rel="icon"
+      href="../../media/icons/LiF_icon.ico"
+      type="image/x-icon"
+    />
 
     <!-- Shared website styling -->
     <link rel="stylesheet" href="../../css/base.css" />
@@ -66,8 +70,7 @@ Author: Nick Kapuka
             JavaScript, CSS, and elevator control
           </p>
           <p>
-            <b>Tags:</b> #LiF #SQL #PHP #JavaScript #AJAX #CSS
-            #ElevatorControl
+            <b>Tags:</b> #LiF #SQL #PHP #JavaScript #AJAX #CSS #ElevatorControl
           </p>
         </aside>
       </section>
@@ -162,7 +165,9 @@ Author: Nick Kapuka
 
         <h3 id="sql-commands">Representative SQL commands</h3>
 
-        <pre class="code-block language-sql"><code class="language-sql">USE lif_elevator;
+        <pre
+          class="code-block language-sql"
+        ><code class="language-sql">USE lif_elevator;
 
 SHOW TABLES;
 DESCRIBE elevator_requests;
@@ -175,12 +180,14 @@ ORDER BY elevator_request_id DESC;</code></pre>
         <p>
           <code class="language-text">INSERT</code> creates a new history row,
           while <code class="language-text">UPDATE</code> changes an existing
-          row. This distinction became important for the door switch because
-          its current state is stored by repeatedly updating
+          row. This distinction became important for the door switch because its
+          current state is stored by repeatedly updating
           <code class="language-text">state_id = 1</code>.
         </p>
 
-        <pre class="code-block language-sql"><code class="language-sql">UPDATE elevator_state
+        <pre
+          class="code-block language-sql"
+        ><code class="language-sql">UPDATE elevator_state
 SET doors_open = 1
 WHERE state_id = 1;
 
@@ -197,7 +204,9 @@ AFTER doors_open;</code></pre>
           validated before PDO prepared statements send it to the database.
         </p>
 
-        <pre class="code-block language-php"><code class="language-php">$query = "
+        <pre
+          class="code-block language-php"
+        ><code class="language-php">$query = "
     SELECT *
     FROM access_requests
     WHERE request_id = :request_id
@@ -217,9 +226,7 @@ $request = $statement-&gt;fetch();</code></pre>
             template.
           </li>
           <li>Bind submitted values to placeholders.</li>
-          <li>
-            Use <code class="language-text">execute()</code> to run it.
-          </li>
+          <li>Use <code class="language-text">execute()</code> to run it.</li>
           <li>
             Use <code class="language-text">fetch()</code> or
             <code class="language-text">fetchAll()</code> to retrieve SELECT
@@ -229,7 +236,9 @@ $request = $statement-&gt;fetch();</code></pre>
 
         <h3 id="authentication">Authentication</h3>
 
-        <pre class="code-block language-php"><code class="language-php">$passwordCorrect = $user &amp;&amp;
+        <pre
+          class="code-block language-php"
+        ><code class="language-php">$passwordCorrect = $user &amp;&amp;
     password_verify($password, $user['password_hash']);
 
 if ($passwordCorrect &amp;&amp;
@@ -258,7 +267,9 @@ if ($passwordCorrect &amp;&amp;
           project uses <code class="language-text">fetch()</code> and JSON.
         </p>
 
-        <pre class="code-block language-javascript"><code class="language-javascript">function sendElevatorRequest(floor, sourceController) {
+        <pre
+          class="code-block language-javascript"
+        ><code class="language-javascript">function sendElevatorRequest(floor, sourceController) {
     const requestData = new URLSearchParams();
 
     requestData.append("requested_floor", floor);
@@ -282,8 +293,8 @@ if ($passwordCorrect &amp;&amp;
             form-style name/value data.
           </li>
           <li>
-            <code class="language-text">fetch()</code> sends the background
-            HTTP request.
+            <code class="language-text">fetch()</code> sends the background HTTP
+            request.
           </li>
           <li>
             <code class="language-text">.then()</code> handles a fulfilled
@@ -301,7 +312,9 @@ if ($passwordCorrect &amp;&amp;
 
         <h3 id="door-interlock">Door movement interlock</h3>
 
-        <pre class="code-block language-javascript"><code class="language-javascript">if (responseData.movement_allowed === false) {
+        <pre
+          class="code-block language-javascript"
+        ><code class="language-javascript">if (responseData.movement_allowed === false) {
     updateDoorDisplay(true);
 
     lastCommandDisplay.textContent =
@@ -330,7 +343,9 @@ moveCarToFloor(floor, commandSource);</code></pre>
           JavaScript changes classes while CSS decides how those classes look.
         </p>
 
-        <pre class="code-block language-css"><code class="language-css">.door-toggle-button {
+        <pre
+          class="code-block language-css"
+        ><code class="language-css">.door-toggle-button {
     width: 100%;
     padding: 11px 14px;
     color: white;
