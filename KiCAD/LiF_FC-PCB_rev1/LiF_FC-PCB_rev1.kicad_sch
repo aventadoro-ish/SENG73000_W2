@@ -299,6 +299,16 @@
 		)
 		(uuid "030f2ef2-c906-4eba-816d-0600937158c3")
 	)
+	(wire
+		(pts
+			(xy 21.59 97.79) (xy 25.4 97.79)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "04d463a2-28b9-4474-bb93-feb9fc6feec4")
+	)
 	(bus
 		(pts
 			(xy 109.22 72.39) (xy 121.92 72.39)
@@ -699,6 +709,16 @@
 		)
 		(uuid "96dc222d-4c36-4742-bce8-64b18b6e2f22")
 	)
+	(wire
+		(pts
+			(xy 21.59 158.75) (xy 21.59 97.79)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "a12b5a50-3538-48cc-810a-d8e811538d0c")
+	)
 	(bus
 		(pts
 			(xy 109.22 95.25) (xy 134.62 95.25)
@@ -778,6 +798,16 @@
 			(type default)
 		)
 		(uuid "b70d906f-e547-444c-8ee1-ff4cc1855e62")
+	)
+	(wire
+		(pts
+			(xy 25.4 158.75) (xy 21.59 158.75)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "b8470948-460a-4d17-96ab-7702a3725d70")
 	)
 	(wire
 		(pts
@@ -1797,6 +1827,16 @@
 				(justify right)
 			)
 		)
+		(pin "V_{supply}" input
+			(at 25.4 97.79 180)
+			(uuid "5e403997-b2a6-49fe-9d03-f8d29c48e4ba")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
 		(instances
 			(project "LiF_FC-PCB_rev1"
 				(path "/9e3e8da7-e506-46c9-90e5-307e4ad30d29"
@@ -2317,6 +2357,16 @@
 					(size 1.27 1.27)
 				)
 				(justify right)
+			)
+		)
+		(pin "V_{supply}" output
+			(at 25.4 158.75 180)
+			(uuid "f449efad-7b0d-4717-a1c2-538f5ae676d4")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
 			)
 		)
 		(instances

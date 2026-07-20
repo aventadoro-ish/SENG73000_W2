@@ -5491,7 +5491,6 @@
 	(symbol
 		(lib_id "Connector:TestPoint")
 		(at 33.02 125.73 0)
-		(mirror y)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -5499,7 +5498,7 @@
 		(dnp no)
 		(uuid "b7b09d73-164d-46a6-ad8f-e9a93ac54072")
 		(property "Reference" "TP27"
-			(at 30.48 121.1579 0)
+			(at 35.56 121.1579 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5508,7 +5507,7 @@
 			)
 		)
 		(property "Value" "PDM CLK"
-			(at 30.48 123.6979 0)
+			(at 35.56 123.6979 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5517,7 +5516,7 @@
 			)
 		)
 		(property "Footprint" "TestPoint:TestPoint_Loop_D1.80mm_Drill1.0mm_Beaded"
-			(at 27.94 125.73 0)
+			(at 38.1 125.73 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5526,7 +5525,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 27.94 125.73 0)
+			(at 38.1 125.73 0)
 			(effects
 				(font
 					(size 1.27 1.27)

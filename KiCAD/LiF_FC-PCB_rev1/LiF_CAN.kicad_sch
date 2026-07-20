@@ -3194,7 +3194,7 @@
 		(uuid "f6a3534f-5a4c-4dfe-82ff-93aa707e33a1")
 	)
 	(no_connect
-		(at 109.22 137.16)
+		(at 99.06 142.24)
 		(uuid "f705c968-1ab3-4feb-9cf3-1333e3ba8a5b")
 	)
 	(bus_entry
@@ -3274,16 +3274,6 @@
 			(type default)
 		)
 		(uuid "06936ba6-23ff-4045-b196-0507cb3aecb0")
-	)
-	(wire
-		(pts
-			(xy 113.03 142.24) (xy 109.22 142.24)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "06a4a216-b711-4692-b69c-4c2892b7b457")
 	)
 	(wire
 		(pts
@@ -3457,7 +3447,7 @@
 	)
 	(wire
 		(pts
-			(xy 93.98 139.7) (xy 99.06 139.7)
+			(xy 93.98 137.16) (xy 99.06 137.16)
 		)
 		(stroke
 			(width 0)
@@ -3927,16 +3917,6 @@
 	)
 	(wire
 		(pts
-			(xy 113.03 143.51) (xy 113.03 142.24)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "5f8b1128-3381-4abc-b889-5d9d02b0a99a")
-	)
-	(wire
-		(pts
 			(xy 123.19 81.28) (xy 123.19 82.55)
 		)
 		(stroke
@@ -4044,6 +4024,16 @@
 			(type default)
 		)
 		(uuid "7046fd70-3e85-41b1-9e21-f6d1363169b3")
+	)
+	(wire
+		(pts
+			(xy 113.03 139.7) (xy 113.03 143.51)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "71e85fdc-517b-4de6-a23b-8a8e4356662b")
 	)
 	(wire
 		(pts
@@ -4747,7 +4737,7 @@
 	)
 	(wire
 		(pts
-			(xy 93.98 139.7) (xy 93.98 153.67)
+			(xy 93.98 137.16) (xy 93.98 153.67)
 		)
 		(stroke
 			(width 0)
@@ -5194,6 +5184,16 @@
 			(type default)
 		)
 		(uuid "f550b8f6-00b6-4358-a106-2728839d096c")
+	)
+	(wire
+		(pts
+			(xy 109.22 139.7) (xy 113.03 139.7)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "f98d2272-fc70-4535-b393-1b5056f94d42")
 	)
 	(wire
 		(pts
@@ -6383,7 +6383,7 @@
 				(justify right)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric"
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric"
 			(at 186.182 54.61 90)
 			(effects
 				(font
@@ -6977,6 +6977,7 @@
 	(symbol
 		(lib_id "Switch:SW_DPDT_x2")
 		(at 104.14 177.8 0)
+		(mirror y)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -7000,7 +7001,7 @@
 				)
 			)
 		)
-		(property "Footprint" "LiF_PCB_Footprints:SW_JS202011JCQN"
+		(property "Footprint" "Button_Switch_SMD:SW_DPDT_CK_JS202011JCQN"
 			(at 104.14 177.8 0)
 			(effects
 				(font
@@ -7019,24 +7020,6 @@
 			)
 		)
 		(property "Description" "Switch, dual pole double throw, separate symbols"
-			(at 104.14 177.8 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "PN" "JS202011JCQN"
-			(at 104.14 177.8 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "DKPN" "CKN10723CT-ND"
 			(at 104.14 177.8 0)
 			(effects
 				(font
@@ -7109,6 +7092,24 @@
 			)
 		)
 		(property "VERIFIER" ""
+			(at 104.14 177.8 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "PN" "JS202011JCQN"
+			(at 104.14 177.8 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "DKPN" "CKN10723CT-ND"
 			(at 104.14 177.8 0)
 			(effects
 				(font
@@ -7211,23 +7212,14 @@
 	)
 	(symbol
 		(lib_id "Switch:SW_DPDT_x2")
-		(at 104.14 139.7 0)
+		(at 104.14 139.7 180)
 		(unit 2)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(fields_autoplaced yes)
 		(uuid "4ae0ff89-f71d-4451-ae54-371d0ad1080b")
 		(property "Reference" "SW3"
-			(at 104.14 130.81 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "CAN Termination"
 			(at 104.14 133.35 0)
 			(effects
 				(font
@@ -7235,7 +7227,15 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Value" "CAN Termination"
+			(at 104.14 130.81 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Button_Switch_SMD:SW_DPDT_CK_JS202011JCQN"
 			(at 104.14 139.7 0)
 			(effects
 				(font
@@ -7326,6 +7326,24 @@
 			)
 		)
 		(property "VERIFIER" ""
+			(at 104.14 139.7 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "PN" "JS202011JCQN"
+			(at 104.14 139.7 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "DKPN" "CKN10723CT-ND"
 			(at 104.14 139.7 0)
 			(effects
 				(font
@@ -8747,7 +8765,7 @@
 				(justify right)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric"
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric"
 			(at 194.818 96.52 90)
 			(effects
 				(font
@@ -8889,7 +8907,7 @@
 				(justify right)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric"
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric"
 			(at 194.818 54.61 90)
 			(effects
 				(font
@@ -9452,7 +9470,7 @@
 				(justify right)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric"
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric"
 			(at 186.182 96.52 90)
 			(effects
 				(font
@@ -10793,7 +10811,7 @@
 				(justify right)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric"
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric"
 			(at 114.808 147.32 90)
 			(effects
 				(font
