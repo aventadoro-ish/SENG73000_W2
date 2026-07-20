@@ -261,7 +261,7 @@ require_once __DIR__ . '/db.php';
                 <p><strong>User:</strong> <?php echo $_SESSION['username']; ?></p>
                 <p><strong>Area:</strong> Protected content</p>
                 <p><strong>Account Type:</strong>
-                    <?php echo htmlspecialchars($_SESSION['user_role'], ENT_QUOTES, 'UIF-8');?>
+                    <?php echo htmlspecialchars($_SESSION['user_role'], ENT_QUOTES, 'UTF-8');?>
                 <p>
             </aside>
         </section>
