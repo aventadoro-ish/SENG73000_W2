@@ -1,6 +1,9 @@
 <?php
 session_start();
 
+// load the DB connection
+require_once __DIR__ . '/db.php';
+
 if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
     header("Location: ../html/login.html");
     exit;
@@ -52,6 +55,8 @@ $safeUsername = htmlspecialchars($_SESSION['username'] ?? 'User', ENT_QUOTES, 'U
                 <p><strong>Status:</strong> Logged in</p>
                 <p><strong>User:</strong> <?php echo $safeUsername; ?></p>
                 <p><strong>Area:</strong> Protected content</p>
+                <p><strong>Account Type:</strong> <?php echo $_SESSION['user_role']; ?>
+                <p>
             </aside>
         </section>
 
@@ -67,7 +72,7 @@ $safeUsername = htmlspecialchars($_SESSION['username'] ?? 'User', ENT_QUOTES, 'U
 
             <div class="member-button-grid">
 
-                <a href="dashboard.php" member-action-card">
+                <a href="elevator_control.php" class="member-action-card elevator-card">
                     <h3>Elevator Control</h3>
                     <p>Control the elevator from a website!</p>
                 </a>
@@ -81,6 +86,26 @@ $safeUsername = htmlspecialchars($_SESSION['username'] ?? 'User', ENT_QUOTES, 'U
                     <h3>Log Out</h3>
                     <p>End the current login session.</p>
                 </a>
+                <?php if ($_SESSION['user_role'] === 'admin'): ?>
+                <a href="manage_requests.php" class="member-action-card manage-req">
+                    <h3>Manage Incoming Requests</h3>
+                    <p>Accept/deny website access.</p>
+                </a>
+                <?php endif ?>
+
+                <?php if ($_SESSION['user_role'] === 'admin'): ?>
+                <a href="elevator_diagnostics.php" class="member-action-card elevator-diagnostics">
+                    <h3>Diagnostics</h3>
+                    <p>Check Elevator Diagnostics.</p>
+                </a>
+                <?php endif ?>
+
+                <?php if ($_SESSION['user_role'] === 'admin'): ?>
+                <a href="" class="member-action-card maintainence-page">
+                    <h3>Maintainence</h3>
+                    <p>Options to manually tweak a few values</p>
+                </a>
+                <?php endif ?>
             </div>
         </section>
 

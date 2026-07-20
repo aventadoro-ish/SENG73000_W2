@@ -1,9 +1,357 @@
 <?php
 session_start();
 
+// DB connection
+require_once __DIR__ . '/db.php';
+
 if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
     header("Location: ../html/login.html");
     exit;
+}
+
+// elevator_control JS sends a POST request when an elevator button is pressed
+// read it here
+if($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // tell JS that PHP will return a JSON file instead of HTML:
+    header('Content-Type: application/json');
+
+    // determine what type of AJAX request was sent (move elevator or toggle doors button)
+    $requestAction = $_POST['request_action'] ?? 'move';
+
+    // handle a door-state update separately from a move elevator request
+    if($requestAction === 'door') {
+        // JS will send open/closed so check for that
+        $submittedDoorState = $_POST['door_state'] ?? '';
+
+        // add only two states for doors
+        $allowedDoorStates = ['open', 'closed'];
+
+        // reject other states
+        if(!in_array($submittedDoorState, $allowedDoorStates, true)) {
+            echo json_encode([
+                'success' => false,
+                'message' => 'invalid door state'
+            ]);
+            
+            exit;
+        } 
+
+        // read the values - default in DB is false (boolean; 0)
+        $doorsOpen = 0;
+
+        if($submittedDoorState === 'open') {
+            $doorsOpen = 1;
+        }
+
+        // query DB
+
+        try {
+            // update the row that represents door state
+            $query = "
+                UPDATE elevator_state
+                SET doors_open = :doors_open
+                WHERE state_id = 1
+            ";
+
+            $statement = $pdo->prepare($query);
+
+            $params  = ['doors_open' => $doorsOpen];
+
+            $result = $statement->execute($params);
+
+            if($result) {
+                echo json_encode([
+                    'success' => true,
+                    'message' => 'door state updated',
+                    'door_state' => $submittedDoorState
+                ]);
+            } else {
+                echo json_encode([
+                    'success' => false,
+                    'message' => 'door state failed to update; its joever'
+                ]);
+            }
+        } catch (PDOException $e) {
+            error_log($e->getMessage());
+
+            echo json_encode([
+                'success' => false,
+                'message' => 'query for door state failed, its joever'
+            ]);
+        }
+
+        // door request complete, do not continue
+
+        exit;
+    }
+
+    if($requestAction === 'sabbath') {
+        // JS replies with enable or disabled
+        $submittedSabbathState = $_POST['sabbath_state'] ?? '';
+
+        $allowedSabbathStates = ['enabled', 'disabled'];
+
+        if(!in_array($submittedSabbathState, $allowedSabbathStates, true)) {
+            echo json_encode([
+                'success' => false,
+                'message' => 'invalid sabbath state'
+            ]);
+            exit;
+        }
+        // convert text into 0/1 for DB state
+        $sabbathEnabled = 0;
+
+        if($submittedSabbathState === 'enabled') {
+            $sabbathEnabled = 1;
+        }
+
+        try {
+            $query = "
+                UPDATE elevator_state
+                SET sabbath_enabled = :sabbath_enabled
+                WHERE state_id = 1
+            ";
+
+            $statement = $pdo->prepare($query);
+
+            $params = ['sabbath_enabled' => $sabbathEnabled];
+
+            $result = $statement->execute($params);
+
+            if($result) {
+                // sucessful
+                echo json_encode([
+                    'success' => true,
+                    'message' => 'sabbath mode updated',
+                    'sabbath_state' => $submittedSabbathState
+                ]);
+            } else {
+                echo json_encode([
+                    'success' => false,
+                    'message' => 'sabbath mode could not be enabled'
+                ]);
+            }
+        } catch (PDOException $e) {
+            error_log($e->getMessage());
+            echo json_encode([
+                'success' => false,
+                'message' => 'a database error prevented sabbath toggle',
+            ]);
+        }
+        exit;
+    }
+
+    // receive JS values to move the elevator
+    $submittedFloor = $_POST['requested_floor'] ?? '';
+    $sourceController = $_POST['source_controller'] ?? '';
+
+    // convert submitted floor into a valid integer
+    $requestedFloor = filter_var($submittedFloor, FILTER_VALIDATE_INT);
+
+    // create a 3-element array (since we have 3 floors... for now)
+    $allowedFloors = [1, 2, 3];
+
+    // reject any other values
+    if($requestedFloor === false || !in_array($requestedFloor, $allowedFloors, true)) {
+
+        // print the error message
+        echo json_encode([
+            'success' => false,
+            'message' => 'invalid elevator floor, its joever'
+        ]);
+        exit; 
+    }
+    
+    // once again, only use valid sources
+    $allowedSources = ['web_floor_station', 'web_car_controller'];
+
+    // and once again, handle valid source controllers (from the web)
+    // reject unknown controller names
+    if(!in_array($sourceController, $allowedSources, true)) {
+        // print message
+        echo json_encode([
+            'success' => false,
+            'message' => 'invalid source controller, its joever'
+        ]);
+        exit;
+    }
+
+    // grab the user ID
+    // login.php stored it in this session
+    $requestedByUserID = $_SESSION['user_id'] ?? null;
+
+    // if empty, get yo ahh outta here
+    if($requestedByUserID === null){
+        echo json_encode([
+            'success' => false,
+            'message' => 'the logged-in user could not be identified, its joever'
+        ]);
+        header('Location: ../login.html');
+        exit;
+    }
+
+    try {
+
+        // movement is unsafe if state cannot be found
+        $doorsOpen = true;
+
+        // command
+        $query = "
+            SELECT doors_open
+            FROM elevator_state
+            WHERE state_id = 1
+            LIMIT 1
+        ";
+
+        // prep and execute
+        $statement = $pdo->prepare($query);
+        $result = $statement->execute();
+
+        // fetch from DB
+        $elevatorState = $statement->fetch();
+
+        if($result && $elevatorState) {
+            // convert DB bool into PHP bool
+            $doorsOpen = (int) $elevatorState['doors_open'] === 1;
+        }
+
+        // continue with the movement control code below only when doors are closed
+        $movementAllowed = !$doorsOpen;
+
+        // code below will still run and log buttons into DB - queuing will handle it
+        // movement will be prevented in the JS
+
+        
+        // insert into DB
+        $query = "
+            INSERT INTO elevator_requests (
+                request_type,
+                requested_floor,
+                requested_by_user_id,
+                source_controller
+            )
+        
+            VALUES (
+                :request_type,
+                :requested_floor,
+                :requested_by_user_id,
+                :source_controller
+            )
+        ";
+
+        $statement = $pdo->prepare($query);
+
+        $params = [
+            'request_type' => 'remote',
+            'requested_floor' => $requestedFloor,
+            'requested_by_user_id' => $requestedByUserID,
+            'source_controller' => $sourceController
+        ];
+
+        $result = $statement->execute($params);
+
+        if($result) {
+            // retrieve the auto-generated elevator_request_id
+            // type-cast to int since we need it to be int for sending it back to JS
+            $elevatorRequestID = (int) $pdo->lastInsertId();
+
+            // send the successful query back to JS
+            echo json_encode([
+                'success' => true,
+                'message' => 'elevator request logged successfully!',
+                'elevator_request_id' => $elevatorRequestID,
+                'requested_floor' => $requestedFloor,
+                'source_controller' => $sourceController,
+
+                // if logged successfully, tell JS what PHP found in elevator_state DB (for doors)
+                'doors_open' => $doorsOpen,
+                'movement_allowed' => $movementAllowed
+            ]);
+        // query failed/request not logged
+        } else {
+            echo json_encode([
+                'success' => false,
+                'message' => 'elevator request was not logged, its joever'
+            ]);
+        }
+    } 
+    catch (PDOException $e) 
+    {
+        error_log($e->getMessage());
+
+        // report message back to JS too
+        echo json_encode([
+            'success' => false,
+            'message' => 'a database error occured that prevented the elevator request, its joever'
+        ]);
+    }
+    exit;
+}
+
+
+// create a dynamic default display if there are no elevator requests - pull from DB to keep it updated:
+$initialFloor = 1;
+$initialRequestID = null;
+$initialSource = 'floor';
+$initialStatus = 'idle';
+
+try {
+    // query has no user input so a prep statement doesn't have to be used:
+    $query = "
+        SELECT
+            elevator_request_id,
+            requested_floor,
+            source_controller,
+            request_status
+        FROM elevator_requests
+        ORDER BY elevator_request_id DESC
+        LIMIT 1    
+    ";
+
+    // run the query
+    $statement = $pdo->query($query);
+
+    // retireve the newest row or false if empty
+    $latestRequest = $statement->fetch();
+
+    if($latestRequest) {
+        $initialFloor = (int) $latestRequest['requested_floor'];
+        $initialRequestID = (int) $latestRequest['elevator_request_id'];
+        $initialStatus = (int) $latestRequest['request_status'];
+
+        if($latestRequest['source_controller'] === 'web_car_controller') {
+            $initialSource = 'car';
+        }
+
+    }
+} catch (PDOException $e) {
+    // Keep the default Floor 1/System idle display if loading fails.
+    error_log($e->getMessage());
+}
+
+// default vused if the DB state cannot be loaded:
+$initialDoorsOpen = false;
+
+try {
+    // read from DB to load page with the data
+    $query = "
+        SELECT doors_open
+        FROM elevator_state
+        WHERE state_id = 1
+        LIMIT 1
+    ";
+
+    $statement = $pdo->prepare($query);
+    $result = $statement->execute();
+
+    $elevatorState = $statement->fetch();
+
+    // maria DB returns 0 or 1 for door state, convert it into a PHP bool
+    if($elevatorState) {
+        $initialDoorsOpen = (int) $elevatorState['doors_open'] === 1;
+    }
+} catch (PDOException $e) {
+    error_log($e->getMessage());
 }
 
 $safeUsername = htmlspecialchars($_SESSION['username'] ?? 'Member', ENT_QUOTES, 'UTF-8');
@@ -31,16 +379,20 @@ $safeUsername = htmlspecialchars($_SESSION['username'] ?? 'Member', ENT_QUOTES, 
     <div id="navbar-placeholder" data-root="../"></div>
     <script src="../js/navbar.js"></script>
 
-    <main class="page-wrapper">
+    <main class="page-wrapper" id="elevatorControlPage" data-initial-floor="<?php echo $initialFloor; ?>"
+        data-initial-request-id="<?php echo $initialRequestID; ?>" data-initial-source="<?php echo $initialSource; ?>">
         <section class="intro-section elevator-control-intro" id="page_top">
+
             <div class="intro-text">
                 <p class="section-label">Protected Control Panel</p>
 
                 <h1>Elevator Control Room</h1>
 
                 <p class="intro-description">
-                    Welcome, <?php echo $safeUsername; ?>. This page allows you, yes YOU, to control the humble elevator platform!
-                    The floor stations can request the car to go to them, while the car controller can send the cab to any floor.
+                    Welcome, <?php echo $safeUsername; ?>. This page allows you, yes YOU, to control the humble elevator
+                    platform!
+                    The floor stations can request the car to go to them, while the car controller can send the cab to
+                    any floor.
                 </p>
 
                 <div class="button-row">
@@ -57,7 +409,8 @@ $safeUsername = htmlspecialchars($_SESSION['username'] ?? 'Member', ENT_QUOTES, 
             </aside>
         </section>
 
-        <section class="elevator-game-panel">
+        <!-- main page -->
+        <section class="elevator-panel">
             <div class="control-hud">
                 <div>
                     <p class="section-label">Simulation display</p>
@@ -66,12 +419,20 @@ $safeUsername = htmlspecialchars($_SESSION['username'] ?? 'Member', ENT_QUOTES, 
 
                 <div class="hud-readout">
                     <span class="hud-label">Current Floor</span>
-                    <span id="currentFloorDisplay" class="hud-value">1</span>
+                    <span id="currentFloorDisplay" class="hud-value"><?php echo $initialFloor;?></span>
                 </div>
 
                 <div class="hud-readout">
                     <span class="hud-label">Last Command</span>
-                    <span id="lastCommandDisplay" class="hud-value">System idle</span>
+                    <span id="lastCommandDisplay" class="hud-value">
+                        <?php if($initialRequestID === null):?>
+                        System Idle
+                        <?php else: ?>
+                        #Request #<?php echo $initialRequestID;?>
+                        for floor <?php echo $initialFloor;?>
+                        -- <?php echo htmlspecialchars($initialStatus, ENT_QUOTES, 'UTF-8');?>
+                        <?php endif; ?>
+                    </span>
                 </div>
             </div>
 
@@ -140,11 +501,21 @@ $safeUsername = htmlspecialchars($_SESSION['username'] ?? 'Member', ENT_QUOTES, 
                         <button class="car-floor-button" data-floor="3">Go to Floor 3</button>
                         <button class="car-floor-button" data-floor="2">Go to Floor 2</button>
                         <button class="car-floor-button active-car-button" data-floor="1">Go to Floor 1</button>
-                    </div>
 
-                    <div class="controller-note">
-                        <strong>Note:</strong> This does not control hardware yet. It only updates the webpage visuals.
-                    </div>
+                        <div class="door-control-panel"
+                            data-door-state="<?php echo $initialDoorsOpen ? 'open' : 'closed';?>">
+                            <p class="section-label"><b>Status</b>
+                                <span id="doorStatusDisplay">Closed</span>
+                            </p>
+
+                            <button type="button" id="doorToggleButton" class="door-toggle-button">Open Doors</button>
+                        </div>
+
+                        <div class="sabbath-toggle">
+                            <p class="section-label"><b>Sabbath Toggle</b></p>
+
+                            <button type="button" id="sabbathToggle" class="sabbath-toggle-button">Sabbath Mode</button>
+                        </div>
                 </aside>
             </div>
         </section>

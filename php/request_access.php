@@ -24,7 +24,7 @@ $requestId = null;
 if ($submitted) 
 {
 
-    // match HTML names (from form submmited values)
+    // match HTML names (from form submmited values) 
     $firstname = $_POST['firstName'] ?? '';
     $lastname = $_POST['lastName'] ?? '';
     $email = $_POST['email'] ?? '';
@@ -72,16 +72,20 @@ if ($submitted)
         $errors[] = "Please check at least one box for involvement.";
     }
 
-    if (strlen($details) > 180) { {
+    if (strlen($details) > 180) { 
         $errors[] = "Details cannot exceed 180 characters";
+    
     }
-}
-    // No errors, Yeppie!
+    
+    // only contact the database after all submitted values pass validation (no errors)
     if (empty($errors)) {
+
+        // convert the checkbox array into one string for the database
         $involvementText = implode(', ', $involvement);
-        // format it into SQL using try-catch, my beloved:
+        
+        // define a formatted INSERT query using named parameters
         try {
-            $sql = 
+            $query = 
             "
             INSERT INTO access_requests (
                 first_name,
@@ -105,21 +109,32 @@ if ($submitted)
             ) 
              ";
 
-            $statement = $pdo->prepare($sql);
+            // create a statement from the query text
+            $statement = $pdo->prepare($query);
 
-            $statement->execute([
-                ':first_name' => $firstname,
-                ':last_name' => $lastname,
-                ':email' => $email,
-                ':birthday' => $birthday,
-                ':person_type' => $fac_or_student,
-                ':involvement' => $involvementText,
-                ':drives_car' => $drives_car,
-                ':details' => $details
-            ]);
+            // map each SQL parameter to its submitted PHP value
+            $params = [
+                'first_name' => $firstname,
+                'last_name' => $lastname,
+                'email' => $email,
+                'birthday' => $birthday,
+                'person_type' => $fac_or_student,
+                'involvement' => $involvementText,
+                'drives_car' => $drives_car,
+                'details' => $details
+            ];
 
-            $requestId = $pdo->lastInsertId();
-            $requestSaved = true;    
+            // execute the parameterized INSERT query
+            $result  = $statement->execute($params);
+
+
+            if ($result) {
+                // retrieve the AUTO_INCREMENT ID assigned to the new request
+                $requestId = $pdo->lastInsertId();
+                $requestSaved = true;
+            } else {
+                $errors[] = "The access request could not be saved.";
+            }
         } 
         catch (PDOException $e) 
         {

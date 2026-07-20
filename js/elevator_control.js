@@ -1,6 +1,9 @@
 // visual elevator demo
-// this does not send commands to hardware yet. It only updates the webpage visuals
+// this does not send commands to hardware yet
+// it only updates the webpage visuals and updates the DB
+
 document.addEventListener("DOMContentLoaded", function () {
+    // an HTML is talking, listen and learn 🤫
     const elevatorCar = document.getElementById("elevatorCar");
     const currentFloorDisplay = document.getElementById("currentFloorDisplay");
     const lastCommandDisplay = document.getElementById("lastCommandDisplay");
@@ -9,13 +12,190 @@ document.addEventListener("DOMContentLoaded", function () {
     const carButtons = document.querySelectorAll(".car-floor-button");
     const carScreen = document.querySelector(".car-screen");
 
+    // read the initial values in <main> of elevator_control.php
+    const elevatorControlPage = document.getElementById("elevatorControlPage");
+    const initialFloor = elevatorControlPage.dataset.initialFloor;
+    const initialRequestID = elevatorControlPage.dataset.initialRequestId;
+    const initialSource = elevatorControlPage.dataset.initialSource;
+
+    // for handling the doors status and label of said status
+    const doorToggleButton = document.getElementById("doorToggleButton");
+    const doorStatusDisplay = document.getElementById("doorStatusDisplay");
+    const doorControlPanel = document.querySelector(".door-control-panel");
+    let doorsOpen = false;
+
+    // sabbath mode
+    const sabbathToggle = document.getElementById("sabbathToggle");
+    let sabbathEnabled = false;
+
+
     // these positions match the current desktop tower layout
     // floor 1 is lowest, floor 3 is highest
     const carPositions = {
-        "1": "-354px",
-        "2": "-177px",
-        "3": "0px"
+        "1": "-315px",
+        "2": "-155px",
+        "3": "12px"
+
     };
+
+
+    // send an elevator request to elevator_control.php
+    function sendElevatorRequest(floor, sourceController) {
+        // format values like normal form data using a constructor of URLSearchParams() (big ass Web API magic)
+        const requestData = new URLSearchParams();
+
+        // add a named value (floor) to the form-style request data ("requested_floor")
+        requestData.append("requested_floor", floor);
+        requestData.append("source_controller", sourceController);
+
+        // send an HTTP request without reloading the page
+        // POST sends the data to the PHP; content-type formats it like an HTML form;
+        // body is the actual floor/source values; response.json converts PHPs JSON response into a JS object
+        return fetch("elevator_control.php" , {
+            method: "POST",
+            headers: {"Content-Type": "application/x-www-form-urlencoded"}, 
+            body: requestData.toString()
+        })
+
+        // a returned Promise which decodes PHP's JSON into a JS Object (stored in 'response')
+        .then(function (response) {
+            return response.json();
+        })
+    }
+
+    // function to handle sending an AJAX req to PHP for door state
+    function sendDoorState (doorState) {
+
+        // format the value like a normal submitted HTML form (the humble AJAX)
+        const requestData = new URLSearchParams();
+
+        // tell PHP where to run the code ("door" works with door state)
+        requestData.append("request_action", "door");
+
+        // doorState will contain either open or close so append it
+        requestData.append("door_state", doorState);
+
+        // send values to PHP without reloading page
+        return fetch("elevator_control.php", {
+            method: "POST",
+            headers: {"Content-Type": "application/x-www-form-urlencoded"},
+            body: requestData.toString()
+        })
+        
+        // when PHP responds, decode JSON to JS Object to handle it
+        .then (function (response) {
+            return response.json();
+        });
+    }
+
+    // function to send the Sabbath toggle HTTP request
+    function sendSabbathState(sabbathState) {
+        const requestData = new URLSearchParams();
+
+        // tell PHP which POST to use
+        requestData.append("request_action", "sabbath");
+
+        // contains either enabled or disabled
+        requestData.append("sabbath_state", sabbathState);
+
+        // send the request
+        return fetch ("elevator_control.php", {
+            method: "POST",
+            headers: {"Content-Type": "application/x-www-form-urlencoded"},
+            body: requestData.toString()
+        })
+
+        // when PHP responds, decode JSON to JS Object to handle it
+        .then (function (response) {
+            return response.json();
+        });
+    }
+
+    // new function to handle a successful PHP response
+    function handleResponse (responseData) {
+        // PHP can still send a response successfully but SQL can fail, handle that by ensuring that nothing returns false (from json_encode())
+        if(responseData.success === true) {
+            // HTML data attributes contain strings so convert the floor to a string
+            // php returns requested_floor: 3, while HTML uses "3"
+            const floor = String(responseData.requested_floor);
+
+            // moveCarToFloor excepts "floor" or "car"
+            // let floor be the default and change it below if needed
+            let commandSource = "floor";
+
+            // determine who submitted the request
+            if (responseData.source_controller === "web_car_controller") {
+                // switch to car
+                commandSource = "car";
+            }
+            
+            if (responseData.movement_allowed === false) {
+                // sync page to DB door state
+                updateDoorDisplay(true);
+
+                lastCommandDisplay.textContent  = "Request #" + responseData.elevator_request_id + " logged for floor " 
+                                                    + floor + " - cannot move with doors open";
+
+                return;
+            }
+
+            // move the visual elevator only after the request was logged
+            moveCarToFloor(floor, commandSource);
+
+            // display the DB request number confirmation by stitching strings together
+            lastCommandDisplay.textContent = "Request #" + responseData.elevator_request_id + " logged for floor " + floor;
+        } else {
+            // PHP responded but it came false (validation issue or DB failure)
+            lastCommandDisplay.textContent = "requested rejected" + responseData.message;
+        }
+    }
+
+    // handle PHP response to door state
+    function handleDoorResponse(responseData) {
+        if(responseData.success === true) {
+            // convert PHP's open/close to boolean
+            if(responseData.door_state === "open") {
+                // update page text
+                updateDoorDisplay(true);
+            } else {
+                // update page text
+                updateDoorDisplay(false);
+            }
+
+        // update the last command text
+        lastCommandDisplay.textContent = "Doors changed to " + responseData.door_state;
+        } else {
+            // PHP responded but SQL failed
+            // update the last command text
+            lastCommandDisplay.textContent = "Door update rejected " + responseData.message;
+        }
+    } 
+
+    // function to handle the response and update the last command
+    function handleSabbathResponse(responseData) {
+        if(responseData.success === true) {
+            const enabled = responseData.sabbath_state === "enabled";
+            
+            updateSabbathDisplay(enabled);
+
+            lastCommandDisplay.textContent = "Sabbath mode " + responseData.sabbath_state;
+        } else {
+            lastCommandDisplay.textContent = "Sabath update rejected" + responseData.message;
+        }
+    }
+
+    function handleSabbathFailure(error) {
+        lastCommandDisplay.textContent = "The Sabbath request could not be sent";
+
+        console.error("Sabbath request failed", error);
+    }
+
+    // handle an AJAX failure - network failure, invalid JSON response, etc.
+    function handleRequestFail(error) {
+        lastCommandDisplay.textContent = "the elevator request could not be sent";
+
+        console.error("elevator request failed due to: ", error);
+    }
 
     // moves the elevator car to the desired floor based on the floor selected and source (floor controller/cab controller)
     function moveCarToFloor(floor, commandSource) {
@@ -26,13 +206,6 @@ document.addEventListener("DOMContentLoaded", function () {
         elevatorCar.style.bottom = carPositions[floor];
         currentFloorDisplay.textContent = floor;
         carScreen.textContent = floor;
-
-        // add text to the "last command" box to show who called/moved the elevator
-        if (commandSource === "floor") {
-            lastCommandDisplay.textContent = "Floor " + floor + " requested the car";
-        } else {
-            lastCommandDisplay.textContent = "Cab selected Floor " + floor;
-        }
 
         floorRows.forEach(function (row) {
             row.classList.remove("active-floor");
@@ -51,17 +224,141 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // move car to floor when a floor button is clicked
+    // if an SQL request exists, position the visual elevator at that floor
+    if (initialRequestID !== "") {
+        moveCarToFloor(initialFloor, initialSource);
+
+        // moveCarToFloor changes the command text so it must be replaced with the DB request info afterward
+        lastCommandDisplay.textContent = "request #" + initialRequestID + " for floor " + initialFloor;
+    }
+
+
     floorButtons.forEach(function (button) {
+        // give this specific button (in the loop) instructions for what to do when clicked
         button.addEventListener("click", function () {
-            moveCarToFloor(button.dataset.floor, "floor");
+
+            // we already have the specific button from the forEach loop
+            const floor = button.dataset.floor;
+
+            lastCommandDisplay.textContent = "Sending request for Floor " + floor + "...";
+
+            // send the request and wait for PHP's answer
+            sendElevatorRequest(floor, "web_floor_station")
+
+            // PHP responded and its JSON was decoded
+            .then(handleResponse)
+
+            // the network request or JSON decoding failed
+            .catch(handleRequestFail);
         });
     });
 
-    // move car to floor when a car controller button is clicked
+    // replace old car call with new one:
     carButtons.forEach(function (button) {
-        button.addEventListener("click", function () {
-            moveCarToFloor(button.dataset.floor, "car");
+        // give this specific button (in the loop) instructions for what to do when clicked
+        button.addEventListener("click", function() {
+
+            // we already have the specific button from the forEach loop
+            const floor = button.dataset.floor;
+
+            // update command display
+            lastCommandDisplay.textContent = "sending car-controller request  for floor " + floor + " ...";
+
+            // use existing AJAX function but identify source as car controller
+            sendElevatorRequest(floor, "web_car_controller")
+
+                // once PHP responded and its JSON is decoded
+                .then (handleResponse)
+
+                // network request or decoding failed
+                .catch (handleRequestFail);
         });
     });
+
+    // update button after SQL success
+    function updateSabbathDisplay (newSabbathState) {
+        sabbathEnabled = newSabbathState;
+
+        if(sabbathEnabled === true) {
+            sabbathToggle.textContent = "Disable Sabbath mode";
+            sabbathToggle.classList.add("active");
+        } else {
+            sabbathToggle.textContent = "Enable Sabbath mode";
+            sabbathToggle.classList.remove("active");
+        }
+    }
+
+    // doors toggle function (between closed and open)
+    function updateDoorDisplay(newDoorState) {
+        doorsOpen = newDoorState;
+
+        // if the doors are closed, open them
+        if(doorsOpen === true) {
+            doorStatusDisplay.textContent = "Open";
+            doorToggleButton.textContent = "Close Doors";
+            
+            // adds the CSS class to the entire moving elevator car.
+            elevatorCar.classList.add("doors-open");
+
+        // the doors are open, close them
+        } else {
+            doorStatusDisplay.textContent = "Closed";
+            doorToggleButton.textContent = "Open Doors";
+
+            // Remove the open-door class.
+            elevatorCar.classList.remove("doors-open");
+        }
+    }
+
+    // read the door state that PHP placed in the HTML (String)
+    const initialDoorState = doorControlPanel.dataset.doorState;
+
+    // convert string into a true ("closed" is false)
+    const initialDoorsOpen = initialDoorState === "open";
+
+    // update door-related elements with the data
+    updateDoorDisplay(initialDoorsOpen);
+
+
+    // decide which door state should be requested
+    function toggleDoors() {
+        let requestedDoorState = "open";
+
+        // if the doors are already open, request that they close.
+        if (doorsOpen === true) {
+            requestedDoorState = "closed";
+        }
+
+        lastCommandDisplay.textContent = "Requesting doors " + requestedDoorState + "...";
+
+        // ask PHP to update DB
+        sendDoorState(requestedDoorState)
+
+        // DB update succeeded or PHP returned a validation failure
+        .then(handleDoorResponse)
+
+        // network request or JSON decoding failure
+        .catch(handleRequestFail);
+    }   
+
+    // wait for the toggle door switch to be clicked
+    doorToggleButton.addEventListener("click",  toggleDoors);
+
+    // handle the sabbath mode and call the respective functions based on sucess/failure
+    function toggleSabbathMode () {
+        let requestedState = "enabled";
+
+        if(sabbathEnabled === true) {
+            requestedState = "disabled";
+        } 
+
+        lastCommandDisplay.textContent = "Requesting Sabbath mode " + requestedState + "...";
+
+        sendSabbathState(requestedState)
+            .then(handleSabbathResponse)
+            .catch(handleSabbathFailure);
+    }
+
+    // wait for sabbath toggle to be clicked
+    sabbathToggle.addEventListener("click", toggleSabbathMode);
 });
