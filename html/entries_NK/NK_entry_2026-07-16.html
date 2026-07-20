@@ -1,0 +1,823 @@
+<!doctype html>
+<!--
+Author: Nick Kapuka
+-->
+
+<html lang="en">
+  <head>
+    <title>NK Logbook Entry - 2026-07-16</title>
+    <meta charset="UTF-8" />
+    <meta name="author" content="Nick Kapuka" />
+    <meta name="description" content="NK Logbook Entry" />
+    <meta name="robots" content="index, follow" />
+    <meta http-equiv="Pragma" content="no-cache" />
+
+    <link rel="icon" href="../../media/icons/LiF_icon.ico" type="image/x-icon" />
+
+    <!-- shared website styling -->
+    <link rel="stylesheet" href="../../css/base.css" />
+
+    <!-- logbook entry page styling -->
+    <link rel="stylesheet" href="../../css/logbook_entry.css" />
+
+    <!-- Prism syntax highlighting theme -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css"
+    />
+    <link rel="stylesheet" href="../../css/code_formatting.css" />
+  </head>
+
+  <body>
+    <!-- Nav bar loaded by JavaScript -->
+    <div id="navbar-placeholder" data-root="../../"></div>
+    <script src="../../js/navbar.js"></script>
+
+    <main class="page-wrapper">
+      <section class="intro-section logbook-entry-intro" id="page_top">
+        <div class="intro-text">
+          <p class="section-label">Daily Logbook Entry</p>
+          <h1>Logbook Entry, 2026-07-16 by Nick Kapuka</h1>
+
+          <p class="intro-description">Finished up access management to protected pages</p>
+
+          <div class="button-row">
+            <a href="../logbook_NK.html" class="button secondary-button">My Logbook Cover Page</a>
+            <a href="#log" class="button primary-button">Jump to Entry</a>
+          </div>
+        </div>
+
+        <aside class="summary-card">
+          <h2>Entry Snapshot</h2>
+          <p><b>Date:</b> 2026-07-16</p>
+          <p><b>Author:</b> Nick Kapuka</p>
+          <p><b>Focus:</b> Databases, MariaDB, PHP, SQL</p>
+        </aside>
+      </section>
+
+      <section class="logbook-entry-content" id="log">
+<h2 id="managing-access-to-protected-pages">Managing access to protected pages</h2>
+<p>Finishing manage_access.php and  fixing SQL...</p>
+<h3 id="key-details">Key details</h3>
+<ul class="clean-list">
+<li><strong>Purpose:</strong>  Have a way to manage access and approve accounts</li>
+<li><strong>Component or tool:</strong> VSCode, PHPMyAdmin, MariaDB</li>
+<li><strong>Result:</strong> Successfully finished the manage_requests file and allowed for an admin account to approve users</li>
+<li><strong>Team contribution:</strong> Nick Kapuka</li>
+</ul>
+      </section>
+      <section class="logbook-entry-content">
+<h2 id="finishing-manage-requests-php">Finishing manage_requests.php:</h2>
+<h3 id="finish-up-by-cleaning-up">Finish up by cleaning up!</h3>
+<p>Last entry, most of the request access logic was already functional. From this point on, it was more about making the submitted table look pretty.</p>
+<p>As seen in my last entry, seen here <a href="NK_entry_2026-07-14.html">NK_entry_2026-07-14</a>, this was the state of the table:</p>
+<figure>
+  <img alt="Manage-access page confirming that the selected request was found" class="img_med" src="../../media/images/PHP_ManageAccess_Table_RequestFound.png" />
+  <figcaption><b>Manage-access page confirming that the selected request was found</b></figcaption>
+</figure>
+
+<p>It was alright but not the best. I improved the HTML by changing a few minor things:</p>
+<pre class="code-block language-php"><code class="language-php">&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;
+
+&lt;head&gt;
+    &lt;title&gt;Manage Access Requests&lt;/title&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;link rel="icon" href="../media/icons/LiF_icon.ico" type="image/x-icon"&gt;
+
+    &lt;meta name="author" content="Nick Kapuka"&gt;
+    &lt;meta name="description" content="confirm/deny access requests"&gt;
+    &lt;meta name="robots" content="noindex, nofollow"&gt;
+    &lt;meta http-equiv="Pragma" content="no-cache"&gt;
+
+    &lt;link rel="stylesheet" href="../css/base.css"&gt;
+    &lt;link rel="stylesheet" href="../css/manage_requests.css"&gt;
+&lt;/head&gt;
+
+&lt;body&gt;
+
+    &lt;!-- nav bar --&gt;
+    &lt;div id="navbar-placeholder" data-root="../"&gt;&lt;/div&gt;
+    &lt;script src="../js/navbar.js"&gt;&lt;/script&gt;
+
+    &lt;main class="page-wrapper"&gt;
+        &lt;section class="intro-section" id="page_top"&gt;
+            &lt;div&gt;
+                &lt;p class="section-label"&gt;Admin Page&lt;/p&gt;
+
+                &lt;h1&gt;Hello, &lt;?php echo $_SESSION['username']; ?&gt;&lt;/h1&gt;
+
+                &lt;p class="intro-description"&gt;
+                    Here, you will see pending access requests. You're free to accept or deny them.
+
+                    Additionally, you grant them a permanent username and temporary password which they can use to log
+                    in.
+                &lt;/p&gt;
+
+                &lt;div class="button-row"&gt;
+                    &lt;a href="logout.php" class="button secondary-button"&gt;Log out&lt;/a&gt;
+                    &lt;a href="members.php" class="button primary-button"&gt;Return to members page&lt;/a&gt;
+                &lt;/div&gt;
+
+            &lt;/div&gt;
+            &lt;aside class="summary-card"&gt;
+                &lt;h2&gt;Access Status&lt;/h2&gt;
+                &lt;p&gt;&lt;strong&gt;Status:&lt;/strong&gt; Logged in&lt;/p&gt;
+                &lt;p&gt;&lt;strong&gt;User:&lt;/strong&gt; &lt;?php echo $_SESSION['username']; ?&gt;&lt;/p&gt;
+                &lt;p&gt;&lt;strong&gt;Area:&lt;/strong&gt; Protected content&lt;/p&gt;
+                &lt;p&gt;&lt;strong&gt;Account Type:&lt;/strong&gt;
+                    &lt;?php echo htmlspecialchars($_SESSION['user_role'], ENT_QUOTES, 'UTF-8');?&gt;
+                &lt;p&gt;
+            &lt;/aside&gt;
+        &lt;/section&gt;
+
+        &lt;section class="admin-content-section"&gt;
+            &lt;h2&gt;Status Updates:&lt;/h2&gt;
+
+            &lt;!-- print any errors --&gt;
+            &lt;?php if(!empty($errors)): ?&gt;
+            &lt;h2&gt;Approval errors!&lt;/h2&gt;
+            &lt;ul&gt;
+                &lt;!-- Loop through contents to dispaly errors in array --&gt;
+                &lt;?php foreach($errors as $error): ?&gt;
+                &lt;li&gt;&lt;?php echo htmlspecialchars($error, ENT_QUOTES, 'UTF-8');?&gt;&lt;/li&gt;
+                &lt;?php endforeach ?&gt;
+            &lt;/ul&gt;
+
+            &lt;!-- print if successful --&gt;
+            &lt;?php elseif (!empty($formMessage)): ?&gt;
+            &lt;p&gt;
+                &lt;?php echo htmlspecialchars($formMessage, ENT_QUOTES, 'UTF-8'); ?&gt;
+            &lt;/p&gt;
+            &lt;?php endif ?&gt;
+
+            &lt;?php if(empty($requests)): ?&gt;
+            &lt;p&gt;There are currently no pending requests&lt;/p&gt;
+
+            &lt;?php else: ?&gt;
+            &lt;p&gt;There are currently &lt;b&gt;&lt;?php echo count($requests); ?&gt;&lt;/b&gt; pending requests for review.&lt;/p&gt;
+            &lt;?php endif ?&gt;
+        &lt;/section&gt;
+
+        &lt;?php if (!empty($requests)): ?&gt;
+        &lt;section class="requests-table-section"&gt;
+            &lt;div class="requests-heading"&gt;
+                &lt;p class="section-label"&gt;Request Table&lt;/p&gt;
+                &lt;h2&gt;Pending Requests:&lt;/h2&gt;
+                &lt;p&gt;View all the pending requests below:&lt;/p&gt;
+
+            &lt;/div&gt;
+
+            &lt;div class="requests-table-wrapper"&gt;
+                &lt;!-- make a table of requests --&gt;
+                &lt;table class="requests-table"&gt;
+                    &lt;thead&gt;
+                        &lt;tr&gt;
+                            &lt;th&gt;Request ID&lt;/th&gt;
+                            &lt;th&gt;First and Last Name&lt;/th&gt;
+                            &lt;th&gt;Email&lt;/th&gt;
+                            &lt;th&gt;Occupation&lt;/th&gt;
+                            &lt;th&gt;Involvement&lt;/th&gt;
+                            &lt;th&gt;Submitted at&lt;/th&gt;
+                            &lt;th&gt;Create Account&lt;/th&gt;
+                        &lt;/tr&gt;
+                    &lt;/thead&gt;
+
+                    &lt;tbody&gt;
+                        &lt;?php foreach ($requests as $request): ?&gt;
+
+                        &lt;tr&gt;
+                            &lt;td&gt;
+                                &lt;?php echo $request['request_id']; ?&gt;
+                            &lt;/td&gt;
+
+                            &lt;td&gt;
+                                &lt;?php echo htmlspecialchars($request['first_name'] . ' ' . $request['last_name'], ENT_QUOTES, 'UTF-8'); ?&gt;
+                            &lt;/td&gt;
+
+                            &lt;td&gt;
+                                &lt;?php echo htmlspecialchars($request['email'], ENT_QUOTES, 'UTF-8'); ?&gt;
+                            &lt;/td&gt;
+
+                            &lt;td&gt;
+                                &lt;?php echo htmlspecialchars($request['person_type'], ENT_QUOTES, 'UTF-8'); ?&gt;
+                            &lt;/td&gt;
+
+                            &lt;td&gt;
+                                &lt;?php echo htmlspecialchars($request['involvement'], ENT_QUOTES, 'UTF-8'); ?&gt;
+                            &lt;/td&gt;
+
+                            &lt;td&gt;
+                                &lt;?php echo htmlspecialchars($request['submitted_at'], ENT_QUOTES, 'UTF-8'); ?&gt;
+                            &lt;/td&gt;
+
+                            &lt;td&gt;
+                                &lt;form action="manage_requests.php" method="POST"&gt;
+                                    &lt;!-- --&gt;
+                                    &lt;input type="hidden" name="request_id"
+                                        value="&lt;?php echo $request['request_id']; ?&gt;"&gt;
+
+                                    &lt;label&gt;Username:
+                                        &lt;input type="text" name="username" minlength="7" required&gt;
+                                    &lt;/label&gt;
+                                    &lt;br&gt;
+                                    &lt;label&gt;Temporary Password:
+                                        &lt;input type="text" name="password" minlength="7" required&gt;
+                                    &lt;/label&gt;
+                                    &lt;br&gt;
+                                    &lt;button type="submit"&gt;Approve&lt;/button&gt;
+                                &lt;/form&gt;
+                            &lt;/td&gt;
+                        &lt;/tr&gt;
+                        &lt;?php endforeach; ?&gt;
+                    &lt;/tbody&gt;
+                &lt;/table&gt;
+
+
+
+        &lt;/section&gt;
+        &lt;?php endif; ?&gt;
+    &lt;/main&gt;
+    &lt;/div&gt;
+    &lt;p&gt;
+        &lt;a href="members.php"&gt;Return to member area&lt;/a&gt;
+    &lt;/p&gt;
+    &lt;/div&gt;
+&lt;/body&gt;
+
+&lt;/html&gt;
+</code></pre>
+<p>Which was mostly class assignment, and some php clean up</p>
+<p>Then the CSS was filled out (which was empty before).</p>
+<pre class="code-block language-css"><code class="language-css">.admin-content-section {
+  margin-top: 28px;
+  padding: 28px;
+  background-color: var(--card-bg);
+  border-radius: 14px;
+  border-left: 5px solid var(--aqua);
+  box-shadow: 0 4px 14px var(--shadow);
+}
+
+.requests-table-section {
+  margin-top: 28px;
+  padding: 28px;
+  overflow-x: auto;
+  background-color: var(--card-bg);
+  border-radius: 12px;
+  border-left: 5px solid var(--yellow);
+  box-shadow: 0 4px 14px var(--shadow);
+}
+
+.requests-heading h2 {
+  margin-top: 0;
+  color: var(--deep-blue);
+}
+
+.requests-table-wrapper {
+  margin-top: 28px;
+  overflow-x: auto;
+  border-radius: 12px;
+  border: 1px solid rgba(9, 124, 135, 0.22);
+  box-shadow: 0 4px 14px var(--shadow);
+}
+
+.requests-table {
+  width: 100%;
+  /* table is wide so account for that */
+  min-width: 1100px;
+
+  /* combine neighbouring cells into single lines */
+  border-collapse: collapse;
+
+  background-color: #fff4df;
+}
+
+/* apply consistent spacing and borders to every cell */
+.requests-table th,
+.requests-table td {
+  padding: 14px 12px;
+  border: 1px solid rgba(9, 124, 135, 0.22);
+  text-align: left;
+  vertical-align: top;
+}
+
+/* column heading row */
+.requests-table th {
+  color: white;
+  background-color: var(--deep-blue);
+  font-size: 0.95rem;
+  letter-spacing: 0.02rem;
+  white-space: nowrap;
+}
+
+/* give alternating rows slightly different colours for legibility */
+.requests-table tbody tr:nth-child(even) td {
+  background-color: rgba(161, 204, 166, 0.18);
+}
+
+/* highlight current row */
+.requests-table tbody tr:hover td {
+  background-color: rgba(249, 219, 121, 0.32);
+}
+
+/* make request ID visually unique */
+.requests-table td:first-child {
+  width: 80px;
+  font-weight: bold;
+  color: var(--deep-blue);
+  text-align: center;
+  background-color: #fffbdf;
+}
+
+/* wrap long emails around */
+.requests-table td:nth-child(3) {
+  overflow-wrap: anywhere;
+}
+
+</code></pre>
+<p>Additionally, I added functionality to members.php, the main members homepage to only show admin-allowed pages if the user that is logged in is an admin. The code is a simple if statement,</p>
+<pre class="code-block language-php"><code class="language-php">                &lt;?php if ($_SESSION['user_role'] === 'admin'): ?&gt;
+                &lt;a href="manage_requests.php" class="member-action-card manage-req"&gt;
+                    &lt;h3&gt;Manage Incoming Requests&lt;/h3&gt;
+                    &lt;p&gt;Accept/deny website access.&lt;/p&gt;
+                &lt;/a&gt;
+                &lt;?php endif ?&gt;
+</code></pre>
+<p>And here is what it looks like:</p>
+<figure>
+  <img alt="Members page while logged in with an administrator account" class="img_med" src="../../media/images/PHP_ManaageAccess_AdminAccountFixed.png" />
+  <figcaption><b>Members page while logged in with an administrator account</b></figcaption>
+</figure>
+
+<p>Non-admin account:</p>
+<figure>
+  <img alt="Members page while logged in with a non-administrator account" class="img_med" src="../../media/images/PHP_ManageAccess_NonAdminAccount.png" />
+  <figcaption><b>Members page while logged in with a non-administrator account</b></figcaption>
+</figure>
+      </section>
+      <section class="logbook-entry-content">
+<h2 id="sql-issues">SQL Issues</h2>
+<p>Throughout writing my code, I went home to work there since the college closed, but my SQL ran into an issue. At first it was just this block in the XAMPP saying SQL failed to boot:</p>
+<pre class="code-block language-text"><code class="language-text">12:59:09 PM  [mysql] 	Error: MySQL shutdown unexpectedly.
+12:59:09 PM  [mysql] 	This may be due to a blocked port, missing dependencies, 
+12:59:09 PM  [mysql] 	improper privileges, a crash, or a shutdown by another method.
+12:59:09 PM  [mysql] 	Press the Logs button to view error logs and check
+12:59:09 PM  [mysql] 	the Windows Event Viewer for more clues
+12:59:09 PM  [mysql] 	If you need more help, copy and post this
+12:59:09 PM  [mysql] 	entire log window on the forums
+
+</code></pre>
+<p>From here, I checked the log of the MariaDB service by clicking &quot;logs&quot; in XAMPP which gave a large file. Only the most recent entries were relevant though:</p>
+<pre class="code-block language-text"><code class="language-text">2026-07-18 12:54:21 0 [Note] mysqld.exe: Aria engine: starting recovery
+recovered pages: 0% 17% 46% 63% 100% (0.0 seconds); tables to flush: 1 0
+ (0.0 seconds); 
+2026-07-18 12:54:21 0 [Note] mysqld.exe: Aria engine: recovery done
+2026-07-18 12:54:21 0 [Note] InnoDB: Mutexes and rw_locks use Windows interlocked functions
+2026-07-18 12:54:21 0 [Note] InnoDB: Uses event mutexes
+2026-07-18 12:54:21 0 [Note] InnoDB: Compressed tables use zlib 1.3
+2026-07-18 12:54:21 0 [Note] InnoDB: Number of pools: 1
+2026-07-18 12:54:21 0 [Note] InnoDB: Using SSE2 crc32 instructions
+2026-07-18 12:54:21 0 [Note] InnoDB: Initializing buffer pool, total size = 16M, instances = 1, chunk size = 16M
+2026-07-18 12:54:21 0 [Note] InnoDB: Completed initialization of buffer pool
+2026-07-18 12:54:21 0 [Note] InnoDB: Starting crash recovery from checkpoint LSN=595577
+2026-07-18 12:54:22 0 [Note] InnoDB: 128 out of 128 rollback segments are active.
+2026-07-18 12:54:22 0 [Note] InnoDB: Removed temporary tablespace data file: "ibtmp1"
+2026-07-18 12:54:22 0 [Note] InnoDB: Creating shared tablespace for temporary tables
+2026-07-18 12:54:22 0 [Note] InnoDB: Setting file 'C:\xampp\mysql\data\ibtmp1' size to 12 MB. Physically writing the file full; Please wait ...
+2026-07-18 12:54:22 0 [Note] InnoDB: File 'C:\xampp\mysql\data\ibtmp1' size is now 12 MB.
+2026-07-18 12:54:22 0 [Note] InnoDB: Waiting for purge to start
+2026-07-18 12:54:22 0 [Note] InnoDB: 10.4.32 started; log sequence number 595586; transaction id 754
+2026-07-18 12:54:22 0 [Note] InnoDB: Loading buffer pool(s) from C:\xampp\mysql\data\ib_buffer_pool
+2026-07-18 12:54:22 0 [Note] Plugin 'FEEDBACK' is disabled.
+2026-07-18 12:54:22 0 [Note] InnoDB: Buffer pool(s) load completed at 260718 12:54:22
+2026-07-18 12:54:22 0 [Note] Server socket created on IP: '::'.
+2026-07-18 12:58:31 0 [Note] Starting MariaDB 10.4.32-MariaDB source revision c4143f909528e3fab0677a28631d10389354c491 as process 41620
+2026-07-18 12:58:31 0 [Note] InnoDB: Mutexes and rw_locks use Windows interlocked functions
+2026-07-18 12:58:31 0 [Note] InnoDB: Uses event mutexes
+2026-07-18 12:58:31 0 [Note] InnoDB: Compressed tables use zlib 1.3
+2026-07-18 12:58:31 0 [Note] InnoDB: Number of pools: 1
+2026-07-18 12:58:31 0 [Note] InnoDB: Using SSE2 crc32 instructions
+2026-07-18 12:58:31 0 [Note] InnoDB: Initializing buffer pool, total size = 16M, instances = 1, chunk size = 16M
+2026-07-18 12:58:31 0 [Note] InnoDB: Completed initialization of buffer pool
+2026-07-18 12:58:31 0 [Note] InnoDB: 128 out of 128 rollback segments are active.
+2026-07-18 12:58:31 0 [Note] InnoDB: Creating shared tablespace for temporary tables
+2026-07-18 12:58:31 0 [Note] InnoDB: Setting file 'C:\xampp\mysql\data\ibtmp1' size to 12 MB. Physically writing the file full; Please wait ...
+2026-07-18 12:58:31 0 [Note] InnoDB: File 'C:\xampp\mysql\data\ibtmp1' size is now 12 MB.
+2026-07-18 12:58:31 0 [Note] InnoDB: Waiting for purge to start
+2026-07-18 12:58:32 0 [Note] InnoDB: 10.4.32 started; log sequence number 595595; transaction id 754
+2026-07-18 12:58:32 0 [Note] InnoDB: Loading buffer pool(s) from C:\xampp\mysql\data\ib_buffer_pool
+2026-07-18 12:58:32 0 [Note] Plugin 'FEEDBACK' is disabled.
+2026-07-18 12:58:32 0 [Note] InnoDB: Buffer pool(s) load completed at 260718 12:58:32
+2026-07-18 12:58:32 0 [Note] Server socket created on IP: '::'.
+2026-07-18 12:58:39 0 [Note] Starting MariaDB 10.4.32-MariaDB source revision c4143f909528e3fab0677a28631d10389354c491 as process 28268
+2026-07-18 12:58:39 0 [Note] InnoDB: Mutexes and rw_locks use Windows interlocked functions
+2026-07-18 12:58:39 0 [Note] InnoDB: Uses event mutexes
+2026-07-18 12:58:39 0 [Note] InnoDB: Compressed tables use zlib 1.3
+2026-07-18 12:58:39 0 [Note] InnoDB: Number of pools: 1
+2026-07-18 12:58:39 0 [Note] InnoDB: Using SSE2 crc32 instructions
+2026-07-18 12:58:39 0 [Note] InnoDB: Initializing buffer pool, total size = 16M, instances = 1, chunk size = 16M
+2026-07-18 12:58:39 0 [Note] InnoDB: Completed initialization of buffer pool
+2026-07-18 12:58:39 0 [Note] InnoDB: 128 out of 128 rollback segments are active.
+2026-07-18 12:58:39 0 [Note] InnoDB: Removed temporary tablespace data file: "ibtmp1"
+2026-07-18 12:58:39 0 [Note] InnoDB: Creating shared tablespace for temporary tables
+2026-07-18 12:58:39 0 [Note] InnoDB: Setting file 'C:\xampp\mysql\data\ibtmp1' size to 12 MB. Physically writing the file full; Please wait ...
+2026-07-18 12:58:39 0 [Note] InnoDB: File 'C:\xampp\mysql\data\ibtmp1' size is now 12 MB.
+2026-07-18 12:58:39 0 [Note] InnoDB: Waiting for purge to start
+2026-07-18 12:58:39 0 [Note] InnoDB: 10.4.32 started; log sequence number 595595; transaction id 754
+2026-07-18 12:58:39 0 [Note] InnoDB: Loading buffer pool(s) from C:\xampp\mysql\data\ib_buffer_pool
+2026-07-18 12:58:39 0 [Note] Plugin 'FEEDBACK' is disabled.
+2026-07-18 12:58:39 0 [Note] Server socket created on IP: '::'.
+2026-07-18 12:58:59 0 [Note] Starting MariaDB 10.4.32-MariaDB source revision c4143f909528e3fab0677a28631d10389354c491 as process 34428
+2026-07-18 12:58:59 0 [Note] InnoDB: Mutexes and rw_locks use Windows interlocked functions
+2026-07-18 12:58:59 0 [Note] InnoDB: Uses event mutexes
+2026-07-18 12:58:59 0 [Note] InnoDB: Compressed tables use zlib 1.3
+2026-07-18 12:58:59 0 [Note] InnoDB: Number of pools: 1
+2026-07-18 12:58:59 0 [Note] InnoDB: Using SSE2 crc32 instructions
+2026-07-18 12:58:59 0 [Note] InnoDB: Initializing buffer pool, total size = 16M, instances = 1, chunk size = 16M
+2026-07-18 12:58:59 0 [Note] InnoDB: Completed initialization of buffer pool
+2026-07-18 12:58:59 0 [Note] InnoDB: 128 out of 128 rollback segments are active.
+2026-07-18 12:58:59 0 [Note] InnoDB: Creating shared tablespace for temporary tables
+2026-07-18 12:58:59 0 [Note] InnoDB: Setting file 'C:\xampp\mysql\data\ibtmp1' size to 12 MB. Physically writing the file full; Please wait ...
+2026-07-18 12:58:59 0 [Note] InnoDB: File 'C:\xampp\mysql\data\ibtmp1' size is now 12 MB.
+2026-07-18 12:58:59 0 [Note] InnoDB: Waiting for purge to start
+2026-07-18 12:58:59 0 [Note] InnoDB: 10.4.32 started; log sequence number 595604; transaction id 754
+2026-07-18 12:58:59 0 [Note] InnoDB: Loading buffer pool(s) from C:\xampp\mysql\data\ib_buffer_pool
+2026-07-18 12:58:59 0 [Note] Plugin 'FEEDBACK' is disabled.
+2026-07-18 12:58:59 0 [Note] Server socket created on IP: '::'.
+2026-07-18 12:59:08 0 [Note] Starting MariaDB 10.4.32-MariaDB source revision c4143f909528e3fab0677a28631d10389354c491 as process 26640
+2026-07-18 12:59:08 0 [Note] InnoDB: Mutexes and rw_locks use Windows interlocked functions
+2026-07-18 12:59:08 0 [Note] InnoDB: Uses event mutexes
+2026-07-18 12:59:08 0 [Note] InnoDB: Compressed tables use zlib 1.3
+2026-07-18 12:59:08 0 [Note] InnoDB: Number of pools: 1
+2026-07-18 12:59:08 0 [Note] InnoDB: Using SSE2 crc32 instructions
+2026-07-18 12:59:08 0 [Note] InnoDB: Initializing buffer pool, total size = 16M, instances = 1, chunk size = 16M
+2026-07-18 12:59:08 0 [Note] InnoDB: Completed initialization of buffer pool
+2026-07-18 12:59:08 0 [Note] InnoDB: 128 out of 128 rollback segments are active.
+2026-07-18 12:59:08 0 [Note] InnoDB: Creating shared tablespace for temporary tables
+2026-07-18 12:59:08 0 [Note] InnoDB: Setting file 'C:\xampp\mysql\data\ibtmp1' size to 12 MB. Physically writing the file full; Please wait ...
+2026-07-18 12:59:08 0 [Note] InnoDB: File 'C:\xampp\mysql\data\ibtmp1' size is now 12 MB.
+2026-07-18 12:59:08 0 [Note] InnoDB: Waiting for purge to start
+2026-07-18 12:59:08 0 [Note] InnoDB: 10.4.32 started; log sequence number 595613; transaction id 754
+2026-07-18 12:59:08 0 [Note] InnoDB: Loading buffer pool(s) from C:\xampp\mysql\data\ib_buffer_pool
+2026-07-18 12:59:08 0 [Note] Plugin 'FEEDBACK' is disabled.
+2026-07-18 12:59:08 0 [Note] Server socket created on IP: '::'.
+2026-07-18 13:00:13 0 [Note] Starting MariaDB 10.4.32-MariaDB source revision c4143f909528e3fab0677a28631d10389354c491 as process 39660
+2026-07-18 13:00:13 0 [Note] InnoDB: Mutexes and rw_locks use Windows interlocked functions
+2026-07-18 13:00:13 0 [Note] InnoDB: Uses event mutexes
+2026-07-18 13:00:13 0 [Note] InnoDB: Compressed tables use zlib 1.3
+2026-07-18 13:00:13 0 [Note] InnoDB: Number of pools: 1
+2026-07-18 13:00:13 0 [Note] InnoDB: Using SSE2 crc32 instructions
+2026-07-18 13:00:13 0 [Note] InnoDB: Initializing buffer pool, total size = 16M, instances = 1, chunk size = 16M
+2026-07-18 13:00:13 0 [Note] InnoDB: Completed initialization of buffer pool
+2026-07-18 13:00:13 0 [Note] InnoDB: 128 out of 128 rollback segments are active.
+2026-07-18 13:00:13 0 [Note] InnoDB: Creating shared tablespace for temporary tables
+2026-07-18 13:00:13 0 [Note] InnoDB: Setting file 'C:\xampp\mysql\data\ibtmp1' size to 12 MB. Physically writing the file full; Please wait ...
+2026-07-18 13:00:13 0 [Note] InnoDB: File 'C:\xampp\mysql\data\ibtmp1' size is now 12 MB.
+2026-07-18 13:00:13 0 [Note] InnoDB: Waiting for purge to start
+2026-07-18 13:00:13 0 [Note] InnoDB: 10.4.32 started; log sequence number 595622; transaction id 754
+2026-07-18 13:00:13 0 [Note] InnoDB: Loading buffer pool(s) from C:\xampp\mysql\data\ib_buffer_pool
+2026-07-18 13:00:13 0 [Note] Plugin 'FEEDBACK' is disabled.
+2026-07-18 13:00:13 0 [Note] Server socket created on IP: '::'.
+2026-07-18 13:00:17 0 [Note] Starting MariaDB 10.4.32-MariaDB source revision c4143f909528e3fab0677a28631d10389354c491 as process 22780
+2026-07-18 13:00:17 0 [Note] InnoDB: Mutexes and rw_locks use Windows interlocked functions
+2026-07-18 13:00:17 0 [Note] InnoDB: Uses event mutexes
+2026-07-18 13:00:17 0 [Note] InnoDB: Compressed tables use zlib 1.3
+2026-07-18 13:00:17 0 [Note] InnoDB: Number of pools: 1
+2026-07-18 13:00:17 0 [Note] InnoDB: Using SSE2 crc32 instructions
+2026-07-18 13:00:17 0 [Note] InnoDB: Initializing buffer pool, total size = 16M, instances = 1, chunk size = 16M
+2026-07-18 13:00:17 0 [Note] InnoDB: Completed initialization of buffer pool
+2026-07-18 13:00:17 0 [Note] InnoDB: 128 out of 128 rollback segments are active.
+2026-07-18 13:00:17 0 [Note] InnoDB: Removed temporary tablespace data file: "ibtmp1"
+2026-07-18 13:00:17 0 [Note] InnoDB: Creating shared tablespace for temporary tables
+2026-07-18 13:00:17 0 [Note] InnoDB: Setting file 'C:\xampp\mysql\data\ibtmp1' size to 12 MB. Physically writing the file full; Please wait ...
+2026-07-18 13:00:17 0 [Note] InnoDB: File 'C:\xampp\mysql\data\ibtmp1' size is now 12 MB.
+2026-07-18 13:00:17 0 [Note] InnoDB: Waiting for purge to start
+2026-07-18 13:00:18 0 [Note] InnoDB: 10.4.32 started; log sequence number 595622; transaction id 754
+2026-07-18 13:00:18 0 [Note] InnoDB: Loading buffer pool(s) from C:\xampp\mysql\data\ib_buffer_pool
+2026-07-18 13:00:18 0 [Note] Plugin 'FEEDBACK' is disabled.
+2026-07-18 13:00:18 0 [Note] Server socket created on IP: '::'.
+
+</code></pre>
+<p>The good part is this:</p>
+<pre class="code-block language-text"><code class="language-text">mysqld.exe: Aria engine: recovery done
+InnoDB: 10.4.32 started Server socket created
+</code></pre>
+<p>This means that the DB's made are at least safe.</p>
+<p>Next, I figured it might be a port issue so I checked if the port SQL wanted is being used:</p>
+<pre class="code-block language-bash"><code class="language-bash">Copyright (C) Microsoft Corporation. All rights reserved.
+
+PS C:\Windows\system32&gt; netstat -ano | findstr :3306
+PS C:\Windows\system32&gt;
+</code></pre>
+<p>But that didn't return anything, which means that it's not being used - good.</p>
+<p>Another good check was if the mariaDB process was running but not showing up in SQL:</p>
+<pre class="code-block language-bash"><code class="language-bash">PS C:\Windows\system32&gt; Get-Process mysqld -ErrorAction SilentlyContinue
+PS C:\Windows\system32&gt;
+</code></pre>
+<p>But this again did not return anything, meaning this process isn't running elsewhere. Since I was pretty lost from here, I consulted ChatGPT which gave me the following commands:</p>
+<pre class="code-block language-bash"><code class="language-bash">cd C:\xampp\mysql\bin
+.\mysqld.exe --defaults-file="C:\xampp\mysql\bin\my.ini" --console
+</code></pre>
+<p>This runs the MariaDB executable and tells XAMPP to use MariaDB specifically. <code class="language-text">--console</code> prints any startup error. It gave me the following:</p>
+<pre class="code-block language-bash"><code class="language-bash">2026-07-18 13:02:46 0 [Note] Using unique option prefix 'key_buffer' is error-prone and can break in the future. Please use the full name 'key_buffer_size' instead.
+2026-07-18 13:02:46 0 [Note] Starting MariaDB 10.4.32-MariaDB source revision c4143f909528e3fab0677a28631d10389354c491 as process 32372
+2026-07-18 13:02:46 0 [Note] InnoDB: Mutexes and rw_locks use Windows interlocked functions
+2026-07-18 13:02:46 0 [Note] InnoDB: Uses event mutexes
+2026-07-18 13:02:46 0 [Note] InnoDB: Compressed tables use zlib 1.3
+2026-07-18 13:02:46 0 [Note] InnoDB: Number of pools: 1
+2026-07-18 13:02:46 0 [Note] InnoDB: Using SSE2 crc32 instructions
+2026-07-18 13:02:46 0 [Note] InnoDB: Initializing buffer pool, total size = 16M, instances = 1, chunk size = 16M
+2026-07-18 13:02:46 0 [Note] InnoDB: Completed initialization of buffer pool
+2026-07-18 13:02:46 0 [Note] InnoDB: 128 out of 128 rollback segments are active.
+2026-07-18 13:02:46 0 [Note] InnoDB: Creating shared tablespace for temporary tables
+2026-07-18 13:02:46 0 [Note] InnoDB: Setting file 'C:\xampp\mysql\data\ibtmp1' size to 12 MB. Physically writing the file full; Please wait ...
+2026-07-18 13:02:46 0 [Note] InnoDB: File 'C:\xampp\mysql\data\ibtmp1' size is now 12 MB.
+2026-07-18 13:02:46 0 [Note] InnoDB: Waiting for purge to start
+2026-07-18 13:02:46 0 [Note] InnoDB: 10.4.32 started; log sequence number 595631; transaction id 754
+2026-07-18 13:02:46 0 [Note] InnoDB: Loading buffer pool(s) from C:\xampp\mysql\data\ib_buffer_pool
+2026-07-18 13:02:46 0 [Note] Plugin 'FEEDBACK' is disabled.
+2026-07-18 13:02:46 0 [Note] Server socket created on IP: '::'.
+2026-07-18 13:02:46 0 [ERROR] mysqld.exe: Index for table '.\mysql\db' is corrupt; try to repair it
+2026-07-18 13:02:46 0 [ERROR] Fatal error: Can't open and lock privilege tables: Index for table '.\mysql\db' is corrupt; try to repair it
+2026-07-18 13:02:46 0 [ERROR] Aborting
+PS C:\xampp\mysql\bin&gt;
+</code></pre>
+<p>There's the problem:</p>
+<pre class="code-block language-bash"><code class="language-bash">2026-07-18 13:02:46 0 [ERROR] mysqld.exe: Index for table '.\mysql\db' is corrupt; try to repair it
+</code></pre>
+<p>From here, I copied the databases and backed them up:</p>
+<pre class="code-block language-sql"><code class="language-sql">Copy-Item `
+    "C:\xampp\mysql\data" `
+    "C:\xampp\mysql\data_backup_2026-07-18" `
+    -Recurse
+</code></pre>
+<p>Next, confirm the DB's datatype</p>
+<pre class="code-block language-bash"><code class="language-bash">PS C:\xampp\mysql\bin&gt; Get-ChildItem "C:\xampp\mysql\data\mysql\db.*"
+
+
+    Directory: C:\xampp\mysql\data\mysql
+
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+-a----        2019-10-21   8:17 AM           2713 db.frm
+-a----        2026-07-18  12:54 PM          16384 db.MAD
+-a----        2026-07-16   4:00 PM          16384 db.MAD-260718125422.BAK
+-a----        2026-07-18  12:54 PM          24576 db.MAI
+
+
+PS C:\xampp\mysql\bin&gt;
+</code></pre>
+<p>This is useful since the error said that the index was corrupt, which is a .MAI file.</p>
+<p>From here, ChatGPT recommended to run the following command to command:</p>
+<pre class="code-block language-bash"><code class="language-bash">.\aria_chk.exe --check "C:\xampp\mysql\data\mysql\db.MAI"
+</code></pre>
+<p>But it was quiet unsuccessful...</p>
+<pre class="code-block language-bash"><code class="language-bash">PS C:\xampp\mysql\bin&gt; .\aria_chk.exe --check "C:\xampp\mysql\data\mysql\db.MAI"
+C:\xampp\mysql\bin\aria_chk.exe: Got error 'Can't find file' when trying to use aria control file '.\aria_log_control'
+C:\xampp\mysql\bin\aria_chk.exe: Index is corrupted
+aria_chk.exe: error: 'C:\xampp\mysql\data\mysql\db.MAI' doesn't have a correct index definition. You need to recreate it before you can do a repair
+</code></pre>
+<p>The .\arioa_chk.exe actually lives in the data folder, which I missed... So using ls:</p>
+<pre class="code-block language-bash"><code class="language-bash">PS C:\xampp\mysql&gt; ls
+
+
+    Directory: C:\xampp\mysql
+
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+d-----        2026-06-19   5:22 AM                backup
+d-----        2026-06-19   5:28 AM                bin
+d-----        2026-07-18   1:02 PM                data
+d-----        2026-07-18   1:20 PM                data_backup_2026-07-18
+d-----        2026-06-19   5:21 AM                scripts
+d-----        2026-06-19   5:22 AM                share
+-a----        2023-10-30   8:36 AM          17987 COPYING
+-a----        2023-10-30   8:36 AM           2104 CREDITS
+-a----        2013-03-30   8:29 AM            848 mysql_installservice.bat
+-a----        2013-03-30   8:29 AM            395 mysql_uninstallservice.bat
+-a----        2023-10-30   8:36 AM           2874 README.md
+-a----        2019-06-03   7:39 AM           1095 resetroot.bat
+-a----        2023-10-30   8:36 AM          86263 THIRDPARTY
+
+
+PS C:\xampp\mysql&gt; cd data
+PS C:\xampp\mysql\data&gt;
+</code></pre>
+<p>We can navigate to the data folder and run the command once more:</p>
+<pre class="code-block language-bash"><code class="language-bash">PS C:\xampp\mysql\data\mysql&gt; cd ..
+PS C:\xampp\mysql\data&gt; ..\bin\aria_chk.exe --check ".\mysql\db.MAI"
+C:\xampp\mysql\bin\aria_chk.exe: Index is corrupted
+aria_chk.exe: error: '.\mysql\db.MAI' doesn't have a correct index definition. You need to recreate it before you can do a repair
+PS C:\xampp\mysql\data&gt;
+</code></pre>
+<p>From here, another command was ran:</p>
+<pre class="code-block language-bash"><code class="language-bash">PS C:\xampp\mysql\data&gt; cd C:\xampp\mysql\bin
+PS C:\xampp\mysql\bin&gt;
+PS C:\xampp\mysql\bin&gt; .\mysqld.exe `
+&gt;&gt;     --defaults-file="C:\xampp\mysql\bin\my.ini" `
+&gt;&gt;     --skip-grant-tables `
+&gt;&gt;     --bind-address=127.0.0.1 `
+&gt;&gt;     --console
+2026-07-18 13:26:58 0 [Note] Using unique option prefix 'key_buffer' is error-prone and can break in the future. Please use the full name 'key_buffer_size' instead.
+2026-07-18 13:26:58 0 [Note] Starting MariaDB 10.4.32-MariaDB source revision c4143f909528e3fab0677a28631d10389354c491 as process 13992
+2026-07-18 13:26:58 0 [Note] InnoDB: Mutexes and rw_locks use Windows interlocked functions
+2026-07-18 13:26:58 0 [Note] InnoDB: Uses event mutexes
+2026-07-18 13:26:58 0 [Note] InnoDB: Compressed tables use zlib 1.3
+2026-07-18 13:26:58 0 [Note] InnoDB: Number of pools: 1
+2026-07-18 13:26:58 0 [Note] InnoDB: Using SSE2 crc32 instructions
+2026-07-18 13:26:58 0 [Note] InnoDB: Initializing buffer pool, total size = 16M, instances = 1, chunk size = 16M
+2026-07-18 13:26:58 0 [Note] InnoDB: Completed initialization of buffer pool
+2026-07-18 13:26:58 0 [Note] InnoDB: 128 out of 128 rollback segments are active.
+2026-07-18 13:26:58 0 [Note] InnoDB: Creating shared tablespace for temporary tables
+2026-07-18 13:26:58 0 [Note] InnoDB: Setting file 'C:\xampp\mysql\data\ibtmp1' size to 12 MB. Physically writing the file full; Please wait ...
+2026-07-18 13:26:58 0 [Note] InnoDB: File 'C:\xampp\mysql\data\ibtmp1' size is now 12 MB.
+2026-07-18 13:26:58 0 [Note] InnoDB: Waiting for purge to start
+2026-07-18 13:26:58 0 [Note] InnoDB: 10.4.32 started; log sequence number 595640; transaction id 754
+2026-07-18 13:26:58 0 [Note] InnoDB: Loading buffer pool(s) from C:\xampp\mysql\data\ib_buffer_pool
+2026-07-18 13:26:58 0 [Note] Plugin 'FEEDBACK' is disabled.
+2026-07-18 13:26:58 0 [Note] Server socket created on IP: '127.0.0.1'.
+2026-07-18 13:26:58 0 [Note] InnoDB: Buffer pool(s) load completed at 260718 13:26:58
+2026-07-18 13:26:58 0 [Note] Reading of all Master_info entries succeeded
+2026-07-18 13:26:58 0 [Note] Added new Master_info '' to hash table
+2026-07-18 13:26:58 0 [Note] C:\xampp\mysql\bin\mysqld.exe: ready for connections.
+Version: '10.4.32-MariaDB'  socket: ''  port: 3306  mariadb.org binary distribution
+</code></pre>
+<p>Now, it is running in temporary recovery mode.  From here, we can connect to the DB and repair it:</p>
+<pre class="code-block language-bash"><code class="language-bash">PS C:\Windows\system32&gt; cd C:\xampp\mysql\bin
+PS C:\xampp\mysql\bin&gt;
+PS C:\xampp\mysql\bin&gt; .\mysql.exe -u root -h 127.0.0.1 -P 3306
+Welcome to the MariaDB monitor.  Commands end with ; or \g.
+Your MariaDB connection id is 8
+Server version: 10.4.32-MariaDB mariadb.org binary distribution
+
+Copyright (c) 2000, 2018, Oracle, MariaDB Corporation Ab and others.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+MariaDB [(none)]&gt; REPAIR TABLE mysql.db USE_FRM;
++----------+--------+----------+------------------------------------+
+| Table    | Op     | Msg_type | Msg_text                           |
++----------+--------+----------+------------------------------------+
+| mysql.db | repair | warning  | Number of rows changed from 0 to 4 |
+| mysql.db | repair | status   | OK                                 |
++----------+--------+----------+------------------------------------+
+2 rows in set (0.053 sec)
+
+MariaDB [(none)]&gt;
+</code></pre>
+<p>Since it succeeded, we can shutdown:</p>
+<pre class="code-block language-sql"><code class="language-sql">SHUTDOWN;
+</code></pre>
+<p>Checking back the first powershell with &quot;ready for connection&quot;, it had a few new lines with:</p>
+<pre class="code-block language-bash"><code class="language-bash">Found 4 of 0 rows when repairing '.\mysql\db'
+Normal shutdown
+InnoDB: Shutdown completed
+mysqld.exe: Shutdown complete
+</code></pre>
+<p>Now, going back to XAMPP, I started SQL once more and it seems okay.</p>
+<pre class="code-block language-sql"><code class="language-sql">1:56:50 PM  [mysql] 	Status change detected: stopped
+1:56:50 PM  [mysql] 	Error: MySQL shutdown unexpectedly.
+1:56:50 PM  [mysql] 	This may be due to a blocked port, missing dependencies, 
+1:56:50 PM  [mysql] 	improper privileges, a crash, or a shutdown by another method.
+1:56:50 PM  [mysql] 	Press the Logs button to view error logs and check
+1:56:50 PM  [mysql] 	the Windows Event Viewer for more clues
+1:56:50 PM  [mysql] 	If you need more help, copy and post this
+1:56:50 PM  [mysql] 	entire log window on the forums
+1:58:15 PM  [mysql] 	Attempting to start MySQL app...
+1:58:15 PM  [mysql] 	Status change detected: running
+</code></pre>
+<p>Stopping and starting it seems to behave normally as well:</p>
+<pre class="code-block language-sql"><code class="language-sql">1:58:15 PM  [mysql] 	Attempting to start MySQL app...
+1:58:15 PM  [mysql] 	Status change detected: running
+1:59:06 PM  [mysql] 	Attempting to stop MySQL app...
+1:59:06 PM  [mysql] 	Status change detected: stopped
+1:59:08 PM  [mysql] 	Attempting to start MySQL app...
+1:59:08 PM  [mysql] 	Status change detected: running
+</code></pre>
+<p>Now, I can access PHPMyAdmin again, meaning the SQL data is safe... But I couldn't log into LiF_Admin which is the DB account. Trying it on the website, I was greeted with:</p>
+<pre class="code-block language-sql"><code class="language-sql">Database connection failed: SQLSTATE[HY000] [1044] Access denied for user 'LiF_Admin'@'localhost' to database 'lif_elevator'
+</code></pre>
+<p>Then in terminal,</p>
+<pre class="code-block language-bash"><code class="language-bash">nicol@Yoga MINGW64 /c/xampp/htdocs/SENG73000_W2 (NK_Logbook)
+$ mysql -u LiF_Admin -p -h localhost -P 3306 lif_elevator
+Enter password: *******
+ERROR 1044 (42000): Access denied for user 'LiF_Admin'@'localhost' to database 'lif_elevator'
+
+</code></pre>
+<p>From here, I opened the DB using root:</p>
+<pre class="code-block language-sql"><code class="language-sql">mysql -u root -h 127.0.0.1 -P 3306
+</code></pre>
+<p>and ran:</p>
+<pre class="code-block language-sql"><code class="language-sql">MariaDB [(none)]&gt; SELECT User, Host
+    -&gt; FROM mysql.user
+    -&gt; WHERE User = 'LiF_Admin';
++-----------+-----------+
+| User      | Host      |
++-----------+-----------+
+| LiF_Admin | localhost |
++-----------+-----------+
+1 row in set (0.001 sec)
+
+MariaDB [(none)]&gt; 
+</code></pre>
+<p>Which does show localhost. Next, I ran the GRANTS command to see permissions for LiF_Admin:</p>
+<pre class="code-block language-sql"><code class="language-sql">MariaDB [(none)]&gt; SHOW GRANTS FOR 'LiF_Admin'@'localhost';
++------------------------------------------------------------------------------------------------------------------+
+| Grants for LiF_Admin@localhost                                                                                   |
++------------------------------------------------------------------------------------------------------------------+
+| GRANT USAGE ON *.* TO `LiF_Admin`@`localhost` IDENTIFIED BY PASSWORD '*408E424C79DA18DC6AE143AB93AD239605AF5957' |
++------------------------------------------------------------------------------------------------------------------+
+1 row in set (0.000 sec)
+
+MariaDB [(none)]&gt; 
+</code></pre>
+<p>The <code class="language-text">GRANT USAGE ON *.*</code> is where the problem is. <code class="language-text">USAGE</code> means the account and password exist but the account does not have DB perms - makes sense since the corrupted file, the mysql.db table was where the lif_elevator perms were stored... So we need to restore the perms using a GRANT command:</p>
+<pre class="code-block language-sql"><code class="language-sql">MariaDB [(none)]&gt; GRANT SELECT, INSERT, UPDATE, DELETE
+    -&gt; ON lif_elevator.*
+    -&gt; TO 'LiF_Admin'@'localhost';
+ERROR 1030 (HY000): Got error 176 "Read page with wrong checksum" from storage engine Aria
+MariaDB [(none)]&gt; 
+</code></pre>
+<p>Which errored out... Bruh.</p>
+<p>Read page with wrong checksum means grants are readable but not... grantable since it's not healthy enough - back to fixing the problem...</p>
+<p>I ran two commands from here, to check the table and repair it:</p>
+<pre class="code-block language-sql"><code class="language-sql">MariaDB [(none)]&gt; CHECK TABLE mysql.db EXTENDED;
++----------+-------+----------+-----------------------------------------------+
+| Table    | Op    | Msg_type | Msg_text                                      |
++----------+-------+----------+-----------------------------------------------+
+| mysql.db | check | error    | Page 0:  Got error: 176 when reading datafile |
+| mysql.db | check | error    | Corrupt                                       |
++----------+-------+----------+-----------------------------------------------+
+2 rows in set (0.046 sec)
+
+MariaDB [(none)]&gt; REPAIR TABLE mysql.db EXTENDED USE_FRM;
++----------+--------+----------+----------------------------+
+| Table    | Op     | Msg_type | Msg_text                   |
++----------+--------+----------+----------------------------+
+| mysql.db | repair | info     | Wrong CRC on datapage at 1 |
+| mysql.db | repair | status   | OK                         |
++----------+--------+----------+----------------------------+
+2 rows in set (0.044 sec)
+
+MariaDB [(none)]&gt; 
+</code></pre>
+<p>OK message is VERY good. Running the table check once more,</p>
+<pre class="code-block language-sql"><code class="language-sql">MariaDB [(none)]&gt; CHECK TABLE mysql.db EXTENDED;
++----------+-------+----------+----------+tage done
+| Table    | Op    | Msg_type | Msg_text |
++----------+-------+----------+----------+
+| mysql.db | check | status   | OK       |
++----------+-------+----------+----------+
+1 row in set (0.001 sec)
+
+MariaDB [(none)]&gt; 
+</code></pre>
+<p>Looks good!</p>
+<p>From here, we can try grants once more:</p>
+<pre class="code-block language-sql"><code class="language-sql">MariaDB [(none)]&gt; GRANT SELECT, INSERT, UPDATE, DELETE
+    -&gt; ON lif_elevator.*
+    -&gt; TO 'LiF_Admin'@'localhost';
+Query OK, 0 rows affected (0.006 sec)              
+
+MariaDB [(none)]&gt; 
+</code></pre>
+<p>Perfect!</p>
+<p>Now, logging in:</p>
+<pre class="code-block language-bash"><code class="language-bash">nicol@Yoga MINGW64 /c/xampp/htdocs/SENG73000_W2 (NK_Logbook)
+$ mysql -u LiF_Admin -p -h localhost -P 3306 lif_elevator
+Enter password: *******
+Welcome to the MariaDB monitor.  Commands end with ; or \g.
+Your MariaDB connection id is 31
+Server version: 10.4.32-MariaDB mariadb.org binary distribution
+
+Copyright (c) 2000, 2018, Oracle, MariaDB Corporation Ab and others.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+MariaDB [lif_elevator]&gt; 
+</code></pre>
+<p>Basically, what happened was:</p>
+<ul class="clean-list">
+<li>MariaDB's internal mysql.db (.MAI file) got corrupted (privilege table)</li>
+<li>Its index and data page were repaired in Powershell</li>
+<li>The table now passes the CHECK TABLE check?</li>
+<li>LiF_Admin lost perms to lif_elevator but then I restored them</li>
+</ul>
+      </section>
+
+      <p class="top-link">
+        <a href="#page_top">Go to the top of this page</a>
+      </p>
+    </main>
+
+    <footer class="site-footer">
+      <p>Copyright &copy; Nick Kapuka</p>
+    </footer>
+
+    <!-- Prism.js scripts for code formatting -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+  </body>
+</html>

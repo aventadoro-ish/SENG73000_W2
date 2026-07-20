@@ -1,0 +1,362 @@
+<!doctype html>
+<!--
+Author: Nick Kapuka
+-->
+
+<html lang="en">
+  <head>
+    <title>NK Logbook Entry - 2026-07-18</title>
+    <meta charset="UTF-8" />
+    <meta name="author" content="Nick Kapuka" />
+    <meta name="description" content="NK Logbook Entry" />
+    <meta name="robots" content="index, follow" />
+    <meta http-equiv="Pragma" content="no-cache" />
+
+    <link rel="icon" href="../../media/icons/LiF_icon.ico" type="image/x-icon" />
+
+    <!-- shared website styling -->
+    <link rel="stylesheet" href="../../css/base.css" />
+
+    <!-- logbook entry page styling -->
+    <link rel="stylesheet" href="../../css/logbook_entry.css" />
+
+    <!-- Prism syntax highlighting theme -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css"
+    />
+    <link rel="stylesheet" href="../../css/code_formatting.css" />
+  </head>
+
+  <body>
+    <!-- Nav bar loaded by JavaScript -->
+    <div id="navbar-placeholder" data-root="../../"></div>
+    <script src="../../js/navbar.js"></script>
+
+    <main class="page-wrapper">
+      <section class="intro-section logbook-entry-intro" id="page_top">
+        <div class="intro-text">
+          <p class="section-label">Daily Logbook Entry</p>
+          <h1>Logbook Entry, 2026-07-18 by Nick Kapuka</h1>
+
+          <p class="intro-description">Added a working door toggle to the elevator-control page, created the elevator_state table, and synchronized the door state between JavaScript, PHP, MariaDB, and the webpage.</p>
+
+          <div class="button-row">
+            <a href="../logbook_NK.html" class="button secondary-button">My Logbook Cover Page</a>
+            <a href="#log" class="button primary-button">Jump to Entry</a>
+          </div>
+        </div>
+
+        <aside class="summary-card">
+          <h2>Entry Snapshot</h2>
+          <p><b>Date:</b> 2026-07-18</p>
+          <p><b>Author:</b> Nick Kapuka</p>
+          <p><b>Focus:</b> Door toggle switch, elevator_state, AJAX, PHP, JavaScript, and MariaDB</p>
+        </aside>
+      </section>
+
+      <section class="logbook-entry-content" id="log">
+<h2 id="entry-overview">Entry overview</h2>
+<p>Implemented the elevator door toggle from end to end. The webpage now sends the requested door state through AJAX, PHP validates and stores it in MariaDB, and the visual elevator updates to show the doors as open or closed.</p>
+<h3 id="key-details">Key details</h3>
+<ul class="clean-list">
+<li><strong>Purpose:</strong> Store and control the elevator door state from the website and prevent the visual elevator from moving while the doors are open.</li>
+<li><strong>Component or tool:</strong> elevator_control.php, JavaScript/AJAX, MariaDB elevator_state table, HTML, and CSS</li>
+<li><strong>Result:</strong> The open/close door toggle works, updates the database, remains synchronized after a page refresh, and blocks visual elevator movement while the doors are open.</li>
+<li><strong>Team contribution:</strong> Nick Kapuka</li>
+</ul>
+      </section>
+      <section class="logbook-entry-content">
+<h2 id="door-toggle-switch-functionality">Door toggle switch functionality:</h2>
+<p>The toggle switch logic can be split into the JS and PHP functionality. The first step was to create a separate table as the current table did not have enough capabilities.</p>
+<h3 id="sql-elevator-state-table">SQL elevator_state table</h3>
+<p>Simple once again. Create DB using SQL, and fill it with the first element (doors open).</p>
+<pre class="code-block language-sql"><code class="language-sql">CREATE TABLE elevator_state (
+    -&gt;     state_id TINYINT UNSIGNED NOT NULL,
+    -&gt;     doors_open BOOLEAN NOT NULL DEFAULT FALSE,
+    -&gt;     updated_at DATETIME NOT NULL
+    -&gt;         DEFAULT CURRENT_TIMESTAMP
+    -&gt;         ON UPDATE CURRENT_TIMESTAMP,
+    -&gt; 
+    -&gt;     PRIMARY KEY (state_id)
+    -&gt; ) ENGINE = InnoDB;
+ERROR 1046 (3D000): No database selected
+MariaDB [(none)]&gt; USE lif_elevator;
+Database changed
+MariaDB [lif_elevator]&gt; CREATE TABLE elevator_state (
+    -&gt;     state_id TINYINT UNSIGNED NOT NULL,
+    -&gt;     doors_open BOOLEAN NOT NULL DEFAULT FALSE,
+    -&gt;     updated_at DATETIME NOT NULL
+    -&gt;         DEFAULT CURRENT_TIMESTAMP
+    -&gt;         ON UPDATE CURRENT_TIMESTAMP,
+    -&gt; 
+    -&gt;     PRIMARY KEY (state_id)
+    -&gt; ) ENGINE = InnoDB;
+Query OK, 0 rows affected (0.017 sec)
+
+MariaDB [lif_elevator]&gt; INSERT INTO elevator_state (
+    -&gt;     state_id,
+    -&gt;     doors_open
+    -&gt; )
+    -&gt; VALUES (
+    -&gt;     1,
+    -&gt;     FALSE
+    -&gt; );
+Query OK, 1 row affected (0.007 sec)
+
+MariaDB [lif_elevator]&gt; SELECT * FROM elevator_state;
++----------+------------+---------------------+
+| state_id | doors_open | updated_at          |
++----------+------------+---------------------+
+|        1 |          0 | 2026-07-20 09:07:24 |
++----------+------------+---------------------+
+1 row in set (0.001 sec)
+
+</code></pre>
+<p>From here, it was all coding. Let's begin with the JS to send the HTTP request to PHP</p>
+<h3 id="js-pt-1">JS Pt 1</h3>
+<p>Same as before, we make a new URLSearchParams and send the HTTP request with request_action &quot;door&quot;</p>
+<pre class="code-block language-javascript"><code class="language-javascript">    // function to handle sending an AJAX req to PHP for door state
+    function sendDoorState (doorState) {
+
+        // format the value like a normal submitted HTML form (the humble AJAX)
+        const requestData = new URLSearchParams();
+
+        // tell PHP where to run the code ("door" works with door state)
+        requestData.append("request_action", "door");
+
+        // doorState will contain either open or close so append it
+        requestData.append("door_state", doorState);
+
+        // send values to PHP without reloading page
+        return fetch("elevator_control.php", {
+            method: "POST",
+            headers: {"Content-Type": "application/x-www-form-urlencoded"},
+            body: requestData.toString()
+        })
+        
+        // when PHP responds, decode JSON to JS Object to handle it
+        .then (function (response) {
+            return response.json();
+        });
+    }
+
+
+</code></pre>
+<p>After this, we must use PHP to listen to the request and query the DB to update it with the new status change.</p>
+<h3 id="php">PHP</h3>
+<p>After the initial <code class="language-text">POST</code>, I added an if statement where code  that handles the door movement/toggle switch functionality and queries the DB.</p>
+<pre class="code-block language-php"><code class="language-php">
+// handle a door-state update separately from a move elevator request
+    if($requestAction === 'door') {
+        // JS will send open/closed so check for that
+        $submittedDoorState = $_POST['door_state'] ?? '';
+
+        // add only two states for doors
+        $allowedDoorStates = ['open', 'closed'];
+
+        // reject other states
+        if(!in_array($submittedDoorState, $allowedDoorStates, true)) {
+            echo json_encode([
+                'success' =&gt; false,
+                'message' =&gt; 'invalid door state'
+            ]);
+            
+            exit;
+        } 
+
+        // read the values - default in DB is false (boolean; 0)
+        $doorsOpen = 0;
+
+        if($submittedDoorState === 'open') {
+            $doorsOpen = 1;
+        }
+
+        // query DB
+
+        try {
+            // update the row that represents door state
+            $query = "
+                UPDATE elevator_state
+                SET doors_open = :doors_open
+                WHERE state_id = 1
+            ";
+
+            $statement = $pdo-&gt;prepare($query);
+
+            $params  = ['doors_open' =&gt; $doorsOpen];
+
+            $result = $statement-&gt;execute($params);
+
+            if($result) {
+                echo json_encode([
+                    'success' =&gt; true,
+                    'message' =&gt; 'door state updated',
+                    'door_state' =&gt; $submittedDoorState
+                ]);
+            } else {
+                echo json_encode([
+                    'success' =&gt; false,
+                    'message' =&gt; 'door state failed to update; its joever'
+                ]);
+            }
+        } catch (PDOException $e) {
+            error_log($e-&gt;getMessage());
+
+            echo json_encode([
+                'success' =&gt; false,
+                'message' =&gt; 'query for door state failed, its joever'
+            ]);
+        }
+
+        // door request complete, do not continue
+
+        exit;
+    }
+
+</code></pre>
+<p>Pretty simple. JS will send a request of &quot;door&quot; and the PHP will handle it. It first makes sure the submitted door state is valid. Following that, the next major section is  querying the DB which has been seen many times in my entries - same old.</p>
+<p>Make a query string</p>
+<p>Prepare.</p>
+<p>Pass parameters.</p>
+<p>Execute.</p>
+<p>Then based on the result, we used <code class="language-text">echo json_encode();</code> to send values back to the JS. From there, the JS handled it.</p>
+<h3 id="js-pt-2">JS pt 2</h3>
+<p>From here, we use JS once more to handle the door response:</p>
+<pre class="code-block language-javascript"><code class="language-javascript">    // handle PHP response to door state
+    function handleDoorResponse(responseData) {
+        if(responseData.success === true) {
+            // convert PHP's open/close to boolean
+            if(responseData.door_state === "open") {
+                // update page text
+                updateDoorDisplay(true);
+            } else {
+                // update page text
+                updateDoorDisplay(false);
+            }
+
+        // update the last command text
+        lastCommandDisplay.textContent = "Doors changed to " + responseData.door_state;
+        } else {
+            // PHP responded but SQL failed
+            // update the last command text
+            lastCommandDisplay.textContent = "Door update rejected " + responseData.message;
+        }
+    } 
+</code></pre>
+<p>Additionally, there were two more helper functions to update the door display visually, switch between their states, and even visually update them using CSS to make it realistic.</p>
+<pre class="code-block language-javascript"><code class="language-javascript">    // doors toggle function (between closed and open)
+    function updateDoorDisplay(newDoorState) {
+        doorsOpen = newDoorState;
+
+        // if the doors are closed, open them
+        if(doorsOpen === true) {
+            doorStatusDisplay.textContent = "Open";
+            doorToggleButton.textContent = "Close Doors";
+            
+            // adds the CSS class to the entire moving elevator car.
+            elevatorCar.classList.add("doors-open");
+
+        // the doors are open, close them
+        } else {
+            doorStatusDisplay.textContent = "Closed";
+            doorToggleButton.textContent = "Open Doors";
+
+            // Remove the open-door class.
+            elevatorCar.classList.remove("doors-open");
+        }
+    }
+
+    // read the door state that PHP placed in the HTML (String)
+    const initialDoorState = doorControlPanel.dataset.doorState;
+
+    // convert string into a true ("closed" is false)
+    const initialDoorsOpen = initialDoorState === "open";
+
+    // update door-related elements with the data
+    updateDoorDisplay(initialDoorsOpen);
+
+
+    // decide which door state should be requested
+    function toggleDoors() {
+        let requestedDoorState = "open";
+
+        // if the doors are already open, request that they close.
+        if (doorsOpen === true) {
+            requestedDoorState = "closed";
+        }
+
+        lastCommandDisplay.textContent = "Requesting doors " + requestedDoorState + "...";
+
+        // ask PHP to update DB
+        sendDoorState(requestedDoorState)
+
+        // DB update succeeded or PHP returned a validation failure
+        .then(handleDoorResponse)
+
+        // network request or JSON decoding failure
+        .catch(handleRequestFail);
+    }   
+
+    // wait for the toggle door switch to be clicked
+    doorToggleButton.addEventListener("click",  toggleDoors);
+</code></pre>
+<p>The final result looked like so. Most of the UI was about the same but the &quot;last command&quot; syncs upon page refresh (it pulls the latest request #), and the open/close doors fully works.</p>
+<figure>
+  <img alt="Elevator-control page with the doors closed" class="img_med" src="../../media/images/ElevatorRequest_ClosedDoorsDemo.png" />
+  <figcaption><b>Elevator-control page with the doors closed</b></figcaption>
+</figure>
+
+<figure>
+  <img alt="Visual elevator door state after using the door toggle" class="img_med" src="../../media/images/Pasted image 20260720152508.png" />
+  <figcaption><b>Visual elevator door state after using the door toggle</b></figcaption>
+</figure>
+
+<p>Additionally, the elevator can queue requests into the DB but the (visual) elevator will not move until the doors are closed. See below.</p>
+<figure>
+  <img alt="Elevator request queued while the visual doors are open" class="img_med" src="../../media/images/ElevatorRequest_OpenDoorsNotMovingDemo.png" />
+  <figcaption><b>Elevator request queued while the visual doors are open</b></figcaption>
+</figure>
+
+<figure>
+  <img alt="Visual elevator prevented from moving while the doors are open" class="img_med" src="../../media/images/ElevatorRequest_OpenDoorsCannotMoveDemo.png" />
+  <figcaption><b>Visual elevator prevented from moving while the doors are open</b></figcaption>
+</figure>
+
+<h3 id="sql">SQL</h3>
+<p>Naturally, the DB updates too:</p>
+<pre class="code-block language-sql"><code class="language-sql">MariaDB [lif_elevator]&gt; select * from elevator_state;
++----------+------------+-----------------+---------------------+
+| state_id | doors_open | sabbath_enabled | updated_at          |
++----------+------------+-----------------+---------------------+
+|        1 |          0 |               0 | 2026-07-20 15:38:06 |
++----------+------------+-----------------+---------------------+
+1 row in set (0.001 sec)
+
+MariaDB [lif_elevator]&gt; select * from elevator_state;
++----------+------------+-----------------+---------------------+
+| state_id | doors_open | sabbath_enabled | updated_at          |
++----------+------------+-----------------+---------------------+
+|        1 |          1 |               0 | 2026-07-20 15:38:11 |
++----------+------------+-----------------+---------------------+
+1 row in set (0.000 sec)
+
+MariaDB [lif_elevator]&gt; 
+</code></pre>
+<p>The following day - Sabbath mode.</p>
+      </section>
+
+      <p class="top-link">
+        <a href="#page_top">Go to the top of this page</a>
+      </p>
+    </main>
+
+    <footer class="site-footer">
+      <p>Copyright &copy; Nick Kapuka</p>
+    </footer>
+
+    <!-- Prism.js scripts for code formatting -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+  </body>
+</html>

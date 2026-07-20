@@ -1,0 +1,751 @@
+<!doctype html>
+<!--
+Author: Nick Kapuka
+-->
+
+<html lang="en">
+  <head>
+    <title>NK Logbook Entry - 2026-07-17</title>
+    <meta charset="UTF-8" />
+    <meta name="author" content="Nick Kapuka" />
+    <meta name="description" content="NK Logbook Entry" />
+    <meta name="robots" content="index, follow" />
+    <meta http-equiv="Pragma" content="no-cache" />
+
+    <link rel="icon" href="../../media/icons/LiF_icon.ico" type="image/x-icon" />
+
+    <!-- shared website styling -->
+    <link rel="stylesheet" href="../../css/base.css" />
+
+    <!-- logbook entry page styling -->
+    <link rel="stylesheet" href="../../css/logbook_entry.css" />
+
+    <!-- Prism syntax highlighting theme -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css"
+    />
+    <link rel="stylesheet" href="../../css/code_formatting.css" />
+  </head>
+
+  <body>
+    <!-- Nav bar loaded by JavaScript -->
+    <div id="navbar-placeholder" data-root="../../"></div>
+    <script src="../../js/navbar.js"></script>
+
+    <main class="page-wrapper">
+      <section class="intro-section logbook-entry-intro" id="page_top">
+        <div class="intro-text">
+          <p class="section-label">Daily Logbook Entry</p>
+          <h1>Logbook Entry, 2026-07-17 by Nick Kapuka</h1>
+
+          <p class="intro-description">Established AJAX communication between the elevator-control JavaScript and PHP, logged remote floor requests into MariaDB, and synchronized the visual elevator with the newest database request.</p>
+
+          <div class="button-row">
+            <a href="../logbook_NK.html" class="button secondary-button">My Logbook Cover Page</a>
+            <a href="#log" class="button primary-button">Jump to Entry</a>
+          </div>
+        </div>
+
+        <aside class="summary-card">
+          <h2>Entry Snapshot</h2>
+          <p><b>Date:</b> 2026-07-17</p>
+          <p><b>Author:</b> Nick Kapuka</p>
+          <p><b>Focus:</b> AJAX, JavaScript/PHP communication, elevator request logging, and MariaDB synchronization</p>
+        </aside>
+      </section>
+
+      <section class="logbook-entry-content" id="log">
+<h2 id="entry-overview">Entry overview</h2>
+<p>Connected the elevator-control webpage to PHP and MariaDB so button presses could be sent through AJAX, validated, logged as elevator requests, and used to update the visual elevator only after a successful database response.</p>
+<h3 id="key-details">Key details</h3>
+<ul class="clean-list">
+<li><strong>Purpose:</strong> Connect the elevator-control interface to the backend without reloading the page and store each remote floor request in the database.</li>
+<li><strong>Component or tool:</strong> JavaScript fetch/AJAX, PHP, JSON, PDO, MariaDB, and elevator_control.php</li>
+<li><strong>Result:</strong> Successfully sent floor requests from JavaScript to PHP, validated and inserted them into elevator_requests, returned JSON confirmations, and loaded the newest request when the page refreshed.</li>
+<li><strong>Team contribution:</strong> Nick Kapuka</li>
+</ul>
+      </section>
+      <section class="logbook-entry-content">
+<h2 id="elevator-control-php-and-js">Elevator_control.php and JS</h2>
+<h3 id="js-and-php-communication">JS and PHP communication</h3>
+<h4 id="the-test">The Test</h4>
+<p>The first step was to get PHP and JS to communicate. The actual page is PHP while the cool animation and button-checking/page-updating functionality is JS.</p>
+<p>For each button to actually register and be interpreted inside the PHP we need something called AJAX.</p>
+<p>Asynchronous JavaScript and XML. It's a technique used to send and receive data from a server in the background without reloading the webpage. This uses JSON files and HTTP requests.</p>
+<p>The rough procedure is:</p>
+<ol class="clean-list">
+<li>user action:<ul class="clean-list">
+<li>User clicks a button and JS creates form-like data</li>
+</ul>
+</li>
+<li>request created:<ul class="clean-list">
+<li>JS creates a background HTTP request using fetch()</li>
+</ul>
+</li>
+<li>Server processing:<ul class="clean-list">
+<li>the server processes the request (PHP) and sends data back via JSON</li>
+</ul>
+</li>
+<li>page update:<ul class="clean-list">
+<li>JS reads the response and updates only the specific part of the page needed without reloading.</li>
+</ul>
+</li>
+</ol>
+<h5 id="php">PHP:</h5>
+<p>From here, I had to let PHP accept the JS request (as seen in steps 2-3). This was done by the following code:</p>
+<pre class="code-block language-php"><code class="language-php">// elevator_control JS sends a POST request when an elevator button is pressed
+// read it here
+if($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+    // tell JS that PHP will return a JSON file instead of HTML:
+    header('Content-Type: application/json');
+
+    // receive JS values
+    $submittedFloor = $_POST['requested_floor'] ?? '';
+    $sourceController = $_POST['source_controller'] ?? '';
+
+    // temporary test response
+    echo json_encode([
+        'success' =&gt; true,
+        'requested_floor' =&gt; $submittedFloor,
+        'source_controller' =&gt; $sourceController
+    ]);
+    
+    // don't render the rest of elevator_control.php
+    exit;
+}
+</code></pre>
+<p>Essentially, this listens for a POST (sent via JS) and  grabs the value into local PHP variables using <code class="language-text">$_POST</code>.</p>
+<p>It uses json_encode which converts a PHP array of style:</p>
+<pre class="code-block language-php"><code class="language-php">'success' =&gt; true,
+'requested_floor' =&gt; $submittedFloor,
+</code></pre>
+<p>Into a JSON like:</p>
+<pre class="code-block language-json"><code class="language-json">{
+	"success": true,
+	"requested_floor": 3
+}
+</code></pre>
+<p>That's about all the PHP handling for now.</p>
+<h5 id="js-pt-1">JS Pt 1</h5>
+<p>The JS was next:</p>
+<pre class="code-block language-javascript"><code class="language-javascript">// send an elevator request to elevator_control.php
+function sendElevatorRequest(floor, sourceController) {
+    // format values like normal form data using a constructor of URLSearchParams() (big ass Web API magic)
+    const requestData = new URLSearchParams();
+
+    // add a named value  (floro) to the form-style request data ("requested_floor")
+    requestData.append("requested_floor", floor);
+    requestData.append("source_controller", sourceController);
+
+    // send an HTTP request without reloading the page
+    // POST sends the data to the PHP; content-type formats it like an HTML form;
+    // body is the actual floor/source values; response.json converts PHPs JSON response into a JS object
+    return fetch("elevator_control.php" , {
+        method: "POST",
+        headers: {"Content-Type": "application/x-www-form-urlencoded"},
+        body: requestData.toString()
+    })
+
+    .then(function (response) {
+        return response.json();
+    })
+}
+</code></pre>
+<p>This is a bit more complicated and required a fair amount of YouTube videos to understand..., but it mostly lies with that fetch command.</p>
+<p>requestData makes a new object with the URLSearchParams web API. It just has a bunch of built-in functions. Append and fetch are two of them.</p>
+<p>.append is a built-in method from URLSearchParams that appends the submitted name, &quot;requested_floor&quot;</p>
+<p>If the variable &quot;floor&quot; contains a 2, the JSON will read:</p>
+<pre class="code-block language-json"><code class="language-json">requested_floor=2
+</code></pre>
+<p>The second append does the same but for source_controller. Here, it will be &quot;web_floor_station&quot; or &quot;website&quot; or whatever else.</p>
+<pre class="code-block language-json"><code class="language-json">requested_floor=2&amp;source_controller=web_floor_station
+</code></pre>
+<p>The PHP then receives those values as:</p>
+<pre class="code-block language-php"><code class="language-php">$_POST['requested_floor'];
+$_POST['source_controller'];
+</code></pre>
+<p>The last snippet that uses <code class="language-text">fetch</code> has a few roles.</p>
+<pre class="code-block language-javascript"><code class="language-javascript">return fetch("elevator_control.php", {
+</code></pre>
+<p><code class="language-text">fetch</code> itself sends an HTTP request, and here, it was specified to send it to elevator_control.php.</p>
+<p>The method used was <code class="language-text">POST</code> as most of the stuff we've done so far is.</p>
+<p>The next, <code class="language-text">Content-Type</code> part,</p>
+<pre class="code-block language-javascript"><code class="language-javascript">headers: {
+    "Content-Type": "application/x-www-form-urlencoded"
+}
+</code></pre>
+<p>Content-Type tells PHP how the data is formatted, and here, it was specified that the data was encoded like a standard HTML form.</p>
+<p>The last part converts the <code class="language-text">requestData</code> object to string using <code class="language-text">toString()</code>, a built-in method. It converts the object into readable text to send via the HTTP request.</p>
+<pre class="code-block language-text"><code class="language-text">requested_floor=2&amp;source_controller=web_floor_station
+</code></pre>
+<p>Ultimately, that block says &quot;send (toString)(requestData) as an HTTP request in the style of a regular HTML form to the 'elevator_controls.php' webpage&quot;</p>
+<p>However... <code class="language-text">Fetch</code> does not return PHP's answer since there can be many delays. In the future, the PHP will have to run and execute, query mariaDB, log/pull data, and send back a response to the JS.</p>
+<p>Because of this, <code class="language-text">Fetch</code> returns an object called a <code class="language-text">Promise</code> which represents a value that'll be available. A rough comparrison is function definitions in C where you tell the compiler &quot;don't worry about this function, it'll be defined later.&quot;</p>
+<p>Another way to think of it is, “I don’t have PHP’s response yet, but I promise to report back.”</p>
+<p>A <code class="language-text">promise</code> has three states:
+1) Pending - operation unfinished and JS waiting
+2) Fulfilled - operation finished successfully
+3) Reject - operation failed</p>
+<p>From here, we can use <code class="language-text">.then</code>, a method belonging to <code class="language-text">Promise</code>.</p>
+<p>When the <code class="language-text">Promise</code> is fulfilled, run this code is what the function of <code class="language-text">.then</code> is.</p>
+<p>When the <code class="language-text">Promise</code> changes states, it runs this code</p>
+<pre class="code-block language-javascript"><code class="language-javascript">function (response) {
+    return response.json();
+}
+</code></pre>
+<p><code class="language-text">reponse.json()</code> reads the response, interprets it as JSON, and converts into a JS value.</p>
+<h5 id="js-pt-2">JS Pt 2</h5>
+<p>The next JS function was pretty messy, but it is just four callback functions that pass into each other in order of execution. This temporarily replaced the commented-out code snippet which moved the car to the floor selected. For now, we don't want movement - just communication testing.</p>
+<pre class="code-block language-javascript"><code class="language-javascript">    // move car to floor when a floor button is clicked
+    /*
+    floorButtons.forEach(function (button) {
+        button.addEventListener("click", function () {
+            moveCarToFloor(button.dataset.floor, "floor");
+        });
+    });
+    */
+
+    // replacing with a temporary function:
+    
+    floorButtons.forEach(function (button) {
+        button.addEventListener("click", function () {
+            const floor = button.dataset.floor;
+            sendElevatorRequest(floor, "web_floor_station")
+                .then(function (responseData) {
+                    console.log(responseData);
+                })
+                .catch(function(error) {
+                    console.error("Elevator request failed", error);
+                });
+        });
+    });
+</code></pre>
+<ol class="clean-list">
+<li><code class="language-text">function (button)</code> — runs once for every button click</li>
+<li><code class="language-text">function ()</code> — runs later when that button is clicked.</li>
+<li><code class="language-text">function (responseData)</code> — runs later when PHP responds successfully.</li>
+<li><code class="language-text">function (error)</code> — runs later if the asynchronous process fails.</li>
+</ol>
+<p>The order is:</p>
+<ol class="clean-list">
+<li>Visit each button</li>
+</ol>
+<pre class="code-block language-javascript"><code class="language-javascript">floorButtons.forEach(function (button) {
+</code></pre>
+<p>Since there are three floors and six buttons (three car controller; three floor controllers), this function loops through (forEach) those HTML button elements:</p>
+<pre class="code-block language-text"><code class="language-text">First run:  button = Floor 3 button
+Second run: button = Floor 2 button
+Third run:  button = Floor 1 button
+</code></pre>
+<ol start="2">
+<li>Wait for a click</li>
+</ol>
+<pre class="code-block language-javascript"><code class="language-javascript">button.addEventListener("click", function () {
+</code></pre>
+<p>Simple. Wait for a button to be clicked.</p>
+<p>The code inside,</p>
+<pre class="code-block language-javascript"><code class="language-javascript">const floor = button.dataset.floor;
+</code></pre>
+<p>grabs the HTML element of &quot;data-floor&quot; using JS's dataset object.</p>
+<pre class="code-block language-markup"><code class="language-markup">&lt;button class="floor-request-button" data-floor="2"&gt;
+ Request Car
+&lt;/button&gt;
+</code></pre>
+<p>It maps like:</p>
+<pre class="code-block language-text"><code class="language-text">HTML:       data-floor="2"
+JavaScript: button.dataset.floor
+Result:     "2"
+</code></pre>
+<ol start="3">
+<li>Sending the request:</li>
+</ol>
+<pre class="code-block language-javascript"><code class="language-javascript">sendElevatorRequest(floor, "web_floor_station")
+</code></pre>
+<p>Since we're waiting for a valid <code class="language-text">Promise</code> return, we use another callback function which checks for a valid response,</p>
+<ol start="4">
+<li>Response received:</li>
+</ol>
+<p>A successful response is processed as:</p>
+<pre class="code-block language-javascript"><code class="language-javascript">.then(function (responseData) {
+	console.log(responseData);
+})
+</code></pre>
+<p>Which then logs the valid response received from the ``Promise</p>
+<p>If an error occurs, we run the error code:</p>
+<pre class="code-block language-javascript"><code class="language-javascript">.catch(function(error) {
+	console.error("Elevator request failed", error);
+});
+</code></pre>
+<h4 id="expanding-and-inserting-into-the-db">Expanding and inserting into the DB</h4>
+<h5 id="elevator-requests-db-overview">elevator_requests DB Overview</h5>
+<p>Comms were established and checked so the next step is to log any elevator movement into the DB.</p>
+<p>The full elevator request table looks like:</p>
+<pre class="code-block language-sql"><code class="language-sql">MariaDB [lif_elevator]&gt; desc elevator_requests;
++----------------------+---------------------+------+-----+---------------------+----------------+
+| Field                | Type                | Null | Key | Default             | Extra          |
++----------------------+---------------------+------+-----+---------------------+----------------+
+| elevator_request_id  | int(10) unsigned    | NO   | PRI | NULL                | auto_increment |
+| request_type         | varchar(20)         | NO   |     | NULL                |                |
+| requested_floor      | tinyint(3) unsigned | NO   |     | NULL                |                |
+| requested_by_user_id | int(10) unsigned    | YES  | MUL | NULL                |                |
+| source_controller    | varchar(30)         | NO   |     | NULL                |                |
+| request_status       | varchar(20)         | NO   |     | pending             |                |
+| requested_at         | datetime            | NO   |     | current_timestamp() |                |
+| accepted_at          | datetime            | YES  |     | NULL                |                |
+| completed_at         | datetime            | YES  |     | NULL                |                |
+| failure_reason       | varchar(255)        | YES  |     | NULL                |                |
++----------------------+---------------------+------+-----+---------------------+----------------+
+10 rows in set (0.015 sec)
+
+MariaDB [lif_elevator]&gt; 
+</code></pre>
+<p>Not all these values have to be modified right away. I'll start with writing to these values:</p>
+<table class="logbook-table">
+<thead>
+<tr>
+  <th>Table Value</th>
+  <th>new value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>request_type</td>
+  <td>'remote'</td>
+</tr>
+<tr>
+  <td>requested_floor</td>
+  <td>pull from JS code</td>
+</tr>
+<tr>
+  <td>requested_by_user_id</td>
+  <td><code class="language-text">$_SESSION['user_id']</code></td>
+</tr>
+<tr>
+  <td>source_controller</td>
+  <td>received from JS/website</td>
+</tr>
+<tr>
+  <td></td>
+  <td></td>
+</tr>
+</tbody>
+</table>
+<p>The other fields can be ignored for now, the goal is for a button click to log each floor uniquely into the DB.</p>
+<h5 id="rewriting-the-php">Rewriting the PHP</h5>
+<p>From here, the PHP logic was changed as such:</p>
+<p>There were two major blocks. One handled edge-cases for the different values as seen below:</p>
+<pre class="code-block language-php"><code class="language-php">// convert submitted floor into a valid integer
+    $requestedFloor = filter_var($submittedFloor, FILTER_VALIDATE_INT);
+    
+    // create a 3-element array (since we have 3 floors... for now)
+    $allowedFloors = [1, 2, 3];
+    
+    // reject any other values
+    if($requestedFloor === false || !in_array($requestedFloor, $allowedFloors, true)) {
+        // print the error message
+        echo json_encode([
+            'success' =&gt; false,
+            'message' =&gt; 'invalid elevator floor'
+        ]);
+        exit;
+    }
+
+    // once again, only use valid sources
+
+    $allowedSources = ['web_floor_station', 'web_car_controller'];
+
+    // and once again, handle valid source controllers (from the web)
+    // reject unknown controller names
+    if(!in_array($sourceController, $allowedSources, true)) {
+
+        // print message
+
+        echo json_encode([
+
+            'success' =&gt; false,
+
+            'message' =&gt; 'invalid source controller'
+
+        ]);
+
+        exit;
+
+    }
+
+  
+
+    // grab the user ID
+
+    // login.php stored it in this session
+
+    $requestedByUserID = $_SESSION['user_id'] ?? null;
+
+  
+
+    // if empty, get yo ahh outta here
+
+    if($requestedByUserID === null){
+
+        echo json_encode([
+
+            'success' =&gt; false,
+
+            'message' =&gt; 'the logged-in user could not be identified'
+
+        ]);
+
+        header('Location: ../login.html');
+
+        exit;
+
+    }
+</code></pre>
+<p>Nothing of note here except for two functions:</p>
+<pre class="code-block language-php"><code class="language-php">filter_var();
+// and
+in_array()
+</code></pre>
+<p><code class="language-text">filter_var($string, FILTER_VALIDATE_INT)</code> basically validates string to int. In my notes I had it as:</p>
+<table class="logbook-table">
+<thead>
+<tr>
+  <th><code class="language-text">filter_var(..., FILTER_VALIDATE_INT)</code></th>
+  <th>Validates and converts an integer-like value</th>
+  <th><code class="language-text">"8"</code> becomes <code class="language-text">8</code>; <code class="language-text">"hello"</code> becomes <code class="language-text">false</code></th>
+</tr>
+</thead>
+<tbody>
+</tbody>
+</table>
+<p><code class="language-text">in_array()</code> searches if a value exists within an array's elements. In this example,</p>
+<pre class="code-block language-php"><code class="language-php">in_array($requestedFloor, $allowedFloors, true)
+</code></pre>
+<p>Checks if the value wanted, $requestedFloor, is within the $allowedFloors array. <code class="language-text">true</code> means strict comparison.</p>
+<p>Means integer 2 must match integer 2, and &quot;2&quot; won't match with integer 2.</p>
+<p>The next PHP block was the try-catch that actually queried the data into the DB:</p>
+<pre class="code-block language-php"><code class="language-php">try {
+        // insert into DB
+        $query = "
+            INSERT INTO elevator_requests (
+                request_type,
+                requested_floor,
+                requested_by_user_id,
+                source_controller
+            )
+        
+            VALUES (
+                :request_type,
+                :requested_floor,
+                :requested_by_user_id,
+                :source_controller
+            )
+        ";
+
+        $statement = $pdo-&gt;prepare($query);
+
+        $params = [
+            'request_type' =&gt; 'remote',
+            'requested_floor' =&gt; $requestedFloor,
+            'requested_by_user_id' =&gt; $requestedByUserID,
+            'source_controller' =&gt; $sourceController
+        ];
+
+        $result = $statement-&gt;execute($params);
+
+        if($result) {
+            // retrieve the auto-generated elevator_request_id
+            // type-cast to int since we need it to be int for sending it back to JS
+            $elevatorRequestID = (int) $pdo-&gt;lastInsertId();
+
+            // send the successful query back to JS
+            echo json_encode([
+                'success' =&gt; true,
+                'message' =&gt; 'elevator request logged successfully!',
+                'elevator_request_id' =&gt; $elevatorRequestID,
+                'requested_floor' =&gt; $requestedFloor,
+                'source_controller' =&gt; $sourceController
+            ]);
+        // query failed/request not logged
+        } else {
+            echo json_encode([
+                'success' =&gt; false,
+                'message' =&gt; 'elevator request was not logged, please try again'
+            ]);
+        }
+    } 
+    catch (PDOException $e) 
+    {
+        error_log($e-&gt;getMessage());
+
+        // report message back to JS too
+        echo json_encode([
+            'success' =&gt; false,
+            'message' =&gt; 'a database error occured that prevented the elevator request'
+        ]);
+    }
+</code></pre>
+<p>Most of this code is basically the same as any other query seen in my logbooks in the past. The only few exceptions are:</p>
+<pre class="code-block language-php"><code class="language-php">$elevatorRequestID = (int) $pdo-&gt;lastInsertId();
+</code></pre>
+<p>This uses two 'new' things - typecast and  a new function. The type-cast to int is done since the function, <code class="language-text">lastInsertId()</code> returns the auto-generated ID as a <strong>string</strong> but we want the value as an int for <code class="language-text">json_encode()</code>.</p>
+<p>Everything else is basically a normal query.</p>
+<h5 id="testing-it">Testing it:</h5>
+<p>Now, to test it. The expected results are two things:
+When a button is pressed on the website (for elevator control),</p>
+<ol class="clean-list">
+<li>The JS will log it in web-devtools in JSON format.</li>
+<li>The MariaDB will be updated with the new entry.</li>
+</ol>
+<p>Testing the JS logging, I received the following in console:</p>
+<pre class="code-block language-json"><code class="language-json">{
+	success: true,
+	message: 'elevator request logged successfully!',
+	elevator_request_id: 3,
+	requested_floor: 3,
+	source_controller: 'web_floor_station'
+}
+</code></pre>
+<p>Note, it &quot;started&quot; at 3 since I had one previous attempt where it logged it into the DB but didn't echo it in the console since I forgot a semi-colon...</p>
+<p>And for visual proof (please ignore the main page for now, the JS that updates it has been turned off due to testing; maintenance mode ahh):</p>
+<figure>
+  <img alt="Successful remote elevator request shown in the browser console" class="img_med" src="../../media/images/RemoteRequest_ConsoleLogging.png" />
+  <figcaption><b>Successful remote elevator request shown in the browser console</b></figcaption>
+</figure>
+
+<p>And within the DB, I received:</p>
+<pre class="code-block language-sql"><code class="language-sql">MariaDB [lif_elevator]&gt; SELECT * FROM elevator_requests ORDER BY elevator_request_id DESC;
++---------------------+--------------+-----------------+----------------------+-------------------+----------------+---------------------+-------------+--------------+----------------+
+| elevator_request_id | request_type | requested_floor | requested_by_user_id | source_controller | request_status | requested_at        | accepted_at | completed_at | failure_reason |
++---------------------+--------------+-----------------+----------------------+-------------------+----------------+---------------------+-------------+--------------+----------------+
+|                   4 | remote       |               3 |                    1 | web_floor_station | pending        | 2026-07-18 16:48:58 | NULL        | NULL         | NULL           |
+|                   3 | remote       |               3 |                    1 | web_floor_station | pending        | 2026-07-18 16:48:13 | NULL        | NULL         | NULL           |
+|                   2 | remote       |               3 |                    1 | web_floor_station | pending        | 2026-07-18 16:48:08 | NULL        | NULL         | NULL           |
++---------------------+--------------+-----------------+----------------------+-------------------+----------------+---------------------+-------------+--------------+----------------+
+3 rows in set (0.001 sec)
+
+MariaDB [lif_elevator]&gt; 
+</code></pre>
+<p>or for visual clarity,</p>
+<figure>
+  <img alt="Remote elevator requests stored in the MariaDB table" class="img_med" src="../../media/images/RemoteRequest_DBLogging.png" />
+  <figcaption><b>Remote elevator requests stored in the MariaDB table</b></figcaption>
+</figure>
+
+<h5 id="only-updating-the-elevator-once-the-request-was-logged-successfully">Only updating the elevator once the request was logged successfully</h5>
+<p>Since we don't want the webpage to move automatically, regardless of whether the request was logged or not, we need to add logic for it to only move when PHP says it's allowed.</p>
+<p>Note, in <strong>phase 3</strong> this will have to be changed to check for this value in the SQL:</p>
+<pre class="code-block language-sql"><code class="language-sql">MariaDB [lif_elevator]&gt; SELECT accepted_at, completed_at FROM elevator_requests;
++-------------+--------------+
+| accepted_at | completed_at |
++-------------+--------------+
+| NULL        | NULL         |
+| NULL        | NULL         |
+| NULL        | NULL         |
++-------------+--------------+
+3 rows in set (0.000 sec)
+
+</code></pre>
+<p>Both of these are currently NULL, but they will be updated once the <strong>real</strong> elevator actually moves. It will update the DB and say &quot;yep I'm on floor 3 now&quot; which is when the elevator on the website will be updated/move to floor 3 there. Basically, sync the physical elevator to the one on the website using the DB.</p>
+<p>From here, I got back into the JS development...</p>
+<p>The first JS task was to handle PHP's response. The visual elevator should only move if everything went good on PHP's end, so we account for that in this function:</p>
+<pre class="code-block language-javascript"><code class="language-javascript">    // new function to handle a successful PHP response
+    function handleResponse (responseData) {
+        // PHP can still send a response successfully but SQL can fail, handle that by ensuring that nothing returns false (from json_encode())
+        if(responseData.success === true) {
+            // HTML data attributes contain strings so convert the floor to a string
+            // php returns requested_floor: 3, while HTML uses "3"
+            const floor = String(responseData.requested_floor);
+
+            // moveCarToFloor excepts "floor" or "car"
+            // let floor be the default and change it below if needed
+            let commandSource = "floor";
+
+            // determine who submitted the request
+            if (responseData.source_controller === "web_car_controller") {
+                // switch to car
+                commandSource = "car";
+            }
+            
+            if (responseData.movement_allowed === false) {
+                // sync page to DB door state
+                updateDoorDisplay(true);
+
+                lastCommandDisplay.textContent  = "Request #" + responseData.elevator_request_id + " logged for floor " 
+                                                    + floor + " - cannot move with doors open";
+
+                return;
+            }
+
+            // move the visual elevator only after the request was logged
+            moveCarToFloor(floor, commandSource);
+
+            // display the DB request number confirmation by stitching strings together
+            lastCommandDisplay.textContent = "Request #" + responseData.elevator_request_id + " logged for floor " + floor;
+        } else {
+            // PHP responded but it came false (validation issue or DB failure)
+            lastCommandDisplay.textContent = "requested rejected" + responseData.message;
+        }
+    }
+</code></pre>
+<p>The:</p>
+<pre class="code-block language-javascript"><code class="language-javascript">if(responseData.success === true)
+</code></pre>
+<p>Is what ensures both PHP and SQL did their jobs successfully.</p>
+<pre class="code-block language-javascript"><code class="language-javascript">moveCarToFloor(floor, "floor");
+</code></pre>
+<p>Calls the animation functions which moves the car to the proper positions.
+<code class="language-text">lastCommandDisplay.textContent</code> just shows prints data to the page.</p>
+<p>Additionally, a function w as made to handle an actual AJAX failure - JSON didn't return properly or whatever other issue:</p>
+<pre class="code-block language-javascript"><code class="language-javascript">// handle an AJAX failure - network failure, invalid JSON response, etc.
+function handleRequestFail(error) {
+    lastCommandDisplay.textContent = "the elevator request could not be sent";
+    console.error("elevator request failed due to: ", error);
+}
+</code></pre>
+<p>Pretty simple. If error, show error message and log it.</p>
+      </section>
+      <section class="logbook-entry-content">
+<h2 id="note-taking-issue">Note taking issue</h2>
+<p>From here, I continued the development further. Unfortunately, my Obsidian was having loading issues so my note-taking in the moment wasn't possible. Instead, the rest of this entry is mostly from memory in order of events. While discussing a previous section, you may see future additions in the same image.</p>
+<h3 id="reading-from-db-for-refresh-sync">Reading from DB for refresh sync</h3>
+<p>After that point, I believe comms were just established successfully, but the full cycle was not fully setup. The requests were logging into the DB, but the next part was to read from the DB everytime the webpage was updated. This was done using more PHP logic to query the DB and read from it using <code class="language-text">fetch</code>.</p>
+<pre class="code-block language-php"><code class="language-php">// create a dynamic default display if there are no elevator requests - pull from DB to keep it updated:
+$initialFloor = 1;
+$initialRequestID = null;
+$initialSource = 'floor';
+$initialStatus = 'idle';
+
+try {
+    // query has no user input so a prep statement doesn't have to be used:
+    $query = "
+        SELECT
+            elevator_request_id,
+            requested_floor,
+            source_controller,
+            request_status
+        FROM elevator_requests
+        ORDER BY elevator_request_id DESC
+        LIMIT 1    
+    ";
+
+    // run the query
+    $statement = $pdo-&gt;query($query);
+
+    // retireve the newest row or false if empty
+    $latestRequest = $statement-&gt;fetch();
+
+    if($latestRequest) {
+        $initialFloor = (int) $latestRequest['requested_floor'];
+        $initialRequestID = (int) $latestRequest['elevator_request_id'];
+        $initialStatus = (int) $latestRequest['request_status'];
+
+        if($latestRequest['source_controller'] === 'web_car_controller') {
+            $initialSource = 'car';
+        }
+
+    }
+} catch (PDOException $e) {
+    // Keep the default Floor 1/System idle display if loading fails.
+    error_log($e-&gt;getMessage());
+}
+</code></pre>
+<p>This is outside of the <code class="language-text">$_SERVER['REQUEST_METHOD] === 'POST'</code> and is the default loading of the webpage/php. That means it will pull from the DB and write stuff in as soon as the page loads.</p>
+<p>Additionally, here are two more associated JS functions that I'm unsure if I mentioned elsewhere, but they're directly connected to the elevator:</p>
+<pre class="code-block language-javascript"><code class="language-javascript">    // moves the elevator car to the desired floor based on the floor selected and source (floor controller/cab controller)
+    function moveCarToFloor(floor, commandSource) {
+        if (!elevatorCar) {
+            return;
+        }
+
+        elevatorCar.style.bottom = carPositions[floor];
+        currentFloorDisplay.textContent = floor;
+        carScreen.textContent = floor;
+
+        floorRows.forEach(function (row) {
+            row.classList.remove("active-floor");
+
+            if (row.dataset.floor === floor) {
+                row.classList.add("active-floor");
+            }
+        });
+
+        carButtons.forEach(function (button) {
+            button.classList.remove("active-car-button");
+
+            if (button.dataset.floor === floor) {
+                button.classList.add("active-car-button");
+            }
+        });
+    }
+
+    // if an SQL request exists, position the visual elevator at that floor
+    if (initialRequestID !== "") {
+        moveCarToFloor(initialFloor, initialSource);
+
+        // moveCarToFloor changes the command text so it must be replaced with the DB request info afterward
+        lastCommandDisplay.textContent = "request #" + initialRequestID + " for floor " + initialFloor;
+    }
+</code></pre>
+<p>The one above handles the physical movement of the elevator.</p>
+<p>The &quot;functions&quot; below is what handles the processing of the &quot;request car&quot; and &quot;go to floor 3&quot;</p>
+<pre class="code-block language-javascript"><code class="language-javascript">    floorButtons.forEach(function (button) {
+        // give this specific button (in the loop) instructions for what to do when clicked
+        button.addEventListener("click", function () {
+
+            // we already have the specific button from the forEach loop
+            const floor = button.dataset.floor;
+
+            lastCommandDisplay.textContent = "Sending request for Floor " + floor + "...";
+
+            // send the request and wait for PHP's answer
+            sendElevatorRequest(floor, "web_floor_station")
+
+            // PHP responded and its JSON was decoded
+            .then(handleResponse)
+
+            // the network request or JSON decoding failed
+            .catch(handleRequestFail);
+        });
+    });
+
+    // replace old car call with new one:
+    carButtons.forEach(function (button) {
+        // give this specific button (in the loop) instructions for what to do when clicked
+        button.addEventListener("click", function() {
+
+            // we already have the specific button from the forEach loop
+            const floor = button.dataset.floor;
+
+            // update command display
+            lastCommandDisplay.textContent = "sending car-controller request  for floor " + floor + " ...";
+
+            // use existing AJAX function but identify source as car controller
+            sendElevatorRequest(floor, "web_car_controller")
+
+                // once PHP responded and its JSON is decoded
+                .then (handleResponse)
+
+                // network request or decoding failed
+                .catch (handleRequestFail);
+        });
+    });
+</code></pre>
+<p>That was about it for this entry, the goal for tomorrow is the toggle switch + sabbath mode triggers.</p>
+      </section>
+
+      <p class="top-link">
+        <a href="#page_top">Go to the top of this page</a>
+      </p>
+    </main>
+
+    <footer class="site-footer">
+      <p>Copyright &copy; Nick Kapuka</p>
+    </footer>
+
+    <!-- Prism.js scripts for code formatting -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+  </body>
+</html>
