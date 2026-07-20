@@ -1,0 +1,433 @@
+<!doctype html>
+<!--
+Author: Nick Kapuka
+-->
+
+<html lang="en">
+  <head>
+    <title>NK Logbook Entry - 2026-07-19</title>
+    <meta charset="UTF-8" />
+    <meta name="author" content="Nick Kapuka" />
+    <meta
+      name="description"
+      content="LiF website database, authentication, and elevator-control development summary"
+    />
+    <meta name="robots" content="index, follow" />
+    <meta http-equiv="Pragma" content="no-cache" />
+
+    <link rel="icon" href="../../media/icons/LiF_icon.ico" type="image/x-icon" />
+
+    <!-- Shared website styling -->
+    <link rel="stylesheet" href="../../css/base.css" />
+
+    <!-- Logbook entry page styling -->
+    <link rel="stylesheet" href="../../css/logbook_entry.css" />
+
+    <!-- Prism syntax highlighting theme -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css"
+    />
+    <link rel="stylesheet" href="../../css/code_formatting.css" />
+  </head>
+
+  <body>
+    <!-- Nav bar loaded by JavaScript -->
+    <div id="navbar-placeholder" data-root="../../"></div>
+    <script src="../../js/navbar.js"></script>
+
+    <main class="page-wrapper">
+      <section class="intro-section logbook-entry-intro" id="page_top">
+        <div class="intro-text">
+          <p class="section-label">Daily Logbook Entry</p>
+          <h1>Logbook Entry, 2026-07-19 by Nick Kapuka</h1>
+
+          <p class="intro-description">
+            Consolidated the SQL, PHP, JavaScript, AJAX, and CSS used to build
+            the LiF website database, authentication system, admin approval
+            workflow, elevator request logging, door interlock, and Sabbath
+            mode.
+          </p>
+
+          <div class="button-row">
+            <a href="../logbook_NK.html" class="button secondary-button">
+              My Logbook Cover Page
+            </a>
+            <a href="#log" class="button primary-button">Jump to Entry</a>
+          </div>
+        </div>
+
+        <aside class="summary-card">
+          <h2>Entry Snapshot</h2>
+          <p><b>Date:</b> 2026-07-19</p>
+          <p><b>Author:</b> Nick Kapuka</p>
+          <p>
+            <b>Focus:</b> MariaDB, SQL, PHP/PDO, authentication, AJAX,
+            JavaScript, CSS, and elevator control
+          </p>
+          <p>
+            <b>Tags:</b> #LiF #SQL #PHP #JavaScript #AJAX #CSS
+            #ElevatorControl
+          </p>
+        </aside>
+      </section>
+
+      <section class="logbook-entry-content" id="log">
+        <h2 id="entry-overview">Entry overview</h2>
+
+        <p>
+          This entry summarizes the website back-end and elevator-control work
+          completed so far. The website can collect access requests, store them
+          in MariaDB, authenticate approved accounts, restrict admin pages,
+          create new users, log remote elevator requests, and store the current
+          door and Sabbath-mode states.
+        </p>
+
+        <h3 id="key-details">Key details</h3>
+
+        <ul class="clean-list">
+          <li>
+            <strong>Purpose:</strong> Create one reference entry covering the
+            complete website-to-database workflow.
+          </li>
+          <li>
+            <strong>Components:</strong> XAMPP, MariaDB, SQL, PHP, PDO,
+            sessions, password hashing, JavaScript, AJAX/fetch, JSON, HTML, and
+            CSS.
+          </li>
+          <li>
+            <strong>Result:</strong> Completed the main website account cycle
+            and the first phase of database-backed elevator controls.
+          </li>
+          <li><strong>Team contribution:</strong> Nick Kapuka</li>
+        </ul>
+      </section>
+
+      <section class="logbook-entry-content">
+        <h2 id="system-workflow">System workflow</h2>
+
+        <p>The current website path is:</p>
+
+        <ol class="clean-list">
+          <li>The user submits a form or presses an elevator button.</li>
+          <li>HTML or JavaScript sends a POST request to PHP.</li>
+          <li>PHP validates the submitted values.</li>
+          <li>PDO runs an SQL query against MariaDB.</li>
+          <li>PHP returns either HTML or a JSON response.</li>
+          <li>JavaScript updates the webpage without a full reload.</li>
+        </ol>
+
+        <p>
+          The Raspberry Pi will later read pending elevator requests and send
+          CAN messages to the elevator controller. The website currently logs
+          commands and simulates the visual response.
+        </p>
+      </section>
+
+      <section class="logbook-entry-content">
+        <h2 id="sql-database">SQL and MariaDB</h2>
+
+        <p>
+          Four main tables were created. The first three store history and
+          accounts, while <code class="language-text">elevator_state</code>
+          stores the current operating state in one permanent row.
+        </p>
+
+        <table class="logbook-table">
+          <thead>
+            <tr>
+              <th>Table</th>
+              <th>Purpose</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>access_requests</td>
+              <td>Stores pending and reviewed website-access forms</td>
+            </tr>
+            <tr>
+              <td>users</td>
+              <td>Stores approved accounts and hashed passwords</td>
+            </tr>
+            <tr>
+              <td>elevator_requests</td>
+              <td>Logs floor commands and their processing status</td>
+            </tr>
+            <tr>
+              <td>elevator_state</td>
+              <td>Stores door and Sabbath-mode states</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3 id="sql-commands">Representative SQL commands</h3>
+
+        <pre class="code-block language-sql"><code class="language-sql">USE lif_elevator;
+
+SHOW TABLES;
+DESCRIBE elevator_requests;
+SHOW CREATE TABLE users;
+
+SELECT *
+FROM elevator_requests
+ORDER BY elevator_request_id DESC;</code></pre>
+
+        <p>
+          <code class="language-text">INSERT</code> creates a new history row,
+          while <code class="language-text">UPDATE</code> changes an existing
+          row. This distinction became important for the door switch because
+          its current state is stored by repeatedly updating
+          <code class="language-text">state_id = 1</code>.
+        </p>
+
+        <pre class="code-block language-sql"><code class="language-sql">UPDATE elevator_state
+SET doors_open = 1
+WHERE state_id = 1;
+
+ALTER TABLE elevator_state
+ADD sabbath_enabled BOOLEAN NOT NULL DEFAULT FALSE
+AFTER doors_open;</code></pre>
+      </section>
+
+      <section class="logbook-entry-content">
+        <h2 id="php-pdo">PHP, PDO, and authentication</h2>
+
+        <p>
+          PHP connects the forms and webpages to MariaDB. Submitted data is
+          validated before PDO prepared statements send it to the database.
+        </p>
+
+        <pre class="code-block language-php"><code class="language-php">$query = "
+    SELECT *
+    FROM access_requests
+    WHERE request_id = :request_id
+";
+
+$statement = $pdo-&gt;prepare($query);
+$statement-&gt;bindValue('request_id', $requestId, PDO::PARAM_INT);
+$result = $statement-&gt;execute();
+$request = $statement-&gt;fetch();</code></pre>
+
+        <p>The prepared-statement order is:</p>
+
+        <ol class="clean-list">
+          <li>Store the SQL in <code class="language-text">$query</code>.</li>
+          <li>
+            Use <code class="language-text">prepare()</code> to create the SQL
+            template.
+          </li>
+          <li>Bind submitted values to placeholders.</li>
+          <li>
+            Use <code class="language-text">execute()</code> to run it.
+          </li>
+          <li>
+            Use <code class="language-text">fetch()</code> or
+            <code class="language-text">fetchAll()</code> to retrieve SELECT
+            results.
+          </li>
+        </ol>
+
+        <h3 id="authentication">Authentication</h3>
+
+        <pre class="code-block language-php"><code class="language-php">$passwordCorrect = $user &amp;&amp;
+    password_verify($password, $user['password_hash']);
+
+if ($passwordCorrect &amp;&amp;
+    $user['account_status'] === 'approved') {
+    session_regenerate_id(true);
+
+    $_SESSION['logged_in'] = true;
+    $_SESSION['user_id'] = $user['user_id'];
+    $_SESSION['username'] = $user['username'];
+    $_SESSION['user_role'] = $user['user_role'];
+}</code></pre>
+
+        <p>
+          Admin pages check both
+          <code class="language-text">logged_in</code> and
+          <code class="language-text">user_role</code>. Session-key spelling
+          must match exactly.
+        </p>
+      </section>
+
+      <section class="logbook-entry-content">
+        <h2 id="javascript-ajax">JavaScript and AJAX</h2>
+
+        <p>
+          AJAX allows the elevator page to contact PHP without refreshing. The
+          project uses <code class="language-text">fetch()</code> and JSON.
+        </p>
+
+        <pre class="code-block language-javascript"><code class="language-javascript">function sendElevatorRequest(floor, sourceController) {
+    const requestData = new URLSearchParams();
+
+    requestData.append("requested_floor", floor);
+    requestData.append("source_controller", sourceController);
+
+    return fetch("elevator_control.php", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+        },
+        body: requestData.toString()
+    })
+    .then(function (response) {
+        return response.json();
+    });
+}</code></pre>
+
+        <ul class="clean-list">
+          <li>
+            <code class="language-text">URLSearchParams</code> creates
+            form-style name/value data.
+          </li>
+          <li>
+            <code class="language-text">fetch()</code> sends the background
+            HTTP request.
+          </li>
+          <li>
+            <code class="language-text">.then()</code> handles a fulfilled
+            Promise.
+          </li>
+          <li>
+            <code class="language-text">.catch()</code> handles network,
+            decoding, or thrown JavaScript errors.
+          </li>
+          <li>
+            <code class="language-text">response.json()</code> converts PHP's
+            JSON into a JavaScript value.
+          </li>
+        </ul>
+
+        <h3 id="door-interlock">Door movement interlock</h3>
+
+        <pre class="code-block language-javascript"><code class="language-javascript">if (responseData.movement_allowed === false) {
+    updateDoorDisplay(true);
+
+    lastCommandDisplay.textContent =
+        "Request logged, but waiting because the doors are open";
+
+    return;
+}
+
+moveCarToFloor(floor, commandSource);</code></pre>
+
+        <p>
+          The floor request is still inserted into
+          <code class="language-text">elevator_requests</code>, but the early
+          <code class="language-text">return</code> prevents the webpage from
+          visually moving the car while the doors are open. The Pi will later
+          handle the real request queue.
+        </p>
+      </section>
+
+      <section class="logbook-entry-content">
+        <h2 id="css-interface">CSS and interface states</h2>
+
+        <p>
+          CSS was used to format admin tables, elevator controls, status cards,
+          door animations, hover effects, and active Sabbath-mode states.
+          JavaScript changes classes while CSS decides how those classes look.
+        </p>
+
+        <pre class="code-block language-css"><code class="language-css">.door-toggle-button {
+    width: 100%;
+    padding: 11px 14px;
+    color: white;
+    background-color: var(--deep-blue);
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: 0.25s;
+}
+
+.door-toggle-button:hover,
+.sabbath-toggle-button.active {
+    color: var(--ink);
+    background-color: var(--yellow);
+    box-shadow: 0 0 14px rgba(249, 219, 121, 0.85);
+}</code></pre>
+
+        <table class="logbook-table">
+          <thead>
+            <tr>
+              <th>CSS feature</th>
+              <th>Project use</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>var(--colour)</td>
+              <td>Reuse the tropical palette from base.css</td>
+            </tr>
+            <tr>
+              <td>Flexbox/Grid</td>
+              <td>Arrange cards, controls, and responsive content</td>
+            </tr>
+            <tr>
+              <td>:hover</td>
+              <td>Give buttons visible mouse feedback</td>
+            </tr>
+            <tr>
+              <td>.active / .doors-open</td>
+              <td>Display JavaScript-controlled operating states</td>
+            </tr>
+            <tr>
+              <td>overflow-x: auto</td>
+              <td>Keep large database tables usable on smaller screens</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="logbook-entry-content">
+        <h2 id="results-lessons">Results and notable lessons</h2>
+
+        <ul class="clean-list">
+          <li>
+            The full access cycle works: submit request, approve it as admin,
+            create an account, and log in with the new account.
+          </li>
+          <li>
+            Floor and car-controller requests are logged with the requesting
+            website user.
+          </li>
+          <li>
+            Door and Sabbath states are stored persistently in
+            <code class="language-text">elevator_state</code>.
+          </li>
+          <li>
+            Open doors prevent visual movement while still allowing the request
+            to be logged for later processing.
+          </li>
+          <li>
+            SQL trailing commas, foreign keys, unique constraints, session-key
+            typos, forgotten <code class="language-text">execute()</code>
+            calls, and string-versus-Boolean comparisons were common debugging
+            points.
+          </li>
+        </ul>
+
+        <p>
+          The next major phase is Raspberry Pi integration. The Pi will consume
+          database requests, communicate over CAN, and update the database using
+          the real elevator position and controller status. The hardware
+          controller must enforce the real door safety interlock; the current
+          JavaScript interlock affects only the visual webpage.
+        </p>
+      </section>
+
+      <p class="top-link">
+        <a href="#page_top">Go to the top of this page</a>
+      </p>
+    </main>
+
+    <footer class="site-footer">
+      <p>Copyright &copy; Nick Kapuka</p>
+    </footer>
+
+    <!-- Prism.js scripts for code formatting -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+  </body>
+</html>
