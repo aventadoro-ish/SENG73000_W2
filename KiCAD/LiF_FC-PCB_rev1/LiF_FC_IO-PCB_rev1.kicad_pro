@@ -37,9 +37,9 @@
         "other_text_thickness": 0.15,
         "other_text_upright": false,
         "pads": {
-          "drill": 0.75,
-          "height": 1.75,
-          "width": 1.2
+          "drill": 0.8,
+          "height": 1.27,
+          "width": 2.54
         },
         "silk_line_width": 0.1,
         "silk_text_italic": false,
@@ -440,7 +440,6 @@
       "bus_entry_needed": "error",
       "bus_to_bus_conflict": "error",
       "bus_to_net_conflict": "error",
-      "conflicting_netclasses": "error",
       "different_unit_footprint": "error",
       "different_unit_net": "error",
       "duplicate_reference": "error",
@@ -483,16 +482,11 @@
     }
   },
   "libraries": {
-    "pinned_footprint_libs": [
-      "MatsLibrary",
-      "LiF_PCB_Footprints"
-    ],
-    "pinned_symbol_libs": [
-      "LiF_PCB_Symbols"
-    ]
+    "pinned_footprint_libs": [],
+    "pinned_symbol_libs": []
   },
   "meta": {
-    "filename": "LiF_FC-PCB_rev1.kicad_pro",
+    "filename": "LiF_FC_IO-PCB_rev1.kicad_pro",
     "version": 3
   },
   "net_settings": {
@@ -570,7 +564,7 @@
       "exclude_dnp": false,
       "fields_ordered": [
         {
-          "group_by": true,
+          "group_by": false,
           "label": "Reference",
           "name": "Reference",
           "show": true
@@ -582,7 +576,7 @@
           "show": true
         },
         {
-          "group_by": false,
+          "group_by": true,
           "label": "Value",
           "name": "Value",
           "show": true
@@ -615,13 +609,7 @@
           "group_by": false,
           "label": "Datasheet",
           "name": "Datasheet",
-          "show": false
-        },
-        {
-          "group_by": false,
-          "label": "CREATOR",
-          "name": "CREATOR",
-          "show": false
+          "show": true
         },
         {
           "group_by": false,
@@ -631,15 +619,9 @@
         },
         {
           "group_by": false,
-          "label": "DK#",
-          "name": "DK#",
-          "show": false
-        },
-        {
-          "group_by": false,
           "label": "DKPN",
           "name": "DKPN",
-          "show": true
+          "show": false
         },
         {
           "group_by": false,
@@ -679,12 +661,6 @@
         },
         {
           "group_by": false,
-          "label": "PACKAGE",
-          "name": "PACKAGE",
-          "show": false
-        },
-        {
-          "group_by": false,
           "label": "PARTREV",
           "name": "PARTREV",
           "show": false
@@ -693,24 +669,12 @@
           "group_by": false,
           "label": "PN",
           "name": "PN",
-          "show": true
-        },
-        {
-          "group_by": false,
-          "label": "PRICE",
-          "name": "PRICE",
           "show": false
         },
         {
           "group_by": false,
           "label": "Package",
           "name": "Package",
-          "show": false
-        },
-        {
-          "group_by": false,
-          "label": "Part#",
-          "name": "Part#",
           "show": false
         },
         {
@@ -723,12 +687,6 @@
           "group_by": false,
           "label": "STANDARD",
           "name": "STANDARD",
-          "show": false
-        },
-        {
-          "group_by": false,
-          "label": "Sim.Device",
-          "name": "Sim.Device",
           "show": false
         },
         {
@@ -751,8 +709,8 @@
         },
         {
           "group_by": false,
-          "label": "AVAILABILITY",
-          "name": "AVAILABILITY",
+          "label": "CREATOR",
+          "name": "CREATOR",
           "show": false
         },
         {
@@ -765,12 +723,6 @@
           "group_by": false,
           "label": "#",
           "name": "${ITEM_NUMBER}",
-          "show": false
-        },
-        {
-          "group_by": false,
-          "label": "DKNP",
-          "name": "DKNP",
           "show": false
         }
       ],
@@ -823,64 +775,8 @@
   },
   "sheets": [
     [
-      "9e3e8da7-e506-46c9-90e5-307e4ad30d29",
+      "2640ffc9-1f98-4c31-bd37-ff4e6f14911e",
       "Root"
-    ],
-    [
-      "dbf56dc2-3990-4801-b0e0-f59d351af64c",
-      "Power Regulation"
-    ],
-    [
-      "b5f6c072-28d6-4dbf-9d97-d5b17dc4e7a5",
-      "Power OR-ing"
-    ],
-    [
-      "d7dd20e9-8027-4523-a1e0-5e82c0dab821",
-      "Power OR-ing1"
-    ],
-    [
-      "18794d3c-1606-4c60-8412-e38df19bc4d8",
-      "5V Regulator"
-    ],
-    [
-      "fa6eb845-b5e3-4a8e-9c24-c1b567f4e987",
-      "MCU"
-    ],
-    [
-      "17577359-df8d-4d28-9071-787d31b1b6da",
-      "Load Cell"
-    ],
-    [
-      "77827f91-166d-41e9-a525-15815c2a0550",
-      "CAN"
-    ],
-    [
-      "25eacf96-1a70-4276-a4a6-d0196807ae93",
-      "Accelerometer"
-    ],
-    [
-      "75541181-887f-448c-8628-82c2df7284ca",
-      "Audio"
-    ],
-    [
-      "d823ad92-d1a3-4f4d-8dfc-d728d5836dc0",
-      "Display"
-    ],
-    [
-      "5a2c7040-8854-4895-b7b6-208daa06b69a",
-      "Buttons"
-    ],
-    [
-      "42a8ae4d-a2ee-470b-ba60-96ca330bd4df",
-      "Encoder"
-    ],
-    [
-      "a8743cf2-df76-4292-9b13-dfab84e92b69",
-      "Servos"
-    ],
-    [
-      "430b22f5-fe40-4c7c-a3d7-4ca49b0a1260",
-      "Stackup Header"
     ]
   ],
   "text_variables": {}
