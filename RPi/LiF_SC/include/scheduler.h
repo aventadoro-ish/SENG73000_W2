@@ -4,42 +4,51 @@
 #include <queue>
 
 
-class RequestQueue {
-    struct Compare {
-        bool min_priority = true;
+enum class TravelDir : unsigned int {
+    UP,
+    STATIONARY,
+    DOWN
+};
 
-        bool operator()(int lhs, int rhs) const {
-            if (min_priority) {
-                return lhs > rhs; // Smallest value at top
-            }
+enum class RequestDir : unsigned int {
+    UP,
+    DOWN,
+    NA
+};
 
-            return lhs < rhs;     // Largest value at top
-        }
-    };
+enum class RequestType : unsigned int {
+    FLOOR,
+    CAR,
+    WEBSITE,
+    MAINTENANCE
+};
 
-    enum class TravelDir : unsigned int {
-        UP,
-        STATIONARY,
-        DOWN
-    };
+typedef struct {
+    RequestType type;
+    RequestDir dir;
+    int floor;
+} Request;
 
-    using PriorityQueue =
-    std::priority_queue<int, std::vector<int>, Compare>;
 
-    PriorityQueue pq{Compare{true}};
-    TravelDir dir = TravelDir::STATIONARY;
-
-    void rebuild_queue(bool min_priority);
-
+class Scheduler {
+    int dynamic_travel_limit = 0;
+    TravelDir car_dir = TravelDir::STATIONARY;
 
 public:
-    void set_travel_up();
+    /**
+     * @brief Add a new request to the scheduler algorithm
+     * @param new_rq new request parameters
+     * @return 0 - request added, and no new action is required. 
+     * 1 - request changed which action needs to be performed now.
+     * -1 if an error occurred
+     */
+    int add_request(Request new_rq);
 
-    void set_travel_down();
-
-    void set_stationary();
-
-
-
+    /**
+     * @brief Which floor the cabin needs to go to
+     * @return 0 if current floor does not need to change
+     * -1 if error. New target floor value otherwise
+     */
+    int get_target_floor();
 
 };

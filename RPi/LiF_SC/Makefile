@@ -13,7 +13,7 @@ CPPFLAGS := -I$(INC_DIR)
 CXXFLAGS := -Wall -Wextra -g
 
 # reference: https://stackoverflow.com/a/3774731
-SOURCES := $(shell find $(SOURCEDIR) -name '*.cpp')
+SOURCES := $(shell find $(SRC_DIR) -name '*.cpp')
 
 OBJECTS := $(patsubst $(SRC_DIR)/%.cpp,$(OBJ_DIR)/%.o,$(SOURCES))
 
