@@ -12,11 +12,8 @@ LDFLAGS := -L/usr/lib/arm-linux-gnueabihf
 CPPFLAGS := -I$(INC_DIR)
 CXXFLAGS := -Wall -Wextra -g
 
-SOURCES := \
-	$(SRC_DIR)/main.cpp \
-	$(SRC_DIR)/mainFunctions.cpp \
-	$(SRC_DIR)/pcanFunctions.cpp \
-	$(SRC_DIR)/databaseFunctions.cpp
+# reference: https://stackoverflow.com/a/3774731
+SOURCES := $(shell find $(SOURCEDIR) -name '*.cpp')
 
 OBJECTS := $(patsubst $(SRC_DIR)/%.cpp,$(OBJ_DIR)/%.o,$(SOURCES))
 
