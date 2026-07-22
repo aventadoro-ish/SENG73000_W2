@@ -15,7 +15,7 @@ using namespace std;
 // -----------------------------------------------------------------------------
 
 // #define DO_USE_DB
-
+// #define DO_USE_CAN
 
 constexpr unsigned int NUM_FLOORS = 3;
 
@@ -65,6 +65,7 @@ SC_State state = SC_State::INITIALIZE;
 int floorNumber = INITIAL_FLOOR;
 int prev_floorNumber = INITIAL_FLOOR;
 bool is_CC_door_closed = false;
+int pendingFloor = -1; //no other message in the queue
 
 
 
@@ -292,7 +293,7 @@ int main() {
 	}
 	
 	pcanRxClose();
-	return(0);
+	return 0;
 }
 
 
