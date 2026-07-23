@@ -8,6 +8,7 @@
 #include "../include/databaseFunctions.h"
 #include "../include/mainFunctions.h"
 #include "setting.h"
+#include "scheduler.h"
 
 using namespace std;
 
@@ -79,6 +80,8 @@ int get_floor_request();
 // Main
 // -----------------------------------------------------------------------------
 int main() {
+	run_scheduler_manual_test();
+	return 0;
 
 	int choice; 
 	int ID; 

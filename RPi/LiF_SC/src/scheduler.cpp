@@ -2,8 +2,16 @@
 
 #include <iostream>
 
-int Scheduler::run_scheduler() {
+#include <algorithm>
+#include <cctype>
+#include <climits>
+#include <cstdlib>
+#include <sstream>
+#include <string>
 
+
+int Scheduler::run_scheduler() {
+    std::cout << "-> running scheduler" << std::endl;
     // First, check if there are no requests. If no requests -> stay still
     bool has_requests = false;
     for (int i = 0; i < NUM_FLOORS; i++) {
@@ -17,7 +25,8 @@ int Scheduler::run_scheduler() {
         }
     }
     if (!has_requests) {
-        this->car_dir == TravelDir::STATIONARY;
+        this->car_dir = TravelDir::STATIONARY;
+        std::cout << "\t-> no requests found" << std::endl;
         return this->cur_floor;
     }
 
@@ -54,8 +63,17 @@ int Scheduler::run_scheduler() {
 
         // closest request is at floor closest_rq_floor, so go to that floor
         if (closest_rq_floor > this->cur_floor) {
+            this->car_dir = TravelDir::DOWN;
+            this->dynamic_travel_limit = closest_rq_floor + 1;
+            this->cur_target_floor = closest_rq_floor + 1;
+            std::cout << "\t-> stationary car found closest request at floor " << closest_rq_floor + 1 << std::endl;
+            return closest_rq_floor + 1;
+        } else {
+            std::cout << "closest request is at floor " << closest_rq_floor + 1 << std::endl;
             this->car_dir = TravelDir::UP;
             this->dynamic_travel_limit = closest_rq_floor + 1;
+            this->cur_target_floor = closest_rq_floor + 1;
+            std::cout << "\t-> stationary car found closest request at floor " << closest_rq_floor + 1 << std::endl;
             return closest_rq_floor + 1;
         }
     }
@@ -159,6 +177,7 @@ int Scheduler::run_scheduler() {
                 }
             }
         }
+
         break;
     }
     default:
@@ -166,6 +185,25 @@ int Scheduler::run_scheduler() {
         break;
     }
 
+
+    if (this->cur_floor == this->dynamic_travel_limit && 
+        this->cur_floor == this->cur_target_floor && 
+        this->cur_floor == new_target_floor &&
+        this->car_requests[this->cur_floor - 1] == false && 
+        this->floor_requests[this->cur_floor - 1][0] == false &&
+        this->floor_requests[this->cur_floor - 1][1] == false) {
+        if (this->car_dir == TravelDir::UP) { 
+            this->car_dir = TravelDir::DOWN;
+
+        } else if (this->car_dir == TravelDir::DOWN) {
+            this->car_dir = TravelDir::UP;
+
+        } else {
+            std::cerr << "INVALID TRAVEL DIIIIR" << std::endl;
+        }
+    }
+
+    std::cout << "\t-> moving car found next request at floor " << new_target_floor << std::endl;
     return new_target_floor;
 }
 
@@ -190,10 +228,34 @@ void Scheduler::update_car_position(int floor) {
 }
 
 void Scheduler::register_car_stop() {
+    // std::cout << "Car stop registered. ";
     if (this->car_dir == TravelDir::UP) {
-        this->floor_requests[this->cur_floor - 1][0] = false;
+        // std::cout << "Clearing up requests from floor " << this->cur_floor << std::endl;
+        // this->floor_requests[this->cur_floor - 1][0] = false;
         this->car_requests[this->cur_floor - 1] = false;
+
+        if (this->cur_floor == this->dynamic_travel_limit) {
+            this->floor_requests[this->cur_floor - 1][1] = false;
+        } else {
+            this->floor_requests[this->cur_floor - 1][0] = false;
+        }
+
     } else if (this->car_dir == TravelDir::DOWN) {
+        std::cout << "Clearing down requests from floor " << this->cur_floor << std::endl;
+        // this->floor_requests[this->cur_floor - 1][1] = false;
+        this->car_requests[this->cur_floor - 1] = false;
+
+        
+        if (this->cur_floor == this->dynamic_travel_limit) {
+            this->floor_requests[this->cur_floor - 1][0] = false;
+        } else {
+            this->floor_requests[this->cur_floor - 1][1] = false;
+        }
+    
+    } else {
+        // A request can be registered for the floor where the stationary car
+        // is already located.
+        this->floor_requests[this->cur_floor - 1][0] = false;
         this->floor_requests[this->cur_floor - 1][1] = false;
         this->car_requests[this->cur_floor - 1] = false;
     }
@@ -201,5 +263,190 @@ void Scheduler::register_car_stop() {
 
 int Scheduler::get_target_floor() {
     this->run_scheduler();
+    std::cout << "get_tgt cur_target_floor=" << this->cur_target_floor << std::endl;
     return this->cur_target_floor;
+}
+
+
+namespace {
+
+const char *to_string(TravelDir dir) {
+    switch (dir) {
+    case TravelDir::UP:         return "UP";
+    case TravelDir::STATIONARY: return "STATIONARY";
+    case TravelDir::DOWN:       return "DOWN";
+    }
+    return "INVALID";
+}
+
+std::string trim(std::string text) {
+    const auto first = text.find_first_not_of(" \t\r\n");
+    if (first == std::string::npos) {
+        return {};
+    }
+
+    const auto last = text.find_last_not_of(" \t\r\n");
+    return text.substr(first, last - first + 1);
+}
+
+bool parse_floor_number(const std::string &text, unsigned int &floor) {
+    if (text.empty() ||
+        !std::all_of(text.begin(), text.end(),
+                     [](unsigned char ch) { return std::isdigit(ch); })) {
+        return false;
+    }
+
+    try {
+        const unsigned long parsed = std::stoul(text);
+        if (parsed < 1 || parsed > NUM_FLOORS) {
+            return false;
+        }
+        floor = static_cast<unsigned int>(parsed);
+        return true;
+    } catch (...) {
+        return false;
+    }
+}
+
+} // namespace
+
+void Scheduler::print_state(std::ostream &outs) const {
+    outs << "Scheduler state\n"
+         << "  current floor:        " << this->cur_floor << '\n'
+         << "  target floor:         " << this->cur_target_floor << '\n'
+         << "  travel direction:     " << to_string(this->car_dir) << '\n'
+         << "  dynamic travel limit: " << this->dynamic_travel_limit << '\n'
+         << "  requests:\n"
+         << "    floor | up | down | car\n"
+         << "    ------+----+------+----\n";
+
+    for (unsigned int i = 0; i < NUM_FLOORS; ++i) {
+        outs << "    " << (i + 1) << "     | "
+             << (this->floor_requests[i][0] ? "X " : ". ")
+             << " | " << (this->floor_requests[i][1] ? "X   " : ".   ")
+             << " | " << (this->car_requests[i] ? 'X' : '.') << '\n';
+    }
+}
+
+void run_scheduler_manual_test() {
+    Scheduler scheduler;
+    unsigned int simulation_floor = INITIAL_FLOOR;
+    unsigned long simulation_tick = 0;
+    bool car_is_moving = false;
+    bool running = true;
+
+    std::cout
+        << "Elevator scheduler manual test\n"
+        << "Commands: tick, F<floor><U|D>, C<floor>, print, exit\n"
+        << "Examples: F2U, F3D, C2\n";
+
+    while (running) {
+        std::cout << "\nscheduler> ";
+
+        std::string command;
+        if (!std::getline(std::cin, command)) {
+            std::cout << "\nInput closed; ending simulation.\n";
+            break;
+        }
+        command = trim(command);
+
+        if (command == "exit") {
+            running = false;
+        } else if (command == "print") {
+            std::cout << "Simulation state\n"
+                      << "  tick:             " << simulation_tick << '\n'
+                      << "  simulated floor:  " << simulation_floor << '\n'
+                      << "  car moving:       "
+                      << (car_is_moving ? "yes" : "no") << '\n';
+            scheduler.print_state();
+        } else if (command == "tick") {
+            const int target_floor = scheduler.get_target_floor();
+            if (target_floor < 1 ||
+                target_floor > static_cast<int>(NUM_FLOORS)) {
+                std::cout << "Scheduler returned invalid target floor "
+                          << target_floor << ".\n";
+                continue;
+            }
+
+            ++simulation_tick;
+            car_is_moving =
+                simulation_floor != static_cast<unsigned int>(target_floor);
+            
+                std::cout << "** simulation_floor=" << simulation_floor << ", tgt_floor=" << target_floor << std::endl;
+           
+            if (simulation_floor < static_cast<unsigned int>(target_floor)) {
+                ++simulation_floor;
+                scheduler.update_car_position(
+                    static_cast<int>(simulation_floor));
+                std::cout << "Tick " << simulation_tick << ": moved up to floor "
+                          << simulation_floor << ".\n";
+            } else if (simulation_floor >
+                       static_cast<unsigned int>(target_floor)) {
+                --simulation_floor;
+                scheduler.update_car_position(
+                    static_cast<int>(simulation_floor));
+                std::cout << "Tick " << simulation_tick
+                          << ": moved down to floor "
+                          << simulation_floor << ".\n";
+            } else {
+                std::cout << "Tick " << simulation_tick
+                          << ": car remains on floor "
+                          << simulation_floor << ".\n";
+            }
+
+            if (simulation_floor ==
+                static_cast<unsigned int>(target_floor)) {
+                car_is_moving = false;
+                scheduler.register_car_stop();
+                std::cout << "Stopped at target floor "
+                          << simulation_floor << ".\n";
+            }
+        } else if (command.size() >= 3 &&
+                   std::toupper(static_cast<unsigned char>(command.front())) ==
+                       'F') {
+            const char direction_char = static_cast<char>(
+                std::toupper(static_cast<unsigned char>(command.back())));
+            unsigned int request_floor = 0;
+
+            if ((direction_char != 'U' && direction_char != 'D') ||
+                !parse_floor_number(
+                    command.substr(1, command.size() - 2), request_floor)) {
+                std::cout << "Invalid floor request. Use F<floor><U|D>, "
+                          << "with floor in 1.." << NUM_FLOORS << ".\n";
+                continue;
+            }
+
+            Request request{
+                RequestType::FLOOR,
+                direction_char == 'U' ? RequestDir::UP : RequestDir::DOWN,
+                static_cast<int>(request_floor)
+            };
+            if (scheduler.add_request(request) == 0) {
+                std::cout << "Added " << request << ".\n";
+            }
+        } else if (command.size() >= 2 &&
+                   std::toupper(static_cast<unsigned char>(command.front())) ==
+                       'C') {
+            unsigned int request_floor = 0;
+            if (!parse_floor_number(command.substr(1), request_floor)) {
+                std::cout << "Invalid car request. Use C<floor>, "
+                          << "with floor in 1.." << NUM_FLOORS << ".\n";
+                continue;
+            }
+
+            Request request{
+                RequestType::CAR,
+                RequestDir::NA,
+                static_cast<int>(request_floor)
+            };
+            if (scheduler.add_request(request) == 0) {
+                std::cout << "Added " << request << ".\n";
+            }
+        } else if (!command.empty()) {
+            std::cout << "Unknown command. Valid commands are: tick, "
+                      << "F<floor><U|D>, C<floor>, print, exit.\n";
+        }
+    }
+
+    std::cout << "Simulation ended.\n";
 }

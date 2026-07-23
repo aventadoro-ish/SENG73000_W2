@@ -31,7 +31,7 @@ typedef struct {
     int floor;
 } Request;
 
-std::ostream & operator << (std::ostream & outs, const Request & rq) {
+inline std::ostream & operator << (std::ostream & outs, const Request & rq) {
     std::string rq_dir_str; 
     switch (rq.dir) {
     case RequestDir::UP:        rq_dir_str = "UP";          break;
@@ -83,6 +83,11 @@ public:
     Scheduler(unsigned int initial_floor = INITIAL_FLOOR) {
         this->cur_floor = initial_floor;
         this->cur_target_floor = initial_floor;
+        for (int i = 0; i < NUM_FLOORS; i++) {
+            this->car_requests[i] = false;
+            this->floor_requests[i][0] = false;
+            this->floor_requests[i][1] = false;
+        }
     }
 
 
@@ -116,4 +121,21 @@ public:
      */
     int get_target_floor();
 
+
+    /**
+     * @brief Print all scheduler state used by the scheduling algorithm.
+     */
+    void print_state(std::ostream &outs = std::cout) const;
 };
+
+/**
+ * @brief Run an interactive, one-floor-per-tick scheduler simulation.
+ *
+ * Commands:
+ *   tick  - advance the simulation by one step
+ *   FdD   - add a floor request (for example F2U or F3D)
+ *   Cd    - add a car request (for example C2)
+ *   print - print scheduler and simulation state
+ *   exit  - end the simulation
+ */
+void run_scheduler_manual_test();
