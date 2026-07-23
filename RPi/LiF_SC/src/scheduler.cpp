@@ -141,7 +141,7 @@ int Scheduler::run_scheduler() {
         //      due to index i always being less than corresponding floor number
         //      by 1
         // first we want to update the dynamic travel limit
-        for (int i = this->cur_floor - 1; i > 0; i--) {
+        for (int i = static_cast<int>(this->cur_floor) - 2; i >= 0; --i) {
             if (this->floor_requests[i][1]) {
                 // found a floor request in the opposite direction of travel
                 if (i+1 < this->dynamic_travel_limit) {
@@ -155,7 +155,7 @@ int Scheduler::run_scheduler() {
         }
 
         // then we check for stops on the way to the new dynamic travel limit
-        for (int i = this->cur_floor - 1; i > 0; i--) {
+        for (int i = static_cast<int>(this->cur_floor) - 2; i >= 0; --i) {
             if (this->car_requests[i] && i+1 > this->dynamic_travel_limit) {
                 // found a car request which is on the way to the current destination
                 //  so make a stop there
