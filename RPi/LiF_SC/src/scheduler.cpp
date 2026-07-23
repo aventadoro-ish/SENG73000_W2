@@ -95,7 +95,7 @@ int Scheduler::run_scheduler() {
         //      due to index i always being less than corresponding floor number
         //      by 1
         // first we want to update the dynamic travel limit
-        for (int i = this->cur_floor; i <= NUM_FLOORS; i++) {
+        for (int i = this->cur_floor; i < NUM_FLOORS; i++) {
             if (this->floor_requests[i][1]) {
                 // found a floor request in the opposite direction of travel
                 if (i+1 > this->dynamic_travel_limit) {
@@ -108,7 +108,7 @@ int Scheduler::run_scheduler() {
         }
 
         // then we check for stops on the way to the new dynamic travel limit
-        for (int i = this->cur_floor; i <= NUM_FLOORS; i++) {
+        for (int i = this->cur_floor; i < NUM_FLOORS; i++) {
             if (this->car_requests[i] && i+1 < this->dynamic_travel_limit) {
                 // found a car request which is on the way to the current destination
                 //  so make a stop there
@@ -141,7 +141,7 @@ int Scheduler::run_scheduler() {
         //      due to index i always being less than corresponding floor number
         //      by 1
         // first we want to update the dynamic travel limit
-        for (int i = this->cur_floor - 1; i >= 0; i--) {
+        for (int i = this->cur_floor - 1; i > 0; i--) {
             if (this->floor_requests[i][1]) {
                 // found a floor request in the opposite direction of travel
                 if (i+1 < this->dynamic_travel_limit) {
@@ -155,7 +155,7 @@ int Scheduler::run_scheduler() {
         }
 
         // then we check for stops on the way to the new dynamic travel limit
-        for (int i = this->cur_floor; i < NUM_FLOORS; i++) {
+        for (int i = this->cur_floor - 1; i > 0; i--) {
             if (this->car_requests[i] && i+1 > this->dynamic_travel_limit) {
                 // found a car request which is on the way to the current destination
                 //  so make a stop there
@@ -166,7 +166,7 @@ int Scheduler::run_scheduler() {
                 }
             }
 
-            if (this->floor_requests[i][0]) {
+            if (this->floor_requests[i][1]) {
                 // found a floor request in the direction of travel
 
                 if (i+1 > this->dynamic_travel_limit && i+1 > new_target_floor) {
@@ -260,37 +260,39 @@ void Scheduler::update_car_position(int floor) {
 }
 
 void Scheduler::register_car_stop() {
-    // std::cout << "Car stop registered. ";
-    if (this->car_dir == TravelDir::UP) {
-        // std::cout << "Clearing up requests from floor " << this->cur_floor << std::endl;
-        // this->floor_requests[this->cur_floor - 1][0] = false;
-        this->car_requests[this->cur_floor - 1] = false;
+    const int floor_idx = static_cast<int>(this->cur_floor) - 1;
+    const TravelDir arrival_dir = this->car_dir;
 
+    // A car request is always satisfied when the car stops here.
+    this->car_requests[floor_idx] = false;
+
+    if (arrival_dir == TravelDir::UP) {
+        // Serve an UP floor call while travelling up.
+        this->floor_requests[floor_idx][0] = false;
+
+        // At the upper travel limit, the car can also serve a DOWN call
+        // before reversing.
         if (this->cur_floor == this->dynamic_travel_limit) {
-            this->floor_requests[this->cur_floor - 1][1] = false;
-        } else {
-            this->floor_requests[this->cur_floor - 1][0] = false;
+            this->floor_requests[floor_idx][1] = false;
         }
+    } else if (arrival_dir == TravelDir::DOWN) {
+        // Serve a DOWN floor call while travelling down.
+        this->floor_requests[floor_idx][1] = false;
 
-    } else if (this->car_dir == TravelDir::DOWN) {
-        std::cout << "Clearing down requests from floor " << this->cur_floor << std::endl;
-        // this->floor_requests[this->cur_floor - 1][1] = false;
-        this->car_requests[this->cur_floor - 1] = false;
-
-        
+        // At the lower travel limit, the car can also serve an UP call
+        // before reversing.
         if (this->cur_floor == this->dynamic_travel_limit) {
-            this->floor_requests[this->cur_floor - 1][0] = false;
-        } else {
-            this->floor_requests[this->cur_floor - 1][1] = false;
+            this->floor_requests[floor_idx][0] = false;
         }
-    
     } else {
-        // A request can be registered for the floor where the stationary car
-        // is already located.
-        this->floor_requests[this->cur_floor - 1][0] = false;
-        this->floor_requests[this->cur_floor - 1][1] = false;
-        this->car_requests[this->cur_floor - 1] = false;
+        // The car was already waiting at this floor.
+        this->floor_requests[floor_idx][0] = false;
+        this->floor_requests[floor_idx][1] = false;
     }
+
+    // Make the next scheduling decision only after all requests served
+    // by this stop have been cleared.
+    this->run_scheduler();
 }
 
 int Scheduler::get_target_floor() {
