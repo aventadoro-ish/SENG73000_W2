@@ -83,9 +83,9 @@ int Scheduler::run_scheduler() {
     // at this point car is moving either UP or DOWN,
     //  so we need to check if there are any requests further in the 
     //  direction of travel
-    // by default assume current target floor will be the new target floor
+    // by default assume dynamic travel limit will be the new target floor
     //  unless a better target is found
-    int new_target_floor = this->cur_target_floor;
+    int new_target_floor = this->dynamic_travel_limit;
     switch (this->car_dir) {
     case TravelDir::UP: {
 
@@ -197,9 +197,10 @@ int Scheduler::run_scheduler() {
     ) {
         if (this->car_dir == TravelDir::UP) {
             bool has_requests_below = false;
-            for (int i = this->cur_floor; i > 0; i--) {
+            for (int i = static_cast<int>(this->cur_floor) - 2; i >= 0; i--) {
                 if (this->car_requests[i] || this->floor_requests[i][0] || this->floor_requests[i][1]) {
                     has_requests_below = true;
+                    break;
                 }
             }
             if (has_requests_below) {
@@ -212,10 +213,10 @@ int Scheduler::run_scheduler() {
 
         } else if (this->car_dir == TravelDir::DOWN) {
             bool has_requests_above = false;
-            for (int i = 0; i < this->cur_floor; i++) {
+            for (int i = static_cast<int>(this->cur_floor); i < static_cast<int>(NUM_FLOORS); ++i) {
                 if (this->car_requests[i] || this->floor_requests[i][0] || this->floor_requests[i][1]) {
-                    std::cout << "tag2" << std::endl;
                     has_requests_above = true;
+                    break;
                 }
             }
             if (has_requests_above) {
@@ -404,10 +405,7 @@ void run_scheduler_manual_test() {
 
             ++simulation_tick;
             car_is_moving =
-                simulation_floor != static_cast<unsigned int>(target_floor);
-            
-                std::cout << "** simulation_floor=" << simulation_floor << ", tgt_floor=" << target_floor << std::endl;
-           
+                simulation_floor != static_cast<unsigned int>(target_floor);           
             if (simulation_floor < static_cast<unsigned int>(target_floor)) {
                 ++simulation_floor;
                 scheduler.update_car_position(
