@@ -21,6 +21,7 @@ int chooseMsg();
 int HexFromFloor(int floorVal);
 int FloorFromHex(int Hex);
 
+
 // States
 typedef enum {
     STATE_IDLE,        // 0 - no message request, check DB and CAN for requests

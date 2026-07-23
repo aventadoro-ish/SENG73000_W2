@@ -2,16 +2,21 @@
 #include "../include/databaseFunctions.h"
 #include <stdlib.h>
 #include <iostream>
+#ifdef DO_USE_DB
 #include <mysql_connection.h>
 #include <cppconn/driver.h>
 #include <cppconn/exception.h>
 #include <cppconn/resultset.h>
 #include <cppconn/statement.h>
 #include <cppconn/prepared_statement.h>
- 
+
+#endif
+
 using namespace std; 
  
 int db_getFloorNum() {
+#ifdef DO_USE_DB
+
 	sql::Driver *driver; 			// Create a pointer to a MySQL driver object
 	sql::Connection *con; 			// Create a pointer to a database connection object
 	sql::Statement *stmt;			// Crealte a pointer to a Statement object to hold statements 
@@ -37,10 +42,14 @@ int db_getFloorNum() {
 	delete con;
 	
 	return floorNum;
+#else 
+	return -1;
+#endif
 }
  
  
 int db_setFloorNum(int floorNum) {
+#ifdef DO_USE_DB
 	sql::Driver *driver; 				// Create a pointer to a MySQL driver object
 	sql::Connection *con; 				// Create a pointer to a database connection object
 	sql::Statement *stmt;				// Crealte a pointer to a Statement object to hold statements 
@@ -71,5 +80,8 @@ int db_setFloorNum(int floorNum) {
 	delete pstmt;
 	delete stmt;
 	delete con;
+#else 
+	return -1;
+#endif
 } 
  
