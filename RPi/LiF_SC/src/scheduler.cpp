@@ -207,7 +207,7 @@ int Scheduler::run_scheduler() {
                 std::cout << "DTL reached -> reverse to down" << std::endl;
                 this->car_dir = TravelDir::DOWN;
             } else {
-                std::cout << "DTL reached w/o requests left -> stay still" << std::endl;
+                std::cout << "DTL reached w/o requests below left -> stay still" << std::endl;
                 this->car_dir = TravelDir::STATIONARY;
             }
 
@@ -223,7 +223,7 @@ int Scheduler::run_scheduler() {
                 std::cout << "DTL reached -> reverse to up" << std::endl;
                 this->car_dir = TravelDir::UP;
             } else {
-                std::cout << "DTL reached w/o requests left -> stay still" << std::endl;
+                std::cout << "DTL reached w/o requests above left -> stay still" << std::endl;
                 this->car_dir = TravelDir::STATIONARY;
             }
 
@@ -461,11 +461,15 @@ void run_scheduler_manual_test() {
                 direction_char == 'U' ? RequestDir::UP : RequestDir::DOWN,
                 static_cast<int>(request_floor)
             };
-            // if (scheduler.add_request(request) == 0) {
-            //     std::cout << "Added " << request << ".\n";
-            // }
+
             scheduler.add_request(request);
             std::cout << "Added " << request << ".\n";
+                        std::cout << "Simulation state\n"
+                << "  tick:             " << simulation_tick << '\n'
+                << "  simulated floor:  " << simulation_floor << '\n'
+                << "  car moving:       "
+                << (car_is_moving ? "yes" : "no") << '\n';
+            scheduler.print_state();
 
         } else if (command.size() >= 2 &&
                    std::toupper(static_cast<unsigned char>(command.front())) ==
@@ -485,6 +489,12 @@ void run_scheduler_manual_test() {
             if (scheduler.add_request(request) == 0) {
                 std::cout << "Added " << request << ".\n";
             }
+            std::cout << "Simulation state\n"
+                << "  tick:             " << simulation_tick << '\n'
+                << "  simulated floor:  " << simulation_floor << '\n'
+                << "  car moving:       "
+                << (car_is_moving ? "yes" : "no") << '\n';
+            scheduler.print_state();
         } else if (!command.empty()) {
             std::cout << "Unknown command. Valid commands are: tick, "
                       << "F<floor><U|D>, C<floor>, print, exit.\n";

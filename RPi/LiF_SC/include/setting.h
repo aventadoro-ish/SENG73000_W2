@@ -7,7 +7,7 @@
 // #define DO_USE_DB
 // #define DO_USE_CAN
 
-constexpr unsigned int NUM_FLOORS = 6;
+constexpr unsigned int NUM_FLOORS = 3;
 
 /**
  * @brief How long to wait between moving to the next floor in sabbath mode 
