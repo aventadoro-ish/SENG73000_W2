@@ -160,7 +160,7 @@ int Scheduler::run_scheduler() {
                 // found a car request which is on the way to the current destination
                 //  so make a stop there
 
-                if (i > new_target_floor) {
+                if (i + 1 > new_target_floor) {
                     // only change target floor if this floor is higher than current target
                     new_target_floor = i+1;
                 }
@@ -237,14 +237,28 @@ int Scheduler::run_scheduler() {
     return new_target_floor;
 }
 
-int Scheduler::add_request(Request new_rq)
-{
+int Scheduler::add_request(Request new_rq) {
     // if (this->rq_size == rq_buffer_size) {
     //     std::cerr << "Scheduler error! Request buffer size exceeded, unable to add new request: " << new_rq << std::endl;
     // }
 
     if (new_rq.type == RequestType::CAR) {
         this->car_requests[new_rq.floor-1] = true;
+
+        // car requests in the direction of travel and further away from the 
+        //  car than DTL should update DTL
+        if (this->car_dir == TravelDir::UP && 
+            new_rq.floor > this->dynamic_travel_limit && 
+            new_rq.floor > this->cur_floor) {
+                this->dynamic_travel_limit = new_rq.floor;
+
+        } else if (this->car_dir == TravelDir::DOWN && 
+            new_rq.floor < this->dynamic_travel_limit && 
+            new_rq.floor < this->cur_floor) {
+                this->dynamic_travel_limit = new_rq.floor;
+
+        }
+
     } else if (new_rq.type == RequestType::FLOOR) {
         int updown_idx = new_rq.dir == RequestDir::UP ? 0 : 1;
         this->floor_requests[new_rq.floor-1][updown_idx] = true;
