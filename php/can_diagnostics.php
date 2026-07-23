@@ -117,6 +117,7 @@
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <title>LiF Team - Diagnostics</title>
     <meta charset="UTF-8">
@@ -132,6 +133,7 @@
     <link rel="stylesheet" href="../css/can.css">
     <link rel="stylesheet" href="../css/diagnostics.css">
 </head>
+
 <body>
     <div id="navbar-placeholder" data-root="../"></div>
     <script src="../js/navbar.js"></script>
@@ -158,7 +160,7 @@
             <hr>
 
             <?php if ($loadError): ?>
-                <p class="CANprotocol-error"><?= htmlspecialchars($loadError) ?></p>
+            <p class="CANprotocol-error"><?= htmlspecialchars($loadError) ?></p>
             <?php endif; ?>
 
             <input type="text" id="diagnosticsSearch" placeholder="Search requests...">
@@ -179,25 +181,25 @@
                     </thead>
                     <tbody>
                         <?php foreach ($elevatorRequests as $request): ?>
-                            <?php
+                        <?php
                                 $decoded = $canMessages[$request["source_controller"]] ?? $unknownMessage;
                             ?>
-                            <tr>
-                                <td><?= htmlspecialchars($request["elevator_request_id"]) ?></td>
-                                <td><?= htmlspecialchars($request["requested_floor"]) ?></td>
-                                <td><?= htmlspecialchars($decoded["can_id"]) ?></td>
-                                <td><?= htmlspecialchars($decoded["message"]) ?></td>
-                                <td><?= htmlspecialchars($decoded["transmitter"]) ?></td>
-                                <td><?= htmlspecialchars($decoded["recipient"]) ?></td>
-                                <td><?= htmlspecialchars($request["request_status"]) ?></td>
-                                <td><?= htmlspecialchars($request["requested_at"]) ?></td>
-                            </tr>
+                        <tr>
+                            <td><?= htmlspecialchars($request["elevator_request_id"]) ?></td>
+                            <td><?= htmlspecialchars($request["requested_floor"]) ?></td>
+                            <td><?= htmlspecialchars($decoded["can_id"]) ?></td>
+                            <td><?= htmlspecialchars($decoded["message"]) ?></td>
+                            <td><?= htmlspecialchars($decoded["transmitter"]) ?></td>
+                            <td><?= htmlspecialchars($decoded["recipient"]) ?></td>
+                            <td><?= htmlspecialchars($request["request_status"]) ?></td>
+                            <td><?= htmlspecialchars($request["requested_at"]) ?></td>
+                        </tr>
                         <?php endforeach; ?>
 
                         <?php if (!$elevatorRequests && !$loadError): ?>
-                            <tr>
-                                <td colspan="8">No elevator requests found.</td>
-                            </tr>
+                        <tr>
+                            <td colspan="8">No elevator requests found.</td>
+                        </tr>
                         <?php endif; ?>
                     </tbody>
                 </table>
@@ -209,4 +211,5 @@
 
     <script src="../js/diagnostics.js"></script>
 </body>
+
 </html>
