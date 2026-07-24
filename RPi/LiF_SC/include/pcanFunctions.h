@@ -4,27 +4,7 @@
 #ifdef DO_USE_CAN
 #include <libpcan.h> // used for TPCANMsg
 #else 
-// define proxy for the datatypes used by the library
-
-// compatibilty defines
-#if defined(DWORD) || defined(WORD) || defined(BYTE)
-#error "double define for DWORD, WORD, BYTE found"
-#endif
-
-#include <cstdint>
-
-#define DWORD  uint32_t
-#define WORD   uint16_t
-#define BYTE   uint8_t
-
-typedef struct 
-{
-  DWORD ID;              // 11/29 bit code
-  BYTE  MSGTYPE;         // bits of MSGTYPE_*
-  BYTE  LEN;             // count of data bytes (0..8)
-  BYTE  DATA[8];         // data bytes, up to 8
-} TPCANMsg;              // for PCAN_WRITE_MSG
-
+#include "pcan_proxy.h"
 #endif
 
 

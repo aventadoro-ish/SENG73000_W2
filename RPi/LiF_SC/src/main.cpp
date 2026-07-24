@@ -37,6 +37,8 @@ enum class SC_State : unsigned int {
 bool is_running = true;
 SC_State state = SC_State::INITIALIZE;
 
+Scheduler scheduler;
+
 int floorNumber = INITIAL_FLOOR;
 int prev_floorNumber = INITIAL_FLOOR;
 bool is_CC_door_closed = false;
@@ -82,6 +84,8 @@ int get_floor_request();
 int main() {
 	run_scheduler_manual_test();
 	return 0;
+
+	scheduler = Scheduler();
 
 	int choice; 
 	int ID; 
