@@ -31,6 +31,10 @@ public:
      */
     int log_can_message(int id, int* data, uint8_t length);
 
+    int log_floor_request(unsigned int floor);
+
+    int log_car_request(unsigned int floor);
+
     /**
      * @brief Read new requested floor from DB
      * @return 0 if no new requests have been added, -1 if error, floor number 
@@ -50,5 +54,7 @@ public:
      * @return true if connected, false if disconnected
      */
     bool is_db_connected();
+
+
 
 };
