@@ -3,8 +3,10 @@
 #define PCAN_PROXY
 
 #ifdef DO_USE_CAN
+#warning "DO_USE_CAN flag is set yet pcan_proxy.h is being included from somewhere."
 #error "pcan_proxy.h should not be used if DO_USE_CAN is set."
-#endif
+#else
+
 
 // define proxy for the datatypes used by the library
 
@@ -484,5 +486,6 @@ WORD LINUX_CAN_BTR0BTR1(HANDLE hHandle, DWORD dwBitRate);
 #endif // __LIBPCAN_H__
 
 
+#endif
 
 #endif

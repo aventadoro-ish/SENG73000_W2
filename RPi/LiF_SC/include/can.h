@@ -1,9 +1,9 @@
 #pragma once
 
-#ifdef DO_USE_CAN
-#include <libpcan.h> // used for TPCANMsg
-#else 
+#if !defined(DO_USE_CAN) || defined(_WIN32) || defined(_WIN64)
 #include "pcan_proxy.h"
+#else 
+#include <libpcan.h> // used for TPCANMsg
 #endif
 
 
@@ -12,7 +12,6 @@ private:
     const char* pcan_resource_path = "/dev/pcanusb32";
 
     HANDLE h2;
-    TPCANMsg Txmsg;
     TPCANMsg Rxmsg;
     DWORD status;
 
@@ -37,10 +36,9 @@ private:
      */
     int pcanRxState(TPCANMsg *msg);
 
-    // Function declarations
+    
     int pcanTx(int id, int data);
 
-    int pcanRx(int num_msgs);
 
 public:
     CAN();

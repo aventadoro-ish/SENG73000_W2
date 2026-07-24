@@ -5,7 +5,7 @@
 // -----------------------------------------------------------------------------
 
 // #define DO_USE_DB
-// #define DO_USE_CAN
+#define DO_USE_CAN
 
 constexpr unsigned int NUM_FLOORS = 6;
 

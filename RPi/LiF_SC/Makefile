@@ -7,7 +7,9 @@ OBJ_DIR := obj
 TARGET := LiF_SC
 
 LDFLAGS := -L/usr/lib/arm-linux-gnueabihf
-# LDLIBS := -l:libmysqlcppconn.so -lpcan
+LDLIBS := 					\
+	-lpcan
+# 	-l:libmysqlcppconn.so 	
 
 CPPFLAGS := -I$(INC_DIR)
 CXXFLAGS := -Wall -Wextra -g
