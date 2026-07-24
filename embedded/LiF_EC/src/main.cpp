@@ -127,6 +127,12 @@ void setup() {
         Serial.println("LCD initialization failed!");
     }
 
+    LiF_LCD::lcd.clear();
+    LiF_LCD::lcd.print("LiF - EC");
+    LiF_LCD::lcd.setCursor(0, 1);
+    LiF_LCD::lcd.print("Initializing");
+
+
     Wire.setSDA(I2C2_SDA);
     Wire.setSCL(I2C2_SCL);
 
@@ -134,14 +140,31 @@ void setup() {
     Wire.begin();
     Wire.setClock(100000);
 
-    while (1) {
-        Serial.print(tof_sensor.readRangeSingleMillimeters());
-        if (tof_sensor.timeoutOccurred()) { Serial.print(" TIMEOUT"); }
-
-        Serial.println();
-    }
+    // while (1) {
+    //     Serial.print(tof_sensor.readRangeSingleMillimeters());
+    //     if (tof_sensor.timeoutOccurred()) { Serial.print(" TIMEOUT"); }
+    //     Serial.println();
+    // }
     
     LiF_CAN::setup();
+
+    
+    LiF_LCD::lcd.setCursor(0, 1);
+    LiF_LCD::lcd.print("Initialized ");
+
+    while (1) {
+        CAN_message_t rxMsg;
+        while (LiF_CAN::bus.read(rxMsg)) {  
+            LiF_LCD::lcd.clear();
+            LiF_LCD::lcd.home();
+            LiF_LCD::lcd.printf("Rec IC: %d", rxMsg.id);
+            LiF_LCD::lcd.setCursor(0, 1);
+            LiF_LCD::lcd.printf("data: %d", rxMsg.buf[0]);
+
+        }
+    }
+    
+
     LiF_Motor::setup();
     LiF_Motor::setupMotorControlTimer();
 

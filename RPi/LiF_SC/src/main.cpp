@@ -40,6 +40,7 @@ bool is_running = true;
 SC_State state = SC_State::INITIALIZE;
 
 Scheduler scheduler;
+CAN can_link;
 
 int floorNumber = INITIAL_FLOOR;
 int prev_floorNumber = INITIAL_FLOOR;
@@ -88,6 +89,15 @@ int main() {
 	// return 0;
 
 	scheduler = Scheduler();
+	// can_link = CAN();
+
+	for (int i = 0; i < 10; i++) {
+		int res = can_link.pcanTx(0x100, i);
+		std::cout << "Tx message test result " << std::hex << res << std::dec  << std::endl;
+		sleep(1);
+	}
+
+	return 1;
 
 
 

@@ -23,10 +23,7 @@
                 "panel": "shared",
                 "clear": true
             },
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            }
+            "group": "build"
         },
         {
             "label": "Build LiF_SC on Raspberry Pi",
@@ -53,7 +50,10 @@
                 "Build LiF_SC on Raspberry Pi"
             ],
             "problemMatcher": [],
-            "group": "build"
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
         }
     ]
 }

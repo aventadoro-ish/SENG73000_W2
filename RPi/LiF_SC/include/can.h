@@ -37,13 +37,15 @@ private:
     int pcanRxState(TPCANMsg *msg);
 
     
-    int pcanTx(int id, int data);
-
-
+    
+    
 public:
     CAN();
-
+    
     ~CAN();
+    
+    
+    int pcanTx(int id, int data);
 
 
 private:
