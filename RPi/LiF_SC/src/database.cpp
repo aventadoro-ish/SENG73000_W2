@@ -1,14 +1,504 @@
-#include "database.h"
-#include <iostream>
+// Author: NK
+// Brief: various database functions to read/write/update DB. Below is a map of their uses:
 
+// Assuming in main.cpp you do something like:
+// DB db;
+// then,
+// use: bool connected = db.db_connect();
+// use: DB::OperationMode mode = db.get_operation_mode();
+// use: int floor = db.read_floor_request();
+// use: bool success = db.set_operation_mode(DB::OperationMode::SABBATH);
+// use: bool success = db.set_doors_open(false); // closing the doors
 
-std::string DB::map_table_name(DB::Tables table) {
+#include "../include/database.h"
+
+// reformatted this block since I'm more used to this type of switch-case, mb
+std::string DB::map_table_name(DB::Tables table)
+{
     switch (table)
     {
-    case Tables::CAN_LOGS:      return std::string("can_table_name");           break;
+    case Tables::CAN_LOGS:
+        return std::string("can_table_name");
+
+    case Tables::ELEVATOR_LOGS:
+        return std::string("elevator_requests");
+
     default:
         std::cerr << "Invalid DB table value" << std::endl;
-        break;
     }
     return std::string();
+}
+
+std::string DB::map_operation_mode(DB::OperationMode operationMode)
+{
+    switch (operationMode)
+    {
+    case OperationMode::NORMAL:
+        return std::string("normal");
+
+    case OperationMode::SABBATH:
+        return std::string("sabbath");
+
+    case OperationMode::MAINTENANCE:
+        return std::string("maintenance");
+
+    case OperationMode::FAULT:
+        return std::string("fault");
+
+    default:
+        std::cerr << "Invalid DB operation mode" << std::endl;
+    }
+    return std::string();
+}
+
+// attempts to establish DB connection (try-catch)
+// returns true if exists or active, false if failed
+bool DB::db_connect()
+{
+    // if a connection already exists to the DB do not connect to it again
+    if (con != nullptr && !con->isClosed())
+    {
+        return true;
+    }
+
+    // in case con is old, delete and replace (cleanup before trying)
+    if (con != nullptr)
+    {
+        delete con;
+        con = nullptr;
+    }
+
+    // try to open the SQL connection
+    try
+    {
+        // obtain the SQL driver
+        // similar to original code
+        sql::Driver *driver = get_driver_instance();
+
+        // connect to MariaDB
+        con = driver->connect("tcp://127.0.0.1:3306", "LiF_Admin", "LiF_ESE");
+
+        // select the lif_elevator database to use
+        con->setSchema("lif_elevator");
+
+        // if everything works up until this point, no errors occured so return true
+        return true;
+    }
+    catch (sql::SQLException &error)
+    {
+        // display the issue the SQL returned
+        // error.what() apparently formats it to be human-readable and asks the exception for its description
+        std::cerr << "Database connection failed: " << error.what() << std::endl;
+
+        // remove any partially created or unusable connection if it failed (cleanup)
+        if (con != nullptr)
+        {
+            delete con;
+            con = nullptr;
+        }
+
+        // return false since the connection attempt failed
+        return false;
+    }
+}
+
+// read the next pending request in elevator_requests
+// returns int for request floor (1-3); 0 for no pending; -1 for error
+// use: int floorRequest = db.read_floor_request();
+int DB::read_floor_request()
+{
+    // make sure the DB connectionj exists before querying
+    if (!db_connect())
+    {
+        return -1;
+    }
+
+    // hold SQL query statement and returned rows
+    sql::Statement *statement = nullptr;
+    sql::ResultSet *result = nullptr;
+
+    // query the DB:
+    try
+    {
+        // create an object that can send SQL commands using con
+        statement = con->createStatement();
+
+        // find oldest "pending" request
+        // formatted in the same way the PHP queries are (see like any PHP for reference lol)
+        result = statement->executeQuery(
+            "SELECT elevator_request_id, requested_floor "
+            "FROM elevator_requests "
+            "WHERE request_status = 'pending' "
+            "AND request_type = 'remote' "
+            "ORDER BY elevator_request_id ASC "
+            "LIMIT 1 ");
+
+        // check if the query returned 0 rows
+        // basically an empty table/queue case
+        if (!result->next())
+        {
+            // no result returned to reset the request ID
+            active_request_id = 0;
+
+            // remove query objects since nothing was returned
+            delete result;
+            delete statement;
+
+            // return 0 for empty table/nothing to return
+            return 0;
+        }
+
+        // remember which row was selected
+        active_request_id = result->getInt("elevator_request_id");
+
+        // grab the requested floor
+        int requested_floor = result->getInt("requested_floor");
+
+        // delete the SQL objects since the values were grabbed and stored into variables
+        delete result;
+        delete statement;
+
+        // return requested_floor
+        return requested_floor;
+    }
+    catch (sql::SQLException &error)
+    {
+        // delete either object  if it was created before the error
+        if (result != nullptr)
+        {
+            delete result;
+        }
+        if (statement != nullptr)
+        {
+            delete statement;
+        }
+
+        // reset request_id since it was not obtained if it failed
+        active_request_id = 0;
+
+        // print error description
+        std::cerr << "Failed to read floor request from DB " << error.what() << std::endl;
+
+        return -1;
+    }
+}
+
+// mark the current active request as completed (once the EC confirms its position is the new floor)
+// this only updates DB
+bool DB::complete_elevator_request()
+{
+    // ensure there is an active request
+    if (active_request_id <= 0)
+    {
+        std::cerr << "No active elevator request to complete" << std::endl;
+        return false;
+    }
+
+    if (!db_connect())
+    {
+        return false;
+    }
+
+    sql::PreparedStatement *statement = nullptr;
+
+    try
+    {
+        statement = con->prepareStatement(
+            "UPDATE elevator_requests "
+            "SET request_status = 'completed', "
+            "completed_at = CURRENT_TIMESTAMP "
+            "WHERE elevator_request_id = ? "
+            "AND request_status IN ('pending', 'accepted')");
+
+        // mark the request previously found by read_floor_request() as complete (for eleavator actualy moving)
+        statement->setInt(1, active_request_id);
+
+        // executeUpdate returns number of updated rows
+        int updatedRows = statement->executeUpdate();
+
+        // pointer no longer needed
+        delete statement;
+
+        if (updatedRows == 0)
+        {
+            std::cerr << "Active elevator request could not be completed" << std::endl;
+
+            return false;
+        }
+
+        active_request_id = 0;
+
+        return true;
+    }
+    catch (sql::SQLException &error)
+    {
+        if (statement != nullptr)
+        {
+            delete statement;
+        }
+
+        std::cerr << "failed to mark a request as complete in DB: " << error.what() << std::endl;
+
+        return false;
+    }
+}
+
+// pending until RY sends me her table...
+int DB::log_can_message(int id, int *data, uint8_t length)
+{
+    return -1;
+}
+
+// function that grabs the current operation mode from the database
+DB::OperationMode DB::get_operation_mode()
+{
+    // make sure the DB connection exists before querying
+    if (!db_connect())
+    {
+        return OperationMode::UNKNOWN;
+    }
+
+    // hold the SQL query statement and relevant pointers
+    sql::Statement *statement = nullptr;
+    sql::ResultSet *result = nullptr;
+
+    // query the DB:
+    try
+    {
+        statement = con->createStatement();
+
+        result = statement->executeQuery(
+            "SELECT operation_mode "
+            "FROM elevator_state "
+            "WHERE state_id = 1 "
+            "LIMIT 1 ");
+
+        // check if the query returned 0 rows
+        // basically an empty table/queue case
+        if (!result->next())
+        {
+
+            // remove query objects since nothing was returned
+            delete result;
+            delete statement;
+
+            // return UNKNOWN for unknown value/fail
+            return OperationMode::UNKNOWN;
+        }
+
+        // grab the operation_mode
+        std::string operationMode = result->getString("operation_mode");
+
+        // obtained the mode from the line above, cleanup objects
+        delete result;
+        delete statement;
+
+        // map the returned operation_mode into the enum class
+        if (operationMode == "normal")
+        {
+            return OperationMode::NORMAL;
+        }
+        else if (operationMode == "sabbath")
+        {
+            return OperationMode::SABBATH;
+        }
+        else if (operationMode == "maintenance")
+        {
+            return OperationMode::MAINTENANCE;
+        }
+        else if (operationMode == "fault")
+        {
+            return OperationMode::FAULT;
+        }
+
+        return OperationMode::UNKNOWN;
+    }
+    catch (sql::SQLException &error)
+    {
+        // delete either object if it was created
+        if (result != nullptr)
+        {
+            delete result;
+        }
+        if (statement != nullptr)
+        {
+            delete statement;
+        }
+
+        // print error description
+        std::cerr << "Failed to read operation_mode from DB " << error.what() << std::endl;
+
+        return OperationMode::UNKNOWN;
+    }
+}
+
+// update the DB with the new method of operation if changed
+// true if successfully updated, false if invalid mode or DB error
+// use: DB.set_operation_mode(OperationMode::SABBATH);
+bool DB::set_operation_mode(OperationMode operationMode)
+{
+    // prevent UNKNOWN being set as the state
+    if (operationMode == OperationMode::UNKNOWN)
+    {
+        std::cerr << "Cannot set mode to UNKNOWN bruh" << std::endl;
+        return false;
+    }
+
+    // check if DB connection valid
+    if (!db_connect())
+    {
+        return false;
+    }
+
+    // convert given enum value into MariaDB string (using table mapping at top of file)
+    // OperationMode::NORMAL -> "normal" (for DB)
+    std::string operationModeText = map_operation_mode(operationMode);
+
+    // hold the prepared text in a statement
+    sql::PreparedStatement *statement = nullptr;
+
+    try
+    {
+        // make the statement (? is placeholder)
+        statement = con->prepareStatement(
+            "UPDATE elevator_state "
+            "SET operation_mode = ? "
+            "WHERE state_id = 1 ");
+
+        // replace the ? with valid text for the full query
+        // following michael's example of pstmt->setInt(1, floorNum)
+        statement->setString(1, operationModeText);
+
+        // execute UPDATE command
+        statement->executeUpdate();
+
+        // delete statement pointer
+        delete statement;
+
+        // if successful logging, return true
+        return true;
+    }
+    catch (sql::SQLException &error)
+    {
+        // delete statement if created but didn't complete query
+        if (statement != nullptr)
+        {
+            delete statement;
+        }
+
+        //  print error
+        std::cerr << "failed to updated operation_mode in DB " << error.what() << std::endl;
+
+        // return false for fail
+        return false;
+    }
+}
+
+bool DB::set_doors_open(bool doorsOpen)
+{
+    // check if DB connection exists
+    if (!db_connect())
+    {
+        return false;
+    }
+
+    // hold prepare statement
+    sql::PreparedStatement *statement = nullptr;
+
+    // query DB
+    try
+    {
+        // make statement (? is place holder)
+        statement = con->prepareStatement(
+            "UPDATE elevator_state "
+            "SET doors_open = ? "
+            "WHERE state_id = 1");
+
+        // replace ? with a valid value
+        // true = 1, false = 0
+        statement->setInt(1, doorsOpen ? 1 : 0);
+
+        statement->executeUpdate();
+
+        // delete the pointer
+        delete statement;
+
+        // true for valid execution
+        return true;
+    }
+    catch (sql::SQLException &error)
+    {
+
+        // delete statement if it was created
+        if (statement != nullptr)
+        {
+            delete statement;
+        }
+
+        // print the error
+        std::cerr << "failed to update door status in DB " << error.what() << std::endl;
+
+        // false for failed to update
+        return false;
+    }
+}
+
+int DB::get_doors_open()
+{
+    // ensure DB connection exists
+    if (!db_connect())
+    {
+        return -1;
+    }
+
+    // query DB to read
+    sql::Statement *statement = nullptr;
+    sql::ResultSet *result = nullptr;
+
+    try
+    {
+        statement = con->createStatement();
+
+        result = statement->executeQuery(
+            "SELECT doors_open "
+            "FROM elevator_state "
+            "WHERE state_id = 1 "
+            "LIMIT 1");
+
+        // the row was not found???
+        if (!result->next())
+        {
+            delete result;
+            delete statement;
+
+            std::cerr << "open_doors was not found in the DB" << std::endl;
+
+            return -1;
+        }
+
+        int doorState = result->getInt("doors_open");
+
+        delete result;
+        delete statement;
+
+        return doorState;
+    }
+    catch (sql::SQLException &error)
+    {
+        // if it was created but query failed, delete it
+        if (result != nullptr)
+        {
+            delete result;
+        }
+
+        // if it was created but query failed, delete it
+        if (statement != nullptr)
+        {
+            delete statement;
+        }
+
+        std::cerr << "failed to read doors_open status from DB " << error.what() << std::endl;
+
+        return -1;
+    }
 }
