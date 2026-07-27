@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include <string>
+#include <cstdlib>
 #include <stdlib.h>
 #include <unistd.h> 
 #include <iostream>

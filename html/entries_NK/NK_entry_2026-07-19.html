@@ -1,0 +1,362 @@
+<!doctype html>
+<!--
+Author: Nick Kapuka
+-->
+
+<html lang="en">
+  <head>
+    <title>NK Logbook Entry - 2026-07-19</title>
+    <meta charset="UTF-8" />
+    <meta name="author" content="Nick Kapuka" />
+    <meta name="description" content="NK Logbook Entry" />
+    <meta name="robots" content="index, follow" />
+    <meta http-equiv="Pragma" content="no-cache" />
+
+    <link rel="icon" href="../../media/icons/LiF_icon.ico" type="image/x-icon" />
+
+    <!-- shared website styling -->
+    <link rel="stylesheet" href="../../css/base.css" />
+
+    <!-- logbook entry page styling -->
+    <link rel="stylesheet" href="../../css/logbook_entry.css" />
+
+    <!-- Prism syntax highlighting theme -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css"
+    />
+    <link rel="stylesheet" href="../../css/code_formatting.css" />
+  </head>
+
+  <body>
+    <!-- Nav bar loaded by JavaScript -->
+    <div id="navbar-placeholder" data-root="../../"></div>
+    <script src="../../js/navbar.js"></script>
+
+    <main class="page-wrapper">
+      <section class="intro-section logbook-entry-intro" id="page_top">
+        <div class="intro-text">
+          <p class="section-label">Daily Logbook Entry</p>
+          <h1>Logbook Entry, 2026-07-19 by Nick Kapuka</h1>
+
+          <p class="intro-description">Added Sabbath mode to the elevator-control page by expanding elevator_state and implementing the SQL, PHP, JavaScript, HTML, and CSS needed for the toggle.</p>
+
+          <div class="button-row">
+            <a href="../logbook_NK.html" class="button secondary-button">My Logbook Cover Page</a>
+            <a href="#log" class="button primary-button">Jump to Entry</a>
+          </div>
+        </div>
+
+        <aside class="summary-card">
+          <h2>Entry Snapshot</h2>
+          <p><b>Date:</b> 2026-07-19</p>
+          <p><b>Author:</b> Nick Kapuka</p>
+          <p><b>Focus:</b> Sabbath mode, elevator_state, AJAX, PHP, JavaScript, MariaDB, HTML, and CSS</p>
+        </aside>
+      </section>
+
+      <section class="logbook-entry-content" id="log">
+<h2 id="entry-overview">Entry overview</h2>
+<p>Implemented a Sabbath mode toggle for the elevator-control page. The new state is stored in MariaDB, updated through PHP and AJAX, and reflected visually by the Sabbath mode button.</p>
+<h3 id="key-details">Key details</h3>
+<ul class="clean-list">
+<li><strong>Purpose:</strong> Add a persistent Sabbath mode setting that can be enabled or disabled from the website and stored in the elevator_state table.</li>
+<li><strong>Component or tool:</strong> MariaDB elevator_state table, PHP, JavaScript/AJAX, HTML, and CSS</li>
+<li><strong>Result:</strong> Successfully added the sabbath_enabled database field and created a working toggle that updates both the database and the webpage display.</li>
+<li><strong>Team contribution:</strong> Nick Kapuka</li>
+</ul>
+      </section>
+      <section class="logbook-entry-content">
+<h2 id="sabbath-mode-toggle">Sabbath mode toggle</h2>
+<p>This entry will be very rushed since I did this right before work.</p>
+<h3 id="sql-expanding-elevator-states">SQL - expanding elevator_states</h3>
+<pre class="code-block language-sql"><code class="language-sql">ALTER TABLE elevator_state
+    -&gt; ADD sabbath_enable BOOLEAN NOT NULL DEFAULT FALSE
+    -&gt; AFTER doors_open;
+ERROR 1046 (3D000): No database selected
+MariaDB [(none)]&gt; use lif_elevator
+Database changed
+MariaDB [lif_elevator]&gt; ALTER TABLE elevator_state
+    -&gt; ADD sabbath_enabled BOOLEAN NOT NULL DEFAULT FALSE
+    -&gt; AFTER doors_open;
+Query OK, 0 rows affected (0.016 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+MariaDB [lif_elevator]&gt; DESC elevator_state;
++-----------------+---------------------+------+-----+---------------------+-------------------------------+
+| Field           | Type                | Null | Key | Default             | Extra                         |
++-----------------+---------------------+------+-----+---------------------+-------------------------------+
+| state_id        | tinyint(3) unsigned | NO   | PRI | NULL                |                               |
+| doors_open      | tinyint(1)          | NO   |     | 0                   |                               |
+| sabbath_enabled | tinyint(1)          | NO   |     | 0                   |                               |
+| updated_at      | datetime            | NO   |     | current_timestamp() | on update current_timestamp() |
++-----------------+---------------------+------+-----+---------------------+-------------------------------+
+4 rows in set (0.016 sec)
+
+</code></pre>
+<h3 id="php-similar-to-toggle-switch">PHP - similar to toggle switch</h3>
+<p>I hope the comments are sufficient to understand for whoever reading.</p>
+<pre class="code-block language-php"><code class="language-php">
+if($requestAction === 'sabbath') {
+        // JS replies with enable or disabled
+        $submittedSabbathState = $_POST['sabbath_state'] ?? '';
+
+        $allowedSabbathStates = ['enabled', 'disabled'];
+
+        if(!in_array($submittedSabbathState, $allowedSabbathStates, true)) {
+            echo json_encode([
+                'success' =&gt; false,
+                'message' =&gt; 'invalid sabbath state'
+            ]);
+            exit;
+        }
+        // convert text into 0/1 for DB state
+        $sabbathEnabled = 0;
+
+        if($submittedSabbathState === 'enabled') {
+            $sabbathEnabled = 1;
+        }
+
+        try {
+            $query = "
+                UPDATE elevator_state
+                SET sabbath_enabled = :sabbath_enabled
+                WHERE state_id = 1
+            ";
+
+            $statement = $pdo-&gt;prepare($query);
+
+            $params = ['sabbath_enabled' =&gt; $sabbathEnabled];
+
+            $result = $statement-&gt;execute($params);
+
+            if($result) {
+                // sucessful
+                echo json_encode([
+                    'success' =&gt; true,
+                    'message' =&gt; 'sabbath mode updated',
+                    'sabbath_state' =&gt; $submittedSabbathState
+                ]);
+            } else {
+                echo json_encode([
+                    'success' =&gt; false,
+                    'message' =&gt; 'sabbath mode could not be enabled'
+                ]);
+            }
+        } catch (PDOException $e) {
+            error_log($e-&gt;getMessage());
+            echo json_encode([
+                'success' =&gt; false,
+                'message' =&gt; 'a database error prevented sabbath toggle',
+            ]);
+        }
+        exit;
+    }
+</code></pre>
+<h3 id="js">JS</h3>
+<pre class="code-block language-javascript"><code class="language-javascript">    // function to send the Sabbath toggle HTTP request
+    function sendSabbathState(sabbathState) {
+        const requestData = new URLSearchParams();
+
+        // tell PHP which POST to use
+        requestData.append("request_action", "sabbath");
+
+        // contains either enabled or disabled
+        requestData.append("sabbath_state", sabbathState);
+
+        // send the request
+        return fetch ("elevator_control.php", {
+            method: "POST",
+            headers: {"Content-Type": "application/x-www-form-urlencoded"},
+            body: requestData.toString()
+        })
+
+        // when PHP responds, decode JSON to JS Object to handle it
+        .then (function (response) {
+            return response.json();
+        });
+    }
+
+</code></pre>
+<pre class="code-block language-javascript"><code class="language-javascript">
+    // function to handle the response and update the last command
+    function handleSabbathResponse(responseData) {
+        if(responseData.success === true) {
+            const enabled = responseData.sabbath_state === "enabled";
+            
+            updateSabbathDisplay(enabled);
+
+            lastCommandDisplay.textContent = "Sabbath mode " + responseData.sabbath_state;
+        } else {
+            lastCommandDisplay.textContent = "Sabath update rejected" + responseData.message;
+        }
+    }
+
+    function handleSabbathFailure(error) {
+        lastCommandDisplay.textContent = "The Sabbath request could not be sent";
+
+        console.error("Sabbath request failed", error);
+    }
+</code></pre>
+<pre class="code-block language-javascript"><code class="language-javascript">
+    // update button after SQL success
+    function updateSabbathDisplay (newSabbathState) {
+        sabbathEnabled = newSabbathState;
+
+        if(sabbathEnabled === true) {
+            sabbathToggle.textContent = "Disable Sabbath mode";
+            sabbathToggle.classList.add("active");
+        } else {
+            sabbathToggle.textContent = "Enable Sabbath mode";
+            sabbathToggle.classList.remove("active");
+        }
+    }
+</code></pre>
+<pre class="code-block language-javascript"><code class="language-javascript">    // handle the sabbath mode and call the respective functions based on sucess/failure
+    function toggleSabbathMode () {
+        let requestedState = "enabled";
+
+        if(sabbathEnabled === true) {
+            requestedState = "disabled";
+        } 
+
+        lastCommandDisplay.textContent = "Requesting Sabbath mode " + requestedState + "...";
+
+        sendSabbathState(requestedState)
+            .then(handleSabbathResponse)
+            .catch(handleSabbathFailure);
+    }
+
+    // wait for sabbath toggle to be clicked
+    sabbathToggle.addEventListener("click", toggleSabbathMode);
+</code></pre>
+<h3 id="html-and-css-formatting">HTML and CSS formatting:</h3>
+<p>Updated CSS and HTML:</p>
+<pre class="code-block language-php"><code class="language-php">                     &lt;div class="door-control-panel"
+                            data-door-state="&lt;?php echo $initialDoorsOpen ? 'open' : 'closed';?&gt;"&gt;
+                            &lt;p class="section-label"&gt;&lt;b&gt;Status&lt;/b&gt;
+                                &lt;span id="doorStatusDisplay"&gt;Closed&lt;/span&gt;
+                            &lt;/p&gt;
+
+                            &lt;button type="button" id="doorToggleButton" class="door-toggle-button"&gt;Open Doors&lt;/button&gt;
+                        &lt;/div&gt;
+
+                        &lt;div class="sabbath-toggle"&gt;
+                            &lt;p class="section-label"&gt;&lt;b&gt;Sabbath Toggle&lt;/b&gt;&lt;/p&gt;
+
+                            &lt;button type="button" id="sabbathToggle" class="sabbath-toggle-button"&gt;Sabbath Mode&lt;/button&gt;
+                        &lt;/div&gt;
+</code></pre>
+<pre class="code-block language-css"><code class="language-css">
+/* door control CSS */
+.door-control-panel {
+  margin-top: 22px;
+  padding: 16px;
+  background-color: white;
+  border-left: 4px solid var(--orange);
+  border-radius: 10px;
+  box-shadow: 0 3px 10px var(--shadow);
+}
+
+.door-control-panel .section-label {
+  margin-bottom: 8px;
+}
+
+.door-status {
+  margin-bottom: 12px;
+  color: var(--deep-blue);
+  font-size: 1.05rem;
+}
+
+.door-toggle-button {
+  width: 100%;
+  padding: 11px 14px;
+  color: white;
+  background-color: var(--deep-blue);
+  border: none;
+  border-radius: 10px;
+  font-family: Georgia, serif;
+  font-size: 0.98rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.25s;
+}
+
+.door-toggle-button:hover {
+  color: var(--ink);
+  background-color: var(--yellow);
+  box-shadow: 0 0 14px rgba(249, 219, 121, 0.85);
+}
+
+.sabbath-toggle-button {
+  width: 100%;
+  padding: 11px 14px;
+  color: white;
+  background-color: var(--deep-blue);
+  border: none;
+  border-radius: 10px;
+  font-family: Georgia, serif;
+  font-size: 0.98rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.25s;
+}
+
+.sabbath-toggle-button:hover {
+  color: var(--ink);
+  background-color: var(--yellow);
+  box-shadow: 0 0 14px rgba(249, 219, 121, 0.85);
+}
+
+.sabbath-toggle-button.active {
+  color: var(--ink);
+  background-color: var(--yellow);
+  box-shadow: 0 0 14px rgba(249, 219, 121, 0.85);
+}
+</code></pre>
+<h3 id="images-of-sabbath-mode-toggle">Images of Sabbath mode toggle:</h3>
+<figure>
+  <img alt="Sabbath mode toggle in the disabled state" class="img_med" src="../../media/images/ElevatorRequest_SabbathModeToggleOFF.png" />
+  <figcaption><b>Sabbath mode toggle in the disabled state</b></figcaption>
+</figure>
+
+<figure>
+  <img alt="Sabbath mode toggle in the enabled state" class="img_med" src="../../media/images/ElevatorRequest_SabbathModeToggleON.png" />
+  <figcaption><b>Sabbath mode toggle in the enabled state</b></figcaption>
+</figure>
+
+<p>The DB naturally updates too:</p>
+<pre class="code-block language-sql"><code class="language-sql">MariaDB [lif_elevator]&gt; select * from elevator_state;
++----------+------------+-----------------+---------------------+
+| state_id | doors_open | sabbath_enabled | updated_at          |
++----------+------------+-----------------+---------------------+
+|        1 |          1 |               0 | 2026-07-20 15:36:35 |
++----------+------------+-----------------+---------------------+
+1 row in set (0.001 sec)
+
+MariaDB [lif_elevator]&gt; select * from elevator_state;
++----------+------------+-----------------+---------------------+
+| state_id | doors_open | sabbath_enabled | updated_at          |
++----------+------------+-----------------+---------------------+
+|        1 |          1 |               1 | 2026-07-20 15:37:32 |
++----------+------------+-----------------+---------------------+
+1 row in set (0.000 sec)
+
+MariaDB [lif_elevator]&gt; 
+</code></pre>
+      </section>
+
+      <p class="top-link">
+        <a href="#page_top">Go to the top of this page</a>
+      </p>
+    </main>
+
+    <footer class="site-footer">
+      <p>Copyright &copy; Nick Kapuka</p>
+    </footer>
+
+    <!-- Prism.js scripts for code formatting -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+  </body>
+</html>

@@ -15,14 +15,13 @@ Author: Rita Yevtushenko
     <meta name="author" content="Rita Yevtushenko">
 
     <meta name="description"
-        content="Lithium Firefly Logbook Entry">
+          content="Lithium Firefly Logbook Entry">
 
     <meta name="robots" content="index, follow">
 
     <link rel="icon"
           href="../../media/icons/LiF_icon.ico"
           type="image/x-icon">
-
     <link rel="stylesheet" href="../../css/base.css">
     <link rel="stylesheet" href="../../css/logbook_entry.css">
 
@@ -42,6 +41,7 @@ Author: Rita Yevtushenko
 
 </aside>
 
+<!-- ======================================================= -->
 
 <section class="logbook-entry-intro">
 
@@ -53,11 +53,11 @@ Author: Rita Yevtushenko
 
 <strong>Date:</strong> July 13, 2026<br>
 
-<strong>Project:</strong> Lithium Firefly<br>
+<strong>Project:</strong> Lithium Firefly Elevator<br>
 
-<strong>Hours:</strong> 3 <br>
+<strong>Hours:</strong> 5<br>
 
-<strong>Focus:</strong> MySql databses Setup
+<strong>Focus:</strong> PCB Revision 2 Development
 
 </p>
 
@@ -65,7 +65,9 @@ Author: Rita Yevtushenko
 
 <p class="logbook_summary">
 
-Start an sql schema for the following tables;
+Continued refining Revision 2 of the PCB schematic by improving the
+load cell circuitry, reorganizing the project hierarchy, and refining
+the USB-C CAN communication interface for future controller boards.
 
 </p>
 
@@ -77,33 +79,224 @@ Start an sql schema for the following tables;
 
 </div>
 
-    </section>
+</section>
 
-    <section class="logbook-entry-content">
-                    <figure>
+<!-- ======================================================= -->
 
-            <img src="../../media/images/Load Cell.png">
+<section class="logbook-entry-content">
 
-            <figcaption>
+<h2>PCB Revision 2 Development</h2>
 
-            Figure 1. Revised Load Cell Amplifier from NAU7802SG1 to MCP6N11
+<p>
 
-            </figcaption>
+Continued refining the second revision of the PCB schematic. The focus
+was improving the organization of the design by separating major
+functional blocks into hierarchical sheets while updating several
+subcircuits that had been reviewed during previous design meetings.
 
-            </figure>
-    </section>
+</p>
 
+<p>
 
-            <section class="logbook-entry-content">
+Work primarily focused on the load cell amplifier circuitry, CAN bus
+connections, and USB-C interface used throughout the elevator control
+boards.
 
-            </section>
-            <footer class="site-footer">
+</p>
 
-                <p>
-                    Copyright &copy; Rita Yevtushenko
-                </p>
+<!-- ======================================================= -->
 
-            </footer>
-        </main>
-    </body>
+<h2>Load Cell Circuit Improvements</h2>
+
+<p>
+
+The load cell signal conditioning circuit was revised to use the
+MCP6N11 instrumentation amplifier. The updated circuit simplifies the
+analog front-end while providing better integration with the remaining
+PCB components.
+
+</p>
+
+<p>
+
+Component placement and signal routing were reviewed to improve
+readability before beginning PCB layout.
+
+</p>
+
+<figure>
+
+<img src="../../media/images/Load Cell.png"
+     alt="Load Cell Circuit">
+
+<figcaption>
+
+Figure 1. Updated load cell amplifier circuit using the MCP6N11
+instrumentation amplifier.
+
+</figcaption>
+
+</figure>
+
+<figure>
+
+<img src="../../media/images/Final_circuit_RY3.png"
+     alt="Final Load Cell Revision">
+
+<figcaption>
+
+Figure 2. Final revision of the load cell schematic after reorganizing
+the circuitry.
+
+</figcaption>
+
+</figure>
+
+<!-- ======================================================= -->
+
+<h2>USB-C CAN Interface</h2>
+
+<p>
+
+Continued developing the USB-C communication module used to distribute
+both CAN communication and power between elevator controller boards.
+
+</p>
+
+<p>
+
+The connector routes CANH and CANL through the USB-C interface while
+providing a +5&nbsp;V supply for downstream hardware modules.
+
+</p>
+
+<h4>Design Decisions</h4>
+
+<ul>
+
+<li>Added 5.1&nbsp;kΩ pull-down resistors on the USB-C CC pins.</li>
+
+<li>Maintained differential routing for CANH and CANL.</li>
+
+<li>Used the horizontal USB-C connector for communication only.</li>
+
+<li>Prepared the schematic for future hardware revisions.</li>
+
+</ul>
+
+<figure>
+
+<img src="../../media/images/Rev1_RY_Before_Jul6.png"
+     alt="USB-C Revision 1">
+
+<figcaption>
+
+Figure 3. Early USB-C connector design used for CAN communication and
+power distribution.
+
+</figcaption>
+
+</figure>
+
+<p>
+
+This revision was later refined as additional design requirements were
+identified.
+
+</p>
+
+<figure>
+
+<img src="../../media/images/Final_circuit_RY2.png"
+     alt="Final USB-C">
+
+<figcaption>
+
+Figure 4. Final revision of the USB-C interface after connector and
+routing improvements.
+
+</figcaption>
+
+</figure>
+
+<!-- ======================================================= -->
+
+<h2>Project Hierarchy</h2>
+
+<p>
+
+Continued reorganizing the project into hierarchical schematic sheets.
+Separating the hardware into functional blocks significantly improved
+navigation and reduced clutter on the root sheet.
+
+</p>
+
+<figure>
+
+<img src="../../media/images/Final_circuit_RY1.png"
+     alt="Hierarchy Root">
+
+<figcaption>
+
+Figure 5. Final project hierarchy showing the major functional blocks
+used throughout the PCB design.
+
+</figcaption>
+
+</figure>
+
+<!-- ======================================================= -->
+
+<h2>Engineering Discussion</h2>
+
+<p>
+
+Although today's work consisted mainly of schematic refinements rather
+than implementing entirely new hardware, these improvements greatly
+increased the maintainability of the project. Organizing the design into
+hierarchical sheets simplified navigation while making future revisions
+more manageable.
+
+</p>
+
+<p>
+
+The updated USB-C interface provides a reusable communication and power
+connector for multiple subsystem boards, while the revised load cell
+circuit offers a cleaner analog front-end for future PCB layout work.
+
+</p>
+
+<!-- ======================================================= -->
+
+<h2>Next Steps</h2>
+
+<ul>
+
+<li>Continue refining the PCB schematic.</li>
+
+<li>Verify USB-C pin assignments across subsystem boards.</li>
+
+<li>Complete remaining schematic symbols and project libraries.</li>
+
+<li>Move towards organizing databases for the project.</li>
+
+</ul>
+
+</section>
+
+</main>
+
+<footer class="site-footer">
+
+<p>
+
+Copyright &copy; Rita Yevtushenko
+
+</p>
+
+</footer>
+
+</body>
+
 </html>

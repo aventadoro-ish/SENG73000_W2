@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+
+<!--
+Author: Rita Yevtushenko
+-->
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <title>RY's Logbook - 2026-07-17</title>
+
+    <meta name="author" content="Rita Yevtushenko">
+
+    <meta name="description"
+          content="Lithium Firefly Logbook Entry">
+
+    <meta name="robots" content="index, follow">
+
+    <link rel="icon"
+          href="../../media/icons/LiF_icon.ico"
+          type="image/x-icon">
+
+    <link rel="icon" href="../../media/icons/LiF_icon.ico" type="image/x-icon">
+        <link rel="stylesheet" href="../../css/base.css">
+        <link rel="stylesheet" href="../../css/logbook_entry.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css">
+        <link rel="stylesheet" href="../../css/code_formatting.css">
+        <script>
+            window.MathJax = {
+                tex: {
+                    inlineMath: [['\\(', '\\)'], ['$', '$']],
+                    displayMath: [['\\[', '\\]'], ['$$', '$$']]
+                },
+                svg: { fontCache: 'global' }
+            };
+	</script>
+	<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+</head>
+<body>
+
+
+    <div id="navbar-placeholder" data-root="../../"></div>
+    <script src="../../js/navbar.js"></script>
+
+
+<main class="page-wrapper">
+		<section class="intro-section logbook-entry-intro" id="page_top">
+			<div class="intro-text">
+				<p class="section-label">Daily Logbook Entry</p>
+				<h1>Logbook Entry, 2026-07-17 by Rita Yevtushenko</h1>
+				<p class="intro-description">I²S audio amplifier testing for 6 floors</p>
+				<div class="button-row">
+					<a href="../logbook_MR.html" class="button secondary-button">My Logbook Cover Page</a>
+					<a href="#log" class="button primary-button">Jump to Entry</a>
+					<a href="RY_entry_2026-07-16.html" class="button secondary-button">Previous Entry</a>
+					<a href="RY_entry_2026-07-19.html" class="button secondary-button">Next Entry</a>
+				</div>
+			</div>
+			<aside class="summary-card">
+				<h2>Entry Snapshot</h2>
+				<p><b>Date:</b> 2026-07-17</p>
+				<p><b>Author:</b> Rita Yevtushenko</p>
+				<p><b>Focus:</b> I²S audio amplifier testing for 6 floors</p>
+			</aside>
+		</section>
+
+
+<!-- ======================================================= -->
+
+
+<section class="logbook-entry-intro">
+
+
+<div>
+
+
+<h1>Logbook Entry</h1>
+
+<h2>Summary</h2>
+
+<p class="logbook_summary">
+
+Configured the Raspberry Pi 4 to communicate with the MAX98357A I²S
+audio amplifier, verified successful hardware detection through ALSA,
+tested speaker playback, and prepared floor announcement audio files
+for integration into the Supervisory Controller finite state machine.
+
+</p>
+
+<a href="../logbook_RY.html">
+
+← Return to Logbook Cover Page
+
+</a>
+
+</div>
+
+</section>
+
+<!-- ======================================================= -->
+
+<section class="logbook-entry-content">
+
+<h2>Objective</h2>
+
+<p>
+
+Following the unsuccessful attempts on the Raspberry Pi 5 due to the
+operating system compatibility issues, I continued development on the
+project Raspberry Pi 4. The objective was to configure the MAX98357A
+I²S amplifier, verify communication with the Raspberry Pi, and prepare
+the floor announcement audio system for integration into the elevator
+FSM.
+
+</p>
+
+<!-- ======================================================= -->
+
+<h2>Hardware Setup</h2>
+
+<p>
+
+The MAX98357A I²S amplifier was connected to the Raspberry Pi 4 using
+the dedicated I²S interface. This configuration will eventually allow
+the Supervisory Controller to play floor announcements whenever the
+elevator reaches its destination floor.
+
+</p>
+
+<ul>
+
+<li>BCLK → GPIO18 (Pin 12)</li>
+
+<li>LRC → GPIO19 (Pin 35)</li>
+
+<li>DIN → GPIO21 (Pin 40)</li>
+
+<li>VIN → 5 V (Pin 2)</li>
+
+<li>GND → Pin 6</li>
+
+</ul>
+
+<figure>
+
+<img src="../../media/images/HardwareWiringAudio.jpeg"
+     alt="MAX98357A wiring">
+
+<figcaption>
+
+Figure 1. Raspberry Pi 4 connected to the MAX98357A I²S amplifier.
+
+</figcaption>
+
+</figure>
+
+
+<!-- ======================================================= -->
+
+<h2>Firmware Configuration</h2>
+
+<p>
+
+The Raspberry Pi firmware configuration file
+(<code>/boot/firmware/config.txt</code>) was modified to disable the
+default onboard audio interface and enable the MAX98357A overlay.
+
+</p>
+
+<h4>Changes Made</h4>
+
+<ul>
+
+<li>Commented out the onboard audio driver.</li>
+
+<li>Modified the VC4 graphics overlay to disable HDMI audio.</li>
+
+<li>Enabled the Raspberry Pi I²S peripheral.</li>
+
+<li>Loaded the MAX98357A device tree overlay.</li>
+
+</ul>
+
+<pre class="code-block language-text"><code class="language-text">
+# dtparam=audio=on
+
+dtoverlay=vc4-kms-v3d,noaudio
+
+dtparam=i2s=on
+
+dtoverlay=max98357a,no-sdmode
+</code></pre>
+
+<figure>
+
+<pre class="code-block language-text"><code class="language-text">
+# For more options and information see
+# http://rptl.io/configtxt
+# Some settings may impact device functionality. See link above for details
+
+# Uncomment some or all of these to enable the optional hardware interfaces
+dtparam=i2c_arm=on
+#dtparam=i2s=on
+dtparam=spi=on
+
+# Enable audio (loads snd_bcm2835)
+# dtparam=audio=on
+
+# Additional overlays and parameters are documented
+# /boot/firmware/overlays/README
+
+# Automatically load overlays for detected cameras
+camera_auto_detect=1
+
+# Automatically load overlays for detected DSI displays
+display_auto_detect=1
+
+# Automatically load initramfs files, if found
+auto_initramfs=1
+
+# Enable DRM VC4 V3D driver
+dtoverlay=vc4-kms-v3d,noaudio
+max_framebuffers=2
+
+# Don't have the firmware create an initial video= setting in cmdline.txt.
+# Use the kernel's default instead.
+disable_fw_kms_setup=1
+
+# Run in 64-bit mode
+arm_64bit=1
+
+# Disable compensation for displays with overscan
+disable_overscan=1
+
+# Run as fast as firmware / board allows
+arm_boost=1
+
+[cm4]
+# Enable host mode on the 2711 built-in XHCI USB controller.
+# This line should be removed if the legacy DWC2 controller is required
+# (e.g. for USB device mode) or if USB support is not required.
+otg_mode=1
+
+[cm5]
+dtoverlay=dwc2,dr_mode=host
+
+[all]
+enable_uart=1
+dtparam=i2s=on
+dtoverlay=max98357a,no-sdmode
+</code></pre>
+
+<figcaption>
+
+Figure 2. Final firmware configuration enabling I²S audio.
+
+</figcaption>
+
+</figure>
+
+<!-- ======================================================= -->
+
+<h2>Hardware Detection</h2>
+
+<p>
+
+After rebooting the Raspberry Pi, the MAX98357A was successfully detected
+by ALSA.
+
+</p>
+
+<pre class="code-block language-bash"><code class="language-bash">
+aplay -l
+</code></pre>
+
+<pre class="code-block language-text"><code class="language-text">
+card 3: MAX98357A [MAX98357A], device 0:
+bcm2835-i2s-HiFi HiFi-0
+</code></pre>
+
+<p>
+
+This confirmed that the device tree overlay loaded correctly and that
+the Raspberry Pi recognized the amplifier hardware.
+
+</p>
+
+<!-- ======================================================= -->
+
+<h2>Speaker Testing</h2>
+
+<!-- ======================================================= -->
+
+<h2>Next Software Integration</h2>
+
+
+<!-- ======================================================= -->
+
+<h2>Results</h2>
+
+<p>
+
+</p>
+
+<!-- ======================================================= -->
+
+<h2>Next Steps</h2>
+
+
+</section>
+
+		<nav class="entry-date-nav" aria-label="Logbook date navigation">
+			<a href="RY_entry_2026-07-19.html" class="button secondary-button">Previous Entry</a>
+			<a href="RY_entry_2026-07-21.html" class="button secondary-button">Next Entry</a>
+		</nav>
+		<p class="top-link"><a href="#page_top">Go to the top of this page</a></p>
+	</main>
+
+	<footer class="site-footer">
+		<p>Copyright &copy; Rita Yevtushenko</p>
+	</footer>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+</body>
+
+</html>

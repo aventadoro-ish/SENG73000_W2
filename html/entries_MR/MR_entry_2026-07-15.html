@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<!--
+Author: Matvey Regentov
+-->
+
+<html lang="en">
+
+<head>
+	<title>MR Logbook Entry - 2026-07-15</title>
+	<meta charset="UTF-8">
+	<meta name="author" content="Matvey Regentov">
+	<meta name="description" content="MR Logbook Entry for 2026-07-15">
+	<meta name="robots" content="index, follow">
+	<meta http-equiv="Pragma" content="no-cache">
+
+	<link rel="icon" href="../../media/icons/LiF_icon.ico" type="image/x-icon">
+	<link rel="stylesheet" href="../../css/base.css">
+	<link rel="stylesheet" href="../../css/logbook_entry.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css">
+	<link rel="stylesheet" href="../../css/code_formatting.css">
+	<script>
+		window.MathJax = {
+			tex: {
+				inlineMath: [['\\(', '\\)'], ['$', '$']],
+				displayMath: [['\\[', '\\]'], ['$$', '$$']]
+			},
+			svg: { fontCache: 'global' }
+		};
+	</script>
+	<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+</head>
+
+<body>
+	<div id="navbar-placeholder" data-root="../../"></div>
+	<script src="../../js/navbar.js"></script>
+
+	<main class="page-wrapper">
+		<section class="intro-section logbook-entry-intro" id="page_top">
+			<div class="intro-text">
+				<p class="section-label">Daily Logbook Entry</p>
+				<h1>Logbook Entry, 2026-07-15 by Matvey Regentov</h1>
+				<p class="intro-description">Service PCB layout, component selection, and board-outline development</p>
+				<div class="button-row">
+					<a href="../logbook_MR.html" class="button secondary-button">My Logbook Cover Page</a>
+					<a href="#log" class="button primary-button">Jump to Entry</a>
+					<a href="MR_entry_2026-07-14.html" class="button secondary-button">Previous Entry</a>
+					<a href="MR_entry_2026-07-16.html" class="button secondary-button">Next Entry</a>
+				</div>
+			</div>
+			<aside class="summary-card">
+				<h2>Entry Snapshot</h2>
+				<p><b>Date:</b> 2026-07-15</p>
+				<p><b>Author:</b> Matvey Regentov</p>
+				<p><b>Focus:</b> Service PCB layout, component selection, and board-outline development</p>
+			</aside>
+		</section>
+
+		<section class="logbook-entry-content" id="log">
+			<h2 id="pcb-layout-session-2">PCB Layout Session 2</h2>
+			<p>I continued laying out the PCB. I completed the placement for the load-cell sheet, the buttons and LEDs,
+				and the 3.3 V regulators.</p>
+			<p>The 7-segment-display net assignments still need to be changed to make routing cleaner.</p>
+			<p>I also began developing the PCB outline. The Nucleo reference board measures 70.00 × 82.50 mm.</p>
+			<p>To keep the new board outline as small as possible, I made the following changes:</p>
+			<ul>
+				<li>I replaced the DB9 connector with a JST-PH2.0 connector.</li>
+				<li>I removed the barrel jack and its reverse-polarity-protection diode.</li>
+				<li>I replaced the large <code>SLW-883935-2A-D</code> CAN-termination switch. After considering the
+					<code>450404015514</code>, I selected the smaller SMD <code>JS202011JCQN</code> switch.</li>
+				<li>I replaced the <code>TL3301PF160QG</code> ESP32-S3 reset and flash buttons with the smaller
+					<code>CKN12220-1-ND</code> buttons.</li>
+			</ul>
+			<p>The board still needed to be enlarged.</p>
+			<figure class="logbook-figure">
+				<img src="../../media/images/LiF-Expanding_Board_outline.png" alt="LiF - Expanding Board outline"
+					class="logbook-image centered-image" style="max-width: 100%; height: auto;">
+				<figcaption>LiF - Expanding Board outline</figcaption>
+			</figure>
+
+			<p>The image compares the original outline, shown in red, with the new outline. The initial 60 × 95 mm
+				outline was increased to 60 × 100 mm.</p>
+			<p>I changed the jumper pin headers from through-hole to SMD components. This saves space and makes it
+				easier to place components on both sides of the board without creating mechanical conflicts.</p>
+
+		</section>
+
+		<section class="logbook-entry-content sources-section" id="sources">
+			<h2>Sources</h2>
+			<p>No external sources were cited in this entry.</p>
+		</section>
+
+		<nav class="entry-date-nav" aria-label="Logbook date navigation">
+			<a href="MR_entry_2026-07-14.html" class="button secondary-button">Previous Entry</a>
+			<a href="MR_entry_2026-07-16.html" class="button secondary-button">Next Entry</a>
+		</nav>
+		<p class="top-link"><a href="#page_top">Go to the top of this page</a></p>
+	</main>
+
+	<footer class="site-footer">
+		<p>Copyright &copy; Matvey Regentov</p>
+	</footer>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+</body>
+
+</html>

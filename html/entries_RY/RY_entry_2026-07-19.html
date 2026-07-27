@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+
+<!--
+Author: Rita Yevtushenko
+-->
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <title>RY's Logbook - 2026-07-19</title>
+
+    <meta name="author" content="Rita Yevtushenko">
+
+    <meta name="description"
+          content="Lithium Firefly Logbook Entry">
+
+    <meta name="robots" content="index, follow">
+
+    <link rel="icon"
+          href="../../media/icons/LiF_icon.ico"
+          type="image/x-icon">
+
+    <link rel="icon" href="../../media/icons/LiF_icon.ico" type="image/x-icon">
+        <link rel="stylesheet" href="../../css/base.css">
+        <link rel="stylesheet" href="../../css/logbook_entry.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css">
+        <link rel="stylesheet" href="../../css/code_formatting.css">
+        <script>
+            window.MathJax = {
+                tex: {
+                    inlineMath: [['\\(', '\\)'], ['$', '$']],
+                    displayMath: [['\\[', '\\]'], ['$$', '$$']]
+                },
+                svg: { fontCache: 'global' }
+            };
+	</script>
+	<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+</head>
+
+
+<body>
+
+
+    <div id="navbar-placeholder" data-root="../../"></div>
+    <script src="../../js/navbar.js"></script>
+
+
+<main class="page-wrapper">
+		<section class="intro-section logbook-entry-intro" id="page_top">
+			<div class="intro-text">
+				<p class="section-label">Daily Logbook Entry</p>
+				<h1>Logbook Entry, 2026-07-19 by Rita Yevtushenko</h1>
+				<p class="intro-description">Updated SC code in include audio</p>
+				<div class="button-row">
+					<a href="../logbook_MR.html" class="button secondary-button">My Logbook Cover Page</a>
+					<a href="#log" class="button primary-button">Jump to Entry</a>
+					<a href="RY_entry_2026-07-17.html" class="button secondary-button">Previous Entry</a>
+					<a href="RY_entry_2026-07-20.html" class="button secondary-button">Next Entry</a>
+				</div>
+			</div>
+			<aside class="summary-card">
+				<h2>Entry Snapshot</h2>
+				<p><b>Date:</b> 2026-07-19</p>
+				<p><b>Author:</b> Rita Yevtushenko</p>
+				<p><b>Focus:</b> Updated SC code in include audio</p>
+			</aside>
+		</section>
+
+
+<!-- ======================================================= -->
+
+
+<section class="logbook-entry-intro">
+
+
+<div>
+
+
+<h1>Logbook Entry</h1>
+
+<h2>Summary</h2>
+
+
+<p class="logbook_summary">
+
+Integrated floor announcement functionality into the elevator
+supervisory controller software. The FSM was updated so that when the
+elevator reaches the ARRIVED state, the controller updates the database
+and plays the corresponding floor announcement audio file using the
+Linux audio playback utility.
+
+</p>
+
+
+<a href="../logbook_RY.html">
+
+← Return to Logbook Cover Page
+
+</a>
+
+
+</div>
+
+
+</section>
+
+
+<!-- ======================================================= -->
+
+
+<section class="logbook-entry-content">
+
+
+<h2>Floor Announcement Integration</h2>
+
+
+<p>
+
+Continued development of the Lithium Firefly elevator software by
+connecting the existing finite state machine (FSM) logic with the audio
+announcement system developed previously using the MAX98357A I2S audio
+amplifier.
+
+</p>
+
+
+<p>
+
+The elevator supervisory controller now announces the destination floor
+after reaching the ARRIVED state. This provides audible feedback to
+passengers and demonstrates integration between the elevator control
+logic and the embedded Linux audio system.
+
+</p>
+
+
+
+<!-- ======================================================= -->
+
+
+<h2>FSM State Update</h2>
+
+
+<p>
+
+The ARRIVED state in both <code>mainFunctions.cpp</code> and
+<code>main.cpp</code> was updated to call the new
+<code>announceFloor()</code> function after the elevator reaches its
+target floor.
+
+</p>
+
+
+<p>
+
+The database update functionality was maintained using the existing
+conditional compilation flag. Once the floor number is stored, the
+audio announcement is triggered before returning the FSM to the IDLE
+state.
+
+</p>
+
+
+<pre><code>
+case STATE_ARRIVED:
+
+#ifdef DO_USE_DB
+    db_setFloorNum(targetFloor);
+#endif
+
+    announceFloor(targetFloor);
+
+    currentState = STATE_IDLE;
+    break;
+</code></pre>
+
+
+
+<!-- ======================================================= -->
+
+
+<h2>Audio Announcement Function</h2>
+
+
+<p>
+
+The new <code>announceFloor()</code> function was added to generate the
+appropriate audio playback command based on the current elevator floor.
+
+</p>
+
+
+<p>
+
+The function dynamically creates the file path using the floor number
+and calls <code>aplay</code> to play the corresponding WAV file stored
+within the elevator audio directory.
+
+</p>
+
+
+<pre><code>
+void announceFloor(int floor)
+{
+    std::string cmd =
+        std::string("/usr/bin/aplay ") +
+        AUDIO_PATH +
+        "floor" +
+        std::to_string(floor) +
+        ".wav &";
+
+    system(cmd.c_str());
+}
+</code></pre>
+
+
+
+<p>
+
+For example, when the elevator arrives at floor 3, the controller
+generates the command:
+
+</p>
+
+
+<pre><code>
+/usr/bin/aplay /path/to/audio/floor3.wav &
+</code></pre>
+
+
+<p>
+
+This allows each floor to have a dedicated announcement file while
+keeping the software implementation scalable for additional floors.
+
+</p>
+
+
+
+<!-- ======================================================= -->
+
+
+<h2>Header File Update</h2>
+
+
+<p>
+
+The function prototype was added to
+<code>mainFunctions.h</code> so that the announcement function can be
+accessed by the main FSM logic.
+
+</p>
+
+
+<pre><code>
+void announceFloor(int floor);
+</code></pre>
+
+
+
+<!-- ======================================================= -->
+
+
+<h2>Software Integration Overview</h2>
+
+
+<p>
+
+The completed software flow is now:
+
+</p>
+
+
+<ul>
+
+<li>Elevator request is received through CAN communication.</li>
+
+<li>FSM transitions through MOVING state.</li>
+
+<li>Target floor is reached and FSM enters ARRIVED state.</li>
+
+<li>Database floor information is updated.</li>
+
+<li><code>announceFloor()</code> selects the correct WAV file.</li>
+
+<li><code>aplay</code> outputs the floor announcement through the I2S audio hardware.</li>
+
+<li>FSM returns to the IDLE state.</li>
+
+</ul>
+
+
+
+<!-- ======================================================= -->
+
+
+<h2>Engineering Discussion</h2>
+
+
+<p>
+
+This update successfully connected the previously tested audio hardware
+with the elevator control software. By keeping the announcement logic
+inside a separate function, the FSM remains readable while allowing the
+audio system to be expanded independently.
+
+</p>
+
+
+<p>
+
+The implementation also allows future improvements such as adding
+direction announcements, door status messages, emergency notifications,
+or replacing the Linux playback command with a dedicated audio driver.
+
+</p>
+
+
+
+<!-- ======================================================= -->
+
+
+<h2>Next Steps</h2>
+
+
+<ul>
+
+<li>Test announcements for all available floors.</li>
+
+<li>Verify audio playback reliability during repeated elevator cycles.</li>
+
+<li>Integrate audio testing with the complete CAN communication system.</li>
+
+<li>Consider adding additional elevator status announcements.</li>
+
+</ul>
+
+</section>
+
+		<nav class="entry-date-nav" aria-label="Logbook date navigation">
+			<a href="RY_entry_2026-07-17.html" class="button secondary-button">Previous Entry</a>
+			<a href="RY_entry_2026-07-20.html" class="button secondary-button">Next Entry</a>
+		</nav>
+		<p class="top-link"><a href="#page_top">Go to the top of this page</a></p>
+	</main>
+
+	<footer class="site-footer">
+		<p>Copyright &copy; Rita Yevtushenko</p>
+	</footer>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+</body>
+
+</html>

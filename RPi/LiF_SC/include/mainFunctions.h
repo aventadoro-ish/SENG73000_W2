@@ -3,6 +3,7 @@
 
 // Queue 
 #define QUEUE_SIZE 3
+#define AUDIO_PATH "/home/rita/LiF_SC/pi/audio/"
 
 extern int requestQueue[QUEUE_SIZE];
 extern int queueHead;
@@ -10,6 +11,7 @@ extern int queueTail;
 extern int queueCount;
 
 void enqueueFloor(int floor);
+void announceFloor(int floor);
 int dequeueFloor();
 
 // Main menu

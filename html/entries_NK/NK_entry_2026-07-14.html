@@ -1,0 +1,375 @@
+<!doctype html>
+<!--
+Author: Nick Kapuka
+-->
+
+<html lang="en">
+  <head>
+    <title>NK Logbook Entry - 2026-07-14</title>
+    <meta charset="UTF-8" />
+    <meta name="author" content="Nick Kapuka" />
+    <meta name="description" content="NK Logbook Entry" />
+    <meta name="robots" content="index, follow" />
+    <meta http-equiv="Pragma" content="no-cache" />
+
+    <link rel="icon" href="../../media/icons/LiF_icon.ico" type="image/x-icon" />
+
+    <!-- shared website styling -->
+    <link rel="stylesheet" href="../../css/base.css" />
+
+    <!-- logbook entry page styling -->
+    <link rel="stylesheet" href="../../css/logbook_entry.css" />
+
+    <!-- Prism syntax highlighting theme -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css"
+    />
+    <link rel="stylesheet" href="../../css/code_formatting.css" />
+  </head>
+
+  <body>
+    <!-- Nav bar loaded by JavaScript -->
+    <div id="navbar-placeholder" data-root="../../"></div>
+    <script src="../../js/navbar.js"></script>
+
+    <main class="page-wrapper">
+      <section class="intro-section logbook-entry-intro" id="page_top">
+        <div class="intro-text">
+          <p class="section-label">Daily Logbook Entry</p>
+          <h1>Logbook Entry, 2026-07-14 by Nick Kapuka</h1>
+
+          <p class="intro-description">Began to work on managing access to the website&#x27;s protected pages</p>
+
+          <div class="button-row">
+            <a href="../logbook_NK.html" class="button secondary-button">My Logbook Cover Page</a>
+            <a href="#log" class="button primary-button">Jump to Entry</a>
+          </div>
+        </div>
+
+        <aside class="summary-card">
+          <h2>Entry Snapshot</h2>
+          <p><b>Date:</b> 2026-07-14</p>
+          <p><b>Author:</b> Nick Kapuka</p>
+          <p><b>Focus:</b> Databases, MariaDB, PHP</p>
+        </aside>
+      </section>
+
+      <section class="logbook-entry-content" id="log">
+<h2 id="managing-access-to-protected-pages">Managing access to protected pages</h2>
+<p>Key details</p>
+<ul class="clean-list">
+<li><strong>Purpose:</strong>  Have a way to manage access and approve accounts</li>
+<li><strong>Component or tool:</strong> VSCode, PHPMyAdmin, MariaDB</li>
+<li><strong>Result:</strong> Began to set up managing request access from the website itself using an admin account</li>
+<li><strong>Team contribution:</strong> Nick Kapuka</li>
+</ul>
+      </section>
+      <section class="logbook-entry-content">
+<h2 id="db-continuation">DB Continuation</h2>
+<h3 id="making-an-elevator-admin-user">Making an elevator admin user</h3>
+<p>I'd like to make an admin account for our website that can give permissions on the website (in the future; personal thing I'd like to do).</p>
+<p>I made this account:</p>
+<p>Username: LiF_Admin
+Password: LiF_ESE</p>
+<p>Which is stored as a hash in the DB as:</p>
+<pre class="code-block language-bash"><code class="language-bash">$2y$10$6GuzQhPpmvdXae2VVjq20OhkJygip9oHQP3TPpTiPmQsNQHbEnb8e
+</code></pre>
+<h3 id="the-plan">The Plan</h3>
+<p>With the admin account made, I began to work on a webpage that will display the access_request schema in a new PHP called &quot;manage_requests.php&quot;.</p>
+<p>This allows for easy approval, username, and password creation and feels a lot more like a real website.</p>
+<p>The plan is:</p>
+<ol class="clean-list">
+<li>An admin logs into manage_requests.php</li>
+<li>The table of requests loads</li>
+<li>The admin can approve/deny the request</li>
+<li>The admin can  grant a temporary username/password</li>
+<li>This will probably be permanent for the purpose of this project, but ideally:<ol class="clean-list">
+<li>The person who requested access can log into their new account and configure their own username and password which is stored in the database and allows for constant permanent login.</li>
+</ol>
+</li>
+</ol>
+<p>This allows to easily and realistically approve requests instead of terminal-based commands or phpMyAdmin.</p>
+<h3 id="php-setup">PHP setup</h3>
+<h4 id="admin-only-access">Admin only access</h4>
+<p>The first part was starting a session in the new file, and checking if the user is an admin:</p>
+<pre class="code-block language-php"><code class="language-php">session_start();
+
+  
+
+// load the DB connection
+
+require_once __DIR__ . '/db.php';
+
+  
+
+    // login.php sets $_SESSION to be logged in to true, so we're gonna check that
+
+    // if someone is NOT logged in, send them back to the login page
+
+    if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
+
+        header("Location: ../html/login.html");
+
+        exit("Please log in.");
+
+    }
+
+  
+
+    // check if the user logged in is the LiF Admin account:
+
+    // use user-role or an empty string
+
+    if(($_SESSION['user_role'] ?? '') !== 'admin') {
+
+        // unauthorized access
+
+        http_response_code(403);
+
+        exit("Access denied; Admin perms required for entry to this page. Please return and login.");
+
+    }
+</code></pre>
+<h3 id="get-contents">Get contents</h3>
+<p>From there, we can query the DB and pull up its contents from the access_request schema:</p>
+<pre class="code-block language-php"><code class="language-php">// next, we want to query the DB and grab all requests that are "pending"
+
+    // query the DB to grab important information to use using a string
+
+    $query = "
+
+        SELECT
+
+            request_id,
+
+            first_name,
+
+            last_name,
+
+            email,
+
+            person_type,
+
+            involvement,
+
+            submitted_at
+
+        FROM access_requests
+
+        WHERE request_status = 'pending'
+
+        ORDER BY submitted_at ASC
+
+    ";
+
+    // this block will query the SQL to grab these items FROM access_request DB, specifically entries where request_status is pending
+
+    // and it will be ordered by submission time
+
+  
+
+    // execute the query:
+
+    $statement = $pdo-&gt;query($query);
+
+  
+
+    // retreive the data
+
+    $requests = $statement-&gt;fetchAll();
+</code></pre>
+<p>From here, the data was organized into a neat HTML table by using PHP variables. See below:</p>
+<h3 id="organize-data">Organize Data</h3>
+<pre class="code-block language-php"><code class="language-php">&lt;table class="manreq-table-wrapper"&gt;
+
+            &lt;thead&gt;
+
+                &lt;tr&gt;
+
+                    &lt;th&gt;Request ID&lt;/th&gt;
+
+                    &lt;th&gt;First and Last Name&lt;/th&gt;
+
+                    &lt;th&gt;Email&lt;/th&gt;
+
+                    &lt;th&gt;Occupation&lt;/th&gt;
+
+                    &lt;th&gt;Involvement&lt;/th&gt;
+
+                    &lt;th&gt;Submitted at&lt;/th&gt;
+
+                    &lt;th&gt;Create Account&lt;/th&gt;
+
+                &lt;/tr&gt;
+
+            &lt;/thead&gt;
+
+  
+
+            &lt;tbody&gt;
+
+                &lt;?php foreach ($requests as $request): ?&gt;
+
+  
+
+                &lt;tr&gt;
+
+                    &lt;td&gt;
+
+                        &lt;?php echo $request['request_id']; ?&gt;
+
+                    &lt;/td&gt;
+
+  
+
+                    &lt;td&gt;
+
+                        &lt;?php echo htmlspecialchars($request['first_name'] . ' ' . $request['last_name'], ENT_QUOTES, 'UTF-8'); ?&gt;
+
+                    &lt;/td&gt;
+
+  
+
+                    &lt;td&gt;
+
+                        &lt;?php echo htmlspecialchars($request['email'], ENT_QUOTES, 'UTF-8'); ?&gt;
+
+                    &lt;/td&gt;
+
+  
+
+                    &lt;td&gt;
+
+                        &lt;?php echo htmlspecialchars($request['person_type'], ENT_QUOTES, 'UTF-8'); ?&gt;
+
+                    &lt;/td&gt;
+
+  
+
+                    &lt;td&gt;
+
+                        &lt;?php echo htmlspecialchars($request['involvement'], ENT_QUOTES, 'UTF-8'); ?&gt;
+
+                    &lt;/td&gt;
+
+  
+
+                    &lt;td&gt;
+
+                        &lt;?php echo htmlspecialchars($request['submitted_at'], ENT_QUOTES, 'UTF-8'); ?&gt;
+
+                    &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                &lt;?php endforeach; ?&gt;
+
+            &lt;/tbody&gt;
+
+        &lt;/table&gt;
+
+  
+
+        &lt;?php endif; ?&gt;
+                    
+</code></pre>
+<p>An HTML-PHP form is used to allow an admin to manually create a username and password for an account, but for</p>
+<h3 id="creating-a-form-within-the-table">Creating a Form within the table</h3>
+<pre class="code-block language-php"><code class="language-php">                    &lt;td&gt;
+
+                        &lt;form action="manage_requests.php" method="POST"&gt;
+
+                            &lt;!-- --&gt;
+
+                            &lt;input type="hidden" name="request_id" value="&lt;?php echo $request['request_id']; ?&gt;"&gt;
+
+  
+
+                            &lt;label&gt;Username:
+
+                                &lt;input type="text" name="username" minlength="7" required&gt;
+
+                            &lt;/label&gt;
+
+  
+
+                            &lt;label&gt;Temporary Password:
+
+                                &lt;input type="text" name="password" minlength="7" required&gt;
+
+                            &lt;/label&gt;
+
+                            &lt;br&gt;
+
+                            &lt;button type="submit"&gt;Approve&lt;/button&gt;
+
+                        &lt;/form&gt;
+
+                    &lt;/td&gt;
+</code></pre>
+<p>This made a really basic table and had a form inside as seen here:</p>
+<figure>
+  <img alt="Initial manage-access table with an account-creation form" class="img_med" src="../../media/images/PHP_ManageAccess_TableAndForm.png" style="max-width: 697px; width: 100%;" />
+  <figcaption><b>Initial manage-access table with an account-creation form</b></figcaption>
+</figure>
+
+<p>Then, there are some error checks:
+Username too short:</p>
+<figure>
+  <img alt="Username-length validation on the manage-access form" class="img_med" src="../../media/images/PHP_ManageAccess_Table_UsernameFault.png" />
+  <figcaption><b>Username-length validation on the manage-access form</b></figcaption>
+</figure>
+
+<p>Password too short:</p>
+<figure>
+  <img alt="Password-length validation on the manage-access form" class="img_med" src="../../media/images/PHP_ManageAccess_Table_PasswordFault.png" />
+  <figcaption><b>Password-length validation on the manage-access form</b></figcaption>
+</figure>
+
+<h3 id="php-to-handle-the-form">PHP to handle the form</h3>
+<p>Here is the PHP on how that form was organized.</p>
+<p>Lastly, there is a code snippet that consults the actual DB and checks if the &quot;Request ID&quot; matches up to prevent any funny business. Here is how it was implemented:</p>
+<pre class="code-block language-php"><code class="language-php">            // if nothing returned
+
+            if(!$selectedRequest) {
+
+                $errors[] = "the selected request does not exist";
+
+  
+
+            // if the request is NOT pending (denied, approved)
+
+            } else if ($selectedRequest['request_status'] !== 'pending') {
+
+                $errors[] = "the selected request has already been reviewed";
+
+            // if it exists and IS pending (since it's not any other form), it is ready
+
+            } else {
+
+                $formMessage = "request found and account is ready for creation";
+
+            }
+</code></pre>
+<figure>
+  <img alt="Manage-access page confirming that the selected request was found" class="img_med" src="../../media/images/PHP_ManageAccess_Table_RequestFound.png" />
+  <figcaption><b>Manage-access page confirming that the selected request was found</b></figcaption>
+</figure>
+
+<p>That was about it for this entry as it was too late to keep working.</p>
+      </section>
+
+      <p class="top-link">
+        <a href="#page_top">Go to the top of this page</a>
+      </p>
+    </main>
+
+    <footer class="site-footer">
+      <p>Copyright &copy; Nick Kapuka</p>
+    </footer>
+
+    <!-- Prism.js scripts for code formatting -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+  </body>
+</html>

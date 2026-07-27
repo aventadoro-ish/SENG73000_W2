@@ -1,0 +1,85 @@
+/* css for diagnostics page additions (search / pagination / errors) */
+/* Pairs with can.css (reuses a couple of components) */     
+
+#diagnosticsSearch {
+    width: 100%;
+    max-width: 420px;
+    margin-bottom: 16px;
+    padding: 11px 14px;
+    background-color: #fffdf4;
+    border: 1px solid rgba(9, 124, 135, 0.28);
+    border-radius: 10px;
+    font-family: Georgia, serif;
+    font-size: 0.98rem;
+    color: var(--ink);
+    box-shadow: 0 3px 10px var(--shadow);
+}
+
+#diagnosticsSearch:focus {
+    outline: none;
+    border-color: var(--aqua);
+    box-shadow: 0 0 10px rgba(0, 206, 200, 0.35);
+}
+
+.CANprotocol-error {
+    padding: 14px 16px;
+    margin-bottom: 16px;
+    color: var(--ink);
+    background-color: rgba(235, 65, 3, 0.12); /* --ember tint, matches table hover */
+    border-left: 5px solid var(--orange);
+    border-radius: 10px;
+    font-weight: bold;
+}
+
+.CANprotocol-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 18px;
+}
+
+.CANprotocol-pagination button {
+    padding: 9px 18px;
+    color: white;
+    background-color: var(--deep-blue);
+    border: none;
+    border-radius: 10px;
+    font-family: Georgia, serif;
+    font-size: 0.95rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.25s;
+}
+
+.CANprotocol-pagination button:hover:not(:disabled) {
+    color: var(--ink);
+    background-color: var(--yellow);
+    box-shadow: 0 0 12px rgba(249, 219, 121, 0.85);
+}
+
+.CANprotocol-pagination button:disabled {
+    background-color: #b9c2c4;
+    cursor: not-allowed;
+}
+
+.CANprotocol-page-label {
+    color: var(--deep-blue);
+    font-weight: bold;
+}
+
+/* sortable header affordance to match the clickable behavior added in diagnostics.js */
+#diagnosticsTable thead th {
+    user-select: none;
+}
+
+#diagnosticsTable thead th:hover {
+    background-color: var(--yellow);
+    color: var(--ink);
+}
+
+@media screen and (max-width: 950px) {
+    #diagnosticsSearch {
+        max-width: 100%;
+    }
+}
