@@ -124,6 +124,8 @@ int CAN::pcanTx(int id, int data) {
 	Txmsg.LEN = 1; 
 	Txmsg.DATA[0] = data; 
 
+    std::cout << "Tx CAN ID 0x" << std::hex << id << " data 0x" << data << std::dec << std::endl;
+
     // not sure why the delay was here. trying to remove it
 	// sleep(1);  
 
@@ -197,8 +199,9 @@ int CAN::rx_can_frame(RxFrame *rx_buffer, TPCANMsg* raw_msg) {
     }
     case ID::CC_SC_FLOOR_RQ: {
         CC_Request rq;
-        rq.is_door_open =       (msg.DATA[0] & 0b00000100) > 0;
+        rq.is_door_open =       (msg.DATA[0] & 0b00000100) == 0;
         rq.floor_request =      (msg.DATA[0] & 0b00000011);
+        std::cout << "CC door open: " << (rq.is_door_open ? "yes " : "no ") << "floor rq " << (int)rq.floor_request << std::endl;
         rx_buffer->data.cc_request = rq;
         break;
     }

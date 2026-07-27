@@ -7,7 +7,7 @@
 // #define DO_USE_DB
 #define DO_USE_CAN
 
-constexpr unsigned int NUM_FLOORS = 6;
+constexpr unsigned int NUM_FLOORS = 3;
 
 /**
  * @brief How long to wait between moving to the next floor in sabbath mode 
@@ -25,7 +25,7 @@ constexpr unsigned long int FLOOR_WAIT_DELAY_MS = 3000;
  * @brief What is the maximum expected time to finish a cabin move before 
  * elevator goes into fault mode
  */
-constexpr unsigned long int MOVE_FINISH_TIMEOUT_MS = 10000;
+constexpr unsigned long int MOVE_FINISH_TIMEOUT_MS = 45000;
 
 /**
  * @brief Period of EC heartbeats in milliseconds

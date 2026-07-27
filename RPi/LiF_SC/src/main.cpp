@@ -193,11 +193,19 @@ void FSM_normal_mode() {
 
 		// only move after spending some time on the floor
 		if ((current_time() - time_move_finish > FLOOR_WAIT_DELAY_MS) && state == SC_State::IDLE) {
+			if (!is_CC_door_open) {
+				can_link.ec_go_to_floor(new_target);
+				current_target = new_target;
+				is_car_moving = true;
+				time_move_start = current_time();
+				state = SC_State::MOVING;
+			} 
+		} else if (state == SC_State::MOVING) {
+			// no check for door open, as it was closed when the move started
 			can_link.ec_go_to_floor(new_target);
 			current_target = new_target;
 			is_car_moving = true;
 			time_move_start = current_time();
-			state = SC_State::MOVING;
 		}
 	}
 
@@ -382,7 +390,8 @@ void process_CAN_msg() {
 		data_arr[i] = rawRxMsg.DATA[i];
 	}
 	database.log_can_message(rawRxMsg.ID, data_arr, rawRxMsg.LEN);
-	std::cout << "Rec CAN frame " << std::hex << rawRxMsg.ID << " data: " << rawRxMsg.DATA[0] << std::endl;
+	
+	std::cout << "Rec CAN frame " << std::hex << rawRxMsg.ID << " data: " << static_cast<int>(rawRxMsg.DATA[0]) << std::dec << std::endl;
 	
 	if (rxMsg.id == CAN::ID::UNKNOWN) {
 		state = SC_State::FAULT;
@@ -418,11 +427,13 @@ void process_CAN_CC_msg(CAN::RxFrame rxMsg) {
 	
 	// only add floor requests in normal operation mode
 	if ((state == SC_State::IDLE) || (state == SC_State::MOVING)) {
-		Request rq;
-		rq.dir = RequestDir::NA;
-		rq.floor = rxMsg.data.cc_request.floor_request;
-		rq.type = RequestType::CAR;
-		scheduler.add_request(rq);
+		if (rxMsg.data.cc_request.floor_request != 0) {
+			Request rq;
+			rq.dir = RequestDir::NA;
+			rq.floor = rxMsg.data.cc_request.floor_request;
+			rq.type = RequestType::CAR;
+			scheduler.add_request(rq);
+		}
 	}
 }
 
