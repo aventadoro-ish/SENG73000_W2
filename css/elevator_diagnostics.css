@@ -14,22 +14,24 @@
   margin-bottom: 35px;
   padding: 22px;
 
-  background-color: white;
-  border: 1px solid #d8dee6;
+  background-color: var(--card-bg);
+  border: 1px solid rgba(9, 124, 135, 0.22);
+  border-top: 5px solid var(--orange);
   border-radius: 10px;
 
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 6px 18px var(--shadow);
 }
 
 .diagnostics-page section h2 {
   margin-top: 0;
   margin-bottom: 18px;
+  color: var(--deep-blue);
 }
 
 .table-scroll {
   max-height: 520px;
   overflow: auto;
-  border: 1px solid #ccd3dc;
+  border: 1px solid rgba(9, 124, 135, 0.3);
   border-radius: 7px;
 }
 
@@ -37,7 +39,7 @@
   width: 100%;
   min-width: 1000px;
   border-collapse: collapse;
-  background-color: white;
+  background-color: #fffdf4;
 }
 
 .diagnostics-table th,
@@ -46,7 +48,7 @@
   text-align: left;
   vertical-align: middle;
   white-space: nowrap;
-  border-bottom: 1px solid #e1e5ea;
+  border-bottom: 1px solid rgba(9, 124, 135, 0.22);
 }
 
 /* keep column headings visible while scrolling */
@@ -56,17 +58,17 @@
   z-index: 1;
 
   color: white;
-  background-color: #263746;
+  background-color: var(--deep-blue);
 }
 
 /* alternating row colours */
 .diagnostics-table tbody tr:nth-child(even) {
-  background-color: #f4f6f8;
+  background-color: rgba(161, 204, 166, 0.18);
 }
 
 /* highlight the row the mouse is currently over */
 .diagnostics-table tbody tr:hover {
-  background-color: #dfeaf3;
+  background-color: rgba(249, 219, 121, 0.32);
 }
 
 /* the failure reason may contain longer text, so allow it to wrap */
@@ -86,40 +88,112 @@
   font-weight: bold;
   text-align: center;
 
-  color: #3d4650;
-  background-color: #e4e7eb;
+  color: var(--ink);
+  background-color: rgba(0, 206, 200, 0.16);
 
+  border: 1px solid rgba(9, 124, 135, 0.25);
   border-radius: 20px;
 }
 
 /* request status badges */
 .diagnostic-badge[data-status="pending"] {
-  color: #765300;
-  background-color: #fff0b8;
+  color: var(--ink);
+  background-color: rgba(249, 219, 121, 0.58);
+  border-color: rgba(255, 156, 95, 0.7);
 }
 
 .diagnostic-badge[data-status="accepted"] {
-  color: #075985;
-  background-color: #dbeafe;
+  color: var(--deep-blue);
+  background-color: rgba(35, 206, 217, 0.2);
+  border-color: var(--aqua);
 }
 
 .diagnostic-badge[data-status="completed"] {
-  color: #176534;
-  background-color: #d5f5df;
+  color: var(--ink);
+  background-color: rgba(161, 204, 166, 0.55);
+  border-color: var(--palm);
 }
 
 .diagnostic-badge[data-status="failed"] {
-  color: #9b1c1c;
-  background-color: #fde0e0;
+  color: var(--ember);
+  background-color: rgba(252, 164, 124, 0.3);
+  border-color: var(--coral);
 }
 
 /* CAN direction badges */
 .diagnostic-badge[data-direction="tx"] {
-  color: #174a7e;
-  background-color: #d9ebff;
+  color: var(--deep-blue);
+  background-color: rgba(35, 206, 217, 0.22);
+  border-color: var(--aqua);
 }
 
 .diagnostic-badge[data-direction="rx"] {
-  color: #6a3278;
-  background-color: #eeddf5;
+  color: var(--ink);
+  background-color: rgba(255, 156, 95, 0.28);
+  border-color: var(--orange);
+}
+
+/* search and filter controls above each diagnostics table */
+.diagnostic-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  align-items: flex-end;
+
+  margin-bottom: 16px;
+  padding: 14px;
+
+  background-color: rgba(255, 248, 223, 0.72);
+  border-left: 4px solid var(--orange);
+  border-radius: 10px;
+  box-shadow: 0 3px 10px var(--shadow);
+}
+
+.diagnostic-filter {
+  display: grid;
+  gap: 5px;
+
+  color: var(--deep-blue);
+  font-weight: bold;
+}
+
+.diagnostic-filter input,
+.diagnostic-filter select {
+  min-width: 210px;
+  padding: 9px 11px;
+
+  color: var(--ink);
+  background-color: #fffdf4;
+
+  border: 1px solid var(--aqua);
+  border-radius: 7px;
+
+  font-family: Georgia, serif;
+  font-size: 0.95rem;
+}
+
+.diagnostic-filter input:focus,
+.diagnostic-filter select:focus {
+  outline: 3px solid rgba(35, 206, 217, 0.25);
+  border-color: var(--deep-blue);
+}
+
+.diagnostic-result-count {
+  margin: 0 0 9px auto;
+
+  color: var(--deep-blue);
+  font-weight: bold;
+}
+
+@media screen and (max-width: 700px) {
+  .diagnostic-filter,
+  .diagnostic-filter input,
+  .diagnostic-filter select {
+    width: 100%;
+  }
+
+  .diagnostic-result-count {
+    width: 100%;
+    margin: 0;
+  }
 }

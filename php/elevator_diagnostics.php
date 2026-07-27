@@ -126,12 +126,12 @@
             <h2>Elevator Requests</h2>
 
             <div class="diagnostic-controls">
-                <label class="diagnostics-filter">
+                <label class="diagnostic-filter">
                     <span>Search Requests</span>
                     <input type="search" id="requestSearch" placeholder="ID, floor, controller...">
                 </label>
 
-                <label class="diagnostics-filter">
+                <label class="diagnostic-filter">
                     <span>Request Status</span>
 
                     <select id="requestStatusFilter">
@@ -143,7 +143,7 @@
                     </select>
                 </label>
 
-                <p class=diagnostic-result-count id="requestResultCount"></p>
+                <p class="diagnostic-result-count" id="requestResultCount"></p>
             </div>
 
             <?php if(empty($elevatorRequests)) { ?>
@@ -198,6 +198,25 @@
         <section>
             <h2>CAN Message Log</h2>
 
+            <div class="diagnostic-controls">
+                <label class="diagnostic-filter">
+                    <span>Search CAN Messages</span>
+                    <input type="search" id="canSearch" placeholder="CAN ID, byte, controller...">
+                </label>
+
+                <label class="diagnostic-filter">
+                    <span>Direction</span>
+
+                    <select id="canDirectionFilter">
+                        <option value="all">All Directions</option>
+                        <option value="tx">TX</option>
+                        <option value="rx">RX</option>
+                    </select>
+                </label>
+
+                <p class="diagnostic-result-count" id="canResultCount"></p>
+            </div>
+
             <?php if(empty($canMessages)) { ?>
             <p>No CAN messages were found.</p>
             <?php } else { ?>
@@ -216,9 +235,10 @@
                         </tr>
                     </thead>
 
-                    <tbody>
+                    <tbody id="canTableBody">
                         <?php foreach($canMessages as $message) { ?>
-                        <tr>
+                        <tr
+                            data-direction="<?php echo htmlspecialchars(strtolower((string) $message['direction']), ENT_QUOTES, 'UTF-8'); ?>">
                             <td><?php echo displayValue($message['log_id']); ?></td>
                             <td><?php echo displayValue($message['elevator_request_id']); ?></td>
                             <td><?php echo displayValue($message['can_id']); ?></td>
