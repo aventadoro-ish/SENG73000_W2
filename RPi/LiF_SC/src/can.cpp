@@ -1,5 +1,6 @@
 #include "can.h"
 #include <iostream>
+#include "setting.h"
 
 
 #if (defined (_WIN32) || defined (_WIN64))
@@ -82,6 +83,29 @@ int CAN::pcanRxState(TPCANMsg *msg) {
     return 1;
 }
 
+// CAN::ID CAN::intToID(int int_id) {
+//     ID id = static_cast<ID>(int_id);
+//     switch (id) {
+//     case ID::SC_EC_FLOOR_RQ:
+//         break;
+//     case ID::EC_ALL_STATUS:
+//         break;
+//     case ID::CC_SC_FLOOR_RQ:
+//         break;
+//     case ID::SC_CC_VIRT_DOOR:
+//         break;
+//     case ID::F1_RQ:
+//         break;
+//     case ID::F2_RQ:
+//         break;
+//     case ID::F3_RQ:
+//         break;
+//     case ID::UNKNOWN:
+//     default:
+//         return   ID::UNKNOWN;
+//     }
+// }
+
 int CAN::pcanTx(int id, int data) {
 	// Clear the channel - new - Must clear the channel before Tx/Rx
 	status = CAN_Status(h2);
@@ -111,6 +135,88 @@ int CAN::pcanTx(int id, int data) {
     }
 
     return status;
+}
+
+int CAN::pcanTx(ID id, int data) {
+    pcanTx(static_cast<int>(id), data);
+}
+
+void CAN::ec_go_to_floor(unsigned int floor, bool ec_enable) {
+    if (floor > NUM_FLOORS) {
+        std::cerr << "Illegal floor: " << floor << ", max is " << NUM_FLOORS << std::endl;
+        return;
+    }
+
+    int data = \
+        1 << 2 |        // enable bit -> assume enabled if floor is requested
+        (floor & 0b11); // floor bits
+    
+    pcanTx(CAN::ID::SC_EC_FLOOR_RQ, data);
+}
+
+void CAN::cc_set_doors(bool is_open) {
+    if (is_open) {
+        pcanTx(ID::SC_CC_VIRT_DOOR, 1);    
+    } else {
+        pcanTx(ID::SC_CC_VIRT_DOOR, 0);    
+    }
+}
+
+int CAN::rx_can_frame(RxFrame *rx_buffer) {
+    TPCANMsg msg;
+
+    int res = pcanRxState(&msg);
+    if (res != 1) {
+        return res;
+    }
+
+    // convert id to CAN::ID and determine message type
+    ID id = static_cast<ID>(msg.ID);
+    rx_buffer->id = id;     // same operation for all cases
+                            // only data decoding logic changes between messages
+    switch (id) {
+    case ID::EC_ALL_STATUS: {
+        EC_Status ec_stat;
+        ec_stat.is_enabled =    (msg.DATA[0] & 0b00000100) > 0;
+        ec_stat.is_moving =     (msg.DATA[0] & 0b00001000) > 0;
+        ec_stat.position =      (msg.DATA[0] & 0b00000011);  
+        rx_buffer->data.ec_status = ec_stat;
+        break;
+    }
+    case ID::CC_SC_FLOOR_RQ: {
+        CC_Request rq;
+        rq.is_door_open =       (msg.DATA[0] & 0b00000100) > 0;
+        rq.floor_request =      (msg.DATA[0] & 0b00000011);
+        rx_buffer->data.cc_request = rq;
+        break;
+    }
+    case ID::F1_RQ:     // Fx_RQ messages can be treated the same way
+    case ID::F2_RQ:        
+    case ID::F3_RQ: {
+        Fx_Request rq;
+        rq.is_requested =       (msg.DATA[0] & 0b00000001) > 0;
+        rx_buffer->data.fx_request = rq;
+        break;
+    }    
+    case ID::SC_CC_VIRT_DOOR:
+    case ID::SC_EC_FLOOR_RQ:        
+        // SC isn't expected to receive its own messages
+        // assume error has occurred and treat as an unknown frame
+        std::cerr << "Warning! SC received a messaged with its own ID: 0x" << \
+            std::hex << msg.ID << std::dec << std::endl;   
+    case ID::UNKNOWN:
+    default:
+        rx_buffer->id = ID::UNKNOWN;    // make this the same for any unknown id
+        // unknown CAN frame id
+        for (int i = 0; i < msg.LEN; i++) {
+            rx_buffer->data.unknown.data[i] = msg.DATA[i];
+        }
+        rx_buffer->data.unknown.dlc = msg.LEN;
+        rx_buffer->data.unknown.id  = msg.ID;
+        break;
+    }
+    
+    return res;
 }
 
 CAN::CAN() {
