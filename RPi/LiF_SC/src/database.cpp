@@ -380,6 +380,104 @@ int DB::log_can_message(int id, int *data, uint8_t length)
     }
 }
 
+// logs a manual (physical) request that was received over CAN into the main elevator DB
+// returns 1 for success, 0 for invalid data/insertion failed, and -1 for DB fail
+int DB::log_elevator_request(int requestedFloor, int sourceID)
+{
+
+    // check if the requested floor is valid
+    if (requestedFloor < 1 || requestedFloor > 3)
+    {
+        std::cerr << "invalid requested floor" << std::endl;
+        return 0;
+    }
+
+    // hard-coded since all received CAN messages came from manual requests (button presses)
+    std::string requestType = "manual";
+    std::string sourceController;
+
+    // determine the source controller based on CAN ID
+    if (sourceID == 0x200)
+    {
+        sourceController = "CC";
+    }
+    else if (sourceID == 0x201)
+    {
+        sourceController = "F1";
+    }
+    else if (sourceID == 0x202)
+    {
+        sourceController = "F2";
+    }
+    else if (sourceID == 0x203)
+    {
+        sourceController = "F3";
+    }
+    else
+    {
+        std::cerr << "Invalid request source CAN ID" << std::endl;
+        return 0;
+    }
+
+    // check DB connection and connect if not
+    if (!db_connect())
+    {
+        return -1;
+    }
+
+    sql::PreparedStatement *statement = nullptr;
+
+    try
+    {
+        statement = con->prepareStatement(
+            "INSERT INTO elevator_requests ( "
+            "request_type, "
+            "requested_floor, "
+            "requested_by_user_id, "
+            "source_controller "
+            ") "
+            "VALUES ( "
+            "?, "
+            "?, "
+            "NULL, "
+            "? "
+            ") ");
+
+        // load the values into the '?' field above
+        statement->setString(1, requestType);
+        statement->setInt(2, requestedFloor);
+        statement->setString(3, sourceController);
+
+        // executeUpdate returns int
+        int insertedRows = statement->executeUpdate();
+
+        // clean up pointer
+        delete statement;
+
+        // should be 1 if success
+        if (insertedRows == 1)
+        {
+            return 1;
+        }
+
+        // if failed
+        std::cerr << "elevator request was not logged: no row inserted";
+
+        return 0;
+    }
+    catch (sql::SQLException &error)
+    {
+        // if made but didn't execute properly
+        if (statement != nullptr)
+        {
+            delete statement;
+        }
+
+        std::cerr << "failed to log elevator request in the DB: " << error.what() << std::endl;
+        return -1;
+    }
+}
+
 // function that grabs the current operation mode from the database
 DB::OperationMode DB::get_operation_mode()
 {
