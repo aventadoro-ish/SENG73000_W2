@@ -50,7 +50,6 @@ DB database;
 int current_floor = INITIAL_FLOOR;
 int current_target = INITIAL_FLOOR;
 bool is_car_moving = false; 
-bool is_CC_door_open = false;
 bool is_EC_enabled = false;
 
 uint64_t time_last_EC_heartbeat;
@@ -254,6 +253,7 @@ void FSM_normal_mode() {
 		if ((current_time() - time_move_finish > FLOOR_WAIT_DELAY_MS) && state == SC_State::IDLE) {
 			if (!is_CC_door_open) {
 				can_link.ec_go_to_floor(new_target);
+				database.log_elevator_request(new_target, 0x200);
 				current_target = new_target;
 				is_car_moving = true;
 				time_move_start = current_time();
@@ -262,6 +262,7 @@ void FSM_normal_mode() {
 		} else if (state == SC_State::MOVING) {
 			// no check for door open, as it was closed when the move started
 			can_link.ec_go_to_floor(new_target);
+			database.log_elevator_request(new_target, 0x200);
 			current_target = new_target;
 			is_car_moving = true;
 			time_move_start = current_time();
@@ -320,24 +321,27 @@ void FSM_sabbath_mode() {
 			state == SC_State::SABBATH_IDLE) {
 		if (is_going_up) {
 			if (current_floor < static_cast<int>(NUM_FLOORS)) {
-				current_target = current_floor++;
+				current_target = current_floor + 1;
 			} else {
 				is_going_up = false;
 				current_target = NUM_FLOORS - 1;
 			}
 		} else {
 			if (current_floor > 1) {
-				current_target = current_floor--;
+				current_target = current_floor - 1;
 			} else {
 				is_going_up = true;
 				current_target = 2;
 			}
 		}
 
-		can_link.ec_go_to_floor(current_target);
-		is_car_moving = true;
-		time_move_start = current_time();
-		state = SC_State::SABBATH_MOVING;
+		if (!is_CC_door_open) {
+			is_car_moving = true;
+			can_link.ec_go_to_floor(current_target);
+			std::cout << "Sabbath mode move to floor " << current_target << std::endl;
+			time_move_start = current_time();
+			state = SC_State::SABBATH_MOVING;
+		}
 	}
 
 
@@ -532,6 +536,9 @@ void process_CAN_EC_msg(CAN::RxFrame rxMsg) {
 
 	is_EC_enabled = stat.is_enabled;
 
+	if (stat.position != current_floor) {
+		std::cout << "EC message updating floor to " << (int) stat.position << std::endl; 
+	}
 	// current position is always updated
 	current_floor = stat.position;
 	scheduler.update_car_position(current_floor);
