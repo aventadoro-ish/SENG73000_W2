@@ -10,7 +10,7 @@ Author: Rita Yevtushenko
 
     <meta charset="UTF-8">
 
-    <title>RY's Logbook - 2026-07-17</title>
+    <title>RY's Logbook - 2026-07-20</title>
 
     <meta name="author" content="Rita Yevtushenko">
 
@@ -50,7 +50,7 @@ Author: Rita Yevtushenko
 		<section class="intro-section logbook-entry-intro" id="page_top">
 			<div class="intro-text">
 				<p class="section-label">Daily Logbook Entry</p>
-				<h1>Logbook Entry, 2026-07-17 by Rita Yevtushenko</h1>
+				<h1>Logbook Entry, 2026-07-20 by Rita Yevtushenko</h1>
 				<p class="intro-description">I²S audio amplifier testing for 6 floors</p>
 				<div class="button-row">
 					<a href="../logbook_MR.html" class="button secondary-button">My Logbook Cover Page</a>
@@ -61,7 +61,7 @@ Author: Rita Yevtushenko
 			</div>
 			<aside class="summary-card">
 				<h2>Entry Snapshot</h2>
-				<p><b>Date:</b> 2026-07-17</p>
+				<p><b>Date:</b> 2026-07-20</p>
 				<p><b>Author:</b> Rita Yevtushenko</p>
 				<p><b>Focus:</b> I²S audio amplifier testing for 6 floors</p>
 			</aside>
@@ -292,23 +292,49 @@ the Raspberry Pi recognized the amplifier hardware.
 
 <h2>Speaker Testing</h2>
 
+<p>The speaker wires were resoldered because the original solder joints had
+become loose and produced an unreliable connection. After repairing the
+connections, the speaker was tested using ALSA playback utilities. Audio
+played successfully through the MAX98357A amplifier, confirming that the
+I²S interface, amplifier configuration, and speaker wiring were all
+functioning correctly.
+</p>
+
 <!-- ======================================================= -->
 
 <h2>Next Software Integration</h2>
-
+<p>The next stage for Phase 2 would be to compile a diagnostics page. 
+	The page should read through the CAN table.
+</p>
 
 <!-- ======================================================= -->
 
 <h2>Results</h2>
 
 <p>
-
+The Raspberry Pi 4 was successfully configured to communicate with the
+MAX98357A I²S amplifier. The firmware changes enabled the I²S interface,
+and ALSA correctly detected the audio device after rebooting. Following
+the repair of the speaker wiring, test audio played successfully,
+confirming proper communication between the Raspberry Pi, amplifier, and
+speaker. The hardware and software configuration is now ready for
+integration with the Supervisory Controller to provide floor
+announcements during elevator operation.
 </p>
 
 <!-- ======================================================= -->
 
 <h2>Next Steps</h2>
 
+<p>The next stage is to integrate audio playback into the Supervisory
+Controller finite state machine so that floor announcement files are
+played automatically when the elevator reaches each destination floor.
+In parallel, a diagnostics webpage will be developed to read and display
+the CAN network table, allowing system status and communication to be
+monitored during testing. Additional testing will verify reliable audio
+playback across all six floor announcements during complete elevator
+operation.
+</p>
 
 </section>
 
