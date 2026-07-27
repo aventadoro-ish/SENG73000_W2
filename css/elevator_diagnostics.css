@@ -185,6 +185,53 @@
   font-weight: bold;
 }
 
+/* pagination controls underneath each table */
+.diagnostic-pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+
+  margin-top: 15px;
+}
+
+/* Previous and Next buttons */
+.diagnostic-page-button {
+  padding: 8px 15px;
+
+  color: var(--cream);
+  background-color: var(--deep-blue);
+
+  border: 2px solid var(--deep-blue);
+  border-radius: 7px;
+
+  font-family: Georgia, serif;
+  font-weight: bold;
+
+  cursor: pointer;
+}
+
+/* button appearance while hovering */
+.diagnostic-page-button:hover:not(:disabled) {
+  color: var(--ink);
+  background-color: var(--yellow);
+}
+
+/* appearance when Previous or Next cannot be used */
+.diagnostic-page-button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* current page text */
+.diagnostic-page-number {
+  min-width: 100px;
+
+  color: var(--deep-blue);
+  font-weight: bold;
+  text-align: center;
+}
+
 @media screen and (max-width: 700px) {
   .diagnostic-filter,
   .diagnostic-filter input,

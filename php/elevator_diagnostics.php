@@ -116,7 +116,32 @@
     <script src="../js/navbar.js"></script>
 
     <main class="page-wrapper diagnostics-page">
-        <h1>Elevator Diagnostics</h1>
+        <section class="intro-section member-area-intro" id="page_top">
+            <div class="intro-text">
+                <p class="section-label">Elevator Diagnostics</p>
+
+                <h1>Welcome, <?php echo displayValue($_SESSION['username']); ?></h1>
+
+                <p class="intro-description">
+                    This page is dedicated to viewing the tables/schemas of the elevator system for maintenance and
+                    diagnostics.
+                </p>
+
+                <div class="button-row">
+                    <a href="../php/logout.php" class="button secondary-button">Log Out</a>
+                    <a href="members.php" class="button primary-button">Return to members</a>
+                </div>
+            </div>
+
+            <aside class="summary-card">
+                <h2>Access Status</h2>
+                <p><strong>Status:</strong> Logged in</p>
+                <p><strong>User:</strong> <?php echo displayValue($_SESSION['username']); ?></p>
+                <p><strong>Area:</strong> Diagnostics</p>
+                <p><strong>Account Type:</strong> <?php echo displayValue($_SESSION['user_role']); ?>
+                <p>
+            </aside>
+        </section>
 
         <?php if($loadError !== '') { ?>
         <p><?php echo htmlspecialchars($loadError, ENT_QUOTES, 'UTF-8'); ?></p>
@@ -154,7 +179,6 @@
                 <table class="diagnostics-table requests-table">
                     <thead>
                         <tr>
-                            <th>
                             <th>Request ID</th>
                             <th>Request Type</th>
                             <th>Requested Floor</th>
@@ -191,6 +215,22 @@
                         <?php } ?>
                     </tbody>
                 </table>
+            </div>
+
+            <div class="diagnostic-pagination">
+
+                <button type="button" id="requestPreviousPage" class="diagnostic-page-button">
+                    Previous
+                </button>
+
+                <span id="requestPageDisplay" class="diagnostic-page-number">
+                    Page 1 of 1
+                </span>
+
+                <button type="button" id="requestNextPage" class="diagnostic-page-button">
+                    Next
+                </button>
+
             </div>
             <?php } ?>
         </section>
@@ -258,29 +298,35 @@
                     </tbody>
                 </table>
             </div>
+
+            <div class="diagnostic-pagination">
+
+                <button type="button" id="CANPreviousPage" class="diagnostic-page-button">
+                    Previous
+                </button>
+
+                <span id="CANPageDisplay" class="diagnostic-page-number">
+                    Page 1 of 1
+                </span>
+
+                <button type="button" id="CANNextPage" class="diagnostic-page-button">
+                    Next
+                </button>
+
+            </div>
             <?php } ?>
         </section>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        <p class="top-link">
+            <a href="#page_top">Go to the top of this page</a>
+        </p>
     </main>
+
+    <footer class="site-footer">
+        <p>Copyright &copy; 2026 Nick Kapuka</p>
+    </footer>
+
+    <script src="../js/elevator_diagnostics.js"></script>
 </body>
+
+</html>
