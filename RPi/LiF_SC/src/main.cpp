@@ -131,11 +131,6 @@ int main() {
 	printf(" - sabbath mode wait time (ms): %lu\n", SABBATH_MOVE_DELAY_MS);
 	printf(" - initial floor: %u\n", INITIAL_FLOOR);
 
-
-	// initialize variables  
-	int targetFloor = 1;
-	time_t moveStartTime = 0;
-
 	while(is_running) { // FSM infinite loop start
 		
 		switch (state) {
@@ -174,8 +169,8 @@ void FSM_normal_mode() {
 		if (current_time() - time_move_start > MOVE_FINISH_TIMEOUT_MS) {
 			state = SC_State::FAULT;
 			char c_str_reason[1000];
-			sprintf("Move timed out in NORMAL mode after %lums. Max time is %lu",
-				c_str_reason, 
+			sprintf(c_str_reason,
+				"Move timed out in NORMAL mode after %lums. Max time is %lu", 
 				current_time() - time_move_start, MOVE_FINISH_TIMEOUT_MS
 			);	
 			FSM_fault_mode(std::string(c_str_reason));
@@ -232,8 +227,8 @@ void FSM_sabbath_mode() {
 		if (current_time() - time_move_start > MOVE_FINISH_TIMEOUT_MS) {
 			state = SC_State::FAULT;
 			char c_str_reason[1000];
-			sprintf("Move timed out in SABBATH mode after %lums. Max time is %lu", 
-				c_str_reason, 
+			sprintf(c_str_reason, 
+				"Move timed out in SABBATH mode after %lums. Max time is %lu", 
 				current_time() - time_move_start, MOVE_FINISH_TIMEOUT_MS
 			);	
 			FSM_fault_mode(std::string(c_str_reason));
@@ -253,7 +248,7 @@ void FSM_sabbath_mode() {
 	if (current_time() - time_move_finish > SABBATH_MOVE_DELAY_MS && 
 			state == SC_State::SABBATH_IDLE) {
 		if (is_going_up) {
-			if (current_floor < NUM_FLOORS) {
+			if (current_floor < static_cast<int>(NUM_FLOORS)) {
 				current_target = current_floor++;
 			} else {
 				is_going_up = false;
@@ -376,7 +371,7 @@ void process_CAN_msg() {
 		state = SC_State::FAULT;
 		unsigned int can_status = can_link.get_status();
 		char c_str_reason[1000];
-		sprintf("CAN receive failed with status 0x%x", c_str_reason, can_status);	
+		sprintf(c_str_reason, "CAN receive failed with status 0x%x", can_status);	
 		FSM_fault_mode(std::string(c_str_reason));
 		return;
 	}
@@ -390,9 +385,9 @@ void process_CAN_msg() {
 	if (rxMsg.id == CAN::ID::UNKNOWN) {
 		state = SC_State::FAULT;
 		char c_str_reason[1000];
-		sprintf("CAN received a message with unknown ID=0x%x, data=0x%d %d %d %d %d %d %d %d, dlc=%d",
-			c_str_reason, 
-			rxMsg.id,
+		sprintf(c_str_reason, 
+			"CAN received a message with unknown ID=0x%x, data=0x%d %d %d %d %d %d %d %d, dlc=%d",
+			rxMsg.data.unknown.id,
 			rxMsg.data.unknown.data[0], 	rxMsg.data.unknown.data[1],
 			rxMsg.data.unknown.data[2],		rxMsg.data.unknown.data[3],
 			rxMsg.data.unknown.data[4],		rxMsg.data.unknown.data[5],
@@ -466,7 +461,7 @@ void process_CAN_EC_msg(CAN::RxFrame rxMsg) {
 	if (!is_car_moving && stat.is_moving) {
 		state = SC_State::FAULT;
 		char c_str_reason[1000];
-		sprintf("Unauthorized cabin move reported by EC, current floor=%d", c_str_reason, current_floor);	
+		sprintf(c_str_reason, "Unauthorized cabin move reported by EC, current floor=%d", current_floor);	
 		FSM_fault_mode(std::string(c_str_reason));
 		return;
 	}
