@@ -63,7 +63,7 @@ public:
      * @param sourceID the sourceID - 0x200, 0x201, etc.
      * @return 1 for success, 0 for invalid/not inserted, -1 for DB failure
      */
-    int DB::log_elevator_request(int requestedFloor, int sourceID);
+    int log_elevator_request(int requestedFloor, int sourceID);
 
     /**
      * @brief Read new requested floor from DB
