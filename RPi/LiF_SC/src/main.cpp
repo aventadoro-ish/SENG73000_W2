@@ -375,13 +375,14 @@ void process_CAN_msg() {
 		FSM_fault_mode(std::string(c_str_reason));
 		return;
 	}
-
+	
 	int data_arr[8];
 	for (int i = 0; i < rawRxMsg.LEN; i++) {
 		data_arr[i] = rawRxMsg.DATA[i];
 	}
 	database.log_can_message(rawRxMsg.ID, data_arr, rawRxMsg.LEN);
-
+	std::cout << "Rec CAN frame " << std::hex << rawRxMsg.ID << " data: " << rawRxMsg.DATA[0] << std::endl;
+	
 	if (rxMsg.id == CAN::ID::UNKNOWN) {
 		state = SC_State::FAULT;
 		char c_str_reason[1000];

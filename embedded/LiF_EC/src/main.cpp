@@ -12,8 +12,8 @@
 // -----------------------------------------------------------------------------
 // Compile Settings
 // -----------------------------------------------------------------------------
-// #define HOME_ON_STARTUP
-// #define ENERGIZE_ON_STARTUP
+#define HOME_ON_STARTUP
+#define ENERGIZE_ON_STARTUP
 #define USE_MOTOR_SERIAL
 // #define USE_SIMPLIFIED_CAN_PROTOCOL
 #define USE_HARDCODED_FLOORS
