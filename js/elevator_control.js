@@ -148,42 +148,28 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-    // new function to handle a successful PHP response
-    function handleResponse (responseData) {
-        // PHP can still send a response successfully but SQL can fail, handle that by ensuring that nothing returns false (from json_encode())
-        if(responseData.success === true) {
-            // HTML data attributes contain strings so convert the floor to a string
-            // php returns requested_floor: 3, while HTML uses "3"
-            const floor = String(responseData.requested_floor);
+function handleResponse(responseData) {
 
-            // moveCarToFloor excepts "floor" or "car"
-            // let floor be the default and change it below if needed
-            let commandSource = "floor";
+    if(responseData.success === true) {
 
-            // determine who submitted the request
-            if (responseData.source_controller === "web_car_controller") {
-                // switch to car
-                commandSource = "car";
-            }
-            
-            if (responseData.movement_allowed === false) {
-                // sync page to DB door state
-                updateDoorDisplay(true);
+        // PHP returns the requested floor as a number
+        const floor = String(responseData.requested_floor);
 
-                lastCommandDisplay.textContent  = "Request #" + responseData.elevator_request_id + " logged for floor " 
-                                                    + floor + " - cannot move with doors open";
+        if(responseData.movement_allowed === false) {
 
-                return;
-            }
+            // synchronize the webpage with the DB door state
+            updateDoorDisplay(true);
 
-            // move the visual elevator only after the request was logged
-            moveCarToFloor(floor, commandSource);
+            lastCommandDisplay.textContent = "Request #" + responseData.elevator_request_id + " logged for floor " + floor + " - cannot move with doors open";
 
-            // display the DB request number confirmation by stitching strings together
-            lastCommandDisplay.textContent = "Request #" + responseData.elevator_request_id + " logged for floor " + floor;
+            return;
+        }
+
+        // the request is queued, but the EC has not confirmed movement
+        lastCommandDisplay.textContent = "Request #" + responseData.elevator_request_id + " logged for floor " + floor + " - waiting for elevator";
+
         } else {
-            // PHP responded but it came false (validation issue or DB failure)
-            lastCommandDisplay.textContent = "requested rejected" + responseData.message;
+        lastCommandDisplay.textContent = "Request rejected: " + responseData.message;
         }
     }
 
@@ -285,14 +271,9 @@ function handleMaintenanceResponse(responseData) {
         });
     }
 
-    // if an SQL request exists, position the visual elevator at that floor
-    if (initialRequestID !== "") {
-        moveCarToFloor(initialFloor, initialSource);
-
-        // moveCarToFloor changes the command text so it must be replaced with the DB request info afterward
-        lastCommandDisplay.textContent = "request #" + initialRequestID + " for floor " + initialFloor;
-    }
-
+if (initialRequestID !== "") {
+    lastCommandDisplay.textContent = "request #" + initialRequestID + " for floor " + initialFloor;
+}
 
     floorButtons.forEach(function (button) {
         // give this specific button (in the loop) instructions for what to do when clicked
@@ -485,4 +466,95 @@ function handleMaintenanceResponse(responseData) {
 
     // run toggleMaintenanceMode whenever the button is clicked
     maintenanceToggle.addEventListener("click", toggleMaintenanceMode);
+
+    // remember the last floor reported by the physical elevator
+let lastConfirmedFloor = "";
+
+
+// ask PHP for the latest physical elevator state
+function pollElevatorStatus() {
+
+    fetch(
+        "elevator_control.php?request_action=status",
+        {
+            method: "GET",
+            cache: "no-store"
+        }
+    )
+
+    // decode PHP's response
+    .then(function (response) {
+
+        if(!response.ok) {
+            throw new Error(
+                "HTTP status " + response.status
+            );
+        }
+
+        return response.json();
+    })
+
+    // update the webpage
+    .then(function (responseData) {
+
+        // ignore a failed database query
+        if(responseData.success !== true) {
+            return;
+        }
+
+
+        // synchronize the door display with the database
+        updateDoorDisplay(
+            responseData.doors_open === true
+        );
+
+
+        // synchronize Sabbath and maintenance buttons
+        updateOperationModeDisplay(
+            responseData.operation_mode || "normal"
+        );
+
+
+        // the EC may not have logged a position yet
+        if(responseData.position_available !== true) {
+            return;
+        }
+
+
+        // HTML floor values are strings
+        const floor =
+            String(responseData.current_floor);
+
+
+        // reject unsupported floor numbers
+        if(!carPositions[floor]) {
+            return;
+        }
+
+
+        // move only when the EC-confirmed floor changes
+        if(floor !== lastConfirmedFloor) {
+
+            moveCarToFloor(floor, "EC");
+
+            lastConfirmedFloor = floor;
+        }
+    })
+
+    // don't overwrite the webpage during a brief polling failure
+    .catch(function (error) {
+
+        console.error(
+            "Elevator status polling failed",
+            error
+        );
+    });
+}
+
+
+// check immediately when the page loads
+pollElevatorStatus();
+
+// check again every 1.5 seconds
+setInterval(pollElevatorStatus, 1500);
 });
