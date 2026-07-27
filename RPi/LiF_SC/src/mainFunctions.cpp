@@ -48,18 +48,6 @@ int menu(){
 	
 }
 
-///////NEW AUDIO FUNCTION/////////
-void announceFloor(int floor)
-{
-    std::string cmd =
-        std::string("/usr/bin/aplay ") +
-        AUDIO_PATH +
-        "floor" +
-        std::to_string(floor) +
-        ".wav &";
-    system(cmd.c_str());
-
-}
 
 int chooseID(){
 
