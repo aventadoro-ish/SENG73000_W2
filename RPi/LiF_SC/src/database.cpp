@@ -9,6 +9,7 @@
 // use: int floor = db.read_floor_request();
 // use: bool success = db.set_operation_mode(DB::OperationMode::SABBATH);
 // use: bool success = db.set_doors_open(false); // closing the doors
+// use: int logResult = db.log_can_message(id, data, length);
 
 #include "../include/database.h"
 
@@ -243,10 +244,238 @@ bool DB::complete_elevator_request()
     }
 }
 
-// pending until RY sends me her table...
+// log a successful CAN message in the CAN_message_log table in DB
+// returns 1 for successful log, 0 for invalid data/no inserted row, and -1 for DB failure
 int DB::log_can_message(int id, int *data, uint8_t length)
 {
-    return -1;
+    // the table requires at least one data byte so ensure the passed in values fit
+    if (data == nullptr || length == 0 || length > 8)
+    {
+        std::cerr << "CAN message was not logged: invalid data or length" << std::endl;
+        return 0;
+    }
+
+    // the rawbyte was stored as a tinyint inside the table so restrict its value
+    if (data[0] < 0 || data[0] > 255)
+    {
+        std::cerr << "CAN message was not logged: data[0] is outside of its 0-255 range" << std::endl;
+        return 0;
+    }
+
+    // make a small lookup table to convert received CAN data into proper text for logging in the DB
+    std::string canIDText;
+    std::string direction;
+    std::string sourceController;
+
+    // RY also made can IDs store as string in the DB - fine. Will have to use table to convert int to string
+    if (id == 0x100)
+    {
+        canIDText = "0x100";
+        direction = "tx";
+        sourceController = "SC";
+    }
+    else if (id == 0x101)
+    {
+        canIDText = "0x101";
+        direction = "rx";
+        sourceController = "EC";
+    }
+    else if (id == 0x200)
+    {
+        canIDText = "0x200";
+        direction = "rx";
+        sourceController = "CC";
+    }
+    else if (id == 0x201)
+    {
+        canIDText = "0x201";
+        direction = "rx";
+        sourceController = "F1";
+    }
+    else if (id == 0x202)
+    {
+        canIDText = "0x202";
+        direction = "rx";
+        sourceController = "F2";
+    }
+    else if (id == 0x203)
+    {
+        canIDText = "0x203";
+        direction = "rx";
+        sourceController = "F3";
+    }
+    else
+    {
+        std::cerr << "CAN message was not logged: unknown CAN id provided" << std::endl;
+        return 0;
+    }
+
+    // ensure the shared database connection exists
+    if (!db_connect())
+    {
+        return -1;
+    }
+
+    // statement pointer for query
+    sql::PreparedStatement *statement = nullptr;
+
+    // query DB
+    try
+    {
+        statement = con->prepareStatement(
+            "INSERT INTO can_message_log ( "
+            "elevator_request_id, "
+            "can_id, "
+            "direction, "
+            "raw_byte, "
+            "dlc, "
+            "source_controller "
+            ") "
+
+            "VALUES ( "
+            "NULLIF(?, 0), "
+            "?, "
+            "?, "
+            "?, "
+            "?, "
+            "? "
+            ") ");
+
+        // active_request_id is 0 when the CAN message is not tied to a remote request
+        // tables won't be fully in sync because of this but this is fine because one request can have many CAN messages
+        statement->setInt(1, active_request_id);
+        statement->setString(2, canIDText);
+        statement->setString(3, direction);
+        statement->setInt(4, data[0]);
+        statement->setInt(5, length);
+        statement->setString(6, sourceController);
+
+        // execute
+        // executeUpdate function returns # of inserted rows so store it into an int
+        int insertedRows = statement->executeUpdate();
+
+        // clean up pointer
+        delete statement;
+
+        // ensure the query worked
+        if (insertedRows == 1)
+        {
+            return 1;
+        }
+
+        // if function does not return 1, query failed so print error
+        std::cerr << "CAN message was not logged: no row was inserted";
+        return 0;
+    }
+    catch (sql::SQLException &error)
+    {
+        // clean up pointer if it was made but query failed
+        if (statement != nullptr)
+        {
+            delete statement;
+        }
+
+        std::cerr << "Failed to log CAN message in DB: " << error.what() << std::endl;
+        return -1;
+    }
+}
+
+// logs a manual (physical) request that was received over CAN into the main elevator DB
+// returns 1 for success, 0 for invalid data/insertion failed, and -1 for DB fail
+int DB::log_elevator_request(int requestedFloor, int sourceID)
+{
+
+    // check if the requested floor is valid
+    if (requestedFloor < 1 || requestedFloor > 3)
+    {
+        std::cerr << "invalid requested floor" << std::endl;
+        return 0;
+    }
+
+    // hard-coded since all received CAN messages came from manual requests (button presses)
+    std::string requestType = "manual";
+    std::string sourceController;
+
+    // determine the source controller based on CAN ID
+    if (sourceID == 0x200)
+    {
+        sourceController = "CC";
+    }
+    else if (sourceID == 0x201)
+    {
+        sourceController = "F1";
+    }
+    else if (sourceID == 0x202)
+    {
+        sourceController = "F2";
+    }
+    else if (sourceID == 0x203)
+    {
+        sourceController = "F3";
+    }
+    else
+    {
+        std::cerr << "Invalid request source CAN ID" << std::endl;
+        return 0;
+    }
+
+    // check DB connection and connect if not
+    if (!db_connect())
+    {
+        return -1;
+    }
+
+    sql::PreparedStatement *statement = nullptr;
+
+    try
+    {
+        statement = con->prepareStatement(
+            "INSERT INTO elevator_requests ( "
+            "request_type, "
+            "requested_floor, "
+            "requested_by_user_id, "
+            "source_controller "
+            ") "
+            "VALUES ( "
+            "?, "
+            "?, "
+            "NULL, "
+            "? "
+            ") ");
+
+        // load the values into the '?' field above
+        statement->setString(1, requestType);
+        statement->setInt(2, requestedFloor);
+        statement->setString(3, sourceController);
+
+        // executeUpdate returns int
+        int insertedRows = statement->executeUpdate();
+
+        // clean up pointer
+        delete statement;
+
+        // should be 1 if success
+        if (insertedRows == 1)
+        {
+            return 1;
+        }
+
+        // if failed
+        std::cerr << "elevator request was not logged: no row inserted";
+
+        return 0;
+    }
+    catch (sql::SQLException &error)
+    {
+        // if made but didn't execute properly
+        if (statement != nullptr)
+        {
+            delete statement;
+        }
+
+        std::cerr << "failed to log elevator request in the DB: " << error.what() << std::endl;
+        return -1;
+    }
 }
 
 // function that grabs the current operation mode from the database
