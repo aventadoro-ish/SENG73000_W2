@@ -202,6 +202,10 @@ void setup() {
     last_tof_update = millis();
     state = EC_State::IDLE;
 
+    LiF_Motor::moveToSteps(FLOOR1_STEPS);
+    while (LiF_Motor::getTargetPositionHalfSteps() != LiF_Motor::getPositionHalfSteps()) {
+        ; // wait until at initial floor
+    }
 
     Serial.println("LiF EC - Setup finished");
 
@@ -350,10 +354,10 @@ void process_CAN_msg_full_mode(CAN_message_t rxMsg) {
         bool is_enabled = (rxMsg.buf[0] & 0b00000100) >> 2;
         uint8_t floor_req = (rxMsg.buf[0] & 0b00000011);
 
-        if (floor_req == 0) {
+        if (floor_req > 3) {
             // illegal floor request -> enter fault mode
             state = EC_State::FAULT;
-            fault_mode("Illegal floor request (0)");
+            fault_mode("Illegal floor request (>3)");
         }
 
         if (is_enabled && state == EC_State::DISABLED) {
