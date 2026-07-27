@@ -103,9 +103,6 @@ bool DB::db_connect()
     }
 }
 
-// read the next pending request in elevator_requests
-// returns int for request floor (1-3); 0 for no pending; -1 for error
-// use: int floorRequest = db.read_floor_request();
 int DB::read_floor_request()
 {
     if (!db_connect())
@@ -121,8 +118,7 @@ int DB::read_floor_request()
     {
         /*
          * On the first call, remember the newest existing request.
-         * All requests up to this ID belong to a previous program run
-         * and will be ignored.
+         * Requests from previous program runs will be ignored.
          */
         if (!request_reader_initialized)
         {
@@ -137,21 +133,18 @@ int DB::read_floor_request()
                 startup_request_id = result->getInt("latest_id");
             }
 
-            delete result;
-            result = nullptr;
-
-            delete statement;
-            statement = nullptr;
-
+            last_read_request_id = startup_request_id;
             request_reader_initialized = true;
-            active_request_id = 0;
 
-            // No request is returned during initialization
+            delete result;
+            delete statement;
+
             return 0;
         }
 
         /*
-         * Only find requests inserted after the reader was initialized.
+         * Find the next pending request that this DB object has not
+         * returned yet. The cursor is independent of scheduler order.
          */
         prepared_statement = con->prepareStatement(
             "SELECT elevator_request_id, requested_floor "
@@ -162,19 +155,17 @@ int DB::read_floor_request()
             "ORDER BY elevator_request_id ASC "
             "LIMIT 1");
 
-        prepared_statement->setInt(1, startup_request_id);
+        prepared_statement->setInt(1, last_read_request_id);
         result = prepared_statement->executeQuery();
 
         if (!result->next())
         {
-            active_request_id = 0;
-
             delete result;
             delete prepared_statement;
             return 0;
         }
 
-        active_request_id =
+        last_read_request_id =
             result->getInt("elevator_request_id");
 
         int requested_floor =
@@ -202,8 +193,6 @@ int DB::read_floor_request()
             delete prepared_statement;
         }
 
-        active_request_id = 0;
-
         std::cerr
             << "Failed to read floor request from DB: "
             << error.what()
@@ -213,14 +202,24 @@ int DB::read_floor_request()
     }
 }
 
-// mark the current active request as completed (once the EC confirms its position is the new floor)
-// this only updates DB
-bool DB::complete_elevator_request()
+bool DB::complete_elevator_request(int completedFloor)
 {
-    // ensure there is an active request
-    if (active_request_id <= 0)
+    if (completedFloor <= 0)
     {
-        std::cerr << "No active elevator request to complete" << std::endl;
+        std::cerr
+            << "Invalid floor passed to complete_elevator_request(): "
+            << completedFloor
+            << std::endl;
+
+        return false;
+    }
+
+    if (!request_reader_initialized)
+    {
+        std::cerr
+            << "Request reader has not been initialized"
+            << std::endl;
+
         return false;
     }
 
@@ -233,30 +232,46 @@ bool DB::complete_elevator_request()
 
     try
     {
+        /*
+         * Complete every request for the floor that was actually served.
+         *
+         * The startup ID prevents requests from previous executions of
+         * this program from being completed.
+         *
+         * This can also complete a duplicate request that arrived after
+         * the scheduler had already registered this floor.
+         */
         statement = con->prepareStatement(
             "UPDATE elevator_requests "
             "SET request_status = 'completed', "
             "completed_at = CURRENT_TIMESTAMP "
-            "WHERE elevator_request_id = ? "
+            "WHERE requested_floor = ? "
+            "AND request_type = 'remote' "
+            "AND elevator_request_id > ? "
             "AND request_status IN ('pending', 'accepted')");
 
-        // mark the request previously found by read_floor_request() as complete (for eleavator actualy moving)
-        statement->setInt(1, active_request_id);
+        statement->setInt(1, completedFloor);
+        statement->setInt(2, startup_request_id);
 
-        // executeUpdate returns number of updated rows
         int updatedRows = statement->executeUpdate();
 
-        // pointer no longer needed
         delete statement;
 
         if (updatedRows == 0)
         {
-            std::cerr << "Active elevator request could not be completed" << std::endl;
+            std::cerr
+                << "No pending DB requests found for floor "
+                << completedFloor
+                << std::endl;
 
             return false;
         }
 
-        active_request_id = 0;
+        std::cout
+            << "Completed " << updatedRows
+            << " DB request(s) for floor "
+            << completedFloor
+            << std::endl;
 
         return true;
     }
@@ -267,7 +282,11 @@ bool DB::complete_elevator_request()
             delete statement;
         }
 
-        std::cerr << "failed to mark a request as complete in DB: " << error.what() << std::endl;
+        std::cerr
+            << "Failed to complete requests for floor "
+            << completedFloor << ": "
+            << error.what()
+            << std::endl;
 
         return false;
     }
@@ -362,7 +381,7 @@ int DB::log_can_message(int id, int *data, uint8_t length)
             ") "
 
             "VALUES ( "
-            "NULLIF(?, 0), "
+            "NULL, "
             "?, "
             "?, "
             "?, "
@@ -372,12 +391,11 @@ int DB::log_can_message(int id, int *data, uint8_t length)
 
         // active_request_id is 0 when the CAN message is not tied to a remote request
         // tables won't be fully in sync because of this but this is fine because one request can have many CAN messages
-        statement->setInt(1, active_request_id);
-        statement->setString(2, canIDText);
-        statement->setString(3, direction);
-        statement->setInt(4, data[0]);
-        statement->setInt(5, length);
-        statement->setString(6, sourceController);
+        statement->setString(1, canIDText);
+        statement->setString(2, direction);
+        statement->setInt(3, data[0]);
+        statement->setInt(4, length);
+        statement->setString(5, sourceController);
 
         // execute
         // executeUpdate function returns # of inserted rows so store it into an int

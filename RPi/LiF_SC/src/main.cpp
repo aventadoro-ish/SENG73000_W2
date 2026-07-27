@@ -219,8 +219,10 @@ void FSM_normal_mode() {
 			time_move_finish = current_time();
 			state = SC_State::IDLE;
 			announceFloor(current_floor);
-			if (floor_requests_from_DB[current_floor-1]) {
-				database.complete_elevator_request();
+			if (floor_requests_from_DB[current_floor - 1]) {
+				if (database.complete_elevator_request(current_floor)) {
+					floor_requests_from_DB[current_floor - 1] = false;
+				}
 			}
 		}
 	}
@@ -228,22 +230,34 @@ void FSM_normal_mode() {
 	
 	// handle remote requests
 	int db_request = database.read_floor_request();
-	if (db_request > 0) {
-		std::cout << "DB request to floor " << db_request << " ";
+	if (db_request > 0 &&
+		db_request <= static_cast<int>(NUM_FLOORS)) {
+
+		std::cout << "DB request to floor "
+				<< db_request << " ";
+
 		if (current_floor == db_request) {
 			std::cout << "already completed" << std::endl;
-			// already at the requested floor 
-			database.complete_elevator_request();
+
+			if (database.complete_elevator_request(db_request)) {
+				floor_requests_from_DB[db_request - 1] = false;
+			}
 		} else {
 			std::cout << "added to scheduler" << std::endl;
+
 			Request rq;
 			rq.dir = RequestDir::NA;
 			rq.floor = db_request;
 			rq.type = RequestType::CAR;
-			scheduler.add_request(rq);
-			floor_requests_from_DB[db_request-1] = true;
 
+			scheduler.add_request(rq);
+
+			// Multiple DB rows for this floor require only one stop.
+			floor_requests_from_DB[db_request - 1] = true;
 		}
+	} else if (db_request < 0) {
+		std::cerr << "Failed to read DB floor request"
+				<< std::endl;
 	}
 	
 	// check for new target floor
@@ -373,52 +387,145 @@ void FSM_sabbath_mode() {
 
 }
 
-void FSM_maintenance_mode() {
-	// handle remote requests
-	int db_request = database.read_floor_request();
-	if (db_request > 0) {
-		std::cout << "DB request to floor " << db_request << " ";
-		if (current_floor == db_request) {
-			std::cout << "already completed" << std::endl;
-			// already at the requested floor 
-			database.complete_elevator_request();
-			floor_requests_from_DB[current_floor-1] = false;
+void FSM_maintenance_mode()
+{
+    /*
+     * Handle completion of a maintenance movement.
+     *
+     * process_CAN_EC_msg() sets is_car_moving to false when the
+     * EC reports that movement has finished.
+     */
+    if (state == SC_State::MAINTENANCE_MOVING) {
+        if (current_time() - time_move_start >
+            MOVE_FINISH_TIMEOUT_MS) {
 
-		} else {
-			std::cout << "Maintenance Go to floor request" << std::endl;
-			can_link.ec_go_to_floor(db_request);
-			floor_requests_from_DB[db_request-1] = true;
-			current_target = db_request;
-		}
-	}
+            state = SC_State::FAULT;
 
+            char c_str_reason[1000];
+            sprintf(
+                c_str_reason,
+                "Move timed out in MAINTENANCE mode after "
+                "%lums. Max time is %lu",
+                current_time() - time_move_start,
+                MOVE_FINISH_TIMEOUT_MS
+            );
 
-	if (!is_car_moving && current_floor == current_target) {
-		floor_requests_from_DB[current_floor-1] = false;
-		database.complete_elevator_request();
-	}
+            FSM_fault_mode(std::string(c_str_reason));
+            return;
+        }
 
+        if (!is_car_moving) {
+            time_move_finish = current_time();
+            state = SC_State::MAINTENANCE;
 
-	DB::OperationMode new_db_op_mode = database.get_operation_mode();
-	switch (new_db_op_mode) {
-	case DB::OperationMode::NORMAL:
-		std::cout << "Mode transition: Maintenance -> Normal" << std::endl;
-		state = is_car_moving ? SC_State::MOVING : SC_State::IDLE;
-		break;
-	case DB::OperationMode::SABBATH:
-		std::cout << "Mode transition: Maintenance -> Maintenance" << std::endl;
-		state = is_car_moving ? SC_State::SABBATH_MOVING : SC_State::SABBATH_IDLE;
-		break;
-		case DB::OperationMode::MAINTENANCE:
-		// do nothing
-		break;
-	case DB::OperationMode::FAULT:
-		std::cout << "Mode transition: Maintenance -> Fault" << std::endl;
-		state = SC_State::FAULT;
-	default:
-		break;
-	}
-}	
+            announceFloor(current_floor);
+
+            /*
+             * Complete the request only if this floor was actually
+             * requested through the database.
+             */
+            if (floor_requests_from_DB[current_floor - 1]) {
+                if (database.complete_elevator_request(
+                        current_floor)) {
+
+                    floor_requests_from_DB[
+                        current_floor - 1
+                    ] = false;
+                }
+            }
+        }
+    }
+
+    /*
+     * Read the next maintenance request only while stationary.
+     *
+     * Waiting for closed doors before reading prevents us from
+     * consuming a request that cannot yet be dispatched.
+     */
+    if (state == SC_State::MAINTENANCE &&
+        !is_car_moving &&
+        !is_CC_door_open) {
+
+        int db_request = database.read_floor_request();
+
+        if (db_request > 0 &&
+            db_request <= static_cast<int>(NUM_FLOORS)) {
+
+            std::cout
+                << "DB maintenance request to floor "
+                << db_request << " ";
+
+            if (current_floor == db_request) {
+                std::cout
+                    << "already completed"
+                    << std::endl;
+
+                if (database.complete_elevator_request(
+                        db_request)) {
+
+                    floor_requests_from_DB[
+                        db_request - 1
+                    ] = false;
+                }
+            } else {
+                std::cout
+                    << "starting movement"
+                    << std::endl;
+
+                floor_requests_from_DB[
+                    db_request - 1
+                ] = true;
+
+                current_target = db_request;
+                is_car_moving = true;
+                time_move_start = current_time();
+                state = SC_State::MAINTENANCE_MOVING;
+
+                can_link.ec_go_to_floor(db_request);
+            }
+        } else if (db_request < 0) {
+            std::cerr
+                << "Failed to read maintenance DB request"
+                << std::endl;
+        }
+    }
+
+    DB::OperationMode new_db_op_mode =
+        database.get_operation_mode();
+
+    switch (new_db_op_mode) {
+    case DB::OperationMode::NORMAL:
+        std::cout
+            << "Mode transition: Maintenance -> Normal"
+            << std::endl;
+
+        state = is_car_moving
+            ? SC_State::MOVING
+            : SC_State::IDLE;
+        break;
+
+    case DB::OperationMode::SABBATH:
+        std::cout
+            << "Mode transition: Maintenance -> Sabbath"
+            << std::endl;
+
+        state = is_car_moving
+            ? SC_State::SABBATH_MOVING
+            : SC_State::SABBATH_IDLE;
+        break;
+
+    case DB::OperationMode::MAINTENANCE:
+        break;
+
+    case DB::OperationMode::FAULT:
+        std::cout
+            << "Mode transition: Maintenance -> Fault"
+            << std::endl;
+
+        state = SC_State::FAULT;
+        break;
+    }
+}
 
 void FSM_initialize() {
 	static uint64_t time_last_print = 0;
@@ -609,14 +716,12 @@ void process_CAN_EC_msg(CAN::RxFrame rxMsg) {
 	// check if EC finished moving the car
 	if (is_car_moving && !stat.is_moving) {
 		is_car_moving = false;
-		scheduler.register_car_stop();
-		time_move_finish = current_time();
-		
-		// check if this floor has been requested by DB
-		if (floor_requests_from_DB[current_floor - 1]) {
-			// then mark request as complete
-			database.complete_elevator_request();	// TODO: add error check here
+
+		if (state == SC_State::MOVING) {
+			scheduler.register_car_stop();
 		}
+
+		time_move_finish = current_time();
 	}
 }
 

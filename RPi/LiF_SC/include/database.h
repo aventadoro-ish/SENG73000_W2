@@ -20,8 +20,10 @@ class DB
     // not defined yet so nullptr
     sql::Connection *con = nullptr;
 
-    // store the ID of the most recent request read from the table
-    int active_request_id = 0;
+    // Highest request ID already returned by read_floor_request().
+    // This is only a reading cursor; it does not represent the request
+    // currently being executed by the scheduler.
+    int last_read_request_id = 0;
 
     // ID of the newest request that existed when request monitoring started
     int startup_request_id = 0;
@@ -77,10 +79,11 @@ public:
     int read_floor_request();
 
     /**
-     * @brief mark requests as complete in the DB
-     * @return true for marked as complete, false for failed
+     * @brief Complete all pending remote requests for a served floor.
+     * @param completedFloor Floor at which the elevator stopped.
+     * @return true if at least one request was completed, false otherwise.
      */
-    bool complete_elevator_request();
+    bool complete_elevator_request(int completedFloor);
 
     /**
      * @brief Read current mode of operation from the database
