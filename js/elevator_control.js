@@ -28,6 +28,12 @@ document.addEventListener("DOMContentLoaded", function () {
     // sabbath mode
     const sabbathToggle = document.getElementById("sabbathToggle");
     let sabbathEnabled = false;
+
+    // retrieve the maintenance button from the HTML
+    const maintenanceToggle = document.getElementById("maintenanceToggle");
+
+    // remember whether maintenance mode is currently active
+    let maintenanceEnabled = false;
     
 
 
@@ -113,6 +119,35 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
+    // send the requested maintenance state to PHP
+    function sendMaintenanceState(maintenanceState) {
+
+        // create form-style POST data
+        const requestData = new URLSearchParams();
+
+        // tell PHP to run its maintenance branch
+        requestData.append("request_action", "maintenance");
+
+        // send either "enabled" or "disabled"
+        requestData.append(
+            "maintenance_state",
+            maintenanceState
+        );
+
+        // send the request without reloading the webpage
+        return fetch("elevator_control.php", {
+            method: "POST",
+            headers: {"Content-Type":"application/x-www-form-urlencoded"},
+            body: requestData.toString()
+        })
+
+        // convert PHP's JSON response into a JavaScript object
+        .then(function (response) {
+            return response.json();
+        }); 
+    }
+
+
     // new function to handle a successful PHP response
     function handleResponse (responseData) {
         // PHP can still send a response successfully but SQL can fail, handle that by ensuring that nothing returns false (from json_encode())
@@ -173,16 +208,30 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     } 
 
-    // function to handle the response and update the last command
-    function handleSabbathResponse(responseData) {
-        if(responseData.success === true) {
-            const enabled = responseData.sabbath_state === "enabled";
-            
-            updateSabbathDisplay(enabled);
+function handleSabbathResponse(responseData) {
+    if(responseData.success === true) {
+        const operationMode = responseData.sabbath_state === "enabled" ? "sabbath" : "normal";
 
-            lastCommandDisplay.textContent = "Sabbath mode " + responseData.sabbath_state;
+        updateOperationModeDisplay(operationMode);
+
+        lastCommandDisplay.textContent = "Sabbath mode " + responseData.sabbath_state;
+
+    } else {
+        lastCommandDisplay.textContent = "Sabbath update rejected: " + responseData.message;
+    }
+}
+
+
+function handleMaintenanceResponse(responseData) {
+    if(responseData.success === true) {
+        const operationMode = responseData.maintenance_state === "enabled" ? "maintenance" : "normal";
+
+            updateOperationModeDisplay(operationMode);
+
+            lastCommandDisplay.textContent = "Maintenance mode " + responseData.maintenance_state;
+
         } else {
-            lastCommandDisplay.textContent = "Sabath update rejected" + responseData.message;
+        lastCommandDisplay.textContent = "Maintenance update rejected: " + responseData.message;
         }
     }
 
@@ -197,6 +246,16 @@ document.addEventListener("DOMContentLoaded", function () {
         lastCommandDisplay.textContent = "the elevator request could not be sent";
 
         console.error("elevator request failed due to: ", error);
+    }
+
+    // handle a network failure or invalid JSON response
+    function handleMaintenanceFailure(error) {
+
+        // display an error on the webpage
+        lastCommandDisplay.textContent = "The maintenance request could not be sent";
+
+        // print the full error in the browser console
+        console.error("Maintenance request failed", error);
     }
 
     // moves the elevator car to the desired floor based on the floor selected and source (floor controller/cab controller)
@@ -290,6 +349,29 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
+    // update the appearance of the maintenance button
+    function updateMaintenanceDisplay(newMaintenanceState) {
+
+        // save the current maintenance state
+        maintenanceEnabled = newMaintenanceState;
+
+        // check whether maintenance mode is active
+        if(maintenanceEnabled === true) {
+            // the next click will disable maintenance
+            maintenanceToggle.textContent = "Disable Maintenance mode";
+
+            // add the same active styling used by Sabbath
+            maintenanceToggle.classList.add("active");
+
+        } else {
+            // the next click will enable maintenance
+            maintenanceToggle.textContent = "Enable Maintenance mode";
+
+            // remove the active styling
+            maintenanceToggle.classList.remove("active");
+        }
+    }
+
     // doors toggle function (between closed and open)
     function updateDoorDisplay(newDoorState) {
         doorsOpen = newDoorState;
@@ -312,6 +394,16 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
+    // synchronize both buttons with operation_mode from the DB
+    function updateOperationModeDisplay(operationMode) {
+        // Sabbath is active only when the mode is "sabbath"
+        updateSabbathDisplay(operationMode === "sabbath");
+
+        // maintenance is active only when the mode is "maintenance"
+        updateMaintenanceDisplay(operationMode === "maintenance");
+    }
+
+
     // read the door state that PHP placed in the HTML (String)
     const initialDoorState = doorControlPanel.dataset.doorState;
 
@@ -321,8 +413,8 @@ document.addEventListener("DOMContentLoaded", function () {
     // update door-related elements with the data
     updateDoorDisplay(initialDoorsOpen);
 
-    // update the Sabbath toggle using the operation mode loaded by PHP
-    updateSabbathDisplay(initialOperationMode === "sabbath");
+    // initialize both buttons using the current database mode
+    updateOperationModeDisplay(initialOperationMode || "normal");
 
 
     // decide which door state should be requested
@@ -366,4 +458,31 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // wait for sabbath toggle to be clicked
     sabbathToggle.addEventListener("click", toggleSabbathMode);
+
+    // decide whether maintenance should be enabled or disabled
+    function toggleMaintenanceMode() {
+        // assume the user wants to enable maintenance
+        let requestedState = "enabled";
+
+        // if it is already enabled, the next click disables it
+        if(maintenanceEnabled === true) 
+        {
+            requestedState = "disabled";
+        }
+
+        // tell the user that the request is being processed
+        lastCommandDisplay.textContent = "Requesting Maintenance mode " + requestedState + "...";
+
+        // send the request to PHP
+        sendMaintenanceState(requestedState)
+
+            // handle a valid response from PHP
+            .then(handleMaintenanceResponse)
+
+            // handle a network or JSON error
+            .catch(handleMaintenanceFailure);
+    }
+
+    // run toggleMaintenanceMode whenever the button is clicked
+    maintenanceToggle.addEventListener("click", toggleMaintenanceMode);
 });
