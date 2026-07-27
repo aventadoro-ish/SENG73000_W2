@@ -164,13 +164,23 @@ void CAN::cc_set_doors(bool is_open) {
 }
 
 int CAN::rx_can_frame(RxFrame *rx_buffer, TPCANMsg* raw_msg) {
-    TPCANMsg msg;
+    TPCANMsg msg{};
     
     int res = pcanRxState(&msg);
-    memcpy(raw_msg, &msg, sizeof(msg));
     if (res != 1) {
         return res;
     }
+    
+    memcpy(raw_msg, &msg, sizeof(msg));
+    if (raw_msg != nullptr) {
+        *raw_msg = msg;
+    }
+
+    if ((msg.MSGTYPE & MSGTYPE_STATUS) != 0) {
+        return 0;
+    }
+
+
 
     // convert id to CAN::ID and determine message type
     ID id = static_cast<ID>(msg.ID);

@@ -430,6 +430,7 @@ void send_heartbeat() {
     } else {
         // if not moving, assume target floor is reached
         floor_pos = target_floor;
+        is_moving = false;
     }
     send_EC_CAN_frame(is_enabled, floor_pos, is_moving);
 }
