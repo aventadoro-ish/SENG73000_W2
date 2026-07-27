@@ -123,6 +123,8 @@ void process_DB_door_command();
 
 void update_door_state_from_CAN(bool can_door_open);
 
+void announceFloor(int floor);
+
 
 // -----------------------------------------------------------------------------
 // Main
@@ -216,6 +218,7 @@ void FSM_normal_mode() {
 		if (!is_car_moving) {
 			time_move_finish = current_time();
 			state = SC_State::IDLE;
+			announceFloor(current_floor);
 			if (floor_requests_from_DB[current_floor-1]) {
 				database.complete_elevator_request();
 			}
@@ -311,6 +314,7 @@ void FSM_sabbath_mode() {
 		if (!is_car_moving) {
 			time_move_finish = current_time();
 			state = SC_State::SABBATH_IDLE;
+			announceFloor(current_floor);
 		}
 	}
 	
@@ -370,7 +374,29 @@ void FSM_sabbath_mode() {
 }
 
 void FSM_maintenance_mode() {
-	// TODO: implement
+	// handle remote requests
+	int db_request = database.read_floor_request();
+	if (db_request > 0) {
+		std::cout << "DB request to floor " << db_request << " ";
+		if (current_floor == db_request) {
+			std::cout << "already completed" << std::endl;
+			// already at the requested floor 
+			database.complete_elevator_request();
+			floor_requests_from_DB[current_floor-1] = false;
+
+		} else {
+			std::cout << "Maintenance Go to floor request" << std::endl;
+			can_link.ec_go_to_floor(db_request);
+			floor_requests_from_DB[db_request-1] = true;
+			current_target = db_request;
+		}
+	}
+
+
+	if (!is_car_moving && current_floor == current_target) {
+		floor_requests_from_DB[current_floor-1] = false;
+		database.complete_elevator_request();
+	}
 }	
 
 void FSM_initialize() {
@@ -676,5 +702,17 @@ void update_door_state_from_CAN(bool can_door_open)
         // Normal operation when no DB override is active.
         is_CC_door_open = can_door_open;
     }
+}
+
+
+void announceFloor(int floor) {
+    std::string cmd =
+        std::string("/usr/bin/aplay ") +
+        AUDIO_PATH +
+        "floor" +
+        std::to_string(floor) +
+        ".wav &";
+    system(cmd.c_str());
+
 }
 
