@@ -184,6 +184,17 @@ void FSM_normal_mode() {
 			state = SC_State::IDLE;
 		}
 	}
+
+	
+	// handle remote requests
+	int db_request = database.read_floor_request();
+	if (db_request > 0) {
+		Request rq;
+		rq.dir = RequestDir::NA;
+		rq.floor = db_request;
+		rq.type = RequestType::WEBSITE;
+		scheduler.add_request(rq);
+	}
 	
 	// check for new target floor
 	int new_target = scheduler.get_target_floor();

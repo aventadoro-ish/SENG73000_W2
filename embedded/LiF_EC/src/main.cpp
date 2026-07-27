@@ -26,6 +26,14 @@
 #define FLOOR1_STEPS    100 
 #define FLOOR2_STEPS    900 
 #define FLOOR3_STEPS    1450 
+
+constexpr int32_t FLOOR1_FULL_STEPS = 100;
+constexpr int32_t FLOOR2_FULL_STEPS = 900;
+constexpr int32_t FLOOR3_FULL_STEPS = 1450;
+
+constexpr int32_t FLOOR1_HALF_STEPS = FLOOR1_FULL_STEPS * 2;
+constexpr int32_t FLOOR2_HALF_STEPS = FLOOR2_FULL_STEPS * 2;
+constexpr int32_t FLOOR3_HALF_STEPS = FLOOR3_FULL_STEPS * 2;
 #endif
 
 constexpr uint32_t DISPLAY_UPDATE_PERIOD_MS = 500;
@@ -37,6 +45,12 @@ enum class EC_State : uint8_t {
     MOVING,
     DISABLED,
     FAULT
+};
+
+enum class TravelDirection {
+    UP,
+    DOWN,
+    NONE
 };
 
 
@@ -51,6 +65,8 @@ uint8_t current_floor = 0;      // 0 is internally interpreted as moving
 // TwoWire myWire;
 VL53L0X tof_sensor;
 unsigned long int last_tof_update;
+TravelDirection travel_direction = TravelDirection::NONE;
+
 
 // -----------------------------------------------------------------------------
 // Function Declarations
@@ -206,6 +222,8 @@ void setup() {
     while (LiF_Motor::getTargetPositionHalfSteps() != LiF_Motor::getPositionHalfSteps()) {
         ; // wait until at initial floor
     }
+    current_floor = 1;
+    target_floor = 1;
 
     Serial.println("LiF EC - Setup finished");
 
@@ -251,41 +269,55 @@ void loop() {
 
     // patch to update current_floor during movement
     if (state == EC_State::MOVING) {
-        int32_t cur_step = LiF_Motor::getPositionHalfSteps();
-        if (target_floor > current_floor) {
-            // moving up
-            if (cur_step >= FLOOR1_STEPS && cur_step < FLOOR2_STEPS) {
-                current_floor = 1;
-            } else if (cur_step >= FLOOR2_STEPS && cur_step < FLOOR3_STEPS) {
-                current_floor = 2;
-            } else if (cur_step == FLOOR3_STEPS) {
-                current_floor = 3;
-            }
-        } else if (target_floor < current_floor) {
-            // moving down
-            if (cur_step >= FLOOR1_STEPS && cur_step < FLOOR2_STEPS) {
-                current_floor = 2;
-            } else if (cur_step >= FLOOR2_STEPS && cur_step <= FLOOR3_STEPS) {
-                current_floor = 3;
-            }
+        const int32_t cur_half_step =
+            LiF_Motor::getPositionHalfSteps();
 
-        } else {
-            // should not happen (target_floor == current_floor)
-            // print for debug sanity
-            Serial.println("There's some kind of an issue");
+        switch (travel_direction) {
+            case TravelDirection::UP:
+                if (current_floor == 1 &&
+                    cur_half_step > FLOOR2_HALF_STEPS) {
+                    current_floor = 2;
+                }
+
+                if (current_floor == 2 &&
+                    cur_half_step > FLOOR3_HALF_STEPS) {
+                    current_floor = 3;
+                }
+                break;
+
+            case TravelDirection::DOWN:
+                if (current_floor == 3 &&
+                    cur_half_step < FLOOR2_HALF_STEPS) {
+                    current_floor = 2;
+                }
+
+                if (current_floor == 2 &&
+                    cur_half_step < FLOOR1_HALF_STEPS) {
+                    current_floor = 1;
+                }
+                break;
+
+            case TravelDirection::NONE:
+                Serial.println("MOVING with no travel direction");
+                break;
         }
     }
-
-    
+        
     // check if in final position
-    if (
-        state == EC_State::MOVING && 
-        LiF_Motor::getTargetPositionHalfSteps() == LiF_Motor::getPositionHalfSteps()
-    ) {
-        Serial.println("Move finished. Now IDLE");
-        // it is implied that the motor is stopped
-        state = EC_State::IDLE;
+    const int32_t cur_step =
+        LiF_Motor::getPositionHalfSteps();
+
+    const int32_t target_step =
+        LiF_Motor::getTargetPositionHalfSteps();
+
+    if (state == EC_State::MOVING &&
+        cur_step == target_step) {
+
         current_floor = target_floor;
+        travel_direction = TravelDirection::NONE;
+        state = EC_State::IDLE;
+
+        Serial.println("Move finished. Now IDLE");
         send_heartbeat();
     }
 
@@ -362,10 +394,10 @@ void process_CAN_msg_full_mode(CAN_message_t rxMsg) {
 
         if (is_enabled && state == EC_State::DISABLED) {
             // enable cmd received when EC is disabled
-            state == EC_State::IDLE;
+            state = EC_State::IDLE;
         } else if (!is_enabled && state != EC_State::DISABLED) {
             // disable cmd received when EC is "enabled"
-            state == EC_State::DISABLED;
+            state = EC_State::DISABLED;
             LiF_Motor::stop();
         }
 
@@ -378,6 +410,7 @@ void process_CAN_msg_full_mode(CAN_message_t rxMsg) {
 #ifdef USE_HARDCODED_FLOORS
             unsigned int tgt_step = 0;
             switch (target_floor) {
+            case 0:     tgt_step = 0;            break;
             case 1:     tgt_step = FLOOR1_STEPS; break;
             case 2:     tgt_step = FLOOR2_STEPS; break;
             case 3:     tgt_step = FLOOR3_STEPS; break;
@@ -386,15 +419,25 @@ void process_CAN_msg_full_mode(CAN_message_t rxMsg) {
                 break;
             }
 
-            if (!LiF_Motor::moveToSteps(tgt_step)) {
-                Serial.println("Failed to move");
+            if (tgt_step != 0) {
+                if (!LiF_Motor::moveToSteps(tgt_step)) {
+                    Serial.println("Failed to move");
+                }
+                if (target_floor > current_floor) {
+                    travel_direction = TravelDirection::UP;
+                } else if (target_floor < current_floor) {
+                    travel_direction = TravelDirection::DOWN;
+                } else {
+                    travel_direction = TravelDirection::NONE;
+                }
+                
+                // inform SC that we are now moving
+                Serial.print("Start Move->");
             }
 #else
 #error "Dynamic (non-hardcoded) floors are not supported yet"
 #endif
 
-            // inform SC that we are now moving
-            Serial.print("Start Move->");
             send_heartbeat();
         }
     }
