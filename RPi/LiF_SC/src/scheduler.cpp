@@ -14,7 +14,7 @@ int Scheduler::run_scheduler() {
     std::cout << "-> running scheduler" << std::endl;
     // First, check if there are no requests. If no requests -> stay still
     bool has_requests = false;
-    for (int i = 0; i < NUM_FLOORS; i++) {
+    for (int i = 0; i < static_cast<int>(NUM_FLOORS); i++) {
         if (this->floor_requests[i][0] || this->floor_requests[i][1]) {
             has_requests = true;
             break;
@@ -41,7 +41,7 @@ int Scheduler::run_scheduler() {
         // max int ensures first comparison is closer than this value
         int closest_rq_distance = INT_MAX;  
 
-        for (int i = 0; i < NUM_FLOORS; i++) {
+        for (int i = 0; i < static_cast<int>(NUM_FLOORS); i++) {
             if (this->floor_requests[i][0] || 
                 this->floor_requests[i][1] || 
                 this->car_requests[i]) {
@@ -62,7 +62,7 @@ int Scheduler::run_scheduler() {
         }
 
         // closest request is at floor closest_rq_floor, so go to that floor
-        if (closest_rq_floor > this->cur_floor) {
+        if (closest_rq_floor > static_cast<int>(this->cur_floor)) {
             this->car_dir = TravelDir::UP;
             this->dynamic_travel_limit = closest_rq_floor;
             this->cur_target_floor = closest_rq_floor;
@@ -95,7 +95,7 @@ int Scheduler::run_scheduler() {
         //      due to index i always being less than corresponding floor number
         //      by 1
         // first we want to update the dynamic travel limit
-        for (int i = this->cur_floor; i < NUM_FLOORS; i++) {
+        for (int i = this->cur_floor; i < static_cast<int>(NUM_FLOORS); i++) {
             if (this->floor_requests[i][1]) {
                 // found a floor request in the opposite direction of travel
                 if (i+1 > this->dynamic_travel_limit) {
@@ -108,7 +108,7 @@ int Scheduler::run_scheduler() {
         }
 
         // then we check for stops on the way to the new dynamic travel limit
-        for (int i = this->cur_floor; i < NUM_FLOORS; i++) {
+        for (int i = this->cur_floor; i < static_cast<int>(NUM_FLOORS); i++) {
             if (this->car_requests[i] && i+1 < this->dynamic_travel_limit) {
                 // found a car request which is on the way to the current destination
                 //  so make a stop there
@@ -188,12 +188,9 @@ int Scheduler::run_scheduler() {
     }
 
 
-    if (this->cur_floor == this->dynamic_travel_limit && 
+    if (this->cur_floor == static_cast<unsigned int>(this->dynamic_travel_limit) && 
         this->cur_floor == this->cur_target_floor && 
-        this->cur_floor == new_target_floor //&&
-        // this->car_requests[this->cur_floor - 1] == false && 
-        // this->floor_requests[this->cur_floor - 1][0] == false &&
-        // this->floor_requests[this->cur_floor - 1][1] == false
+        this->cur_floor == static_cast<unsigned int>(new_target_floor)
     ) {
         if (this->car_dir == TravelDir::UP) {
             bool has_requests_below = false;
@@ -249,12 +246,12 @@ int Scheduler::add_request(Request new_rq) {
         //  car than DTL should update DTL
         if (this->car_dir == TravelDir::UP && 
             new_rq.floor > this->dynamic_travel_limit && 
-            new_rq.floor > this->cur_floor) {
+            new_rq.floor > static_cast<int>(this->cur_floor)) {
                 this->dynamic_travel_limit = new_rq.floor;
 
         } else if (this->car_dir == TravelDir::DOWN && 
             new_rq.floor < this->dynamic_travel_limit && 
-            new_rq.floor < this->cur_floor) {
+            new_rq.floor < static_cast<int>(this->cur_floor)) {
                 this->dynamic_travel_limit = new_rq.floor;
 
         }
@@ -267,7 +264,7 @@ int Scheduler::add_request(Request new_rq) {
     int cur_target = this->cur_target_floor;
     this->run_scheduler();
 
-    return (cur_target != this->cur_target_floor);
+    return (cur_target != static_cast<int>(this->cur_target_floor));
 }
 
 void Scheduler::update_car_position(int floor) {
@@ -287,7 +284,7 @@ void Scheduler::register_car_stop() {
 
         // At the upper travel limit, the car can also serve a DOWN call
         // before reversing.
-        if (this->cur_floor == this->dynamic_travel_limit) {
+        if (this->cur_floor == static_cast<unsigned int>(this->dynamic_travel_limit)) {
             this->floor_requests[floor_idx][1] = false;
         }
     } else if (arrival_dir == TravelDir::DOWN) {
@@ -296,7 +293,7 @@ void Scheduler::register_car_stop() {
 
         // At the lower travel limit, the car can also serve an UP call
         // before reversing.
-        if (this->cur_floor == this->dynamic_travel_limit) {
+        if (this->cur_floor == static_cast<unsigned int>(this->dynamic_travel_limit)) {
             this->floor_requests[floor_idx][0] = false;
         }
     } else {

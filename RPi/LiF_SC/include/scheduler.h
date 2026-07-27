@@ -83,7 +83,7 @@ public:
     Scheduler(unsigned int initial_floor = INITIAL_FLOOR) {
         this->cur_floor = initial_floor;
         this->cur_target_floor = initial_floor;
-        for (int i = 0; i < NUM_FLOORS; i++) {
+        for (int i = 0; i < static_cast<int>(NUM_FLOORS); i++) {
             this->car_requests[i] = false;
             this->floor_requests[i][0] = false;
             this->floor_requests[i][1] = false;
