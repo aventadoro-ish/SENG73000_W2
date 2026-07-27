@@ -132,6 +132,7 @@ int main() {
 	printf(" - initial floor: %u\n", INITIAL_FLOOR);
 
 	while(is_running) { // FSM infinite loop start
+		process_CAN_msg();
 		
 		switch (state) {
 			case SC_State::INITIALIZE:

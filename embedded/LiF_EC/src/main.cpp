@@ -206,6 +206,10 @@ void setup() {
     Serial.println("LiF EC - Setup finished");
 
     send_heartbeat();           // initializes last_heartbeat_time and informs SC that EC is enabled and ready
+    // for (;;) {
+    //     send_heartbeat();           // initializes last_heartbeat_time and informs SC that EC is enabled and ready
+    //     delay(100);
+    // }
 }
 
 
