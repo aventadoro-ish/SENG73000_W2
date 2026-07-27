@@ -24,8 +24,8 @@ constexpr unsigned int PCAN_NO_ERROR            = 0x00000U;  	// No error
 int CAN::pcanInit() {
     h2 = LINUX_CAN_Open(pcan_resource_path, O_RDWR);
     if (h2 == nullptr) {
-        std::cerr << "CAN: Unable to open resource on path: " << \ 
-        pcan_resource_path << "Status: " << std::hex << status << \ 
+        std::cerr << "CAN: Unable to open resource on path: " << \
+        pcan_resource_path << "Status: " << std::hex << status << \
         std::dec << std::endl;
         return -1;
     }
@@ -138,7 +138,7 @@ int CAN::pcanTx(int id, int data) {
 }
 
 int CAN::pcanTx(ID id, int data) {
-    pcanTx(static_cast<int>(id), data);
+    return pcanTx(static_cast<int>(id), data);
 }
 
 void CAN::ec_go_to_floor(unsigned int floor, bool ec_enable) {
@@ -148,7 +148,7 @@ void CAN::ec_go_to_floor(unsigned int floor, bool ec_enable) {
     }
 
     int data = \
-        1 << 2 |        // enable bit -> assume enabled if floor is requested
+        (static_cast<int>(ec_enable) << 2) |
         (floor & 0b11); // floor bits
     
     pcanTx(CAN::ID::SC_EC_FLOOR_RQ, data);
@@ -190,21 +190,22 @@ int CAN::rx_can_frame(RxFrame *rx_buffer) {
         rx_buffer->data.cc_request = rq;
         break;
     }
-    case ID::F1_RQ:     // Fx_RQ messages can be treated the same way
-    case ID::F2_RQ:        
+    case ID::F1_RQ:         [[fallthrough]]; // Fx_RQ messages can be treated the same way
+    case ID::F2_RQ:         [[fallthrough]];
     case ID::F3_RQ: {
         Fx_Request rq;
         rq.is_requested =       (msg.DATA[0] & 0b00000001) > 0;
         rx_buffer->data.fx_request = rq;
         break;
     }    
-    case ID::SC_CC_VIRT_DOOR:
+    case ID::SC_CC_VIRT_DOOR:       [[fallthrough]];
     case ID::SC_EC_FLOOR_RQ:        
         // SC isn't expected to receive its own messages
         // assume error has occurred and treat as an unknown frame
         std::cerr << "Warning! SC received a messaged with its own ID: 0x" << \
             std::hex << msg.ID << std::dec << std::endl;   
-    case ID::UNKNOWN:
+        [[fallthrough]];
+    case ID::UNKNOWN:               [[fallthrough]];
     default:
         rx_buffer->id = ID::UNKNOWN;    // make this the same for any unknown id
         // unknown CAN frame id
