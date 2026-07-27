@@ -99,13 +99,6 @@ $safeUsername = htmlspecialchars($_SESSION['username'] ?? 'User', ENT_QUOTES, 'U
                     <p>Check Elevator Diagnostics.</p>
                 </a>
                 <?php endif ?>
-
-                <?php if ($_SESSION['user_role'] === 'admin'): ?>
-                <a href="" class="member-action-card maintainence-page">
-                    <h3>Maintainence</h3>
-                    <p>Options to manually tweak a few values</p>
-                </a>
-                <?php endif ?>
             </div>
         </section>
 

@@ -593,7 +593,7 @@ $safeUsername = htmlspecialchars($_SESSION['username'] ?? 'Member', ENT_QUOTES, 
                             </button>
                         </div>
 
-                        <!-- reuse the Sabbath classes so this card matches without extra CSS -->
+                        <?php if ($_SESSION['user_role'] === 'admin'): ?>
                         <div class="sabbath-toggle maintenance-toggle">
 
                             <p class="section-label"><b>Maintenance Toggle</b></p>
@@ -603,6 +603,8 @@ $safeUsername = htmlspecialchars($_SESSION['username'] ?? 'Member', ENT_QUOTES, 
                                 Maintenance Mode
                             </button>
                         </div>
+                        <?php endif ?>
+
                     </div>
                 </aside>
             </div>
