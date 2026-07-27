@@ -7,16 +7,15 @@ OBJ_DIR := obj
 TARGET := LiF_SC
 
 LDFLAGS := -L/usr/lib/arm-linux-gnueabihf
-LDLIBS := -l:libmysqlcppconn.so -lpcan
+LDLIBS := 					\
+	-lpcan					\
+	-l:libmysqlcppconn.so 	
 
 CPPFLAGS := -I$(INC_DIR)
 CXXFLAGS := -Wall -Wextra -g
 
-SOURCES := \
-	$(SRC_DIR)/main.cpp \
-	$(SRC_DIR)/mainFunctions.cpp \
-	$(SRC_DIR)/pcanFunctions.cpp \
-	$(SRC_DIR)/databaseFunctions.cpp
+# reference: https://stackoverflow.com/a/3774731
+SOURCES := $(shell find $(SRC_DIR) -name '*.cpp')
 
 OBJECTS := $(patsubst $(SRC_DIR)/%.cpp,$(OBJ_DIR)/%.o,$(SOURCES))
 

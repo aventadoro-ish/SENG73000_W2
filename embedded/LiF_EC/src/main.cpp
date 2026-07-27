@@ -12,8 +12,8 @@
 // -----------------------------------------------------------------------------
 // Compile Settings
 // -----------------------------------------------------------------------------
-// #define HOME_ON_STARTUP
-// #define ENERGIZE_ON_STARTUP
+#define HOME_ON_STARTUP
+#define ENERGIZE_ON_STARTUP
 #define USE_MOTOR_SERIAL
 // #define USE_SIMPLIFIED_CAN_PROTOCOL
 #define USE_HARDCODED_FLOORS
@@ -24,8 +24,8 @@
 // -----------------------------------------------------------------------------
 #ifdef USE_HARDCODED_FLOORS
 #define FLOOR1_STEPS    100 
-#define FLOOR2_STEPS    1200 
-#define FLOOR3_STEPS    2250 
+#define FLOOR2_STEPS    900 
+#define FLOOR3_STEPS    1450 
 #endif
 
 constexpr uint32_t DISPLAY_UPDATE_PERIOD_MS = 500;
@@ -80,9 +80,10 @@ void process_CAN_msg_full_mode(CAN_message_t rxMsg);
 /**
  * @brief Send CAN frame using EC format defined in the elevator protocol.
  * @param is_enabled is EC currently enabled
- * @param position current floor position or 0 for `MOVING` state
+ * @param position current floor position or last exact floor position while moving
+ * @param is_moving if the elevator motor is actively spinning
  */
-void send_EC_CAN_frame(bool is_enabled, uint8_t position);
+void send_EC_CAN_frame(bool is_enabled, uint8_t position, bool is_moving);
 
 /**
  * @brief Sends auto-generated heartbeat to CAN based on global variables.
@@ -127,6 +128,11 @@ void setup() {
         Serial.println("LCD initialization failed!");
     }
 
+    LiF_LCD::lcd.clear();
+    LiF_LCD::lcd.print("LiF - EC");
+    LiF_LCD::lcd.setCursor(0, 1);
+    LiF_LCD::lcd.print("Initializing");
+
     Wire.setSDA(I2C2_SDA);
     Wire.setSCL(I2C2_SCL);
 
@@ -134,14 +140,45 @@ void setup() {
     Wire.begin();
     Wire.setClock(100000);
 
-    while (1) {
-        Serial.print(tof_sensor.readRangeSingleMillimeters());
-        if (tof_sensor.timeoutOccurred()) { Serial.print(" TIMEOUT"); }
-
-        Serial.println();
+    Serial.println("ToF!");
+    tof_sensor.setTimeout(500);
+    if (!tof_sensor.init()) {
+        Serial.println("Failed to detect and initialize sensor!");
+        while (1) {}
     }
+
+    // lower the return signal rate limit (default is 0.25 MCPS)
+    tof_sensor.setSignalRateLimit(0.1);
+    // increase laser pulse periods (defaults are 14 and 10 PCLKs)
+    tof_sensor.setVcselPulsePeriod(VL53L0X::VcselPeriodPreRange, 18);
+    tof_sensor.setVcselPulsePeriod(VL53L0X::VcselPeriodFinalRange, 14);
+    // increase timing budget to 200 ms
+    tof_sensor.setMeasurementTimingBudget(200000);
+
+    // while (1) {
+    //     Serial.print(tof_sensor.readRangeSingleMillimeters());
+    //     if (tof_sensor.timeoutOccurred()) { Serial.print(" TIMEOUT"); }
+    //     Serial.println();
+    // }
     
     LiF_CAN::setup();
+
+    
+    LiF_LCD::lcd.setCursor(0, 1);
+    LiF_LCD::lcd.print("Initialized ");
+
+    // while (1) {
+    //     CAN_message_t rxMsg;
+    //     while (LiF_CAN::bus.read(rxMsg)) {  
+    //         LiF_LCD::lcd.clear();
+    //         LiF_LCD::lcd.home();
+    //         LiF_LCD::lcd.printf("Rec IC: %d", rxMsg.id);
+    //         LiF_LCD::lcd.setCursor(0, 1);
+    //         LiF_LCD::lcd.printf("data: %d", rxMsg.buf[0]);
+    //     }
+    // }
+    
+
     LiF_Motor::setup();
     LiF_Motor::setupMotorControlTimer();
 
@@ -169,6 +206,10 @@ void setup() {
     Serial.println("LiF EC - Setup finished");
 
     send_heartbeat();           // initializes last_heartbeat_time and informs SC that EC is enabled and ready
+    // for (;;) {
+    //     send_heartbeat();           // initializes last_heartbeat_time and informs SC that EC is enabled and ready
+    //     delay(100);
+    // }
 }
 
 
@@ -201,6 +242,33 @@ void loop() {
             Serial.println(" moving");
         } else {
             Serial.println(" not moving");
+        }
+    }
+
+    // patch to update current_floor during movement
+    if (state == EC_State::MOVING) {
+        int32_t cur_step = LiF_Motor::getPositionHalfSteps();
+        if (target_floor > current_floor) {
+            // moving up
+            if (cur_step >= FLOOR1_STEPS && cur_step < FLOOR2_STEPS) {
+                current_floor = 1;
+            } else if (cur_step >= FLOOR2_STEPS && cur_step < FLOOR3_STEPS) {
+                current_floor = 2;
+            } else if (cur_step == FLOOR3_STEPS) {
+                current_floor = 3;
+            }
+        } else if (target_floor < current_floor) {
+            // moving down
+            if (cur_step >= FLOOR1_STEPS && cur_step < FLOOR2_STEPS) {
+                current_floor = 2;
+            } else if (cur_step >= FLOOR2_STEPS && cur_step <= FLOOR3_STEPS) {
+                current_floor = 3;
+            }
+
+        } else {
+            // should not happen (target_floor == current_floor)
+            // print for debug sanity
+            Serial.println("There's some kind of an issue");
         }
     }
 
@@ -329,11 +397,12 @@ void process_CAN_msg_full_mode(CAN_message_t rxMsg) {
 }
 
 
-void send_EC_CAN_frame(bool is_enabled, uint8_t position) {
+void send_EC_CAN_frame(bool is_enabled, uint8_t position, bool is_moving) {
     // DEBUG_PRINTLN("Sending CAN Frame");
     CAN_message_t txMsg;
     txMsg.id = LiF_CAN::TxID;   // EC message id
     txMsg.buf[0] = 
+        (is_moving << 3)  |     // is currently moving
         (is_enabled << 2) |     // enabled bit 
         (position & 0b11);      // floor position
     txMsg.len = 1;
@@ -350,13 +419,15 @@ void send_heartbeat() {
         (state != EC_State::FAULT)      &&  // there are no faults, and
         (state != EC_State::INITIALIZE);    // initialization is done
     uint8_t floor_pos;
+    bool is_moving;
     if (state == EC_State::MOVING) {
-        floor_pos = 0;
+        is_moving = true;
+        floor_pos = current_floor;  // if moving, use last exact current floor value
     } else {
         // if not moving, assume target floor is reached
         floor_pos = target_floor;
     }
-    send_EC_CAN_frame(is_enabled, floor_pos);
+    send_EC_CAN_frame(is_enabled, floor_pos, is_moving);
 }
 
 
@@ -378,7 +449,7 @@ void fault_mode(const char* reason) {
                 Serial.println("FAULT MODE");
             }
 
-            send_EC_CAN_frame(false, 0);
+            send_EC_CAN_frame(false, 0, false);
         }
     }
 }
