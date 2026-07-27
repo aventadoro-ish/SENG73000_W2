@@ -59,7 +59,7 @@ int CAN::pcanClose() {
 int CAN::pcanRxState(TPCANMsg *msg) {
     // Clear the channel - new - Must clear the channel before Tx/Rx
 	status = CAN_Status(h2);
-    if (status != CAN_ERR_OK) {
+    if ((status != CAN_ERR_OK) || (status != CAN_ERR_QRCVEMPTY)) {
         std::cerr << "CAN: error occurred while receiving the message. " \
         "Status: " << std::hex << status << std::dec << std::endl;
         return -1;
