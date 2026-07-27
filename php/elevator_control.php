@@ -123,7 +123,8 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
                 echo json_encode([
                     'success' => true,
                     'message' => 'sabbath mode updated',
-                    'sabbath_state' => $submittedSabbathState
+                    'sabbath_state' => $submittedSabbathState,
+                    'operation_mode' => $operationMode
                 ]);
             } else {
                 echo json_encode([
@@ -138,6 +139,72 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'message' => 'a database error prevented sabbath toggle',
             ]);
         }
+        exit;
+    }
+
+    // handle the maintenance-mode toggle separately from elevator movement requests
+    if($requestAction === 'maintenance') {
+        // JS sends either enabled or disabled
+        $submittedMaintenanceState = $_POST['maintenance_state'] ?? '';
+
+        // only accept the two states used by the maintenance button
+        $allowedMaintenanceStates = ['enabled', 'disabled'];
+
+        // reject any other submitted value
+        if(!in_array($submittedMaintenanceState, $allowedMaintenanceStates, true)) {
+            echo json_encode([
+                'success' => false,
+                'message' => 'invalid maintenance state'
+            ]);
+            exit;
+        }
+
+        // disabling maintenance returns the elevator to normal operation
+        $operationMode = 'normal';
+
+        // enabling maintenance changes the shared operation_mode column
+        if($submittedMaintenanceState === 'enabled') {
+            $operationMode = 'maintenance';
+        }
+
+        try {
+            // update the single elevator-state row
+            $query = "
+                UPDATE elevator_state
+                SET operation_mode = :operation_mode
+                WHERE state_id = 1
+            ";
+
+            $statement = $pdo->prepare($query);
+
+            $params = ['operation_mode' => $operationMode];
+
+            $result = $statement->execute($params);
+
+            if($result) {
+                // return both the button state and final DB operation mode to JS
+                echo json_encode([
+                    'success' => true,
+                    'message' => 'maintenance mode updated',
+                    'maintenance_state' => $submittedMaintenanceState,
+                    'operation_mode' => $operationMode
+                ]);
+            } else {
+                echo json_encode([
+                    'success' => false,
+                    'message' => 'maintenance mode could not be updated'
+                ]);
+            }
+        } catch (PDOException $e) {
+            error_log($e->getMessage());
+
+            echo json_encode([
+                'success' => false,
+                'message' => 'a database error prevented the maintenance toggle'
+            ]);
+        }
+
+        // maintenance request complete, do not continue into movement handling
         exit;
     }
 
@@ -523,6 +590,17 @@ $safeUsername = htmlspecialchars($_SESSION['username'] ?? 'Member', ENT_QUOTES, 
 
                             <button type="button" id="sabbathToggle" class="sabbath-toggle-button">
                                 Sabbath Mode
+                            </button>
+                        </div>
+
+                        <!-- reuse the Sabbath classes so this card matches without extra CSS -->
+                        <div class="sabbath-toggle maintenance-toggle">
+
+                            <p class="section-label"><b>Maintenance Toggle</b></p>
+
+                            <button type="button" id="maintenanceToggle"
+                                class="sabbath-toggle-button maintenance-toggle-button">
+                                Maintenance Mode
                             </button>
                         </div>
                     </div>
