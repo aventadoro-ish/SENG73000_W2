@@ -1,5 +1,6 @@
 #include "can.h"
 #include <iostream>
+#include <cstring>
 #include "setting.h"
 
 
@@ -162,10 +163,11 @@ void CAN::cc_set_doors(bool is_open) {
     }
 }
 
-int CAN::rx_can_frame(RxFrame *rx_buffer) {
+int CAN::rx_can_frame(RxFrame *rx_buffer, TPCANMsg* raw_msg) {
     TPCANMsg msg;
-
+    
     int res = pcanRxState(&msg);
+    memcpy(raw_msg, &msg, sizeof(msg));
     if (res != 1) {
         return res;
     }
@@ -218,6 +220,10 @@ int CAN::rx_can_frame(RxFrame *rx_buffer) {
     }
     
     return res;
+}
+
+unsigned int CAN::get_status() {
+    return status;
 }
 
 CAN::CAN() {

@@ -8,8 +8,8 @@ TARGET := LiF_SC
 
 LDFLAGS := -L/usr/lib/arm-linux-gnueabihf
 LDLIBS := 					\
-	-lpcan
-# 	-l:libmysqlcppconn.so 	
+	-lpcan					\
+	-l:libmysqlcppconn.so 	
 
 CPPFLAGS := -I$(INC_DIR)
 CXXFLAGS := -Wall -Wextra -g

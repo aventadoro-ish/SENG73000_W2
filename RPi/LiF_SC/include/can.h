@@ -109,9 +109,12 @@ public:
 
     /**
      * @brief Attempt to receive and decode a CAN message
-     * @param rx_buffer pointer to data buffer to store the received data
+     * @param rx_buffer pointer to data buffer to store the received and decoded data
+     * @param raw_msg pointer to data buffer to store the received raw data (for DB logging)
      * @return 1 if message is received and decoded, 0 if no message, -1 if error
      */
-    int rx_can_frame(RxFrame* rx_buffer);
+    int rx_can_frame(RxFrame* rx_buffer, TPCANMsg* raw_msg = nullptr);
 
+
+    unsigned int get_status();
 };
