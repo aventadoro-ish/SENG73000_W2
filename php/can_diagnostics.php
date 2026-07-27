@@ -192,6 +192,7 @@
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <title>LiF Team - Diagnostics</title>
     <meta charset="UTF-8">
@@ -207,6 +208,7 @@
     <link rel="stylesheet" href="../css/CANprotocol.css">
     <link rel="stylesheet" href="../css/diagnostics-additions.css">
 </head>
+
 <body>
     <div id="navbar-placeholder" data-root="../"></div>
     <script src="../js/navbar.js"></script>
@@ -233,7 +235,7 @@
             <hr>
 
             <?php if ($loadError): ?>
-                <p class="CANprotocol-error"><?= htmlspecialchars($loadError) ?></p>
+            <p class="CANprotocol-error"><?= htmlspecialchars($loadError) ?></p>
             <?php endif; ?>
 
             <input type="text" id="diagnosticsSearch" placeholder="Search requests...">
@@ -256,28 +258,28 @@
                     </thead>
                     <tbody>
                         <?php foreach ($elevatorRequests as $request): ?>
-                            <?php
+                        <?php
                                 $decoded = $canMessages[$request["source_controller"]] ?? $unknownMessage;
                                 $canByte = encodeCanByte($decoded, $request["requested_floor"]);
                             ?>
-                            <tr>
-                                <td><?= htmlspecialchars($request["elevator_request_id"]) ?></td>
-                                <td><?= htmlspecialchars($request["requested_floor"]) ?></td>
-                                <td><?= htmlspecialchars($decoded["can_id"]) ?></td>
-                                <td><?= htmlspecialchars($canByte["hex"]) ?></td>
-                                <td><?= htmlspecialchars($canByte["bits"]) ?></td>
-                                <td><?= htmlspecialchars($decoded["message"]) ?></td>
-                                <td><?= htmlspecialchars($decoded["transmitter"]) ?></td>
-                                <td><?= htmlspecialchars($decoded["recipient"]) ?></td>
-                                <td><?= htmlspecialchars($request["request_status"]) ?></td>
-                                <td><?= htmlspecialchars($request["requested_at"]) ?></td>
-                            </tr>
+                        <tr>
+                            <td><?= htmlspecialchars($request["elevator_request_id"]) ?></td>
+                            <td><?= htmlspecialchars($request["requested_floor"]) ?></td>
+                            <td><?= htmlspecialchars($decoded["can_id"]) ?></td>
+                            <td><?= htmlspecialchars($canByte["hex"]) ?></td>
+                            <td><?= htmlspecialchars($canByte["bits"]) ?></td>
+                            <td><?= htmlspecialchars($decoded["message"]) ?></td>
+                            <td><?= htmlspecialchars($decoded["transmitter"]) ?></td>
+                            <td><?= htmlspecialchars($decoded["recipient"]) ?></td>
+                            <td><?= htmlspecialchars($request["request_status"]) ?></td>
+                            <td><?= htmlspecialchars($request["requested_at"]) ?></td>
+                        </tr>
                         <?php endforeach; ?>
 
                         <?php if (!$elevatorRequests && !$loadError): ?>
-                            <tr>
-                                <td colspan="10">No elevator requests found.</td>
-                            </tr>
+                        <tr>
+                            <td colspan="10">No elevator requests found.</td>
+                        </tr>
                         <?php endif; ?>
                     </tbody>
                 </table>
@@ -293,7 +295,7 @@
             </p>
 
             <?php if ($detailsLoadError): ?>
-                <p class="CANprotocol-error"><?= htmlspecialchars($detailsLoadError) ?></p>
+            <p class="CANprotocol-error"><?= htmlspecialchars($detailsLoadError) ?></p>
             <?php endif; ?>
 
             <input type="text" id="requestDetailsSearch" placeholder="Search request details...">
@@ -319,27 +321,27 @@
                     </thead>
                     <tbody>
                         <?php foreach ($requestDetails as $detail): ?>
-                            <tr>
-                                <td><?= htmlspecialchars($detail["elevator_request_id"]) ?></td>
-                                <td><?= htmlspecialchars($detail["request_type"]) ?></td>
-                                <td><?= htmlspecialchars($detail["requested_floor"]) ?></td>
-                                <td><?= htmlspecialchars($detail["requested_by_user_id"] ?? "—") ?></td>
-                                <td><?= htmlspecialchars($detail["source_controller"]) ?></td>
-                                <td><?= htmlspecialchars($detail["request_status"]) ?></td>
-                                <td><?= htmlspecialchars($detail["requested_at"]) ?></td>
-                                <td><?= htmlspecialchars($detail["accepted_at"] ?? "—") ?></td>
-                                <td><?= htmlspecialchars(yesNo($detail["accepted_at"] !== null)) ?></td>
-                                <td><?= htmlspecialchars($detail["completed_at"] ?? "—") ?></td>
-                                <td><?= htmlspecialchars(yesNo($detail["completed_at"] !== null)) ?></td>
-                                <td><?= htmlspecialchars($detail["failure_reason"] ?? "—") ?></td>
-                                <td><?= htmlspecialchars(yesNo($detail["failure_reason"] !== null)) ?></td>
-                            </tr>
+                        <tr>
+                            <td><?= htmlspecialchars($detail["elevator_request_id"]) ?></td>
+                            <td><?= htmlspecialchars($detail["request_type"]) ?></td>
+                            <td><?= htmlspecialchars($detail["requested_floor"]) ?></td>
+                            <td><?= htmlspecialchars($detail["requested_by_user_id"] ?? "—") ?></td>
+                            <td><?= htmlspecialchars($detail["source_controller"]) ?></td>
+                            <td><?= htmlspecialchars($detail["request_status"]) ?></td>
+                            <td><?= htmlspecialchars($detail["requested_at"]) ?></td>
+                            <td><?= htmlspecialchars($detail["accepted_at"] ?? "—") ?></td>
+                            <td><?= htmlspecialchars(yesNo($detail["accepted_at"] !== null)) ?></td>
+                            <td><?= htmlspecialchars($detail["completed_at"] ?? "—") ?></td>
+                            <td><?= htmlspecialchars(yesNo($detail["completed_at"] !== null)) ?></td>
+                            <td><?= htmlspecialchars($detail["failure_reason"] ?? "—") ?></td>
+                            <td><?= htmlspecialchars(yesNo($detail["failure_reason"] !== null)) ?></td>
+                        </tr>
                         <?php endforeach; ?>
 
                         <?php if (!$requestDetails && !$detailsLoadError): ?>
-                            <tr>
-                                <td colspan="13">No request details found.</td>
-                            </tr>
+                        <tr>
+                            <td colspan="13">No request details found.</td>
+                        </tr>
                         <?php endif; ?>
                     </tbody>
                 </table>
@@ -356,4 +358,5 @@
 
     <script src="../js/diagnostics.js"></script>
 </body>
+
 </html>

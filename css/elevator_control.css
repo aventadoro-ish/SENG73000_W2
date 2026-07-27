@@ -273,6 +273,15 @@
   box-shadow: 0 0 14px rgba(249, 219, 121, 0.85);
 }
 
+.sabbath-toggle {
+  margin-top: 22px;
+  padding: 16px;
+  background-color: white;
+  border-left: 4px solid var(--orange);
+  border-radius: 10px;
+  box-shadow: 0 3px 10px var(--shadow);
+}
+
 .sabbath-toggle-button {
   width: 100%;
   padding: 11px 14px;

@@ -94,7 +94,7 @@ $safeUsername = htmlspecialchars($_SESSION['username'] ?? 'User', ENT_QUOTES, 'U
                 <?php endif ?>
 
                 <?php if ($_SESSION['user_role'] === 'admin'): ?>
-                <a href="can_diagnostics.php" class="member-action-card elevator-diagnostics">
+                <a href="elevator_diagnostics.php" class="member-action-card elevator-diagnostics">
                     <h3>Diagnostics</h3>
                     <p>Check Elevator Diagnostics.</p>
                 </a>

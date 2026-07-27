@@ -1,0 +1,125 @@
+/* main diagnostics page */
+
+.diagnostics-page {
+  max-width: 1500px;
+  margin: 0 auto;
+  padding: 30px 20px;
+}
+
+.diagnostics-page h1 {
+  margin-bottom: 30px;
+}
+
+.diagnostics-page section {
+  margin-bottom: 35px;
+  padding: 22px;
+
+  background-color: white;
+  border: 1px solid #d8dee6;
+  border-radius: 10px;
+
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+}
+
+.diagnostics-page section h2 {
+  margin-top: 0;
+  margin-bottom: 18px;
+}
+
+.table-scroll {
+  max-height: 520px;
+  overflow: auto;
+  border: 1px solid #ccd3dc;
+  border-radius: 7px;
+}
+
+.diagnostics-table {
+  width: 100%;
+  min-width: 1000px;
+  border-collapse: collapse;
+  background-color: white;
+}
+
+.diagnostics-table th,
+.diagnostics-table td {
+  padding: 11px 14px;
+  text-align: left;
+  vertical-align: middle;
+  white-space: nowrap;
+  border-bottom: 1px solid #e1e5ea;
+}
+
+/* keep column headings visible while scrolling */
+.diagnostics-table th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+
+  color: white;
+  background-color: #263746;
+}
+
+/* alternating row colours */
+.diagnostics-table tbody tr:nth-child(even) {
+  background-color: #f4f6f8;
+}
+
+/* highlight the row the mouse is currently over */
+.diagnostics-table tbody tr:hover {
+  background-color: #dfeaf3;
+}
+
+/* the failure reason may contain longer text, so allow it to wrap */
+.requests-table td:last-child {
+  min-width: 220px;
+  white-space: normal;
+}
+
+/* shared badge appearance */
+.diagnostic-badge {
+  display: inline-block;
+
+  min-width: 65px;
+  padding: 4px 9px;
+
+  font-size: 0.85rem;
+  font-weight: bold;
+  text-align: center;
+
+  color: #3d4650;
+  background-color: #e4e7eb;
+
+  border-radius: 20px;
+}
+
+/* request status badges */
+.diagnostic-badge[data-status="pending"] {
+  color: #765300;
+  background-color: #fff0b8;
+}
+
+.diagnostic-badge[data-status="accepted"] {
+  color: #075985;
+  background-color: #dbeafe;
+}
+
+.diagnostic-badge[data-status="completed"] {
+  color: #176534;
+  background-color: #d5f5df;
+}
+
+.diagnostic-badge[data-status="failed"] {
+  color: #9b1c1c;
+  background-color: #fde0e0;
+}
+
+/* CAN direction badges */
+.diagnostic-badge[data-direction="tx"] {
+  color: #174a7e;
+  background-color: #d9ebff;
+}
+
+.diagnostic-badge[data-direction="rx"] {
+  color: #6a3278;
+  background-color: #eeddf5;
+}

@@ -98,23 +98,23 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
             ]);
             exit;
         }
-        // convert text into 0/1 for DB state
-        $sabbathEnabled = 0;
+        // convert submitted Sabbath state into an elevator operation mode
+        $operationMode = 'normal';
 
         if($submittedSabbathState === 'enabled') {
-            $sabbathEnabled = 1;
+            $operationMode = 'sabbath';
         }
 
         try {
             $query = "
                 UPDATE elevator_state
-                SET sabbath_enabled = :sabbath_enabled
+                SET operation_mode = :operation_mode
                 WHERE state_id = 1
             ";
 
             $statement = $pdo->prepare($query);
 
-            $params = ['sabbath_enabled' => $sabbathEnabled];
+            $params = ['operation_mode' => $operationMode];
 
             $result = $statement->execute($params);
 
@@ -331,11 +331,13 @@ try {
 
 // default vused if the DB state cannot be loaded:
 $initialDoorsOpen = false;
+// additionally, default operation mode to normal until DB is queried:
+$initialOperationMode = 'normal';
 
 try {
     // read from DB to load page with the data
     $query = "
-        SELECT doors_open
+        SELECT doors_open, operation_mode
         FROM elevator_state
         WHERE state_id = 1
         LIMIT 1
@@ -347,8 +349,10 @@ try {
     $elevatorState = $statement->fetch();
 
     // maria DB returns 0 or 1 for door state, convert it into a PHP bool
+    // set the operation mode too
     if($elevatorState) {
         $initialDoorsOpen = (int) $elevatorState['doors_open'] === 1;
+        $initialOperationMode = $elevatorState['operation_mode'];
     }
 } catch (PDOException $e) {
     error_log($e->getMessage());
@@ -380,7 +384,8 @@ $safeUsername = htmlspecialchars($_SESSION['username'] ?? 'Member', ENT_QUOTES, 
     <script src="../js/navbar.js"></script>
 
     <main class="page-wrapper" id="elevatorControlPage" data-initial-floor="<?php echo $initialFloor; ?>"
-        data-initial-request-id="<?php echo $initialRequestID; ?>" data-initial-source="<?php echo $initialSource; ?>">
+        data-initial-request-id="<?php echo $initialRequestID; ?>" data-initial-source="<?php echo $initialSource; ?>"
+        data-operation-mode="<?php echo htmlspecialchars($initialOperationMode, ENT_QUOTES, 'UTF-8'); ?>">>
         <section class="intro-section elevator-control-intro" id="page_top">
 
             <div class="intro-text">
@@ -511,11 +516,16 @@ $safeUsername = htmlspecialchars($_SESSION['username'] ?? 'Member', ENT_QUOTES, 
                             <button type="button" id="doorToggleButton" class="door-toggle-button">Open Doors</button>
                         </div>
 
-                        <div class="sabbath-toggle">
+                        <div class="sabbath-toggle"
+                            data-operation-mode="<?php echo htmlspecialchars($initialOperationMode, ENT_QUOTES, 'UTF-8'); ?>">
+
                             <p class="section-label"><b>Sabbath Toggle</b></p>
 
-                            <button type="button" id="sabbathToggle" class="sabbath-toggle-button">Sabbath Mode</button>
+                            <button type="button" id="sabbathToggle" class="sabbath-toggle-button">
+                                Sabbath Mode
+                            </button>
                         </div>
+                    </div>
                 </aside>
             </div>
         </section>

@@ -17,6 +17,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const initialFloor = elevatorControlPage.dataset.initialFloor;
     const initialRequestID = elevatorControlPage.dataset.initialRequestId;
     const initialSource = elevatorControlPage.dataset.initialSource;
+    const initialOperationMode = elevatorControlPage.dataset.operationMode;
 
     // for handling the doors status and label of said status
     const doorToggleButton = document.getElementById("doorToggleButton");
@@ -27,6 +28,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // sabbath mode
     const sabbathToggle = document.getElementById("sabbathToggle");
     let sabbathEnabled = false;
+    
 
 
     // these positions match the current desktop tower layout
@@ -318,6 +320,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // update door-related elements with the data
     updateDoorDisplay(initialDoorsOpen);
+
+    // update the Sabbath toggle using the operation mode loaded by PHP
+    updateSabbathDisplay(initialOperationMode === "sabbath");
 
 
     // decide which door state should be requested
