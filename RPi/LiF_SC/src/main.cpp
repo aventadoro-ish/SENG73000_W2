@@ -123,6 +123,14 @@ int main() {
 	// return 1;
 
 
+	if (!database.db_connect) {
+		return -1;
+	}
+	
+	// Initializes the request reader and ignores existing requests.
+	db.read_floor_request();
+
+
 
 	
 	printf("\nLithium Firefly Project. Initializing SC FSM\nProgram settings\n");

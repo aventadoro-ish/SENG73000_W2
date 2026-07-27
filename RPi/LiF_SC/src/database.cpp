@@ -108,77 +108,106 @@ bool DB::db_connect()
 // use: int floorRequest = db.read_floor_request();
 int DB::read_floor_request()
 {
-    // make sure the DB connectionj exists before querying
     if (!db_connect())
     {
         return -1;
     }
 
-    // hold SQL query statement and returned rows
     sql::Statement *statement = nullptr;
     sql::ResultSet *result = nullptr;
+    sql::PreparedStatement *prepared_statement = nullptr;
 
-    // query the DB:
     try
     {
-        // create an object that can send SQL commands using con
-        statement = con->createStatement();
+        /*
+         * On the first call, remember the newest existing request.
+         * All requests up to this ID belong to a previous program run
+         * and will be ignored.
+         */
+        if (!request_reader_initialized)
+        {
+            statement = con->createStatement();
 
-        // find oldest "pending" request
-        // formatted in the same way the PHP queries are (see like any PHP for reference lol)
-        result = statement->executeQuery(
+            result = statement->executeQuery(
+                "SELECT COALESCE(MAX(elevator_request_id), 0) AS latest_id "
+                "FROM elevator_requests");
+
+            if (result->next())
+            {
+                startup_request_id = result->getInt("latest_id");
+            }
+
+            delete result;
+            result = nullptr;
+
+            delete statement;
+            statement = nullptr;
+
+            request_reader_initialized = true;
+            active_request_id = 0;
+
+            // No request is returned during initialization
+            return 0;
+        }
+
+        /*
+         * Only find requests inserted after the reader was initialized.
+         */
+        prepared_statement = con->prepareStatement(
             "SELECT elevator_request_id, requested_floor "
             "FROM elevator_requests "
             "WHERE request_status = 'pending' "
             "AND request_type = 'remote' "
+            "AND elevator_request_id > ? "
             "ORDER BY elevator_request_id ASC "
-            "LIMIT 1 ");
+            "LIMIT 1");
 
-        // check if the query returned 0 rows
-        // basically an empty table/queue case
+        prepared_statement->setInt(1, startup_request_id);
+        result = prepared_statement->executeQuery();
+
         if (!result->next())
         {
-            // no result returned to reset the request ID
             active_request_id = 0;
 
-            // remove query objects since nothing was returned
             delete result;
-            delete statement;
-
-            // return 0 for empty table/nothing to return
+            delete prepared_statement;
             return 0;
         }
 
-        // remember which row was selected
-        active_request_id = result->getInt("elevator_request_id");
+        active_request_id =
+            result->getInt("elevator_request_id");
 
-        // grab the requested floor
-        int requested_floor = result->getInt("requested_floor");
+        int requested_floor =
+            result->getInt("requested_floor");
 
-        // delete the SQL objects since the values were grabbed and stored into variables
         delete result;
-        delete statement;
+        delete prepared_statement;
 
-        // return requested_floor
         return requested_floor;
     }
     catch (sql::SQLException &error)
     {
-        // delete either object  if it was created before the error
         if (result != nullptr)
         {
             delete result;
         }
+
         if (statement != nullptr)
         {
             delete statement;
         }
 
-        // reset request_id since it was not obtained if it failed
+        if (prepared_statement != nullptr)
+        {
+            delete prepared_statement;
+        }
+
         active_request_id = 0;
 
-        // print error description
-        std::cerr << "Failed to read floor request from DB " << error.what() << std::endl;
+        std::cerr
+            << "Failed to read floor request from DB: "
+            << error.what()
+            << std::endl;
 
         return -1;
     }

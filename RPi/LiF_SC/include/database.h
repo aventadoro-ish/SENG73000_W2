@@ -23,6 +23,10 @@ class DB
     // store the ID of the most recent request read from the table
     int active_request_id = 0;
 
+    // ID of the newest request that existed when request monitoring started
+    int startup_request_id = 0;
+    bool request_reader_initialized = false;
+
 public:
     enum class Tables
     {
