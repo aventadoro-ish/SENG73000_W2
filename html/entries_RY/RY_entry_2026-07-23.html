@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<!-- Author: Rita Yevtushenko -->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>RY's Logbook - 2026-07-23</title>
+    <meta name="author" content="Rita Yevtushenko">
+    <meta name="description" content="Lithium Firefly Logbook Entry">
+    <meta name="robots" content="index, follow">
+    <link rel="icon" href="../../media/icons/LiF_icon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="../../css/base.css">
+    <link rel="stylesheet" href="../../css/logbook_entry.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css">
+    <link rel="stylesheet" href="../../css/code_formatting.css">
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['\\(', '\\)'], ['$', '$']],
+                displayMath: [['\\[', '\\]'], ['$$', '$$']]
+            },
+            svg: { fontCache: 'global' }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+</head>
+<body>
+    <div id="navbar-placeholder" data-root="../../"></div>
+    <script src="../../js/navbar.js"></script>
+
+    <main class="page-wrapper">
+        <section class="intro-section logbook-entry-intro" id="page_top">
+            <div class="intro-text">
+                <p class="section-label">Daily Logbook Entry</p>
+                <h1>Logbook Entry, 2026-07-23 by Rita Yevtushenko</h1>
+                <p class="intro-description">Diagnostics Page: Initial Build</p>
+                <div class="button-row">
+                    <a href="../logbook_MR.html" class="button secondary-button">My Logbook Cover Page</a>
+                    <a href="#log" class="button primary-button">Jump to Entry</a>
+                    <a href="RY_entry_2026-07-20.html" class="button secondary-button">Previous Entry</a>
+                    <a href="RY_entry_2026-07-24.html" class="button secondary-button">Next Entry</a>
+                </div>
+            </div>
+            <aside class="summary-card">
+                <h2>Entry Snapshot</h2>
+                <p><b>Date:</b> 2026-07-23</p>
+                <p><b>Author:</b> Rita Yevtushenko</p>
+                <p><b>Focus:</b> Diagnostics Page: Initial Build of CAN Diagnostics</p>
+            </aside>
+        </section>
+        <!-- ======================================================= -->
+        <section class="logbook-entry-intro">
+            <div>
+                <h1>Logbook Entry</h1>
+                <h2>Summary</h2>
+                <p class="logbook_summary">
+                    Received the spec for the Elevator Diagnostics Page and studied
+                    <code>elevator_diagnostics.php</code>, after Nick mentioned that php
+                    will be very similar to the diagnostics php. The new page reads
+                    <code>elevator_requests</code>, decodes each row into its CAN protocol
+                    equivalent through a lookup array, and shows the result as a
+                    searchable/paginated table, with a link out to the CAN Protocol Reference
+                    page for the users. 
+                </p>
+                <a href="../logbook_RY.html">
+                    &larr; Return to Logbook Cover Page
+                </a>
+            </div>
+        </section>
+        <!-- ======================================================= -->
+        <section class="logbook-entry-content">
+            <h2>Diagnostics Page Spec</h2>
+            <p>
+                Given the spec for the Elevator Diagnostics Page: read
+                <code>elevator_requests</code> from the database, decode each entry into its
+                CAN protocol information, and display the result as a searchable/paginated
+                table, with a link to the CAN Protocol Reference page for anyone who needs
+                the byte-level bit layouts.
+            </p>
+
+            <h2>Building elevator_diagnostics.php</h2>
+            <p>
+                Started the new page with a proper admin-only session check (following Nick's code), then a single
+                query against <code>elevator_requests</code>:
+            </p>
+            <pre><code>if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
+    header("Location: ../html/login.html");
+    exit("Please log in.");
+}
+
+if (($_SESSION['user_role'] ?? '') !== 'admin') {
+    http_response_code(403);
+    exit("Access denied; admin permissions required for this page.");
+}</code></pre>
+            <p>
+                Replaced the chained if-statements from the draft with a
+                <code>source_controller</code> &rarr; CAN message lookup array,
+                <code>$canMessages</code>, so each controller's CAN ID, transmitter,
+                recipient, and bit layout live in one place instead of being spread across
+                conditional branches:
+            </p>
+            <pre><code>$canMessages = [
+    "web_floor_station" => [
+        "can_id"      => "0x100",
+        "transmitter" => "SC",
+        "recipient"   => "EC",
+        "message"     => "Supervisor Floor Request",
+        "bit_layout"  => "en_floor",
+    ],
+    // ...additional controllers
+];</code></pre>
+
+            <h2>diagnostics.js</h2>
+            <p>
+                Wrote <code>diagnostics.js</code> in vanilla JS, with no jQuery or
+                DataTables dependency, to handle table search, column sorting, and
+                pagination entirely client-side, keeping all database access confined to
+                PHP. Those features were added by seraching similar diagnostics pages online.
+            </p>
+
+            <!-- ======================================================= -->
+            <h2>Stylesheet Review</h2>
+            <p>
+                Reviewed the existing <code>CANprotocol.css</code> and
+                <code>elevator_control.css</code> against the new markup and confirmed the
+                table classes already matched. Added a small
+                <code>diagnostics.css</code> for the elements the existing
+                stylesheets didn't cover: the search bar, pagination buttons, and error
+                banner, matching the existing color tokens and shape language.
+            </p>
+
+            <h2>Next Steps</h2>
+            <ul>
+                <li>Confirm the diagnostics page against the live database once a connection is verified.</li>
+                <li>Cross-check the SQL schema dumps against the actual live setup.</li>
+                <li>Consider adding a second table for fuller request detail.</li>
+                <li>Look into whether CAN bus traffic is being captured anywhere for future decoding.</li>
+            </ul>
+        </section>
+
+        <nav class="entry-date-nav" aria-label="Logbook date navigation">
+            <a href="RY_entry_2026-07-20.html" class="button secondary-button">Previous Entry</a>
+            <a href="RY_entry_2026-07-24.html" class="button secondary-button">Next Entry</a>
+        </nav>
+        <p class="top-link"><a href="#page_top">Go to the top of this page</a></p>
+    </main>
+
+    <footer class="site-footer">
+        <p>Copyright &copy; Rita Yevtushenko</p>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+</body>
+</html>

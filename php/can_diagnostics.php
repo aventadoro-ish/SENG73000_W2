@@ -189,6 +189,23 @@
         error_log($e->getMessage());
         $detailsLoadError = "Could not load request details right now. Please try again shortly.";
     }
+
+    $canLog = [];
+    $canLogError = '';
+ 
+    try {
+        $canLogQuery = "SELECT * FROM can_message_log ORDER BY logged_at DESC";
+ 
+        $canLogStatement = $pdo->prepare($canLogQuery);
+        $canLogStatement->execute();
+ 
+        $canLog = $canLogStatement->fetchAll(PDO::FETCH_ASSOC);
+ 
+    } catch (PDOException $e) {
+        error_log($e->getMessage());
+        $canLogError = "Could not load the CAN message log right now. Please try again shortly.";
+    }
+
 ?>
 <!DOCTYPE html>
 <html lang="en">

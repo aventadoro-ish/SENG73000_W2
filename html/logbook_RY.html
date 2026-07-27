@@ -516,7 +516,7 @@ Note: dude redoing this page literally took me like an hour cause I mostly solo'
             <article class="entry-summary">
                 <h3><a href="./entries_RY/RY_entry_2026-07-19.html">Entry 2 - 2026-07-19</a></h3>
                 <ul>
-                    <li>Updated SC code in include audio</li>
+                    <li>Updated SC code to include audio</li>
                 </ul>
             </article>
 
@@ -526,13 +526,59 @@ Note: dude redoing this page literally took me like an hour cause I mostly solo'
         <section class="week-entry-box" id="week-11">
             <div class="week-header">
                 <p class="section-label">Week 11</p>
-                <h2>Not sure yet</h2>
+                <h2>CAN Diagnostics Page</h2>
             </div>
             
             <article class="entry-summary">
                 <h3><a href="./entries_RY/RY_entry_2026-07-20.html">Entry 1 - 2026-07-20</a></h3>
                 <ul>
-                    <li>Presentation of Phase 2</li>
+                    <li>Configured the Raspberry Pi 4 to communicate with the MAX98357A I²S audio amplifier.</li>
+                    <li>Modified the firmware configuration to enable the I²S interface and verified successful hardware detection through ALSA.</li>
+                    <li>Repaired loose speaker connections and confirmed successful audio playback using test audio.</li>
+                    <li>Prepared the floor announcement audio system for future integration with the Supervisory Controller finite state machine.</li>
+                    <li>Began planning a diagnostics webpage to monitor and display CAN network information.</li>
+                </ul>
+            </article>
+
+            <article class="entry-summary">
+                <h3><a href="./entries_RY/RY_entry_2026-07-23.html">Entry 2 - 2026-07-23</a></h3>
+                <ul>
+                    <li>Received the Elevator Diagnostics Page specification and reviewed the existing PHP implementation for reference.</li>
+                    <li>Developed the initial <code>elevator_diagnostics.php</code> page to decode and display CAN request information from the database.</li>
+                    <li>Implemented administrator-only authentication and organized CAN message decoding using a lookup array.</li>
+                    <li>Created client-side search, sorting, and pagination using vanilla JavaScript.</li>
+                    <li>Added supporting CSS while maintaining consistency with the existing website design.</li>
+                </ul>
+            </article>
+
+            <article class="entry-summary">
+                <h3><a href="./entries_RY/RY_entry_2026-07-24.html">Entry 3 - 2026-07-24</a></h3>
+                <ul>
+                    <li>Verified the correct production SQL schema and investigated the database connection between the Apache VM and Raspberry Pi.</li>
+                    <li>Added computed CAN byte decoding based on the documented CAN protocol specification.</li>
+                    <li>Expanded the diagnostics page with a second table displaying detailed elevator request information.</li>
+                    <li>Refactored the JavaScript implementation to support multiple searchable and sortable diagnostics tables.</li>
+                    <li>Designed the <code>can_message_log</code> database table to support future logging of live CAN bus traffic.</li>
+                </ul>
+            </article>
+
+        </section>
+
+        <!-- Week 12-->
+        <section class="week-entry-box" id="week-12">
+            <div class="week-header">
+                <p class="section-label">Week 12</p>
+                <h2>Not sure yet</h2>
+            </div>
+
+            <article class="entry-summary">
+                <h3><a href="./entries_RY/RY_entry_2026-07-27.html">Entry 1 - 2026-07-27</a></h3>
+                <ul>
+                    <li>Continued refining the Elevator Diagnostics page using the live project database and testing environment.</li>
+                    <li>Improved the presentation of CAN protocol information and elevator request details.</li>
+                    <li>Continued developing the CAN message logging framework for future firmware integration.</li>
+                    <li>Tested and refined the PHP, MySQL, JavaScript, and CSS components supporting the diagnostics system.</li>
+                    <li>Reviewed implementation progress with the engineering team and planned the next integration tasks.</li>
                 </ul>
             </article>
 
