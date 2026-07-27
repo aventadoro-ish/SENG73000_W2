@@ -1,23 +1,26 @@
-// Involves search field and pagination for the diagnostics table
+// diagnostics.js
+// Handles search, sorting, and pagination for the diagnostics tables.
+//
+// initDiagnosticsTable() sets up one table's search/sort/pagination in
+// isolation, so the CAN translation table and the request-details table
+// below it behave independently
 
-document.addEventListener("DOMContentLoaded", function () {
-    const searchInput = document.getElementById("diagnosticsSearch");
-    const table = document.getElementById("diagnosticsTable");
-    const paginationContainer = document.getElementById("diagnosticsPagination");
-
+function initDiagnosticsTable({ tableId, searchInputId, paginationId, rowsPerPage = 10 }) {
+    const table = document.getElementById(tableId);
     if (!table) return;
 
+    const searchInput = document.getElementById(searchInputId);
+    const paginationContainer = document.getElementById(paginationId);
     const tbody = table.querySelector("tbody");
     const headers = table.querySelectorAll("thead th");
 
-    const ROWS_PER_PAGE = 10;
     let currentPage = 1;
     let sortColumn = null;
     let sortAscending = true;
 
     // Cache the original row elements once, so search/sort/pagination
     // all work off the same in-memory list instead of re-reading the DOM.
-    let allRows = Array.from(tbody.querySelectorAll("tr"));
+    const allRows = Array.from(tbody.querySelectorAll("tr"));
 
     function getFilteredRows() {
         const filter = (searchInput?.value || "").toUpperCase().trim();
@@ -32,7 +35,7 @@ document.addEventListener("DOMContentLoaded", function () {
     function sortRows(rows) {
         if (sortColumn === null) return rows;
 
-        const sorted = [...rows].sort((a, b) => {
+        return [...rows].sort((a, b) => {
             const aText = a.children[sortColumn].textContent.trim();
             const bText = b.children[sortColumn].textContent.trim();
 
@@ -40,33 +43,25 @@ document.addEventListener("DOMContentLoaded", function () {
             const bNum = parseFloat(bText);
             const bothNumeric = !isNaN(aNum) && !isNaN(bNum);
 
-            let result;
-            if (bothNumeric) {
-                result = aNum - bNum;
-            } else {
-                result = aText.localeCompare(bText);
-            }
-
+            const result = bothNumeric ? aNum - bNum : aText.localeCompare(bText);
             return sortAscending ? result : -result;
         });
-
-        return sorted;
     }
 
     function renderPage() {
         const filtered = sortRows(getFilteredRows());
-        const totalPages = Math.max(1, Math.ceil(filtered.length / ROWS_PER_PAGE));
+        const totalPages = Math.max(1, Math.ceil(filtered.length / rowsPerPage));
         currentPage = Math.min(currentPage, totalPages);
 
-        const start = (currentPage - 1) * ROWS_PER_PAGE;
-        const pageRows = filtered.slice(start, start + ROWS_PER_PAGE);
+        const start = (currentPage - 1) * rowsPerPage;
+        const pageRows = filtered.slice(start, start + rowsPerPage);
 
         tbody.innerHTML = "";
         if (pageRows.length === 0) {
             const emptyRow = document.createElement("tr");
             const cell = document.createElement("td");
             cell.colSpan = headers.length;
-            cell.textContent = "No matching requests.";
+            cell.textContent = "No matching rows.";
             emptyRow.appendChild(cell);
             tbody.appendChild(emptyRow);
         } else {
@@ -106,7 +101,6 @@ document.addEventListener("DOMContentLoaded", function () {
         paginationContainer.appendChild(nextBtn);
     }
 
-    // Search box: re-render on every keystroke, reset to page 1
     if (searchInput) {
         searchInput.addEventListener("input", () => {
             currentPage = 1;
@@ -114,7 +108,6 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // Click a header to sort by that column; click again to reverse
     headers.forEach((header, index) => {
         header.style.cursor = "pointer";
         header.addEventListener("click", () => {
@@ -129,4 +122,18 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     renderPage();
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+    initDiagnosticsTable({
+        tableId: "diagnosticsTable",
+        searchInputId: "diagnosticsSearch",
+        paginationId: "diagnosticsPagination",
+    });
+
+    initDiagnosticsTable({
+        tableId: "requestDetailsTable",
+        searchInputId: "requestDetailsSearch",
+        paginationId: "requestDetailsPagination",
+    });
 });
