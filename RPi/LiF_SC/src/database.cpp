@@ -286,19 +286,19 @@ int DB::log_can_message(int id, int *data, uint8_t length)
         direction = "rx";
         sourceController = "CC";
     }
-    else if (id == 0x201)
+    else if (id == 0x301)
     {
         canIDText = "0x201";
         direction = "rx";
         sourceController = "F1";
     }
-    else if (id == 0x202)
+    else if (id == 0x302)
     {
         canIDText = "0x202";
         direction = "rx";
         sourceController = "F2";
     }
-    else if (id == 0x203)
+    else if (id == 0x303)
     {
         canIDText = "0x203";
         direction = "rx";
