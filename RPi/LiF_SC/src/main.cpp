@@ -397,6 +397,27 @@ void FSM_maintenance_mode() {
 		floor_requests_from_DB[current_floor-1] = false;
 		database.complete_elevator_request();
 	}
+
+
+	DB::OperationMode new_db_op_mode = database.get_operation_mode();
+	switch (new_db_op_mode) {
+	case DB::OperationMode::NORMAL:
+		std::cout << "Mode transition: Maintenance -> Normal" << std::endl;
+		state = is_car_moving ? SC_State::MOVING : SC_State::IDLE;
+		break;
+	case DB::OperationMode::SABBATH:
+		std::cout << "Mode transition: Maintenance -> Maintenance" << std::endl;
+		state = is_car_moving ? SC_State::SABBATH_MOVING : SC_State::SABBATH_IDLE;
+		break;
+		case DB::OperationMode::MAINTENANCE:
+		// do nothing
+		break;
+	case DB::OperationMode::FAULT:
+		std::cout << "Mode transition: Maintenance -> Fault" << std::endl;
+		state = SC_State::FAULT;
+	default:
+		break;
+	}
 }	
 
 void FSM_initialize() {
@@ -548,11 +569,15 @@ void process_CAN_Fx_msg(CAN::RxFrame rxMsg) {
 	}
 
 	if (rxMsg.data.fx_request.is_requested) {
-		Request rq;
-		rq.dir = RequestDir::UP;	// TODO: fix when new CAN format is implemented
-		rq.floor = floor_num;
-		rq.type = RequestType::FLOOR;
-		scheduler.add_request(rq);
+		if ((state == SC_State::IDLE) ||
+	        (state == SC_State::MOVING)) {
+
+			Request rq;
+			rq.dir = RequestDir::UP;	// TODO: fix when new CAN format is implemented
+			rq.floor = floor_num;
+			rq.type = RequestType::FLOOR;
+			scheduler.add_request(rq);
+		}
 	}
 
 }
