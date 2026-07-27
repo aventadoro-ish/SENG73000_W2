@@ -122,6 +122,10 @@ int main() {
 	// }
 	// return 1;
 
+	for (int i = 0; i < (int) NUM_FLOORS; i++) {
+		floor_requests_from_DB[i] = 0;
+	}
+
 
 
 	
@@ -182,6 +186,9 @@ void FSM_normal_mode() {
 		if (!is_car_moving) {
 			time_move_finish = current_time();
 			state = SC_State::IDLE;
+			if (floor_requests_from_DB[current_floor-1]) {
+				database.complete_elevator_request();
+			}
 		}
 	}
 
@@ -189,11 +196,21 @@ void FSM_normal_mode() {
 	// handle remote requests
 	int db_request = database.read_floor_request();
 	if (db_request > 0) {
-		Request rq;
-		rq.dir = RequestDir::NA;
-		rq.floor = db_request;
-		rq.type = RequestType::WEBSITE;
-		scheduler.add_request(rq);
+		std::cout << "DB request to floor " << db_request << " ";
+		if (current_floor == db_request) {
+			std::cout << "already completed" << std::endl;
+			// already at the requested floor 
+			database.complete_elevator_request();
+		} else {
+			std::cout << "added to scheduler" << std::endl;
+			Request rq;
+			rq.dir = RequestDir::NA;
+			rq.floor = db_request;
+			rq.type = RequestType::CAR;
+			scheduler.add_request(rq);
+			floor_requests_from_DB[db_request-1] = true;
+
+		}
 	}
 	
 	// check for new target floor
@@ -227,12 +244,15 @@ void FSM_normal_mode() {
 		// do nothing
 		break;
 	case DB::OperationMode::SABBATH:
+		std::cout << "Mode transition: Normal -> Sabbath" << std::endl;
 		state = is_car_moving ? SC_State::SABBATH_MOVING : SC_State::SABBATH_IDLE;
 		break;
 	case DB::OperationMode::MAINTENANCE:
+		std::cout << "Mode transition: Normal -> Maintenance" << std::endl;
 		state = is_car_moving ? SC_State::MAINTENANCE_MOVING : SC_State::MAINTENANCE;
 		break;
 	case DB::OperationMode::FAULT:
+		std::cout << "Mode transition: Normal -> Fault" << std::endl;
 		state = SC_State::FAULT;
 	default:
 		break;
@@ -294,15 +314,18 @@ void FSM_sabbath_mode() {
 	DB::OperationMode new_db_op_mode = database.get_operation_mode();
 	switch (new_db_op_mode) {
 	case DB::OperationMode::NORMAL:
+		std::cout << "Mode transition: Sabbath -> Normal" << std::endl;
 		state = is_car_moving ? SC_State::MOVING : SC_State::IDLE;
 		break;
 	case DB::OperationMode::SABBATH:
 		// do nothing
 		break;
 	case DB::OperationMode::MAINTENANCE:
+		std::cout << "Mode transition: Sabbath -> Maintenance" << std::endl;
 		state = is_car_moving ? SC_State::MAINTENANCE_MOVING : SC_State::MAINTENANCE;
 		break;
 	case DB::OperationMode::FAULT:
+		std::cout << "Mode transition: Sabbath -> Fault" << std::endl;
 		state = SC_State::FAULT;
 	default:
 		break;
@@ -435,6 +458,11 @@ void process_CAN_msg() {
 
 void process_CAN_CC_msg(CAN::RxFrame rxMsg) {
 	is_CC_door_open = rxMsg.data.cc_request.is_door_open;
+	if (is_CC_door_open && database.get_doors_open() != 1) {
+		database.set_doors_open(true);
+	} else if (!is_CC_door_open && database.get_doors_open() != 0) {
+		database.set_doors_open(false);
+	}
 	
 	// only add floor requests in normal operation mode
 	if ((state == SC_State::IDLE) || (state == SC_State::MOVING)) {
