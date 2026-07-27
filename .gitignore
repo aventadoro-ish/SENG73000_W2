@@ -14,6 +14,7 @@ embedded/LiF_EC/.vscode/launch.json
 RPi/LiF_SC/obj/*
 RPi/LiF_SC/main
 
+RPi/LiF_SC/LiF_SC
 
 # SSH credentials must never be stored in this repository
 *.pem

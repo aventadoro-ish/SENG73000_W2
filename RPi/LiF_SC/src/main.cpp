@@ -146,12 +146,12 @@ int main() {
 	}
 
 
-	if (!database.db_connect) {
+	if (!database.db_connect()) {
 		return -1;
 	}
 	
 	// Initializes the request reader and ignores existing requests.
-	db.read_floor_request();
+	database.read_floor_request();
 
 	// Remember the initial database door state without treating it as
 	// a new command.
