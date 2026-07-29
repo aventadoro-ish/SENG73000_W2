@@ -48,9 +48,9 @@
 #define SC_ID				0x100		// Supervisor Controller; R-Pi
 #define EC_ID				0x101		// Elevator Controller; arduino
 #define CC_ID				0x200		// Cab Controller; STM32
-#define F1_ID				0x201		// Floor 1 controller; STM32
-#define F2_ID				0x202		// Floor 2 controller; STM32
-#define F3_ID				0x203		// Floor 3 controller; STM32
+#define F1_ID				0x301		// Floor 1 controller; STM32
+#define F2_ID				0x302		// Floor 2 controller; STM32
+#define F3_ID				0x303		// Floor 3 controller; STM32
 
 // variable names for each floor
 #define CAB_MOVING			0			// no floor; used for Cab
