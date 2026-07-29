@@ -187,7 +187,6 @@ int main() {
 				FSM_maintenance_mode();
 				break;
 			default:
-
 				break;
 		}
 
