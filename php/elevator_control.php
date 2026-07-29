@@ -9,7 +9,8 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
     exit;
 }
 
-// re turn the latest physical elevator state to JS by querying CAN DB
+// re turn the latest physical elevator state to JS by polling the CAN DB - WIP; pushed to phase 3
+/*
 if ($_SERVER['REQUEST_METHOD'] === 'GET' && ($_GET['request_action'] ?? '') === 'status') {
     header('Content-Type: application/json');
     header('Cache-Control: no-store');
@@ -69,7 +70,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && ($_GET['request_action'] ?? '') === 
             'position_available' => $positionAvailable,
             'current_floor' => $currentFloor,
             'doors_open' => (int) $elevatorState['doors_open'] === 1,
-            'operation_mode' => $elevatoreState['operation_mode']    
+            'operation_mode' => $elevatorState['operation_mode']    
         ]);
 
     } catch (PDOException $e) {
@@ -80,32 +81,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && ($_GET['request_action'] ?? '') === 
             'message' =>  'elevator status could not be loaded at this time.'
         ]);
     }
-
-
-
-
-
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+*/
 // elevator_control JS sends a POST request when an elevator button is pressed
 // read it here
 if($_SERVER['REQUEST_METHOD'] === 'POST') {

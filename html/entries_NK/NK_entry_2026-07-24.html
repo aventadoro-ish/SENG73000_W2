@@ -1,0 +1,347 @@
+<!doctype html>
+<!--
+Author: Nick Kapuka
+-->
+
+<html lang="en">
+  <head>
+    <title>Logbook Entry, 2026-07-24 by Nick Kapuka</title>
+    <meta charset="UTF-8" />
+    <meta name="author" content="Nick Kapuka" />
+    <meta name="description" content="Created the first Raspberry Pi C++/MariaDB helper functions and redesigned elevator_state so one operation_mode field represents normal, Sabbath, maintenance, or fault operation." />
+    <meta name="robots" content="index, follow" />
+    <meta http-equiv="Pragma" content="no-cache" />
+
+    <link rel="icon" href="../../media/icons/LiF_icon.ico" type="image/x-icon" />
+
+    <!-- Shared website styling -->
+    <link rel="stylesheet" href="../../css/base.css" />
+
+    <!-- Logbook entry page styling -->
+    <link rel="stylesheet" href="../../css/logbook_entry.css" />
+
+    <!-- Prism syntax highlighting theme -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css"
+    />
+    <link rel="stylesheet" href="../../css/code_formatting.css" />
+  </head>
+
+  <body>
+    <!-- Nav bar loaded by JavaScript -->
+    <div id="navbar-placeholder" data-root="../../"></div>
+    <script src="../../js/navbar.js"></script>
+
+    <main class="page-wrapper">
+      <section class="intro-section logbook-entry-intro" id="page_top">
+        <div class="intro-text">
+          <p class="section-label">Daily Logbook Entry</p>
+          <h1>Logbook Entry, 2026-07-24 by Nick Kapuka</h1>
+
+          <p class="intro-description">Created the first Raspberry Pi C++/MariaDB helper functions and redesigned elevator_state so one operation_mode field represents normal, Sabbath, maintenance, or fault operation.</p>
+
+          <div class="button-row">
+            <a href="../logbook_NK.html" class="button secondary-button">
+              My Logbook Cover Page
+            </a>
+            <a href="#log" class="button primary-button">Jump to Entry</a>
+          </div>
+        </div>
+
+        <aside class="summary-card">
+          <h2>Entry Snapshot</h2>
+          <p><b>Date:</b> 2026-07-24</p>
+          <p><b>Author:</b> Nick Kapuka</p>
+          <p><b>Focus:</b> C++ database connector, MariaDB, Raspberry Pi, and elevator operation modes</p>
+          <p><b>Tags:</b> #LiF #CPlusPlus #MariaDB #RaspberryPi #Database</p>
+        </aside>
+      </section>
+
+      <section class="logbook-entry-content" id="log">
+        <h2 id="entry-overview">Entry overview</h2>
+        <p>Created the first Raspberry Pi C++/MariaDB helper functions and redesigned elevator_state so one operation_mode field represents normal, Sabbath, maintenance, or fault operation.</p>
+
+        <h3 id="key-details">Key details</h3>
+        <ul class="clean-list">
+          <li><strong>Purpose:</strong> Begin the supervisor-controller database interface and align the database state design with the C++ OperationMode enum.</li>
+          <li><strong>Components:</strong> C++ database connector, MariaDB, Raspberry Pi, and elevator operation modes</li>
+          <li><strong>Result:</strong> Created db_connect() and get_operation_mode(), then replaced the old sabbath_enabled field with a constrained operation_mode value.</li>
+          <li><strong>Team contribution:</strong> Nick Kapuka</li>
+        </ul>
+      </section>
+
+      <section class="logbook-entry-content">
+<h2 id="c-handling-of-databases">C++ handling of databases</h2>
+<h3 id="starting-point">starting point</h3>
+<p>MR provided me with two files, database.cpp and database.h to create various database helper functions he can use in main.cpp.</p>
+<h3 id="the-plan">the plan</h3>
+<p>I thought of the various functions I'd need on-top of the provided ones.</p>
+<pre class="code-block language-text"><code class="language-text">db_connect()  --&gt; connect to the DB
+get_operation_mode() --&gt; sabbath mode, normal operation, etc.
+set_operation_mode() --&gt; sabbath mode, normal operation, etc.
+set_doors_open() --&gt; update doors status (opened/closed)
+read_floor_request() --&gt; read an incoming floor request from website
+complete_elevator_request() --&gt; mark a request as completed in the DB
+log_elevator_request() --&gt; log a manual request into the DB
+accept_elevator_request() --&gt; accept an elevator request (prepared to move elev.)
+fail_elevator_request() --&gt; provide a failure reason in the DB
+log_can_message() --&gt; log ALL CAN traffic into this DB</code></pre>
+<h3 id="the-process">The Process:</h3>
+<p>I looked over Michael's databaseFunctions.cpp to understand how querying the database worked in C++ and my god is it awful. Everytime I have to touch this language I get more suicidal... Whatever though, we ball on.</p>
+<p>Firstly, I had to include this ugly block of helper libraries that Michael used</p>
+<pre class="code-block language-cpp"><code class="language-cpp">#include &lt;mysql_connection.h&gt;
+#include &lt;cppconn/driver.h&gt;
+#include &lt;cppconn/exception.h&gt;
+#include &lt;cppconn/resultset.h&gt;
+#include &lt;cppconn/statement.h&gt;
+#include &lt;cppconn/prepared_statement.h&gt;</code></pre>
+<p>From there, I created a private variable called con to keep track of the database connection. That way, a single function call can connect to the DB/check its status rather than repeating lines of code everytime. It was done as such:</p>
+<pre class="code-block language-cpp"><code class="language-cpp">class DB {
+    // stores shared DB connection used by DB object
+    // not defined yet so nullptr
+    sql::Connection* con = nullptr;
+    
+    // rest of code
+}</code></pre>
+<h4 id="db_connect">db_connect</h4>
+<p>From there, I used MR's note on what functions he wanted. The first one I made was db_connect() since that was the most logical approach - actually be able to connect/query the DB before writing functions that query it.</p>
+<pre class="code-block language-cpp"><code class="language-cpp">// attempts to establish DB connection (try-catch)
+// returns true if exists or active, false if failed
+bool DB::db_connect() {
+    // if a connection already exists to the DB do not connect to it again
+    if(con != nullptr &amp;&amp; !con-&gt;isClosed()) { return true;}
+    
+    // in case con is old, delete and replace (cleanup before trying)
+    if (con != nullptr) {
+        delete con;
+        con = nullptr;
+    }
+
+    // try to open the SQL connection
+    try {
+        // obtain the SQL driver
+        // similar to original code
+        sql::Driver* driver = get_driver_instance();
+
+        // connect to MariaDB
+        con = driver-&gt;connect(&quot;tcp://127.0.0.1:3306&quot;, &quot;LiF_Admin&quot;, &quot;LiF_ESE&quot;);
+
+        // select the lif_elevator database to use
+        con-&gt;setSchema(&quot;lif_elevator&quot;);
+
+        // if everything works up until this point, no errors occured so return true
+        return true;
+    } catch (sql::SQLException&amp; error) {
+        // display the issue the SQL returned
+        // error.what() apparently formats it to be human-readable and asks the exception for its description
+        std::cerr &lt;&lt; &quot;Database connection failed: &quot; &lt;&lt; error.what() &lt;&lt; std::endl;
+
+        // remove any partially created or unusable connection if it failed (cleanup)
+        if (con != nullptr) {
+            delete con;
+            con = nullptr;
+        }
+
+        // return false since the connection attempt failed
+        return false;
+    }
+}</code></pre>
+<p>The function isn't overly complicated but my god does C++ syntax suck.</p>
+<p>The comments explain it pretty well.</p>
+<ol class="clean-list">
+<li>check if the connection exists</li>
+<li>in case con exists but had issues, delete it and reset it</li>
+<li>try to form the connection
+<ol class="clean-list">
+<li>make a driver pointer using the <code>get_driver_instance()</code> function - same one Michael uses</li>
+<li>try to connect to the localhost connection with a defined port using the LiF_Admin account</li>
+<li>set the schema being used to <code>lif_elevator</code></li>
+<li>return true if all went well</li>
+</ol></li>
+<li>catch any exceptions/errors
+<ol class="clean-list">
+<li>print the error and what it was</li>
+<li>if the connection exists delete and reset it</li>
+<li>return false for db connection fail</li>
+</ol></li>
+</ol>
+<h4 id="get_operation_mode">get_operation_mode</h4>
+<p>From there, I made another function that grabs the operation_state. See the related SQL note/update below in <a href="#updating-elevator_state-table">Updating elevator_state table</a></p>
+<p>The function was implemented as such:</p>
+<pre class="code-block language-cpp"><code class="language-cpp">// function that grabs the current operation mode from the database
+DB::OperationMode DB::get_operation_mode() {
+    // make sure the DB connection exists before querying
+    if(!db_connect()) { 
+        return OperationMode::UNKNOWN;
+    }
+
+    // hold the SQL query statement and relevant pointers
+    sql::Statement* statement = nullptr;
+    sql::ResultSet* result = nullptr;
+
+    // query the DB:
+    try {
+        statement = con-&gt;createStatement();
+
+        result = statement-&gt;executeQuery(
+            &quot;SELECT operation_mode &quot;
+            &quot;FROM elevator_state &quot;
+            &quot;WHERE state_id = 1 &quot;
+            &quot;LIMIT 1 &quot;
+        );
+
+        // check if the query returned 0 rows
+        // basically an empty table/queue case
+        if(!result-&gt;next()) {
+
+            // remove query objects since nothing was returned
+            delete result;
+            delete statement;
+
+            // return UNKNOWN for unknown value/fail
+            return OperationMode::UNKNOWN;
+        }
+
+        // grab the operation_mode
+        std::string operationMode = result-&gt;getString(&quot;operation_mode&quot;);
+
+        // obtained the mode from the line above, cleanup objects
+        delete result;
+        delete statement;
+
+        // map the returned operation_mode into the enum class
+        if(operationMode == &quot;normal&quot;)
+        {
+            return OperationMode::NORMAL;
+        } 
+        else if (operationMode == &quot;sabbath&quot;)
+        {
+            return OperationMode::SABBATH;
+        } 
+        else if (operationMode == &quot;maintenance&quot;)
+        {
+            return OperationMode::MAINTENANCE;
+        } 
+        else if (operationMode == &quot;fault&quot;) 
+        {
+            return OperationMode::FAULT;
+        }
+
+        return OperationMode::UNKNOWN;
+
+
+    } catch (sql::SQLException&amp; error) {
+        // delete either object if it was created
+        if (result != nullptr) {
+            delete result;
+        }
+        if (statement != nullptr) {
+            delete statement;
+        }
+
+        // print error description
+        std::cerr &lt;&lt; &quot;Failed to read operation_mode from DB&quot; &lt;&lt; error.what() &lt;&lt; std::endl;
+
+        return OperationMode::UNKNOWN;
+    }
+}</code></pre>
+<p>Since this function is of type OperationMode (which is an enum defined as)</p>
+<pre class="code-block language-cpp"><code class="language-cpp">    enum class OperationMode {
+        NORMAL,
+        SABBATH,
+        MAINTENANCE,
+        FAULT,
+        UNKNOWN
+    };</code></pre>
+<p>The return statements must be returned as such too.</p>
+<p>The process goes: 1) check if the DB is connected 2) create pointers for DB access 3) try to query the DB 1) select from operation_mode table and pull the elevator_state 1) if the query returned nothing delete pointers and return known state 2) if everything went w ell, grab the operation_mode using getString 3) delete pointers since they're not longer needed 4) map the read state from DB into if statements and return the appropriate OperationMode 4) If querying fails, catch it, delete pointers, and print an error message</p>
+      </section>
+
+      <section class="logbook-entry-content">
+<h2 id="updating-elevator_state-table">Updating elevator_state table</h2>
+<p>After consulting MR about it and looking at the C++ code he gave me, we kind of concluded that it would be smarter to modify the existing elevator_state table. The old one was:</p>
+<pre class="code-block language-sql"><code class="language-sql">MariaDB [lif_elevator]&gt; desc elevator_state;
++-----------------+---------------------+------+-----+---------------------+-------------------------------+
+| Field           | Type                | Null | Key | Default             | Extra                         |
++-----------------+---------------------+------+-----+---------------------+-------------------------------+
+| state_id        | tinyint(3) unsigned | NO   | PRI | NULL                |                               |
+| doors_open      | tinyint(1)          | NO   |     | 0                   |                               |
+| sabbath_enabled | tinyint(1)          | NO   |     | 0                   |                               |
+| updated_at      | datetime            | NO   |     | current_timestamp() | on update current_timestamp() |
++-----------------+---------------------+------+-----+---------------------+-------------------------------+</code></pre>
+<p>Here, <code>sabbath_enabled</code> was it's own column, so following the Enum that MR made:</p>
+<pre class="code-block language-cpp"><code class="language-cpp">enum class OperationMode {
+        NORMAL,
+        SABBATH,
+        MAINTENANCE,
+        FAULT
+    };</code></pre>
+<p>Storing normal operation, maintenance mode, or faulted in their own columns within the SQL would be a poor decision. This can create issues later where multiple states are triggered at once.</p>
+<p>Because of this, it would be smarter and better to change the existing <code>sabbath_enabled</code> into <code>operation_modes</code> with pre-existing constraints of these states.</p>
+<p>It's important to note, that the PHP and JS that handles sabbath_enabled on the website <strong>will have to be changed later!!!</strong></p>
+<p>Continuing with modifying the table, the following SQL command can be ran to make the change:</p>
+<pre class="code-block language-sql"><code class="language-sql">MariaDB [(none)]&gt; use lif_elevator;
+Database changed
+MariaDB [lif_elevator]&gt; ALTER TABLE elevator_state CHANGE COLUMN sabbath_enabled operation_mode VARCHAR(20) NOT NULL DEFAULT &#39;normal&#39;;
+Query OK, 1 row affected (0.058 sec)               
+Records: 1  Duplicates: 0  Warnings: 0</code></pre>
+<p>This alters the table and changes the column, but the values that existed in it prior will become literals. Since <code>sabbath_enabled</code> was a tinyint, the 1 that it held will not be stored as "1". This can be seen below:</p>
+<pre class="code-block language-sql"><code class="language-sql">MariaDB [lif_elevator]&gt; select * from elevator_state;
++----------+------------+----------------+---------------------+
+| state_id | doors_open | operation_mode | updated_at          |
++----------+------------+----------------+---------------------+
+|        1 |          0 | 1              | 2026-07-24 18:12:55 |
++----------+------------+----------------+---------------------+
+1 row in set (0.001 sec)</code></pre>
+<p>So the table will have to be updated to hold the proper default value - 'normal'</p>
+<pre class="code-block language-sql"><code class="language-sql">MariaDB [lif_elevator]&gt; UPDATE elevator_state SET operation_mode = CASE WHEN operation_mode = &#39;1&#39; THEN &#39;sabbath&#39; ELSE &#39;normal&#39; END;
+Query OK, 1 row affected (0.007 sec)</code></pre>
+<p>Additionally, let's add constraints to the table itself so it cannot suddenly become a "banana" state lol:</p>
+<pre class="code-block language-sql"><code class="language-sql">MariaDB [lif_elevator]&gt; ALTER TABLE elevator_state
+    -&gt; ADD CONSTRAINT chk_operation_mode
+    -&gt; CHECK (operation_mode IN (
+    -&gt; &#39;normal&#39;,
+    -&gt; &#39;sabbath&#39;,
+    -&gt; &#39;maintenance&#39;,
+    -&gt; &#39;fault&#39;
+    -&gt; )
+    -&gt; );
+Query OK, 1 row affected (0.027 sec)               
+Records: 1  Duplicates: 0  Warnings: 0</code></pre>
+<p>Reading the table,</p>
+<pre class="code-block language-sql"><code class="language-sql">
+MariaDB [lif_elevator]&gt; select * from elevator_state;
++----------+------------+----------------+---------------------+
+| state_id | doors_open | operation_mode | updated_at          |
++----------+------------+----------------+---------------------+
+|        1 |          0 | sabbath        | 2026-07-24 18:49:57 |
++----------+------------+----------------+---------------------+</code></pre>
+<p>But it is still in sabbath mode from before. I'll force-change this for now to keep it 'clean':</p>
+<pre class="code-block language-sql"><code class="language-sql">MariaDB [lif_elevator]&gt; UPDATE elevator_state SET operation_mode = &#39;normal&#39; WHERE state_id = 1;
+Query OK, 1 row affected (0.006 sec)</code></pre>
+<p>Then,</p>
+<pre class="code-block language-sql"><code class="language-sql">MariaDB [lif_elevator]&gt; select * from elevator_state;
++----------+------------+----------------+---------------------+
+| state_id | doors_open | operation_mode | updated_at          |
++----------+------------+----------------+---------------------+
+|        1 |          0 | normal         | 2026-07-24 18:55:08 |
++----------+------------+----------------+---------------------+
+1 row in set (0.001 sec)</code></pre>
+<p>Perfect!</p>
+      </section>
+
+      <p class="top-link">
+        <a href="#page_top">Go to the top of this page</a>
+      </p>
+    </main>
+
+    <footer class="site-footer">
+      <p>Copyright &copy; Nick Kapuka</p>
+    </footer>
+
+    <!-- Prism.js scripts for code formatting -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+  </body>
+</html>

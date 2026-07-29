@@ -1,0 +1,2255 @@
+<!doctype html>
+<!--
+Author: Nick Kapuka
+-->
+
+<html lang="en">
+  <head>
+    <title>Phase 2 Final Logbook Entry, 2026-07-27 by Nick Kapuka</title>
+    <meta charset="UTF-8" />
+    <meta name="author" content="Nick Kapuka" />
+    <meta name="description" content="Connected the Raspberry Pi supervisor, MariaDB database, CAN network, protected elevator controls, and rebuilt diagnostics page into one end-to-end Phase 2 system." />
+    <meta name="robots" content="index, follow" />
+    <meta http-equiv="Pragma" content="no-cache" />
+
+    <link rel="icon" href="../../media/icons/LiF_icon.ico" type="image/x-icon" />
+
+    <!-- Shared website styling -->
+    <link rel="stylesheet" href="../../css/base.css" />
+
+    <!-- Logbook entry page styling -->
+    <link rel="stylesheet" href="../../css/logbook_entry.css" />
+
+    <!-- Prism syntax highlighting theme -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css"
+    />
+    <link rel="stylesheet" href="../../css/code_formatting.css" />
+  </head>
+
+  <body>
+    <!-- Nav bar loaded by JavaScript -->
+    <div id="navbar-placeholder" data-root="../../"></div>
+    <script src="../../js/navbar.js"></script>
+
+    <main class="page-wrapper">
+      <section class="intro-section logbook-entry-intro" id="page_top">
+        <div class="intro-text">
+          <p class="section-label">Daily Logbook Entry</p>
+          <h1>Phase 2 Final Logbook Entry, 2026-07-27 by Nick Kapuka</h1>
+
+          <p class="intro-description">Connected the Raspberry Pi supervisor, MariaDB database, CAN network, protected elevator controls, and rebuilt diagnostics page into one end-to-end Phase 2 system.</p>
+
+          <div class="button-row">
+            <a href="../logbook_NK.html" class="button secondary-button">
+              My Logbook Cover Page
+            </a>
+            <a href="#log" class="button primary-button">Jump to Entry</a>
+          </div>
+        </div>
+
+        <aside class="summary-card">
+          <h2>Entry Snapshot</h2>
+          <p><b>Date:</b> 2026-07-27</p>
+          <p><b>Author:</b> Nick Kapuka</p>
+          <p><b>Focus:</b> C++, MariaDB, CAN logging, PHP, JavaScript, diagnostics, and Raspberry Pi deployment</p>
+          <p><b>Tags:</b> #LiF #CPlusPlus #MariaDB #CAN #PHP #JavaScript #CSS #RaspberryPi #Diagnostics</p>
+        </aside>
+      </section>
+
+      <section class="logbook-entry-content" id="log">
+        <h2 id="entry-overview">Entry overview</h2>
+        <p>Connected the Raspberry Pi supervisor, MariaDB database, CAN network, protected elevator controls, and rebuilt diagnostics page into one end-to-end Phase 2 system.</p>
+
+        <h3 id="key-details">Key details</h3>
+        <ul class="clean-list">
+          <li><strong>Purpose:</strong> Consolidate and complete the website-to-database-to-CAN workflow for the Phase 2 project conclusion.</li>
+          <li><strong>Components:</strong> C++, MariaDB, CAN logging, PHP, JavaScript, diagnostics, and Raspberry Pi deployment</li>
+          <li><strong>Result:</strong> Completed the database connector, CAN logger, diagnostic tables, filters and pagination, operating-mode controls, and Pi deployment troubleshooting.</li>
+          <li><strong>Team contribution:</strong> Nick Kapuka</li>
+        </ul>
+      </section>
+
+      <section class="logbook-entry-content">
+<h2 id="main-task-or-topic">Main task or topic</h2>
+<p>The main goal across July 24th to 27th was to finish connecting the Raspberry Pi supervisor controller, MariaDB database, CAN network, and protected website pages all together as part of the phase 2 conclusion. This required finishing the C++ database connector, adding raw CAN-message logging, rebuilding the diagnostics page, updating the PHP/JavaScript elevator controls, and fixing differences between the local Windows database and the database on the Raspberry Pi.</p>
+<p>This entry also consolidates the work from the earlier parts of the same development thread because much of the code written during these few days depended directly on the C++, SQL, PHP, JavaScript, HTML, and CSS created beforehand.</p>
+      </section>
+
+      <section class="logbook-entry-content">
+<h2 id="project-architecture-and-intended-data-flow">Project architecture and intended data flow</h2>
+<p>The Raspberry Pi has two major roles:</p>
+<ol class="clean-list">
+<li>It hosts the Apache/PHP website and MariaDB database.</li>
+<li>It acts as the supervisor controller (<code>SC</code>) on the elevator CAN network.</li>
+</ol>
+<p>The intended complete flow is:</p>
+<pre class="mermaid">flowchart TD
+    A[&quot;Website control button&quot;] --&gt; B[&quot;PHP validates request&quot;]
+    B --&gt; C[&quot;MariaDB elevator_requests&quot;]
+    C --&gt; D[&quot;Raspberry Pi C++ supervisor&quot;]
+    D --&gt; E[&quot;CAN request from SC&quot;]
+    E --&gt; F[&quot;Elevator Controller&quot;]
+    F --&gt; G[&quot;CAN position response&quot;]
+    G --&gt; D
+    D --&gt; H[&quot;Update request and CAN logs&quot;]
+    H --&gt; I[&quot;Diagnostics page&quot;]</pre>
+<p>The website does <strong>not</strong> talk directly to the CAN adapter. Website requests are written into MariaDB first. The C++ supervisor then reads the oldest pending remote request, sends the correct CAN message, waits for the elevator controller to confirm the new position, and marks the database request as completed.</p>
+<p>Manual requests from the STM32 car/floor controllers follow the opposite direction. The Raspberry Pi receives the CAN frame, logs the raw frame, interprets the source, and creates a manual elevator-request entry when appropriate.</p>
+      </section>
+
+      <section class="logbook-entry-content">
+<h2 id="earlier-website-and-database-work-leading-into-this-entry">Earlier website and database work leading into this entry</h2>
+<h3 id="original-visual-elevator-controller">Original visual elevator controller</h3>
+<p>The first version of <code>elevator_control.php</code>, <code>elevator_control.js</code>, and <code>elevator_control.css</code> was primarily a visual demonstration. The HTML contained:</p>
+<ul class="clean-list">
+<li>Three floor rows and floor-station buttons.</li>
+<li>Three car-controller buttons.</li>
+<li>A visual elevator car inside the building shaft.</li>
+<li>A current-floor display.</li>
+<li>A last-command display.</li>
+</ul>
+<p>The JavaScript waited for the HTML to load and then retrieved the main controls:</p>
+<pre class="code-block language-javascript"><code class="language-javascript">document.addEventListener(&quot;DOMContentLoaded&quot;, function () {
+    const elevatorCar = document.getElementById(&quot;elevatorCar&quot;);
+
+    const currentFloorDisplay = document.getElementById(&quot;currentFloorDisplay&quot;);
+
+    const lastCommandDisplay = document.getElementById(&quot;lastCommandDisplay&quot;);
+
+    const floorRows = document.querySelectorAll(&quot;.floor-row&quot;);
+
+    const floorButtons = document.querySelectorAll(&quot;.floor-request-button&quot;);
+
+    const carButtons = document.querySelectorAll(&quot;.car-floor-button&quot;);
+});</code></pre>
+<p>The original <code>moveCarToFloor()</code> function updated the webpage but did not send anything to the physical elevator:</p>
+<pre class="code-block language-javascript"><code class="language-javascript">function moveCarToFloor(floor, commandSource) {
+    elevatorCar.style.bottom = carPositions[floor];
+    currentFloorDisplay.textContent = floor;
+    carScreen.textContent = floor;
+
+    floorRows.forEach(function (row) {
+        row.classList.remove(&quot;active-floor&quot;);
+
+        if(row.dataset.floor === floor) {
+            row.classList.add(&quot;active-floor&quot;);
+        }
+    });
+
+    carButtons.forEach(function (button) {
+        button.classList.remove(&quot;active-car-button&quot;);
+
+        if(button.dataset.floor === floor) {
+            button.classList.add(&quot;active-car-button&quot;);
+        }
+    });
+}</code></pre>
+<p>This prototype was later changed so a visual movement only occurred <strong>after</strong> PHP confirmed that the request had been written into MariaDB.</p>
+<h3 id="adding-ajax-requests-to-the-control-page">Adding AJAX requests to the control page</h3>
+<p>The floor and car buttons were changed to call <code>sendElevatorRequest()</code>:</p>
+<pre class="code-block language-javascript"><code class="language-javascript">function sendElevatorRequest(floor, sourceController) {
+    const requestData = new URLSearchParams();
+
+    requestData.append(&quot;requested_floor&quot;, floor);
+    requestData.append(&quot;source_controller&quot;, sourceController);
+
+    return fetch(&quot;elevator_control.php&quot;, {
+        method: &quot;POST&quot;,
+        headers: {
+            &quot;Content-Type&quot;:
+                &quot;application/x-www-form-urlencoded&quot;
+        },
+        body: requestData.toString()
+    })
+    .then(function (response) {
+        return response.json();
+    });
+}</code></pre>
+<p>The important flow is:</p>
+<ol class="clean-list">
+<li><code>URLSearchParams()</code> builds data in the same format as a normal HTML form.</li>
+<li><code>fetch()</code> sends a POST request without refreshing the page.</li>
+<li>PHP validates the floor, source controller, session user, and database state.</li>
+<li>PHP inserts the request using PDO.</li>
+<li><code>response.json()</code> turns PHP's JSON reply into a JavaScript object.</li>
+<li><code>handleResponse()</code> updates the page only after <code>responseData.success === true</code>.</li>
+</ol>
+<p>The two allowed website sources were:</p>
+<pre class="code-block language-php"><code class="language-php">$allowedSources = [
+    &#39;web_floor_station&#39;,
+    &#39;web_car_controller&#39;
+];</code></pre>
+<p>The allowed floors were intentionally limited to the current three-floor elevator:</p>
+<pre class="code-block language-php"><code class="language-php">$allowedFloors = [1, 2, 3];</code></pre>
+<p>The website request inserted:</p>
+<pre class="code-block language-sql"><code class="language-sql">INSERT INTO elevator_requests (
+    request_type,
+    requested_floor,
+    requested_by_user_id,
+    source_controller
+)
+VALUES (
+    :request_type,
+    :requested_floor,
+    :requested_by_user_id,
+    :source_controller
+);</code></pre>
+<p>For requests from the website:</p>
+<ul class="clean-list">
+<li><code>request_type</code> is <code>remote</code>.</li>
+<li><code>requested_by_user_id</code> comes from <code>$_SESSION['user_id']</code>.</li>
+<li><code>source_controller</code> is either <code>web_floor_station</code> or <code>web_car_controller</code>.</li>
+<li><code>request_status</code> uses the table default of <code>pending</code>.</li>
+<li><code>requested_at</code> uses <code>CURRENT_TIMESTAMP</code>.</li>
+</ul>
+<p>After a successful insert, PHP retrieves the generated ID:</p>
+<pre class="code-block language-php"><code class="language-php">$elevatorRequestID = (int) $pdo-&gt;lastInsertId();</code></pre>
+<p>It then returns values such as:</p>
+<pre class="code-block language-php"><code class="language-php">echo json_encode([
+    &#39;success&#39; =&gt; true,
+    &#39;message&#39; =&gt; &#39;elevator request logged successfully!&#39;,
+    &#39;elevator_request_id&#39; =&gt; $elevatorRequestID,
+    &#39;requested_floor&#39; =&gt; $requestedFloor,
+    &#39;source_controller&#39; =&gt; $sourceController
+]);</code></pre>
+<h3 id="loading-the-latest-database-request-on-page-load">Loading the latest database request on page load</h3>
+<p>The visual elevator originally returned to its default display whenever the page refreshed. PHP was changed to retrieve the newest request:</p>
+<pre class="code-block language-sql"><code class="language-sql">SELECT
+    elevator_request_id,
+    requested_floor,
+    source_controller,
+    request_status
+FROM elevator_requests
+ORDER BY elevator_request_id DESC
+LIMIT 1;</code></pre>
+<p>The values were stored in:</p>
+<pre class="code-block language-php"><code class="language-php">$initialFloor = 1;
+$initialRequestID = null;
+$initialSource = &#39;floor&#39;;
+$initialStatus = &#39;idle&#39;;</code></pre>
+<p>They were then placed into HTML <code>data-*</code> attributes:</p>
+<pre class="code-block language-php"><code class="language-php">&lt;main
+    class=&quot;page-wrapper&quot;
+    id=&quot;elevatorControlPage&quot;
+    data-initial-floor=&quot;&lt;?php echo $initialFloor; ?&gt;&quot;
+    data-initial-request-id=&quot;&lt;?php echo $initialRequestID; ?&gt;&quot;
+    data-initial-source=&quot;&lt;?php echo $initialSource; ?&gt;&quot;&gt;</code></pre>
+<p>JavaScript read them using <code>dataset</code>:</p>
+<pre class="code-block language-javascript"><code class="language-javascript">const elevatorControlPage = document.getElementById(&quot;elevatorControlPage&quot;);
+
+const initialFloor = elevatorControlPage.dataset.initialFloor;
+
+const initialRequestID = elevatorControlPage.dataset.initialRequestId;
+
+const initialSource = elevatorControlPage.dataset.initialSource;</code></pre>
+<p>This made the browser display agree with the newest database request after a page reload.</p>
+<h3 id="authentication-and-access-control-supporting-the-protected-pages">Authentication and access control supporting the protected pages</h3>
+<p>The elevator-control and diagnostics pages rely on the website authentication work completed earlier.</p>
+<p>The shared <code>db.php</code> connection uses PDO:</p>
+<pre class="code-block language-php"><code class="language-php">&lt;?php
+    $host = &#39;localhost&#39;;
+    $dbname = &#39;lif_elevator&#39;;
+    $dbuser = &#39;LiF_Admin&#39;;
+    $dbpass = &#39;LiF_ESE&#39;;
+
+    try {
+        $pdo = new PDO(
+            &quot;mysql:host=$host;&quot;
+            . &quot;dbname=$dbname;&quot;
+            . &quot;charset=utf8mb4&quot;,
+            $dbuser,
+            $dbpass
+        );
+
+        $pdo-&gt;setAttribute(
+            PDO::ATTR_DEFAULT_FETCH_MODE,
+            PDO::FETCH_ASSOC
+        );
+
+        $pdo-&gt;setAttribute(
+            PDO::ATTR_ERRMODE,
+            PDO::ERRMODE_EXCEPTION
+        );
+    } catch(PDOException $e) {
+        die(
+            &quot;Database connection failed: &quot;
+            . $e-&gt;getMessage()
+        );
+    }
+?&gt;</code></pre>
+<p><code>PDO::FETCH_ASSOC</code> returns rows using database field names as keys. <code>PDO::ERRMODE_EXCEPTION</code> allows a failed SQL operation to enter the surrounding <code>catch</code>.</p>
+<p>The login code verifies the stored password hash with:</p>
+<pre class="code-block language-php"><code class="language-php">password_verify(
+    $submittedPassword,
+    $user[&#39;password_hash&#39;]
+);</code></pre>
+<p>After a successful login, the session needs the same keys expected by every protected page:</p>
+<pre class="code-block language-php"><code class="language-php">$_SESSION[&#39;logged_in&#39;] = true;
+$_SESSION[&#39;user_id&#39;] = $user[&#39;user_id&#39;];
+$_SESSION[&#39;username&#39;] = $user[&#39;username&#39;];
+$_SESSION[&#39;user_role&#39;] = $user[&#39;user_role&#39;];</code></pre>
+<p>This corrected an earlier mismatch where one page expected <code>$_SESSION['user_id']</code> while the login code only stored a <code>logged_in</code> flag and username.</p>
+<p>A normal protected page uses:</p>
+<pre class="code-block language-php"><code class="language-php">session_start();
+
+if(
+    !isset($_SESSION[&#39;logged_in&#39;]) ||
+    $_SESSION[&#39;logged_in&#39;] !== true
+) {
+    header(
+        &quot;Location: ../html/login.html&quot;
+    );
+
+    exit;
+}</code></pre>
+<p>The diagnostics/approval pages add:</p>
+<pre class="code-block language-php"><code class="language-php">if(
+    ($_SESSION[&#39;user_role&#39;] ?? &#39;&#39;)
+    !== &#39;admin&#39;
+) {
+    http_response_code(403);
+    exit(&quot;Access denied&quot;);
+}</code></pre>
+<p>The complete account flow became:</p>
+<ol class="clean-list">
+<li>Visitor submits <code>request_access</code>.</li>
+<li>PHP inserts the application into <code>access_requests</code>.</li>
+<li>Admin views pending applications.</li>
+<li>Admin approves a request and creates the matching <code>users</code> row.</li>
+<li>Password is stored as a hash, not plain text.</li>
+<li>The access request is marked approved.</li>
+<li>The approved user logs in.</li>
+<li>Session data permits access to <code>members.php</code> and the elevator controller.</li>
+<li>Only <code>user_role = admin</code> can access request-management and diagnostics pages.</li>
+</ol>
+<p>The approval form used prepared statements and a Post/Redirect/Get redirect after success. This prevented refreshing the result page from resubmitting the same approval.</p>
+<p>Important earlier debugging points included:</p>
+<ul class="clean-list">
+<li>A trailing comma can invalidate a <code>CREATE TABLE</code>.</li>
+<li>A foreign-key column must be compatible with the referenced key.</li>
+<li><code>username</code> and <code>email</code> unique constraints reject duplicate accounts.</li>
+<li>Calling <code>$pdo-&gt;prepare()</code> does not run SQL until <code>execute()</code> is called.</li>
+<li>PHP session-key names must match exactly across files.</li>
+<li>The string <code>"false"</code> is truthy in PHP/JavaScript unless it is deliberately converted; JSON booleans should remain real booleans.</li>
+<li>Output such as usernames must be passed through <code>htmlspecialchars()</code>.</li>
+</ul>
+<h3 id="door-state-and-movement-interlock">Door state and movement interlock</h3>
+<p>The permanent door state is stored in the one-row <code>elevator_state</code> table instead of adding a new history row every time the doors move.</p>
+<p>PHP accepts only:</p>
+<pre class="code-block language-php"><code class="language-php">$allowedDoorStates = [&#39;open&#39;, &#39;closed&#39;];</code></pre>
+<p>The submitted text is converted into the database's <code>0</code>/<code>1</code> value:</p>
+<pre class="code-block language-php"><code class="language-php">$doorsOpen = 0;
+
+if($submittedDoorState === &#39;open&#39;) {
+    $doorsOpen = 1;
+}</code></pre>
+<p>The row is updated with:</p>
+<pre class="code-block language-sql"><code class="language-sql">UPDATE elevator_state
+SET doors_open = :doors_open
+WHERE state_id = 1;</code></pre>
+<p>Before a movement request is inserted, PHP reads the current door state:</p>
+<pre class="code-block language-sql"><code class="language-sql">SELECT doors_open
+FROM elevator_state
+WHERE state_id = 1
+LIMIT 1;</code></pre>
+<p>The request is still logged when the doors are open because it can remain queued, but PHP sends:</p>
+<pre class="code-block language-php"><code class="language-php">&#39;doors_open&#39; =&gt; $doorsOpen,
+&#39;movement_allowed&#39; =&gt; $movementAllowed</code></pre>
+<p>The JavaScript prevents the visual elevator from moving when:</p>
+<pre class="code-block language-javascript"><code class="language-javascript">if(responseData.movement_allowed === false) {
+    updateDoorDisplay(true);
+
+    lastCommandDisplay.textContent =
+        &quot;Request #&quot; +
+        responseData.elevator_request_id +
+        &quot; logged for floor &quot; +
+        floor +
+        &quot; - cannot move with doors open&quot;;
+
+    return;
+}</code></pre>
+<p>This web interlock is useful feedback, but the actual C++/CAN controller must also enforce the real hardware interlock.</p>
+      </section>
+
+      <section class="logbook-entry-content">
+<h2 id="mariadb-schema-used-by-the-combined-system">MariaDB schema used by the combined system</h2>
+<h3 id="purpose-of-each-main-table">Purpose of each main table</h3>
+<table class="logbook-table">
+<colgroup>
+<col style="width: 22%" />
+<col style="width: 77%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Table</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>access_requests</code></td>
+<td>Stores website-access application forms before approval</td>
+</tr>
+<tr class="even">
+<td><code>users</code></td>
+<td>Stores approved accounts, password hashes, roles, and account state</td>
+</tr>
+<tr class="odd">
+<td><code>elevator_requests</code></td>
+<td>Stores remote/manual elevator requests and their progress</td>
+</tr>
+<tr class="even">
+<td><code>elevator_state</code></td>
+<td>Stores the current permanent state in one row</td>
+</tr>
+<tr class="odd">
+<td><code>can_message_log</code></td>
+<td>Stores raw CAN traffic seen or sent by the supervisor</td>
+</tr>
+</tbody>
+</table>
+<p>The major difference is that <code>elevator_requests</code> and <code>can_message_log</code> are historical logs, while <code>elevator_state</code> is a current-state table that is updated in place.</p>
+<h3 id="final-elevator_requests-fields">Final <code>elevator_requests</code> fields</h3>
+<table class="logbook-table">
+<colgroup>
+<col style="width: 22%" />
+<col style="width: 77%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Field</th>
+<th>Use</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>elevator_request_id</code></td>
+<td>Unsigned auto-increment primary key</td>
+</tr>
+<tr class="even">
+<td><code>request_type</code></td>
+<td><code>remote</code> or <code>manual</code></td>
+</tr>
+<tr class="odd">
+<td><code>requested_floor</code></td>
+<td>Requested floor number</td>
+</tr>
+<tr class="even">
+<td><code>requested_by_user_id</code></td>
+<td>Website user for remote requests; normally <code>NULL</code> for manual CAN calls</td>
+</tr>
+<tr class="odd">
+<td><code>source_controller</code></td>
+<td>Website controller name or physical controller name</td>
+</tr>
+<tr class="even">
+<td><code>request_status</code></td>
+<td>Defaults to <code>pending</code>; later changed to <code>accepted</code>, <code>completed</code>, or <code>failed</code></td>
+</tr>
+<tr class="odd">
+<td><code>requested_at</code></td>
+<td>Time request was inserted</td>
+</tr>
+<tr class="even">
+<td><code>accepted_at</code></td>
+<td>Time the supervisor accepted it</td>
+</tr>
+<tr class="odd">
+<td><code>completed_at</code></td>
+<td>Time the requested move was confirmed</td>
+</tr>
+<tr class="even">
+<td><code>failure_reason</code></td>
+<td>Optional diagnostic description</td>
+</tr>
+</tbody>
+</table>
+<h3 id="final-elevator_state-design">Final <code>elevator_state</code> design</h3>
+<p>The original idea used separate boolean columns such as <code>doors_open</code> and <code>sabbath_enabled</code>. This was replaced with:</p>
+<pre class="code-block language-text"><code class="language-text">state_id | doors_open | operation_mode | updated_at</code></pre>
+<p>Only row <code>state_id = 1</code> is used:</p>
+<pre class="code-block language-sql"><code class="language-sql">SELECT *
+FROM elevator_state
+WHERE state_id = 1;</code></pre>
+<figure>
+<img class="img_med" src="../../media/images/NK_Phase2_FinalEntry_ElevatorState.png" alt="Final elevator_state table design" />
+<figcaption><b>Final elevator_state table design</b></figcaption>
+</figure>
+<p>The final supported operation-mode strings are:</p>
+<ul class="clean-list">
+<li><code>normal</code></li>
+<li><code>sabbath</code></li>
+<li><code>maintenance</code></li>
+<li><code>fault</code></li>
+</ul>
+<p>Using one <code>operation_mode</code> column prevents the database from representing contradictory states such as Sabbath and maintenance both being enabled at the same time.</p>
+<p>The table can be recreated with:</p>
+<pre class="code-block language-sql"><code class="language-sql">CREATE TABLE IF NOT EXISTS elevator_state (
+    state_id TINYINT UNSIGNED NOT NULL,
+    doors_open TINYINT(1) NOT NULL DEFAULT 0,
+    operation_mode VARCHAR(20) NOT NULL DEFAULT &#39;normal&#39;,
+    updated_at DATETIME NOT NULL
+        DEFAULT CURRENT_TIMESTAMP
+        ON UPDATE CURRENT_TIMESTAMP,
+
+    PRIMARY KEY (state_id)
+);
+
+INSERT INTO elevator_state (
+    state_id,
+    doors_open,
+    operation_mode
+)
+VALUES (
+    1,
+    0,
+    &#39;normal&#39;
+);</code></pre>
+      </section>
+
+      <section class="logbook-entry-content">
+<h2 id="building-the-raspberry-pi-c-mariadb-connector">Building the Raspberry Pi C++ / MariaDB connector</h2>
+<h3 id="why-a-dedicated-database-object-was-used">Why a dedicated database object was used</h3>
+<p>The supervisor program needed several database actions but should not open a brand-new MariaDB connection for every query. A <code>DB</code> class was therefore used to keep these private variables:</p>
+<pre class="code-block language-cpp"><code class="language-cpp">sql::Connection *con = nullptr;
+int active_request_id = 0;</code></pre>
+<p><code>con</code> stores the shared MySQL Connector/C++ connection (as seen in Michael's example code). <code>active_request_id</code> remembers which remote request was most recently read, allowing a later function to complete the same row after the elevator controller confirms arrival.</p>
+<p>The required connector headers were:</p>
+<pre class="code-block language-cpp"><code class="language-cpp">#include &lt;mysql_connection.h&gt;
+#include &lt;cppconn/driver.h&gt;
+#include &lt;cppconn/exception.h&gt;
+#include &lt;cppconn/resultset.h&gt;
+#include &lt;cppconn/statement.h&gt;
+#include &lt;cppconn/prepared_statement.h&gt;</code></pre>
+<h3 id="database-header-structure">Database header structure</h3>
+<p>The main public definitions became:</p>
+<pre class="code-block language-cpp"><code class="language-cpp">class DB
+{
+    sql::Connection *con = nullptr;
+    int active_request_id = 0;
+
+public:
+    enum class Tables
+    {
+        CAN_LOGS,
+        ELEVATOR_LOGS
+    };
+
+    enum class OperationMode
+    {
+        NORMAL,
+        SABBATH,
+        MAINTENANCE,
+        FAULT,
+        UNKNOWN
+    };
+
+    std::string map_table_name(DB::Tables table);
+    std::string map_operation_mode(DB::OperationMode operationMode);
+
+    bool db_connect();
+    int log_can_message(int id, int *data, uint8_t length);
+    int read_floor_request();
+    bool complete_elevator_request();
+    DB::OperationMode get_operation_mode();
+    bool set_operation_mode(OperationMode operationMode);
+    bool set_doors_open(bool doorsOpen);
+    int get_doors_open();
+};</code></pre>
+<h3 id="reusing-the-connection-with-db_connect">Reusing the connection with <code>db_connect()</code></h3>
+<p>The connector first checks whether a usable connection already exists:</p>
+<pre class="code-block language-cpp"><code class="language-cpp">if(con != nullptr &amp;&amp; !con-&gt;isClosed()) {
+    return true;
+}</code></pre>
+<p>If an old closed connection exists, it is deleted before reconnecting:</p>
+<pre class="code-block language-cpp"><code class="language-cpp">if(con != nullptr) {
+    delete con;
+    con = nullptr;
+}</code></pre>
+<p>The actual connection is:</p>
+<pre class="code-block language-cpp"><code class="language-cpp">sql::Driver *driver = get_driver_instance();
+
+con = driver-&gt;connect(
+    &quot;tcp://127.0.0.1:3306&quot;,
+    &quot;LiF_Admin&quot;,
+    &quot;LiF_ESE&quot;
+);
+
+con-&gt;setSchema(&quot;lif_elevator&quot;);</code></pre>
+<p>The connection is made to the MariaDB server first, then <code>setSchema()</code> selects the <code>lif_elevator</code> database.</p>
+<p>If MariaDB throws a <code>sql::SQLException</code>, <code>error.what()</code> asks the exception for a human-readable description:</p>
+<pre class="code-block language-cpp"><code class="language-cpp">catch(sql::SQLException &amp;error) {
+    std::cerr &lt;&lt; &quot;Database connection failed: &quot; &lt;&lt; error.what() &lt;&lt; std::endl;
+
+    if(con != nullptr) {
+        delete con;
+        con = nullptr;
+    }
+
+    return false;
+}</code></pre>
+<h3 id="mapping-enums-into-database-text">Mapping enums into database text</h3>
+<p>C++ cannot use a normal <code>switch</code> directly on a <code>std::string</code>, so enum values are switched and converted into strings:</p>
+<pre class="code-block language-cpp"><code class="language-cpp">std::string DB::map_operation_mode(
+    DB::OperationMode operationMode
+) {
+    switch(operationMode) {
+        case OperationMode::NORMAL:
+            return std::string(&quot;normal&quot;);
+
+        case OperationMode::SABBATH:
+            return std::string(&quot;sabbath&quot;);
+
+        case OperationMode::MAINTENANCE:
+            return std::string(&quot;maintenance&quot;);
+
+        case OperationMode::FAULT:
+            return std::string(&quot;fault&quot;);
+
+        default:
+            std::cerr &lt;&lt; &quot;Invalid DB operation mode&quot; &lt;&lt; std::endl;
+    }
+
+    return std::string();
+}</code></pre>
+<p>The <code>UNKNOWN</code> value is useful as a safe return state when a read fails, but it is deliberately rejected by <code>set_operation_mode()</code> so it cannot be written into MariaDB.</p>
+<h3 id="reading-the-next-pending-remote-request">Reading the next pending remote request</h3>
+<p><code>read_floor_request()</code> reads the oldest remote request in the queue:</p>
+<pre class="code-block language-cpp"><code class="language-cpp">result = statement-&gt;executeQuery(
+    &quot;SELECT elevator_request_id, requested_floor &quot;
+    &quot;FROM elevator_requests &quot;
+    &quot;WHERE request_status = &#39;pending&#39; &quot;
+    &quot;AND request_type = &#39;remote&#39; &quot;
+    &quot;ORDER BY elevator_request_id ASC &quot;
+    &quot;LIMIT 1 &quot;);</code></pre>
+<p>Adjacent C++ string literals are automatically combined by the compiler. This allowed the query to remain readable without using a raw string literal.</p>
+<p>The <code>result-&gt;next()</code> call is required because a <code>ResultSet</code> begins before its first row:</p>
+<pre class="code-block language-cpp"><code class="language-cpp">if(!result-&gt;next()) {
+    active_request_id = 0;
+
+    delete result;
+    delete statement;
+
+    return 0;
+}</code></pre>
+<p>If a row exists, the function stores both important values:</p>
+<pre class="code-block language-cpp"><code class="language-cpp">active_request_id = result-&gt;getInt(&quot;elevator_request_id&quot;);
+
+int requested_floor = result-&gt;getInt(&quot;requested_floor&quot;);</code></pre>
+<p>The return meanings are:</p>
+<table class="logbook-table">
+<thead>
+<tr class="header">
+<th>Return</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>1</code>–<code>3</code></td>
+<td>A valid requested floor</td>
+</tr>
+<tr class="even">
+<td><code>0</code></td>
+<td>No pending remote request exists</td>
+</tr>
+<tr class="odd">
+<td><code>-1</code></td>
+<td>Connection or SQL query failure</td>
+</tr>
+</tbody>
+</table>
+<h3 id="completing-the-active-remote-request">Completing the active remote request</h3>
+<p>Once the EC confirms that the cab reached the requested floor, <code>complete_elevator_request()</code> updates the same row:</p>
+<pre class="code-block language-cpp"><code class="language-cpp">statement = con-&gt;prepareStatement(
+    &quot;UPDATE elevator_requests &quot;
+    &quot;SET request_status = &#39;completed&#39;, &quot;
+    &quot;completed_at = CURRENT_TIMESTAMP &quot;
+    &quot;WHERE elevator_request_id = ? &quot;
+    &quot;AND request_status IN (&#39;pending&#39;, &#39;accepted&#39;)&quot;);</code></pre>
+<p>The stored request ID replaces the placeholder:</p>
+<pre class="code-block language-cpp"><code class="language-cpp">statement-&gt;setInt(1, active_request_id);</code></pre>
+<p><code>executeUpdate()</code> returns the number of affected rows. If the update succeeds, <code>active_request_id</code> is cleared so an unrelated later CAN message cannot be attached to an already-completed request.</p>
+<h3 id="reading-and-writing-the-operation-mode">Reading and writing the operation mode</h3>
+<p>The current mode is read with:</p>
+<pre class="code-block language-sql"><code class="language-sql">SELECT operation_mode
+FROM elevator_state
+WHERE state_id = 1
+LIMIT 1;</code></pre>
+<p>The returned string is mapped back to:</p>
+<pre class="code-block language-cpp"><code class="language-cpp">OperationMode::NORMAL
+OperationMode::SABBATH
+OperationMode::MAINTENANCE
+OperationMode::FAULT
+OperationMode::UNKNOWN</code></pre>
+<p>The write function uses a prepared statement:</p>
+<pre class="code-block language-cpp"><code class="language-cpp">statement = con-&gt;prepareStatement(
+    &quot;UPDATE elevator_state &quot;
+    &quot;SET operation_mode = ? &quot;
+    &quot;WHERE state_id = 1 &quot;);
+
+statement-&gt;setString(
+    1,
+    operationModeText
+);</code></pre>
+<h3 id="reading-and-writing-door-state">Reading and writing door state</h3>
+<p>The door setter converts the C++ boolean to MariaDB's <code>0</code>/<code>1</code>:</p>
+<pre class="code-block language-cpp"><code class="language-cpp">statement = con-&gt;prepareStatement(
+    &quot;UPDATE elevator_state &quot;
+    &quot;SET doors_open = ? &quot;
+    &quot;WHERE state_id = 1&quot;);
+
+statement-&gt;setInt(
+    1,
+    doorsOpen ? 1 : 0
+);</code></pre>
+<p>The getter returns:</p>
+<table class="logbook-table">
+<thead>
+<tr class="header">
+<th>Return</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>1</code></td>
+<td>Doors open</td>
+</tr>
+<tr class="even">
+<td><code>0</code></td>
+<td>Doors closed</td>
+</tr>
+<tr class="odd">
+<td><code>-1</code></td>
+<td>Database error or missing row</td>
+</tr>
+</tbody>
+</table>
+<h3 id="c-connector-function-summary">C++ connector function summary</h3>
+<table class="logbook-table">
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Function</th>
+<th>Main purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>db_connect()</code></td>
+<td>Create or reuse the MariaDB connection</td>
+</tr>
+<tr class="even">
+<td><code>map_table_name()</code></td>
+<td>Convert the table enum into a SQL table name</td>
+</tr>
+<tr class="odd">
+<td><code>map_operation_mode()</code></td>
+<td>Convert the operation-mode enum into database text</td>
+</tr>
+<tr class="even">
+<td><code>read_floor_request()</code></td>
+<td>Read the oldest pending remote request</td>
+</tr>
+<tr class="odd">
+<td><code>complete_elevator_request()</code></td>
+<td>Mark the active request completed</td>
+</tr>
+<tr class="even">
+<td><code>log_can_message()</code></td>
+<td>Store a raw CAN frame in <code>can_message_log</code></td>
+</tr>
+<tr class="odd">
+<td><code>get_operation_mode()</code></td>
+<td>Read the current one-row mode</td>
+</tr>
+<tr class="even">
+<td><code>set_operation_mode()</code></td>
+<td>Update the one-row mode</td>
+</tr>
+<tr class="odd">
+<td><code>get_doors_open()</code></td>
+<td>Read the current door state</td>
+</tr>
+<tr class="even">
+<td><code>set_doors_open()</code></td>
+<td>Update the current door state</td>
+</tr>
+</tbody>
+</table>
+<h3 id="manual-elevator-request-logger">Manual elevator-request logger</h3>
+<p>A later C++ design also added/discussed:</p>
+<pre class="code-block language-cpp"><code class="language-cpp">int log_elevator_request(
+    int requestedFloor,
+    int sourceID
+);</code></pre>
+<p>This function is for physical CAN button presses, so:</p>
+<ul class="clean-list">
+<li><code>request_type</code> is always <code>manual</code>.</li>
+<li><code>requested_by_user_id</code> is <code>NULL</code>.</li>
+<li><code>source_controller</code> is determined from the CAN ID.</li>
+<li><code>0x200</code> maps to <code>CC</code>.</li>
+<li><code>0x201</code> maps to <code>F1</code>.</li>
+<li><code>0x202</code> maps to <code>F2</code>.</li>
+<li><code>0x203</code> maps to <code>F3</code>.</li>
+</ul>
+<p>Its return convention matches the CAN logger:</p>
+<table class="logbook-table">
+<thead>
+<tr class="header">
+<th>Return</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>1</code></td>
+<td>Row inserted</td>
+</tr>
+<tr class="even">
+<td><code>0</code></td>
+<td>Invalid floor/source or nothing inserted</td>
+</tr>
+<tr class="odd">
+<td><code>-1</code></td>
+<td>Database/SQL failure</td>
+</tr>
+</tbody>
+</table>
+<p>This kept invalid CAN input separate from an actual MariaDB failure.</p>
+<h3 id="intended-use-from-main.cpp">Intended use from <code>main.cpp</code></h3>
+<p>The database object is intended to be made once and reused:</p>
+<pre class="code-block language-cpp"><code class="language-cpp">DB db;
+
+bool connected = db.db_connect();
+
+DB::OperationMode mode = db.get_operation_mode();
+
+int floorRequest = db.read_floor_request();
+
+bool doorsClosed = db.set_doors_open(false);</code></pre>
+<p>A simplified remote-request sequence would be like:</p>
+<pre class="code-block language-cpp"><code class="language-cpp">int requestedFloor = db.read_floor_request();
+
+if(requestedFloor &gt;= 1 &amp;&amp;
+   requestedFloor &lt;= 3) {
+
+    // convert floor into CAN command
+    // send command through PCAN as ID 0x100
+    // log the transmitted CAN frame
+}
+
+// after an EC position message confirms arrival:
+db.complete_elevator_request();</code></pre>
+<p>Snippet of database.h for better visualization:</p>
+<figure>
+<img class="img_med" src="../../media/images/DatabaseCPP_01.png" alt="First portion of database.cpp" />
+<figcaption><b>First portion of database.cpp</b></figcaption>
+</figure>
+<p>Database.cpp 1:</p>
+<figure>
+<img class="img_med" src="../../media/images/DatabaseCPP_02.png" alt="Second portion of database.cpp" />
+<figcaption><b>Second portion of database.cpp</b></figcaption>
+</figure>
+<p>Database.cpp 2:</p>
+<figure>
+<img class="img_med" src="../../media/images/DatabaseCPP_03.png" alt="Third portion of database.cpp" />
+<figcaption><b>Third portion of database.cpp</b></figcaption>
+</figure>
+      </section>
+
+      <section class="logbook-entry-content">
+<h2 id="can-logging">CAN Logging</h2>
+<h3 id="sql-table-and-progress-update">SQL table and progress update:</h3>
+<p>On the 26th I finally received the CAN message logging table made by RY. Initially, the table she provided was sent over Discord and poorly formatted:</p>
+<figure>
+<img class="img_med" src="../../media/images/SQL_ReceivedCANTable.png" alt="CAN-message table originally received over Discord" />
+<figcaption><b>CAN-message table originally received over Discord</b></figcaption>
+</figure>
+<p>This table was alright, but I did ask for her to fix the formatting by either sending me the full file or using the backtick characters to format it as a Discord codeblock. Neither was provided...</p>
+<p>However, the following morning she uploaded it to GitHub - perfect. I pulled from there and remade her table locally using:</p>
+<pre class="code-block language-sql"><code class="language-sql">CREATE TABLE lif_elevator.can_message_log (
+    log_id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    elevator_request_id INT UNSIGNED DEFAULT NULL,
+    can_id VARCHAR(6) NOT NULL,
+    direction ENUM(&#39;tx&#39;, &#39;rx&#39;) NOT NULL,
+    raw_byte TINYINT UNSIGNED NOT NULL,
+    dlc TINYINT UNSIGNED NOT NULL DEFAULT 1,
+    source_controller VARCHAR(30) NOT NULL,
+    logged_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (log_id),
+    INDEX idx_can_log_request (elevator_request_id),
+    INDEX idx_can_log_can_id (can_id),
+    INDEX idx_can_log_logged_at (logged_at),
+    CONSTRAINT fk_can_log_request
+        FOREIGN KEY (elevator_request_id)
+        REFERENCES lif_elevator.elevator_requests (elevator_request_id)
+        ON DELETE SET NULL
+        ON UPDATE CASCADE
+) ENGINE=InnoDB
+  DEFAULT CHARSET=utf8mb4
+  COLLATE=utf8mb4_general_ci;</code></pre>
+<p>With the table finally made, I could begin making a CAN logging function in CPP and eventually move onto the diagnostics page for the website as I've heard from MR that RY communicated with him about dropping that task. MR told her to communicate and confirm with me, as I would be the person best suited to take over the task.</p>
+<p>She did not formally communicate this with me, provided me no update regarding this on either Saturday the 26th, nor Sunday the 27th. As it is currently 1:03AM on Monday the 27th and with nothing new has been pushed to main, I'm assuming she did end up dropping this <strong>required</strong> task.</p>
+<p>Since it is literally due less than 24 hours from now, I will be taking it over - my grade should not have to suffer from incomplete work by my group member and their lack of communication.</p>
+<h3 id="diagnostic-page-update">Diagnostic Page update:</h3>
+<p>RY claimed she did end up updating the PHP and after some time, she did eventually push her changes to main.</p>
+<p>Few things to note right away.</p>
+<figure>
+<img class="img_med" src="../../media/images/Diagnostics_ReceivedPage.png" alt="Initial diagnostics page received from a teammate" />
+<figcaption><b>Initial diagnostics page received from a teammate</b></figcaption>
+</figure>
+<p>The page I received was quite messy and lacked CSS entirely. This was caused by her linking a non-existing CSS file.</p>
+<figure>
+<img class="img_med" src="../../media/images/Diagnostics_MissingCSSIssue.png" alt="Broken CSS reference on the received diagnostics page" />
+<figcaption><b>Broken CSS reference on the received diagnostics page</b></figcaption>
+</figure>
+<p>Removing the "additions" did not fix the problem either (as diagnostics.css did exist)</p>
+<p>Additionally, I asked her to add "back to members" and "log out" buttons after providing her with the EXACT divs needed... She put them in the wrong place, causing this:</p>
+<figure>
+<img class="img_med" src="../../media/images/Diagnostics_WrongButtonPlacement.png" alt="Back and logout buttons placed below the page content" />
+<figcaption><b>Back and logout buttons placed below the page content</b></figcaption>
+</figure>
+<p>They sat right at the bottom of the HTML section:</p>
+<pre class="code-block language-markup"><code class="language-markup">            &lt;div class=&quot;button-row&quot;&gt;
+                &lt;a href=&quot;members.php&quot; class=&quot;button secondary-button&quot;&gt;Back to Members&lt;/a&gt;
+                &lt;a href=&quot;logout.php&quot; class=&quot;button primary-button&quot;&gt;Log Out&lt;/a&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/main&gt;</code></pre>
+<p>Even when I sent her these two images:</p>
+<figure>
+<img class="img_med" src="../../media/images/Diagnostics_ButtonPlacementReference.png" alt="Reference page showing the intended button placement" />
+<figcaption><b>Reference page showing the intended button placement</b></figcaption>
+</figure>
+<figure>
+<img class="img_med" src="../../media/images/Diagnostics_ButtonPlacementRequest.png" alt="Message specifying the requested button placement" />
+<figcaption><b>Message specifying the requested button placement</b></figcaption>
+</figure>
+<p>I don't think I could've made it much more obvious as she had <strong>4</strong> separate files that ALL have the exact same buttons + the code was provided in my message using:</p>
+<figure>
+<img class="img_med" src="../../media/images/Diagnostics_ButtonPlacementCodeSample.png" alt="HTML button-row example provided as a reference" />
+<figcaption><b>HTML button-row example provided as a reference</b></figcaption>
+</figure>
+<p>She also kept her massive CAN look-up table which both MR and I requested her to remove and replace with proper CAN logging, while keeping an elevator_requests table.</p>
+<p>Her PHP essentially read values and translated them:</p>
+<pre class="code-block language-php"><code class="language-php">    //   &quot;en_floor&quot;   -&gt; bit 2 = enable bit, bits 1-0 = floor number (0-3)
+    //   &quot;single_bit&quot; -&gt; bit 0 = request bit, no enable bit
+    $canMessages = [
+        &quot;web_floor_station&quot; =&gt; [
+            &quot;can_id&quot;      =&gt; &quot;0x100&quot;,
+            &quot;transmitter&quot; =&gt; &quot;SC&quot;,
+            &quot;recipient&quot;   =&gt; &quot;EC&quot;,
+            &quot;message&quot;     =&gt; &quot;Supervisor Floor Request&quot;,
+            &quot;bit_layout&quot;  =&gt; &quot;en_floor&quot;,
+            &quot;en_label&quot;    =&gt; &quot;SC_EN&quot;,
+            &quot;field_label&quot; =&gt; &quot;SC_FloorReq&quot;,
+        ],
+        &quot;web_car_controller&quot; =&gt; [
+            &quot;can_id&quot;      =&gt; &quot;0x200&quot;,
+            &quot;transmitter&quot; =&gt; &quot;CC&quot;,
+            &quot;recipient&quot;   =&gt; &quot;SC&quot;,
+            &quot;message&quot;     =&gt; &quot;Car Controller Floor Request&quot;,
+            &quot;bit_layout&quot;  =&gt; &quot;en_floor&quot;,
+            &quot;en_label&quot;    =&gt; &quot;CC_EN&quot;,
+            &quot;field_label&quot; =&gt; &quot;CC_FloorReq&quot;,
+        ],
+        &quot;elevator_controller&quot; =&gt; [
+            &quot;can_id&quot;      =&gt; &quot;0x101&quot;,
+            &quot;transmitter&quot; =&gt; &quot;EC&quot;,
+            &quot;recipient&quot;   =&gt; &quot;ALL&quot;,
+            &quot;message&quot;     =&gt; &quot;Elevator Position Broadcast&quot;,
+            &quot;bit_layout&quot;  =&gt; &quot;en_floor&quot;,
+            &quot;en_label&quot;    =&gt; &quot;EC_EN&quot;,
+            &quot;field_label&quot; =&gt; &quot;EC_Position&quot;,
+        ],
+        &quot;floor_1&quot; =&gt; [
+            &quot;can_id&quot;      =&gt; &quot;0x201&quot;,
+            &quot;transmitter&quot; =&gt; &quot;F1&quot;,
+            &quot;recipient&quot;   =&gt; &quot;SC&quot;,
+            &quot;message&quot;     =&gt; &quot;F1 Cart Request&quot;,
+            &quot;bit_layout&quot;  =&gt; &quot;single_bit&quot;,
+            &quot;en_label&quot;    =&gt; null,
+            &quot;field_label&quot; =&gt; &quot;F1_Req&quot;,
+        ]</code></pre>
+<p>Which... Does not seem like "CAN" logging. She later did remake the table, and when confronted about if it used the new <code>CAN_message_log</code> table <strong>she</strong> made, she said it did.</p>
+<figure>
+<img class="img_med" src="../../media/images/Diagnostics_WrongTable.png" alt="Received diagnostics page showing the incorrect CAN table" />
+<figcaption><b>Received diagnostics page showing the incorrect CAN table</b></figcaption>
+</figure>
+<p>As seen here,</p>
+<figure>
+<img class="img_med" src="../../media/images/SQL_ReceivedCANTable.png" alt="CAN-message table originally received over Discord" />
+<figcaption><b>CAN-message table originally received over Discord</b></figcaption>
+</figure>
+<p>The table was explicitly called "can_message_log", and when using ctrl+F to search, that name does not popup in her file.</p>
+<figure>
+<img class="img_med" src="../../media/images/Diagnostics_CtrlF_Fail.png" alt="Search showing that can_message_log was not used" />
+<figcaption><b>Search showing that can_message_log was not used</b></figcaption>
+</figure>
+<p>So... Her CAN logging didn't do much logging of CAN - lol.</p>
+<p>When MR pointed it out, she recommended to add this statement:</p>
+<pre class="code-block language-php"><code class="language-php">    $canLog = [];
+    $canLogError = &#39;&#39;;
+ 
+    try {
+        $canLogQuery = &quot;SELECT * FROM can_message_log ORDER BY logged_at DESC&quot;;
+ 
+        $canLogStatement = $pdo-&gt;prepare($canLogQuery);
+        $canLogStatement-&gt;execute();
+ 
+        $canLog = $canLogStatement-&gt;fetchAll(PDO::FETCH_ASSOC);
+ 
+    } catch (PDOException $e) {
+        error_log($e-&gt;getMessage());
+        $canLogError = &quot;Could not load the CAN message log right now. Please try again shortly.&quot;;
+    }</code></pre>
+<p>Which, was of course not pasted in Discord code-block form (as I've asked...) but whatever.</p>
+<p>This is a cool query - it does call that table and pulls everything... But it also does nothing without more code - it just fills an array.</p>
+<p>Given that she did not provide anything except for this to go along with her "missing PHP"... I just took it over and remade the entire thing myself.</p>
+<p>Fixing her bugs + understanding the JS (which she asked <strong>me</strong> to explain to <strong>her</strong> after <strong>she</strong> wrote it and claimed <strong>she</strong> does not fully understand it) would take too long. As it is almost 6AM on Monday July 27th, I will continue work on my original "elevator_diagnostics.php" file.</p>
+<p>Speaking of that, I provided her with that file, told her which other php files to cross-reference if she got stuck... And instead she made her own file.</p>
+<p>Something else to note about general code style is that it heavily lacks comments. I personally like to "over-comment" to ensure I can remember what the code does, plus it makes it easier for others to understand. Her code was under-commented with entire functions only receiving 1-2 words, or just strange comments like:</p>
+<pre class="code-block language-php"><code class="language-php">// Add a new entry here any time a new controller/message type is added.</code></pre>
+<p>But I won't judge.</p>
+<p>Here is what I received from RY:</p>
+<figure>
+<img class="img_med" src="../../media/images/Diagnostics_RY_Received_01.png" alt="First portion of the received diagnostics implementation" />
+<figcaption><b>First portion of the received diagnostics implementation</b></figcaption>
+</figure>
+<figure>
+<img class="img_med" src="../../media/images/Diagnostics_RY_Received_02.png" alt="Second portion of the received diagnostics implementation" />
+<figcaption><b>Second portion of the received diagnostics implementation</b></figcaption>
+</figure>
+<h3 id="rebuilding-diagnostics-page">Rebuilding diagnostics page</h3>
+<p>I returned to my own <code>elevator_diagnostics.php</code> starting point and rebuilt the page in layers:</p>
+<ol class="clean-list">
+<li>PHP session/admin protection.</li>
+<li>PDO queries for both diagnostic tables.</li>
+<li>HTML tables that print the returned arrays.</li>
+<li>A new diagnostics-specific CSS file.</li>
+<li>JavaScript search and filter functions.</li>
+<li>Client-side pagination for both tables.</li>
+</ol>
+<h4 id="protecting-the-page">Protecting the page</h4>
+<p>The page starts the existing PHP session and loads the shared database connection:</p>
+<pre class="code-block language-php"><code class="language-php">session_start();
+
+require_once __DIR__ . &#39;/db.php&#39;;</code></pre>
+<p>An unauthenticated visitor is redirected:</p>
+<pre class="code-block language-php"><code class="language-php">if(
+    !isset($_SESSION[&#39;logged_in&#39;]) ||
+    $_SESSION[&#39;logged_in&#39;] != true
+) {
+    header(&quot;Location: ../html/login.html&quot;);
+    exit(&quot;please log in&quot;);
+}</code></pre>
+<p>The diagnostics page contains the full CAN and elevator-request history, so it is additionally restricted to administrators:</p>
+<pre class="code-block language-php"><code class="language-php">if(($_SESSION[&#39;user_role&#39;] ?? &#39;&#39;) !== &#39;admin&#39;) {
+    http_response_code(403);
+
+    exit(
+        &quot;Access denied; Admin perms required &quot;
+        . &quot;for entry to this page.&quot;
+    );
+}</code></pre>
+<p>The two PHP arrays are initialized before querying:</p>
+<pre class="code-block language-php"><code class="language-php">$elevatorRequests = [];
+$canMessages = [];
+$loadError = &#39;&#39;;</code></pre>
+<p>One issue found during the later review was that an intermediate version accidentally initialized:</p>
+<pre class="code-block language-php"><code class="language-php">$elevatorState = [];</code></pre>
+<p>instead of:</p>
+<pre class="code-block language-php"><code class="language-php">$canMessages = [];</code></pre>
+<h4 id="loading-the-elevator-request-table">Loading the elevator-request table</h4>
+<p>The request query loads every relevant column newest-first:</p>
+<pre class="code-block language-php"><code class="language-php">$query = &quot;
+    SELECT
+        elevator_request_id,
+        request_type,
+        requested_floor,
+        requested_by_user_id,
+        source_controller,
+        request_status,
+        requested_at,
+        accepted_at,
+        completed_at,
+        failure_reason
+    FROM elevator_requests
+    ORDER BY elevator_request_id DESC
+&quot;;
+
+$statement = $pdo-&gt;prepare($query);
+$result = $statement-&gt;execute();
+
+if($result) {
+    $elevatorRequests = $statement-&gt;fetchAll(PDO::FETCH_ASSOC);
+}</code></pre>
+<h4 id="loading-the-can-message-table">Loading the CAN-message table</h4>
+<p>The raw CAN query follows the same structure:</p>
+<pre class="code-block language-php"><code class="language-php">$query = &quot;
+    SELECT
+        log_id,
+        elevator_request_id,
+        can_id,
+        direction,
+        raw_byte,
+        dlc,
+        source_controller,
+        logged_at
+    FROM can_message_log
+    ORDER BY log_id DESC
+&quot;;
+
+$statement = $pdo-&gt;prepare($query);
+$result = $statement-&gt;execute();
+
+if($result) {
+    $canMessages = $statement-&gt;fetchAll(PDO::FETCH_ASSOC);
+}</code></pre>
+<p>Both queries are inside one <code>try/catch</code>. The real MariaDB exception is sent to the server log while a simple page-safe message is displayed:</p>
+<pre class="code-block language-php"><code class="language-php">catch(PDOException $e) {
+    error_log($e-&gt;getMessage());
+
+    $loadError =
+        &#39;The diagnostic data could not be &#39;
+        . &#39;loaded from the database.&#39;;
+}</code></pre>
+<h4 id="safely-printing-values-into-the-html">Safely printing values into the HTML</h4>
+<p>Database content is passed through one helper:</p>
+<pre class="code-block language-php"><code class="language-php">function displayValue($value) {
+    if($value === null || $value === &#39;&#39;) {
+        return &#39;---&#39;;
+    }
+
+    return htmlspecialchars(
+        (string) $value,
+        ENT_QUOTES,
+        &#39;UTF-8&#39;
+    );
+}</code></pre>
+<p>This has two purposes:</p>
+<ul class="clean-list">
+<li>A <code>NULL</code> value such as an unfinished <code>completed_at</code> becomes <code>---</code>.</li>
+<li>Other values are escaped before being inserted into HTML.</li>
+</ul>
+<p>The session values in the page header were also updated to use the same escaping instead of directly echoing the username/role:</p>
+<pre class="code-block language-php"><code class="language-php">&lt;h1&gt;
+    Welcome,
+    &lt;?php echo displayValue($_SESSION[&#39;username&#39;]); ?&gt;
+&lt;/h1&gt;</code></pre>
+<h4 id="rendering-the-rows-with-php">Rendering the rows with PHP</h4>
+<p>Each request is printed with a <code>foreach</code> loop:</p>
+<pre class="code-block language-php"><code class="language-php">&lt;?php foreach($elevatorRequests as $request) { ?&gt;
+    &lt;tr
+        data-status=&quot;&lt;?php
+            echo htmlspecialchars(
+                strtolower(
+                    (string) $request[&#39;request_status&#39;]
+                ),
+                ENT_QUOTES,
+                &#39;UTF-8&#39;
+            );
+        ?&gt;&quot;&gt;
+
+        &lt;td&gt;
+            &lt;?php
+                echo displayValue(
+                    $request[&#39;elevator_request_id&#39;]
+                );
+            ?&gt;
+        &lt;/td&gt;
+
+        &lt;!-- remaining request fields --&gt;
+    &lt;/tr&gt;
+&lt;?php } ?&gt;</code></pre>
+<p>The <code>data-status</code> attribute is not visible to the user. It gives JavaScript a simple value such as <code>pending</code> or <code>completed</code> to filter.</p>
+<p>CAN rows use the same idea:</p>
+<pre class="code-block language-php"><code class="language-php">&lt;tr
+    data-direction=&quot;&lt;?php
+        echo htmlspecialchars(
+            strtolower(
+                (string) $message[&#39;direction&#39;]
+            ),
+            ENT_QUOTES,
+            &#39;UTF-8&#39;
+        );
+    ?&gt;&quot;&gt;</code></pre>
+<p>The two table bodies received IDs:</p>
+<pre class="code-block language-markup"><code class="language-markup">&lt;tbody id=&quot;requestTableBody&quot;&gt;</code></pre>
+<pre class="code-block language-markup"><code class="language-markup">&lt;tbody id=&quot;canTableBody&quot;&gt;</code></pre>
+<p>This lets JavaScript retrieve only the rows in the intended table.</p>
+<h4 id="fixing-the-shifted-request-columns">Fixing the shifted request columns</h4>
+<p>The <code>source_controller</code> value initially looked like it was printing under the wrong heading. The value was correct; the table header had an extra empty <code>&lt;th&gt;</code>:</p>
+<pre class="code-block language-markup"><code class="language-markup">&lt;tr&gt;
+    &lt;th&gt;
+    &lt;th&gt;Request ID&lt;/th&gt;</code></pre>
+<p>That empty header shifted every visible heading one column to the right. Removing it fixed the alignment:</p>
+<pre class="code-block language-markup"><code class="language-markup">&lt;tr&gt;
+    &lt;th&gt;Request ID&lt;/th&gt;
+    &lt;th&gt;Request Type&lt;/th&gt;
+    &lt;th&gt;Requested Floor&lt;/th&gt;
+    &lt;th&gt;Requested By User ID&lt;/th&gt;
+    &lt;th&gt;Source Controller&lt;/th&gt;
+    &lt;th&gt;Status&lt;/th&gt;
+    &lt;th&gt;Requested At&lt;/th&gt;
+    &lt;th&gt;Accepted At&lt;/th&gt;
+    &lt;th&gt;Completed At&lt;/th&gt;
+    &lt;th&gt;Failure Reason&lt;/th&gt;
+&lt;/tr&gt;</code></pre>
+<figure>
+<img class="img_med" src="../../media/images/Diagnostics_FinalPage.png" alt="Final rebuilt elevator diagnostics page" />
+<figcaption><b>Final rebuilt elevator diagnostics page</b></figcaption>
+</figure>
+<h4 id="new-diagnostics-css">New diagnostics CSS</h4>
+<p>The page links:</p>
+<pre class="code-block language-markup"><code class="language-markup">&lt;link
+    rel=&quot;stylesheet&quot;
+    href=&quot;../css/elevator_diagnostics.css&quot;&gt;</code></pre>
+<p>The main content width was increased because the database tables contain many columns:</p>
+<pre class="code-block language-css"><code class="language-css">.diagnostics-page {
+  max-width: 1500px;
+  margin: 0 auto;
+  padding: 30px 20px;
+}</code></pre>
+<p>Each diagnostics section is presented as a card:</p>
+<pre class="code-block language-css"><code class="language-css">.diagnostics-page section {
+  margin-bottom: 35px;
+  padding: 22px;
+
+  background-color: var(--card-bg);
+  border: 1px solid rgba(9, 124, 135, 0.22);
+  border-top: 5px solid var(--orange);
+  border-radius: 10px;
+
+  box-shadow: 0 6px 18px var(--shadow);
+}</code></pre>
+<p>Tables are placed in a scrollable container so they do not destroy the layout:</p>
+<pre class="code-block language-css"><code class="language-css">.table-scroll {
+  max-height: 520px;
+  overflow: auto;
+  border: 1px solid rgba(9, 124, 135, 0.3);
+  border-radius: 7px;
+}</code></pre>
+<p>The table itself uses a minimum width to display most/all data better:</p>
+<pre class="code-block language-css"><code class="language-css">.diagnostics-table {
+  width: 100%;
+  min-width: 1000px;
+  border-collapse: collapse;
+  background-color: #fffdf4;
+}</code></pre>
+<p>Column headings remain visible while scrolling:</p>
+<pre class="code-block language-css"><code class="language-css">.diagnostics-table th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+
+  color: white;
+  background-color: var(--deep-blue);
+}</code></pre>
+<p>Alternating rows and a hover colour improve readability:</p>
+<pre class="code-block language-css"><code class="language-css">.diagnostics-table tbody tr:nth-child(even) {
+  background-color: rgba(161, 204, 166, 0.18);
+}
+
+.diagnostics-table tbody tr:hover {
+  background-color: rgba(249, 219, 121, 0.32);
+}</code></pre>
+<p>Status and CAN-direction badges use <code>data-*</code> selectors:</p>
+<pre class="code-block language-css"><code class="language-css">.diagnostic-badge[data-status=&quot;pending&quot;] {
+  background-color: rgba(249, 219, 121, 0.58);
+  border-color: rgba(255, 156, 95, 0.7);
+}
+
+.diagnostic-badge[data-status=&quot;completed&quot;] {
+  background-color: rgba(161, 204, 166, 0.55);
+  border-color: var(--palm);
+}
+
+.diagnostic-badge[data-direction=&quot;tx&quot;] {
+  background-color: rgba(35, 206, 217, 0.22);
+  border-color: var(--aqua);
+}
+
+.diagnostic-badge[data-direction=&quot;rx&quot;] {
+  background-color: rgba(255, 156, 95, 0.28);
+  border-color: var(--orange);
+}</code></pre>
+<p>The search/dropdown controls use flexbox on desktop and become full-width on screens below 700 px.</p>
+<h4 id="javascript-search-and-filters">JavaScript search and filters</h4>
+<p>The request controls are retrieved by ID:</p>
+<pre class="code-block language-javascript"><code class="language-javascript">const requestSearch = document.getElementById(&quot;requestSearch&quot;);
+
+const requestStatusFilter =
+    document.getElementById(
+        &quot;requestStatusFilter&quot;
+    );
+
+const requestResultCount =
+    document.getElementById(
+        &quot;requestResultCount&quot;
+    );
+
+const requestRows =
+    document.querySelectorAll(
+        &quot;#requestTableBody tr&quot;
+    );</code></pre>
+<p><code>filterRequestRows()</code> normalizes the search text:</p>
+<pre class="code-block language-javascript"><code class="language-javascript">const searchText = requestSearch.value
+    .trim()
+    .toLowerCase();</code></pre>
+<p>For every row:</p>
+<pre class="code-block language-javascript"><code class="language-javascript">const rowText = row.textContent.toLowerCase();
+
+const rowStatus = row.dataset.status || &quot;&quot;;
+
+const matchesSearch = rowText.includes(searchText);
+
+const matchesStatus =
+    selectedStatus === &quot;all&quot; ||
+    rowStatus === selectedStatus;</code></pre>
+<p>The row is visible only when <strong>both</strong> tests pass:</p>
+<pre class="code-block language-javascript"><code class="language-javascript">if(matchesSearch &amp;&amp; matchesStatus) {
+    row.hidden = false;
+    visibleRows++;
+} else {
+    row.hidden = true;
+}</code></pre>
+<p>An empty search matches every row because:</p>
+<pre class="code-block language-javascript"><code class="language-javascript">&quot;any text&quot;.includes(&quot;&quot;)</code></pre>
+<p>returns <code>true</code>.</p>
+<p>The CAN table follows the same pattern but uses:</p>
+<pre class="code-block language-javascript"><code class="language-javascript">const CANSearch = document.getElementById(&quot;canSearch&quot;);
+
+const CANDirectionFilter =
+    document.getElementById(
+        &quot;canDirectionFilter&quot;
+    );
+
+const CANRows =
+    document.querySelectorAll(
+        &quot;#canTableBody tr&quot;
+    );</code></pre>
+<p>I kept <code>CAN</code> uppercase in CAN-specific JavaScript names as it is an acronym and not "can do" or something:</p>
+<pre class="code-block language-javascript"><code class="language-javascript">CANSearch
+CANDirectionFilter
+CANResultCount
+CANRows
+filterCANRows()</code></pre>
+<p>The HTML IDs remain lowercase because they must exactly match the existing HTML:</p>
+<pre class="code-block language-javascript"><code class="language-javascript">document.getElementById(&quot;canSearch&quot;);</code></pre>
+<h4 id="javascript-errors-found-during-review">JavaScript errors found during review</h4>
+<p>The JavaScript passed a general syntax check but originally contained several logic/runtime problems, mostly due to misstyping on my end:</p>
+<ol class="clean-list">
+<li>Request row text was not converted to lowercase, even though the user's search text was.</li>
+<li>An initialization test used asterisks (<code>**</code>) instead of logical AND (<code>&amp;&amp;</code>).</li>
+<li>The CAN event-listener initialization block was placed inside <code>filterCANRows()</code> by accident.</li>
+<li>Result-count strings were missing spaces.</li>
+</ol>
+<p>The correct request initialization is:</p>
+<pre class="code-block language-javascript"><code class="language-javascript">if(
+    requestSearch &amp;&amp;
+    requestStatusFilter &amp;&amp;
+    requestResultCount
+) {
+    requestSearch.addEventListener(
+        &quot;input&quot;,
+        filterRequestRows
+    );
+
+    requestStatusFilter.addEventListener(
+        &quot;change&quot;,
+        filterRequestRows
+    );
+
+    filterRequestRows();
+}</code></pre>
+<p>The correct CAN initialization is outside the filter function:</p>
+<pre class="code-block language-javascript"><code class="language-javascript">if(
+    CANSearch &amp;&amp;
+    CANDirectionFilter &amp;&amp;
+    CANResultCount
+) {
+    CANSearch.addEventListener(
+        &quot;input&quot;,
+        filterCANRows
+    );
+
+    CANDirectionFilter.addEventListener(
+        &quot;change&quot;,
+        filterCANRows
+    );
+
+    filterCANRows();
+}</code></pre>
+<h4 id="adding-client-side-pagination">Adding client-side pagination</h4>
+<p>The tables grew quickly, especially <code>can_message_log</code> on the Pi, so pagination was added after the search/filter functions were working.</p>
+<p>RY had a similar approach and I glanced at her code a couple times for reference, but her lack of comments and <strong>documentation</strong> made it difficult to fully understand the code. This led me to create my own and only use hers as reference.</p>
+<p>The chosen page size was:</p>
+<pre class="code-block language-javascript"><code class="language-javascript">const ROWS_PER_PAGE = 15;</code></pre>
+<p>Each table received:</p>
+<ul class="clean-list">
+<li>A Previous button.</li>
+<li>A <code>Page X of Y</code> display.</li>
+<li>A Next button.</li>
+<li>A current-page variable.</li>
+</ul>
+<p>The main pagination idea was to first build an array of only matching rows:</p>
+<pre class="code-block language-javascript"><code class="language-javascript">const matchingRows = [];
+
+requestRows.forEach(function (row) {
+    const rowText = row.textContent.toLowerCase();
+
+    const rowStatus = row.dataset.status || &quot;&quot;;
+
+    const matchesSearch = rowText.includes(searchText);
+
+    const matchesStatus = selectedStatus === &quot;all&quot; || rowStatus === selectedStatus;
+
+    if(matchesSearch &amp;&amp; matchesStatus) {
+        matchingRows.push(row);
+    }
+
+    row.hidden = true;
+});</code></pre>
+<p>The number of required pages is:</p>
+<pre class="code-block language-javascript"><code class="language-javascript">let totalPages = Math.ceil(matchingRows.length /ROWS_PER_PAGE);
+
+if(totalPages === 0) {
+    totalPages = 1;
+}</code></pre>
+<p>The current page's array range is:</p>
+<pre class="code-block language-javascript"><code class="language-javascript">const startIndex = (requestCurrentPage - 1) * ROWS_PER_PAGE;
+
+const endIndex = startIndex + ROWS_PER_PAGE;</code></pre>
+<p>Only rows in that range are shown:</p>
+<pre class="code-block language-javascript"><code class="language-javascript">matchingRows.forEach(
+    function (row, index) {
+        if(index &gt;= startIndex &amp;&amp; index &lt; endIndex) {
+            row.hidden = false;
+        }
+    }
+);</code></pre>
+<p>Changing the search or status returns the table to page 1. Previous/Next buttons are disabled when the first/final page is reached.</p>
+<p>The same structure was duplicated for CAN rows using the preferred uppercase names such as <code>CANCurrentPage</code>, <code>CANPreviousPage</code>, and <code>updateCANTable()</code>.</p>
+<p>This is client-side pagination: PHP still loads the current query result into the page, while JavaScript decides which 15 matching rows to display. A later improvement for a very large CAN log would be SQL/server-side pagination or at minimum:</p>
+<pre class="code-block language-sql"><code class="language-sql">ORDER BY log_id DESC
+LIMIT 500;</code></pre>
+<h4 id="final-small-phphtml-cleanup">Final small PHP/HTML cleanup</h4>
+<p>Lastly, I reviewed the code and formatted it to find: - A malformed closing <code>&lt;p&gt;</code> in the Access Status card. - A missing final <code>&lt;/html&gt;</code> tag. - Session username/role values that should be escaped. - The incorrect <code>$elevatorState = [];</code> initialization. - The extra request-table <code>&lt;th&gt;</code> that shifted all headings.</p>
+<p>After these corrections, the diagnostics page could: - Load both real MariaDB tables. - Show newest entries first. - Display <code>NULL</code> values cleanly. - Search any visible row text. - Filter requests by status. - Filter CAN messages by TX/RX direction. - Show colour-coded badges. - Paginate both filtered result sets. - Restrict access to administrator accounts.</p>
+<h3 id="fixing-old-php-issues">Fixing old PHP issues</h3>
+<p>In between work, I fixed a PHP-DB issue. I had to change one of the entry types from int into a string with different values. The dedicated "sabbath_mode" column which would flip between 0 and 1 has been changed to "operation_modes" (as this works better with the CPP and prevents multiple modes running at once by having one control column).</p>
+<p>The original function was made as such:</p>
+<pre class="code-block language-php"><code class="language-php">if($requestAction === &#39;sabbath&#39;) {
+        // JS replies with enable or disabled
+        $submittedSabbathState = $_POST[&#39;sabbath_state&#39;] ?? &#39;&#39;;
+
+        $allowedSabbathStates = [&#39;enabled&#39;, &#39;disabled&#39;];
+
+        if(!in_array($submittedSabbathState, $allowedSabbathStates, true)) {
+            echo json_encode([
+                &#39;success&#39; =&gt; false,
+                &#39;message&#39; =&gt; &#39;invalid sabbath state&#39;
+            ]);
+            exit;
+        }
+        // convert text into 0/1 for DB state
+        $sabbathEnabled = 0;
+
+        if($submittedSabbathState === &#39;enabled&#39;) {
+            $sabbathEnabled = 1;
+        }
+
+        try {
+            $query = &quot;
+                UPDATE elevator_state
+                SET sabbath_enabled = :sabbath_enabled
+                WHERE state_id = 1
+            &quot;;
+
+            $statement = $pdo-&gt;prepare($query);
+
+            $params = [&#39;sabbath_enabled&#39; =&gt; $sabbathEnabled];
+
+            $result = $statement-&gt;execute($params);
+
+            if($result) {
+                // sucessful
+                echo json_encode([
+                    &#39;success&#39; =&gt; true,
+                    &#39;message&#39; =&gt; &#39;sabbath mode updated&#39;,
+                    &#39;sabbath_state&#39; =&gt; $submittedSabbathState
+                ]);
+            } else {
+                echo json_encode([
+                    &#39;success&#39; =&gt; false,
+                    &#39;message&#39; =&gt; &#39;sabbath mode could not be enabled&#39;
+                ]);
+            }
+        } catch (PDOException $e) {
+            error_log($e-&gt;getMessage());
+            echo json_encode([
+                &#39;success&#39; =&gt; false,
+                &#39;message&#39; =&gt; &#39;a database error prevented sabbath toggle&#39;,
+            ]);
+        }
+        exit;
+    }</code></pre>
+<p>But only a few small changes had to be made. Particularly, this part:</p>
+<pre class="code-block language-php"><code class="language-php">        // convert text into 0/1 for DB state
+        $sabbathEnabled = 0;
+
+        if($submittedSabbathState === &#39;enabled&#39;) {
+            $sabbathEnabled = 1;
+        }</code></pre>
+<p>Had to be swapped to this:</p>
+<pre class="code-block language-php"><code class="language-php">        // convert submitted Sabbath state into an elevator operation mode
+        $operationMode = &#39;normal&#39;;
+
+        if($submittedSabbathState === &#39;enabled&#39;) {
+            $operationMode = &#39;sabbath&#39;;
+        }</code></pre>
+<p>This now avoids the hardcoded 0-1 transition as it is no longer supported.</p>
+<p>Additionally, the query had to be changed as well.</p>
+<p>The updated one looks like such:</p>
+<pre class="code-block language-php"><code class="language-php">            $query = &quot;
+                UPDATE elevator_state
+                SET operation_mode = :operation_mode
+                WHERE state_id = 1
+            &quot;;
+
+            $statement = $pdo-&gt;prepare($query);
+
+            $params = [&#39;operation_mode&#39; =&gt; $operationMode];</code></pre>
+<p>This changes the 'operation_mode' column with the new value of 'operation_mode' (which is sabbath in this case).</p>
+<p>Additionally, I noticed that the CSS element on the sabbath toggle was missing so I fixed it with:</p>
+<pre class="code-block language-css"><code class="language-css">.sabbath-toggle {
+  margin-top: 22px;
+  padding: 16px;
+  background-color: white;
+  border-left: 4px solid var(--orange);
+  border-radius: 10px;
+  box-shadow: 0 3px 10px var(--shadow);
+}</code></pre>
+<p>But this will likely be changed as I plan to move this element later - which means recolouring it.</p>
+<p>One more "mistake" I noticed is that I forgot to make the operation mode dynamic. If you enabled Sabbath mode, it would update, but if you refreshed the page it would revert back. The behaviour is:</p>
+<p>Sabbath enable on website = Sabbath enable in DB refresh page Sabbath disabled on website = Sabbath enable in DB</p>
+<p>This was because refreshing did not query the DB to pull the latest value from the DB.</p>
+<p>First change:</p>
+<pre class="code-block language-php"><code class="language-php">$initialOperationMode = &#39;normal&#39;;</code></pre>
+<p>Default to normal until DB queried.</p>
+<p>Second change:</p>
+<pre class="code-block language-php"><code class="language-php">    // read from DB to load page with the data
+    $query = &quot;
+        SELECT doors_open
+        FROM elevator_state
+        WHERE state_id = 1
+        LIMIT 1
+    &quot;;</code></pre>
+<p>updated to:</p>
+<pre class="code-block language-php"><code class="language-php">    // read from DB to load page with the data
+    $query = &quot;
+        SELECT doors_open, operation_mode
+        FROM elevator_state
+        WHERE state_id = 1
+        LIMIT 1
+    &quot;;</code></pre>
+<p>Read both values from the same table - might as well.</p>
+<p>Next, add this line:</p>
+<pre class="code-block language-php"><code class="language-php">    // maria DB returns 0 or 1 for door state, convert it into a PHP bool
+    if($elevatorState) {
+        $initialDoorsOpen = (int) $elevatorState[&#39;doors_open&#39;] === 1;
+        $initialOperationMode = $elevatorState[&#39;operation_mode&#39;];
+    }</code></pre>
+<p>Next, add this line to the main section's class:</p>
+<pre class="code-block language-php"><code class="language-php">data-operation-mode=&quot;&lt;?php echo htmlspecialchars($initialOperationMode, ENT_QUOTES, &#39;UTF-8&#39;); ?&gt;&quot;&gt;</code></pre>
+<p>And update the div below:</p>
+<pre class="code-block language-php"><code class="language-php">&lt;div class=&quot;sabbath-toggle&quot;
+    data-operation-mode=&quot;&lt;?php echo htmlspecialchars($initialOperationMode, ENT_QUOTES, &#39;UTF-8&#39;); ?&gt;&quot;&gt;
+
+    &lt;p class=&quot;section-label&quot;&gt;&lt;b&gt;Sabbath Toggle&lt;/b&gt;&lt;/p&gt;
+
+    &lt;button type=&quot;button&quot; id=&quot;sabbathToggle&quot; class=&quot;sabbath-toggle-button&quot;&gt;
+        Sabbath Mode
+    &lt;/button&gt;
+&lt;/div&gt;</code></pre>
+<p>And lastly, review/update the JS.</p>
+<pre class="code-block language-javascript"><code class="language-javascript">    const initialOperationMode = elevatorControlPage.dataset.operationMode;</code></pre>
+<p>And initialize the JS:</p>
+<pre class="code-block language-javascript"><code class="language-javascript">    // update the Sabbath toggle using the operation mode loaded by PHP
+    updateSabbathDisplay(initialOperationMode === &quot;sabbath&quot;);</code></pre>
+      </section>
+
+      <section class="logbook-entry-content">
+<h2 id="addition-of-maintenance-mode-in-elevator_control">Addition of maintenance mode in elevator_control</h2>
+<p>Maintenance mode already existed as a valid database/C++ operation mode, but the website did not have a control for it.</p>
+<h3 id="button-placement-and-html">Button placement and HTML</h3>
+<p>The maintenance control was placed directly below the Sabbath toggle in the right-hand controller column. These are both operating-mode controls, so grouping them together is clearer than placing maintenance beside a floor-request button or door control.</p>
+<p>The new HTML card is:</p>
+<pre class="code-block language-markup"><code class="language-markup">&lt;div class=&quot;sabbath-toggle maintenance-toggle&quot;&gt;
+    &lt;p class=&quot;section-label&quot;&gt;
+        &lt;b&gt;Maintenance Toggle&lt;/b&gt;
+    &lt;/p&gt;
+
+    &lt;button
+        type=&quot;button&quot;
+        id=&quot;maintenanceToggle&quot;
+        class=&quot;
+            sabbath-toggle-button
+            maintenance-toggle-button
+        &quot;&gt;
+        Maintenance Mode
+    &lt;/button&gt;
+&lt;/div&gt;</code></pre>
+<p>It reuses the existing Sabbath-button appearance, so no entirely new button style was required.</p>
+<figure>
+<img class="img_med" src="../../media/images/ElevatorController_AllSideButtons.png" alt="Elevator controller with all side controls" />
+<figcaption><b>Elevator controller with all side controls</b></figcaption>
+</figure>
+<h3 id="php-maintenance-post-branch">PHP maintenance POST branch</h3>
+<p>JavaScript identifies the new request with:</p>
+<pre class="code-block language-text"><code class="language-text">request_action = maintenance</code></pre>
+<p>PHP reads and validates it separately from elevator movement:</p>
+<pre class="code-block language-php"><code class="language-php">if($requestAction === &#39;maintenance&#39;) {
+    $submittedMaintenanceState = $_POST[&#39;maintenance_state&#39;] ?? &#39;&#39;;
+
+    $allowedMaintenanceStates = [
+        &#39;enabled&#39;,
+        &#39;disabled&#39;
+    ];
+
+    if(
+        !in_array(
+            $submittedMaintenanceState,
+            $allowedMaintenanceStates,
+            true
+        )
+    ) {
+        echo json_encode([
+            &#39;success&#39; =&gt; false,
+            &#39;message&#39; =&gt;
+                &#39;invalid maintenance state&#39;
+        ]);
+
+        exit;
+    }</code></pre>
+<p>Disabling maintenance returns to normal. Enabling it selects maintenance:</p>
+<pre class="code-block language-php"><code class="language-php">$operationMode = &#39;normal&#39;;
+
+if($submittedMaintenanceState ===&#39;enabled&#39;) {
+    $operationMode = &#39;maintenance&#39;;
+}</code></pre>
+<p>The shared state row is updated:</p>
+<pre class="code-block language-php"><code class="language-php">$query = &quot;
+    UPDATE elevator_state
+    SET operation_mode = :operation_mode
+    WHERE state_id = 1
+&quot;;
+
+$statement = $pdo-&gt;prepare($query);
+
+$params = [
+    &#39;operation_mode&#39; =&gt; $operationMode
+];
+
+$result = $statement-&gt;execute($params);</code></pre>
+<p>The response includes both the submitted button state and the actual resulting database mode:</p>
+<pre class="code-block language-php"><code class="language-php">echo json_encode([
+    &#39;success&#39; =&gt; true,
+    &#39;message&#39; =&gt;
+        &#39;maintenance mode updated&#39;,
+    &#39;maintenance_state&#39; =&gt;
+        $submittedMaintenanceState,
+    &#39;operation_mode&#39; =&gt;
+        $operationMode
+]);</code></pre>
+<p>The final <code>exit;</code> is important because the maintenance request must not fall through into the floor-movement POST logic.</p>
+<h3 id="javascript-maintenance-request">JavaScript maintenance request</h3>
+<p>The new DOM reference/state are:</p>
+<pre class="code-block language-javascript"><code class="language-javascript">const maintenanceToggle = document.getElementById(&quot;maintenanceToggle&quot;);
+
+let maintenanceEnabled = false;</code></pre>
+<p>The request function follows the existing door/Sabbath pattern:</p>
+<pre class="code-block language-javascript"><code class="language-javascript">function sendMaintenanceState(maintenanceState) {
+    const requestData = new URLSearchParams();
+
+    requestData.append(&quot;request_action&quot;, &quot;maintenance&quot;);
+
+    requestData.append(
+        &quot;maintenance_state&quot;,
+        maintenanceState
+    );
+
+    return fetch(
+        &quot;elevator_control.php&quot;,
+        {
+            method: &quot;POST&quot;,
+            headers: {
+                &quot;Content-Type&quot;:
+                    &quot;application/&quot;
+                    + &quot;x-www-form-urlencoded&quot;
+            },
+            body: requestData.toString()
+        }
+    )
+    .then(function (response) {
+        return response.json();
+    });
+}</code></pre>
+<p>The toggle decides whether the next action enables or disables maintenance:</p>
+<pre class="code-block language-javascript"><code class="language-javascript">function toggleMaintenanceMode() {
+    let requestedState = &quot;enabled&quot;;
+
+    if(maintenanceEnabled === true) {
+        requestedState = &quot;disabled&quot;;
+    }
+
+    lastCommandDisplay.textContent =
+        &quot;Requesting Maintenance mode &quot; +
+        requestedState +
+        &quot;...&quot;;
+
+    sendMaintenanceState(requestedState)
+        .then(handleMaintenanceResponse)
+        .catch(handleMaintenanceFailure);
+}
+
+maintenanceToggle.addEventListener(
+    &quot;click&quot;,
+    toggleMaintenanceMode
+);</code></pre>
+<h3 id="synchronizing-sabbath-and-maintenance">Synchronizing Sabbath and maintenance</h3>
+<p>Both buttons must represent the one <code>operation_mode</code> column. The UI is synchronized in one function:</p>
+<pre class="code-block language-javascript"><code class="language-javascript">function updateOperationModeDisplay(
+    operationMode
+) {
+    updateSabbathDisplay(
+        operationMode === &quot;sabbath&quot;
+    );
+
+    updateMaintenanceDisplay(
+        operationMode === &quot;maintenance&quot;
+    );
+}</code></pre>
+<p>This makes the controls mutually exclusive:</p>
+<ul class="clean-list">
+<li><code>normal</code>: both buttons inactive.</li>
+<li><code>sabbath</code>: Sabbath active; maintenance inactive.</li>
+<li><code>maintenance</code>: maintenance active; Sabbath inactive.</li>
+<li><code>fault</code>: neither user toggle appears active.</li>
+</ul>
+<p>The maintenance button appearance is updated with:</p>
+<pre class="code-block language-javascript"><code class="language-javascript">function updateMaintenanceDisplay(
+    newMaintenanceState
+) {
+    maintenanceEnabled = newMaintenanceState;
+
+    if(maintenanceEnabled === true) {
+        maintenanceToggle.textContent =
+            &quot;Disable Maintenance mode&quot;;
+
+        maintenanceToggle.classList.add(
+            &quot;active&quot;
+        );
+    } else {
+        maintenanceToggle.textContent =
+            &quot;Enable Maintenance mode&quot;;
+
+        maintenanceToggle.classList.remove(
+            &quot;active&quot;
+        );
+    }
+}</code></pre>
+<h3 id="loading-the-correct-mode-after-refreshing">Loading the correct mode after refreshing</h3>
+<p>PHP already reads:</p>
+<pre class="code-block language-sql"><code class="language-sql">SELECT doors_open, operation_mode
+FROM elevator_state
+WHERE state_id = 1
+LIMIT 1;</code></pre>
+<p>The main element contains:</p>
+<pre class="code-block language-php"><code class="language-php">data-operation-mode=&quot;&lt;?php
+    echo htmlspecialchars(
+        $initialOperationMode,
+        ENT_QUOTES,
+        &#39;UTF-8&#39;
+    );
+?&gt;&quot;</code></pre>
+<p>JavaScript initializes both buttons:</p>
+<pre class="code-block language-javascript"><code class="language-javascript">const initialOperationMode = elevatorControlPage.dataset.operationMode || &quot;normal&quot;;
+
+updateOperationModeDisplay(
+    initialOperationMode
+);</code></pre>
+<h3 id="fixing-the-button-only-changing-after-a-refresh">Fixing the button only changing after a refresh</h3>
+<p>The initial database load was working because refreshing displayed the correct mode. The actual problem was the AJAX response/UI update after a click.</p>
+<p>The response handler expected:</p>
+<pre class="code-block language-javascript"><code class="language-javascript">responseData.operation_mode</code></pre>
+<p>Therefore the PHP success response must include:</p>
+<pre class="code-block language-php"><code class="language-php">&#39;operation_mode&#39; =&gt; $operationMode</code></pre>
+<p>for <strong>both</strong> Sabbath and maintenance branches.</p>
+<p>For additional reliability, the handler can derive the mode directly from the successful state:</p>
+<pre class="code-block language-javascript"><code class="language-javascript">function handleMaintenanceResponse(
+    responseData
+) {
+    if(responseData.success === true) {
+        const operationMode =
+            responseData.maintenance_state
+                === &quot;enabled&quot;
+                ? &quot;maintenance&quot;
+                : &quot;normal&quot;;
+
+        updateOperationModeDisplay(operationMode);
+
+        lastCommandDisplay.textContent = &quot;Maintenance mode &quot; + responseData.maintenance_state;
+    } else {
+        lastCommandDisplay.textContent = &quot;Maintenance update rejected: &quot; + responseData.message;
+    }
+}</code></pre>
+<p>After changing the Pi's JavaScript, <code>Ctrl + F5</code> was required once to ensure the browser did not continue running a cached copy.</p>
+<p>The website now updates <code>elevator_state.operation_mode</code>; the C++ supervisor still needs to read and enforce the actual maintenance behaviour in the physical system.</p>
+<h3 id="assisting-mr-with-r-pi-db-related-work">Assisting MR with R-Pi DB-related work</h3>
+<h4 id="missing-operation_mode-column">Missing <code>operation_mode</code> column</h4>
+<p>MR received:</p>
+<pre class="code-block language-text"><code class="language-text">Failed to read operation_mode from DB
+Unknown column &#39;operation_mode&#39; in &#39;SELECT&#39;</code></pre>
+<p>The catch block was correctly printing the error:</p>
+<pre class="code-block language-cpp"><code class="language-cpp">std::cerr &lt;&lt; &quot;Failed to read operation_mode from DB &quot; &lt;&lt; error.what() &lt;&lt; std::endl;</code></pre>
+<p>The exception occurs while MariaDB executes the <code>SELECT</code>, before C++ can call:</p>
+<pre class="code-block language-cpp"><code class="language-cpp">result-&gt;getString(&quot;operation_mode&quot;);</code></pre>
+<p>The likely cause was that the Pi still contained the older <code>elevator_state</code> schema. The checks were:</p>
+<pre class="code-block language-sql"><code class="language-sql">USE lif_elevator;
+
+SELECT DATABASE();
+
+DESCRIBE elevator_state;</code></pre>
+<p>The missing column could be added with:</p>
+<pre class="code-block language-sql"><code class="language-sql">ALTER TABLE elevator_state
+ADD COLUMN operation_mode
+    VARCHAR(20)
+    NOT NULL
+    DEFAULT &#39;normal&#39;
+AFTER doors_open;</code></pre>
+<h4 id="emptymissing-elevator_state-table-on-the-pi">Empty/missing <code>elevator_state</code> table on the Pi</h4>
+<p>The local database contained:</p>
+<pre class="code-block language-text"><code class="language-text">state_id | doors_open | operation_mode | updated_at
+1        | 0          | normal         | ...</code></pre>
+<p>but the Pi did not. The table and permanent row were recreated using the <code>CREATE TABLE IF NOT EXISTS</code> and <code>INSERT</code> statements recorded earlier in this note.</p>
+<p>The final checks were:</p>
+<pre class="code-block language-sql"><code class="language-sql">DESCRIBE elevator_state;
+
+SELECT *
+FROM elevator_state;</code></pre>
+<h4 id="clearing-test-elevator-requests">Clearing test elevator requests</h4>
+<p>All 115 earlier requests were test data. The simplest command is normally:</p>
+<pre class="code-block language-sql"><code class="language-sql">TRUNCATE TABLE elevator_requests;</code></pre>
+<p><code>TRUNCATE</code> removes every row and resets the next auto-increment ID to 1.</p>
+<p>When <code>LiF_Admin</code> did not have <code>ALTER</code> permission, the data was cleared with:</p>
+<pre class="code-block language-sql"><code class="language-sql">DELETE FROM elevator_requests;</code></pre>
+<p>and the counter needed a privileged account:</p>
+<pre class="code-block language-sql"><code class="language-sql">ALTER TABLE elevator_requests
+AUTO_INCREMENT = 1;</code></pre>
+<p>The root-login problem happened because:</p>
+<pre class="code-block language-text"><code class="language-text">mariadb -u root -h 127.0.0.1 -P 3306</code></pre>
+<p>was typed <strong>inside</strong> the MariaDB prompt. That is a Linux terminal command, not SQL.</p>
+<p>The correct sequence on the Raspberry Pi is:</p>
+<pre class="code-block language-sql"><code class="language-sql">exit;</code></pre>
+<p>Then from the normal Pi shell:</p>
+<pre class="code-block language-bash"><code class="language-bash">sudo mariadb</code></pre>
+<p>Then:</p>
+<pre class="code-block language-sql"><code class="language-sql">USE lif_elevator;
+
+ALTER TABLE elevator_requests
+AUTO_INCREMENT = 1;</code></pre>
+<p>If MariaDB is waiting at its continuation prompt (<code>-&gt;</code>), the incomplete SQL can be cancelled with:</p>
+<pre class="code-block language-text"><code class="language-text">\c</code></pre>
+<h4 id="php-database-connection-refused">PHP database connection refused</h4>
+<p>Another Pi produced:</p>
+<pre class="code-block language-text"><code class="language-text">SQLSTATE[HY000] [2002]
+No connection could be made because
+the target machine actively refused it</code></pre>
+<p>The PHP connection was:</p>
+<pre class="code-block language-php"><code class="language-php">$host = &#39;localhost&#39;;
+$dbname = &#39;lif_elevator&#39;;
+$dbuser = &#39;LiF_Admin&#39;;
+$dbpass = &#39;LiF_ESE&#39;;</code></pre>
+<p>One troubleshooting change was to explicitly match the C++ connector's TCP connection:</p>
+<pre class="code-block language-php"><code class="language-php">$host = &#39;127.0.0.1&#39;;
+$port = 3306;
+
+$pdo = new PDO(
+    &quot;mysql:host=$host;&quot;
+    . &quot;port=$port;&quot;
+    . &quot;dbname=$dbname;&quot;
+    . &quot;charset=utf8mb4&quot;,
+    $dbuser,
+    $dbpass
+);</code></pre>
+<p><code>localhost</code> can cause PHP to use a Linux socket or resolve differently, while <code>127.0.0.1:3306</code> explicitly requests local TCP.</p>
+<p>Ultimately, the issue was just an IP misstype when entering it into the search bar to access the Pi remotely - lol.</p>
+<h4 id="lif_admin-permissions"><code>LiF_Admin</code> permissions</h4>
+<p>An earlier <code>SHOW GRANTS</code> result contained only:</p>
+<pre class="code-block language-text"><code class="language-text">GRANT USAGE ON *.*
+TO &#39;LiF_Admin&#39;@&#39;localhost&#39;</code></pre>
+<p><code>USAGE</code> does not grant permission to use the project database. The database user required suitable privileges on:</p>
+<pre class="code-block language-text"><code class="language-text">lif_elevator.*</code></pre>
+<p>for the website/C++ operations it performs. Schema-changing commands such as <code>ALTER TABLE</code> can remain root-only if desired, but normal runtime commands require at least the relevant <code>SELECT</code>, <code>INSERT</code>, and <code>UPDATE</code> privileges.</p>
+<h3 id="setting-up-sqlc-connector-on-windows-to-test-c-code">Setting up SQL/C++ Connector on Windows to test C++ code</h3>
+<p>The Raspberry Pi is the actual build target because it already has the professor-provided PCAN and MySQL Connector/C++ libraries. I still configured Windows/VS Code enough to edit and syntax-check normal C++.</p>
+<h4 id="fixing-the-missing-windows-compiler">Fixing the missing Windows compiler</h4>
+<p>At first, VS Code could not find <code>g++</code>, and IntelliSense suggestions such as <code>&lt;string&gt;</code> were not working correctly. MSYS2 was installed and the UCRT64 compiler package was added:</p>
+<pre class="code-block language-bash"><code class="language-bash">pacman -S mingw-w64-ucrt-x86_64-gcc</code></pre>
+<p>After restarting VS Code, the UCRT64 <code>g++</code> installation could be selected as the compiler.</p>
+<p>UCRT64 refers to the MinGW-w64 toolchain that uses Microsoft's Universal C Runtime. This is a normal 64-bit Windows compiler environment.</p>
+<p>The STM32Cube/clangd extensions also interfered with normal desktop C++ IntelliSense. The project needed the correct compiler/toolchain selected rather than treating this MariaDB program like STM32 firmware.</p>
+<h4 id="why-the-full-connector-was-not-compiled-on-windows">Why the full connector was not compiled on Windows</h4>
+<p>The source includes:</p>
+<pre class="code-block language-cpp"><code class="language-cpp">#include &lt;mysql_connection.h&gt;
+#include &lt;cppconn/driver.h&gt;</code></pre>
+<p>Installing <code>g++</code> does not install MySQL Connector/C++. The project libraries supplied by the professor were intended for the Raspberry Pi's ARM/Linux environment, so the Windows editor could understand ordinary C++ but could not fully link the Pi program without a separate Windows Connector/C++ installation.</p>
+<p>This meant the practical approach was:</p>
+<ul class="clean-list">
+<li>Edit and inspect code on Windows.</li>
+<li>Push/pull it through Git.</li>
+<li>Compile and test the full program on the Raspberry Pi.</li>
+</ul>
+<h4 id="raspberry-pi-makefile">Raspberry Pi Makefile</h4>
+<p>The Pi project used:</p>
+<pre class="code-block language-makefile"><code class="language-makefile">CXX = g++
+INC_DIR = include
+SRC_DIR = src
+OBJ_DIR = obj
+TARGET = LiF_SC
+
+CXXFLAGS = -Wall -Wextra -g
+LDFLAGS = -L/usr/lib/arm-linux-gnueabihf
+LDLIBS = -l:libmysqlcppconn.so -lpcan</code></pre>
+<p>The important link libraries are:</p>
+<ul class="clean-list">
+<li><code>libmysqlcppconn.so</code> for MySQL Connector/C++.</li>
+<li><code>libpcan</code> for the PEAK CAN adapter.</li>
+</ul>
+<p>A direct connector test could be built with (provided by AI):</p>
+<pre class="code-block language-bash"><code class="language-bash">g++ \
+  -Iinclude \
+  -Wall \
+  -Wextra \
+  -g \
+  db_test.cpp \
+  src/database.cpp \
+  -L/usr/lib/arm-linux-gnueabihf \
+  -l:libmysqlcppconn.so \
+  -lpcan \
+  -o db_test</code></pre>
+<p>An earlier warning about unused <code>id</code>, <code>data</code>, and <code>length</code> parameters came from the placeholder <code>log_can_message()</code> body. Those warnings disappeared once the real logger used the parameters.</p>
+<h4 id="example-connector-test">Example connector test</h4>
+<p>The class was designed to be tested independently from the full CAN loop:</p>
+<pre class="code-block language-cpp"><code class="language-cpp">DB db;
+
+if(!db.db_connect()) {
+    return 1;
+}
+
+int floor = db.read_floor_request();
+
+std::cout &lt;&lt; &quot;Requested floor: &quot; &lt;&lt; floor &lt;&lt; std::endl;
+
+DB::OperationMode mode = db.get_operation_mode();
+
+int doorsOpen = db.get_doors_open();</code></pre>
+<p>Testing each database function separately made it easier to distinguish:</p>
+<ul class="clean-list">
+<li>A compiler/linker problem.</li>
+<li>A MariaDB connection/permission problem.</li>
+<li>A missing table/column problem.</li>
+<li>A logic problem in the full elevator supervisor.</li>
+</ul>
+      </section>
+
+      <section class="logbook-entry-content">
+<h2 id="final-can-logging-implementation">Final CAN logging implementation</h2>
+<p>The existing CAN Logging section above records how the table was received and why the diagnostics implementation had to be taken over. This section records the completed C++ function in a more direct technical form.</p>
+<h3 id="input-validation-and-return-meanings">Input validation and return meanings</h3>
+<p>The signature remained:</p>
+<pre class="code-block language-cpp"><code class="language-cpp">int DB::log_can_message(
+    int id,
+    int *data,
+    uint8_t length
+);</code></pre>
+<p>It was deliberately kept as an <code>int</code> because the supervisor needed to distinguish three outcomes:</p>
+<table class="logbook-table">
+<thead>
+<tr class="header">
+<th>Return</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>1</code></td>
+<td>Exactly one CAN-log row was inserted</td>
+</tr>
+<tr class="even">
+<td><code>0</code></td>
+<td>Invalid input, unknown CAN ID, or no row inserted</td>
+</tr>
+<tr class="odd">
+<td><code>-1</code></td>
+<td>Database connection/SQL failure</td>
+</tr>
+</tbody>
+</table>
+<p>The first validation prevents a null pointer, a zero-length frame, or a CAN DLC over 8:</p>
+<pre class="code-block language-cpp"><code class="language-cpp">if(
+    data == nullptr ||
+    length == 0 ||
+    length &gt; 8
+) {
+    std::cerr &lt;&lt; &quot;CAN message was not logged: &quot; &lt;&lt; &quot;invalid data or length&quot; &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+<p>The table stores <code>raw_byte</code> as <code>TINYINT UNSIGNED</code>, so:</p>
+<pre class="code-block language-cpp"><code class="language-cpp">if(data[0] &lt; 0 || data[0] &gt; 255) {
+    std::cerr &lt;&lt; &quot;CAN message was not logged: &quot; &lt;&lt; &quot;data[0] is outside 0-255&quot; &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+<h3 id="inferring-direction-and-source">Inferring direction and source</h3>
+<p>The caller does not pass text such as <code>rx</code>, <code>tx</code>, or <code>F2</code>. The function determines those values from the ID so inconsistent labels cannot be supplied:</p>
+<pre class="code-block language-cpp"><code class="language-cpp">if(id == 0x100) {
+    canIdText = &quot;0x100&quot;;
+    direction = &quot;tx&quot;;
+    sourceController = &quot;SC&quot;;
+}
+else if(id == 0x101) {
+    canIdText = &quot;0x101&quot;;
+    direction = &quot;rx&quot;;
+    sourceController = &quot;EC&quot;;
+}
+else if(id == 0x200) {
+    canIdText = &quot;0x200&quot;;
+    direction = &quot;rx&quot;;
+    sourceController = &quot;CC&quot;;
+}
+else if(id == 0x201) {
+    canIdText = &quot;0x201&quot;;
+    direction = &quot;rx&quot;;
+    sourceController = &quot;F1&quot;;
+}
+else if(id == 0x202) {
+    canIdText = &quot;0x202&quot;;
+    direction = &quot;rx&quot;;
+    sourceController = &quot;F2&quot;;
+}
+else if(id == 0x203) {
+    canIdText = &quot;0x203&quot;;
+    direction = &quot;rx&quot;;
+    sourceController = &quot;F3&quot;;
+}
+else {
+    std::cerr &lt;&lt; &quot;CAN message was not logged: &quot; &lt;&lt; &quot;unknown CAN ID&quot; &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+<h3 id="inserting-the-can-row">Inserting the CAN row</h3>
+<p>The prepared query is:</p>
+<pre class="code-block language-cpp"><code class="language-cpp">statement = con-&gt;prepareStatement(
+    &quot;INSERT INTO can_message_log (&quot;
+    &quot;elevator_request_id, &quot;
+    &quot;can_id, &quot;
+    &quot;direction, &quot;
+    &quot;raw_byte, &quot;
+    &quot;dlc, &quot;
+    &quot;source_controller&quot;
+    &quot;) VALUES (&quot;
+    &quot;NULLIF(?, 0), ?, ?, ?, ?, ?&quot;
+    &quot;)&quot;);</code></pre>
+<p>The values are bound in the same order:</p>
+<pre class="code-block language-cpp"><code class="language-cpp">statement-&gt;setInt(
+    1,
+    active_request_id
+);
+
+statement-&gt;setString(
+    2,
+    canIdText
+);
+
+statement-&gt;setString(
+    3,
+    direction
+);
+
+statement-&gt;setInt(
+    4,
+    data[0]
+);
+
+statement-&gt;setInt(
+    5,
+    length
+);
+
+statement-&gt;setString(
+    6,
+    sourceController
+);</code></pre>
+<p><code>NULLIF(?, 0)</code> is important. <code>active_request_id</code> is zero when a CAN frame is not connected to an active remote website request. MariaDB converts that zero to SQL <code>NULL</code>, which satisfies the nullable foreign key.</p>
+<p>The insert result is checked:</p>
+<pre class="code-block language-cpp"><code class="language-cpp">int insertedRows = statement-&gt;executeUpdate();
+
+delete statement;
+
+if(insertedRows == 1) {
+    return 1;
+}
+
+return 0;</code></pre>
+<p>On a SQL exception, the statement is deleted if it was created, the MariaDB message is printed, and the function returns <code>-1</code>.</p>
+      </section>
+
+      <section class="logbook-entry-content">
+<h2 id="raspberry-pi-deployment-and-verification-notes">Raspberry Pi deployment and verification notes</h2>
+<h3 id="website-access-from-another-computer">Website access from another computer</h3>
+<p>Because Apache hosts the site on the Pi, a laptop on the same network can open the Pi's IP address in a browser:</p>
+<pre class="code-block language-text"><code class="language-text">http://&lt;raspberry-pi-ip&gt;/</code></pre>
+<p>Using these useful Pi IP checks:</p>
+<pre class="code-block language-bash"><code class="language-bash">hostname -I</code></pre>
+<p>and:</p>
+<pre class="code-block language-bash"><code class="language-bash">ip addr</code></pre>
+<p>We found the Pi's IP was:</p>
+<pre class="code-block language-bash"><code class="language-bash">192.168.1.115</code></pre>
+<h3 id="programrepository-location">Program/repository location</h3>
+<p>The supervisor project was deployed under:</p>
+<pre class="code-block language-text"><code class="language-text">/var/www/html/SENG73000_W2/RPi/LiF_SC</code></pre>
+<p>The Raspberry Pi was configured so the supervisor programs could start on power-on, allowing the website/server and CAN supervisor to operate as one embedded system.</p>
+      </section>
+
+      <section class="logbook-entry-content">
+<h2 id="end-to-end-behaviour-after-these-changes">End-to-end behaviour after these changes</h2>
+<h3 id="remote-website-request">Remote website request</h3>
+<ol class="clean-list">
+<li>Logged-in user presses a floor/car button.</li>
+<li>JavaScript sends <code>requested_floor</code> and <code>source_controller</code>.</li>
+<li>PHP validates the values and current user.</li>
+<li>PHP reads <code>doors_open</code>.</li>
+<li>PHP inserts a <code>remote</code> row into <code>elevator_requests</code>.</li>
+<li>JavaScript displays the returned request ID.</li>
+<li>C++ reads the oldest pending remote request.</li>
+<li>C++ transmits <code>0x100</code> with the floor command.</li>
+<li>The transmitted frame is inserted into <code>can_message_log</code>.</li>
+<li>EC reports its new position using <code>0x101</code>.</li>
+<li>The received frame is logged.</li>
+<li>Once the position matches, C++ completes the active request.</li>
+<li>The diagnostics page displays the completed request and its related CAN traffic.</li>
+</ol>
+<h3 id="manual-physical-request">Manual physical request</h3>
+<ol class="clean-list">
+<li>A car/floor STM32 sends a CAN request.</li>
+<li>The Pi receives the frame.</li>
+<li><code>log_can_message()</code> stores the raw message.</li>
+<li>The source ID is mapped to <code>CC</code>, <code>F1</code>, <code>F2</code>, or <code>F3</code>.</li>
+<li>The interpreted call is inserted as a <code>manual</code> elevator request.</li>
+<li>The supervisor coordinates the command with the elevator controller.</li>
+</ol>
+<h3 id="state-controls">State controls</h3>
+<ol class="clean-list">
+<li>Door, Sabbath, or Maintenance button sends a separate AJAX action.</li>
+<li>PHP validates the submitted text.</li>
+<li>PHP updates row <code>state_id = 1</code>.</li>
+<li>PHP returns the resulting value as JSON.</li>
+<li>JavaScript immediately updates the page.</li>
+<li>Refreshing re-reads the same values from MariaDB.</li>
+<li>C++ can read the same state before deciding whether/how to move.</li>
+</ol>
+      </section>
+
+      <section class="logbook-entry-content">
+<h2 id="results-and-notable-lessons">Results and notable lessons</h2>
+<ul class="clean-list">
+<li>The database is the boundary between the web interface and the hardware supervisor.</li>
+<li><code>elevator_requests</code> is a work/history queue, while <code>elevator_state</code> stores the latest permanent state.</li>
+<li>A shared C++ connection avoids repeatedly reconnecting to MariaDB.</li>
+<li>Prepared statements are required whenever values are inserted or updated.</li>
+<li><code>result-&gt;next()</code> is the guard that distinguishes a returned row from an empty query.</li>
+<li><code>active_request_id</code> connects the remote request, transmitted CAN frame, received position, and final completion update.</li>
+<li><code>NULLIF(active_request_id, 0)</code> allows unrelated/manual CAN traffic to be logged without violating the foreign key.</li>
+<li>One <code>operation_mode</code> string prevents multiple mutually exclusive modes from being enabled simultaneously.</li>
+<li>AJAX has two distinct success levels: the HTTP request can succeed while PHP/SQL returns <code>success: false</code>.</li>
+<li>PHP page-load values and JavaScript click-response values must both be implemented; otherwise a control may only look correct after refreshing.</li>
+<li>HTML table headings and body cells must contain the same number of columns.</li>
+<li>JavaScript identifiers are case-sensitive, including preferred names containing uppercase <code>CAN</code>.</li>
+<li>Client-side filtering should occur before pagination so every filtered page remains full and page counts stay correct.</li>
+<li>Linux shell commands cannot be entered at the <code>MariaDB [...]&gt;</code> prompt.</li>
+<li>Linux MariaDB table-name capitalization may differ from the Windows development environment.</li>
+<li>The Pi remains the correct final compilation environment for code that links against ARM PCAN and MySQL Connector/C++ libraries.</li>
+</ul>
+      </section>
+
+      <section class="logbook-entry-content">
+<h2 id="final-files-involved">Final files involved</h2>
+<table class="logbook-table">
+<colgroup>
+<col style="width: 19%" />
+<col style="width: 80%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Area</th>
+<th>Main files</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>C++ database connector</td>
+<td><code>include/database.h</code>, <code>src/database.cpp</code></td>
+</tr>
+<tr class="even">
+<td>Shared PHP connection</td>
+<td><code>php/db.php</code></td>
+</tr>
+<tr class="odd">
+<td>Elevator control</td>
+<td><code>php/elevator_control.php</code>, <code>js/elevator_control.js</code>, <code>css/elevator_control.css</code></td>
+</tr>
+<tr class="even">
+<td>Diagnostics</td>
+<td><code>php/elevator_diagnostics.php</code>, <code>js/elevator_diagnostics.js</code>, <code>css/elevator_diagnostics.css</code></td>
+</tr>
+<tr class="odd">
+<td>Authentication/admin</td>
+<td><code>login.php</code>, <code>members.php</code>, <code>manage_requests.php</code>, session-protected pages</td>
+</tr>
+<tr class="even">
+<td>Database</td>
+<td><code>lif_elevator</code> tables described throughout this note</td>
+</tr>
+</tbody>
+</table>
+      </section>
+
+      <p class="top-link">
+        <a href="#page_top">Go to the top of this page</a>
+      </p>
+    </main>
+
+    <footer class="site-footer">
+      <p>Copyright &copy; Nick Kapuka</p>
+    </footer>
+
+    <!-- Prism.js scripts for code formatting -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+    <script type="module">
+      import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+      mermaid.initialize({ startOnLoad: true });
+    </script>
+  </body>
+</html>

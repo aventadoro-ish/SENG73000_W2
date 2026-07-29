@@ -194,32 +194,41 @@ function handleResponse(responseData) {
         }
     } 
 
-function handleSabbathResponse(responseData) {
-    if(responseData.success === true) {
-        const operationMode = responseData.sabbath_state === "enabled" ? "sabbath" : "normal";
+    // handle sabbath mode
+    function handleSabbathResponse(responseData) {
+        if(responseData.success === true) {
+            // change operation mode as needed
+            const operationMode = responseData.sabbath_state === "enabled" ? "sabbath" : "normal";
 
-        updateOperationModeDisplay(operationMode);
-
-        lastCommandDisplay.textContent = "Sabbath mode " + responseData.sabbath_state;
-
-    } else {
-        lastCommandDisplay.textContent = "Sabbath update rejected: " + responseData.message;
-    }
-}
-
-
-function handleMaintenanceResponse(responseData) {
-    if(responseData.success === true) {
-        const operationMode = responseData.maintenance_state === "enabled" ? "maintenance" : "normal";
-
+            // update the webpage display
             updateOperationModeDisplay(operationMode);
 
-            lastCommandDisplay.textContent = "Maintenance mode " + responseData.maintenance_state;
+            // print last command
+            lastCommandDisplay.textContent = "Sabbath mode " + responseData.sabbath_state;
 
         } else {
-        lastCommandDisplay.textContent = "Maintenance update rejected: " + responseData.message;
+            // print last command
+            lastCommandDisplay.textContent = "Sabbath update rejected: " + responseData.message;
         }
     }
+
+    // handle maintenance mode
+    function handleMaintenanceResponse(responseData) {
+        if(responseData.success === true) {
+            // change operation mode as needed
+            const operationMode = responseData.maintenance_state === "enabled" ? "maintenance" : "normal";
+
+                // update the webpage display
+                updateOperationModeDisplay(operationMode);
+
+                // print last command
+                lastCommandDisplay.textContent = "Maintenance mode " + responseData.maintenance_state;
+
+            } else {
+                // print last command
+                lastCommandDisplay.textContent = "Maintenance update rejected: " + responseData.message;
+            }
+        }
 
     function handleSabbathFailure(error) {
         lastCommandDisplay.textContent = "The Sabbath request could not be sent";
@@ -471,7 +480,8 @@ if (initialRequestID !== "") {
 let lastConfirmedFloor = "";
 
 
-// ask PHP for the latest physical elevator state
+// ask PHP for the latest physical elevator state - used for polling. Attempted to implement here last minute but was pushed to phase 3 (will be replaced with node.js and websockets)
+/*
 function pollElevatorStatus() {
 
     fetch(
@@ -557,4 +567,5 @@ pollElevatorStatus();
 
 // check again every 1.5 seconds
 setInterval(pollElevatorStatus, 1500);
+*/
 });

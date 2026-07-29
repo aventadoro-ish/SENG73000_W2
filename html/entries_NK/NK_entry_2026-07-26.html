@@ -1,0 +1,390 @@
+<!doctype html>
+<!--
+Author: Nick Kapuka
+-->
+
+<html lang="en">
+  <head>
+    <title>Logbook Entry, 2026-07-26 to 2026-07-27 by Nick Kapuka</title>
+    <meta charset="UTF-8" />
+    <meta name="author" content="Nick Kapuka" />
+    <meta name="description" content="Added the CAN-message log table, reviewed the received diagnostics page, began rebuilding it around live database records, and updated the Sabbath-mode code for the new operation_mode design." />
+    <meta name="robots" content="index, follow" />
+    <meta http-equiv="Pragma" content="no-cache" />
+
+    <link rel="icon" href="../../media/icons/LiF_icon.ico" type="image/x-icon" />
+
+    <!-- Shared website styling -->
+    <link rel="stylesheet" href="../../css/base.css" />
+
+    <!-- Logbook entry page styling -->
+    <link rel="stylesheet" href="../../css/logbook_entry.css" />
+
+    <!-- Prism syntax highlighting theme -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css"
+    />
+    <link rel="stylesheet" href="../../css/code_formatting.css" />
+  </head>
+
+  <body>
+    <!-- Nav bar loaded by JavaScript -->
+    <div id="navbar-placeholder" data-root="../../"></div>
+    <script src="../../js/navbar.js"></script>
+
+    <main class="page-wrapper">
+      <section class="intro-section logbook-entry-intro" id="page_top">
+        <div class="intro-text">
+          <p class="section-label">Daily Logbook Entry</p>
+          <h1>Logbook Entry, 2026-07-26 to 2026-07-27 by Nick Kapuka</h1>
+
+          <p class="intro-description">Added the CAN-message log table, reviewed the received diagnostics page, began rebuilding it around live database records, and updated the Sabbath-mode code for the new operation_mode design.</p>
+
+          <div class="button-row">
+            <a href="../logbook_NK.html" class="button secondary-button">
+              My Logbook Cover Page
+            </a>
+            <a href="#log" class="button primary-button">Jump to Entry</a>
+          </div>
+        </div>
+
+        <aside class="summary-card">
+          <h2>Entry Snapshot</h2>
+          <p><b>Date:</b> 2026-07-26 to 2026-07-27</p>
+          <p><b>Author:</b> Nick Kapuka</p>
+          <p><b>Focus:</b> CAN logging, diagnostics, PHP, JavaScript, CSS, and operation modes</p>
+          <p><b>Tags:</b> #LiF #CAN #PHP #JavaScript #CSS #MariaDB #Diagnostics</p>
+        </aside>
+      </section>
+
+      <section class="logbook-entry-content" id="log">
+        <h2 id="entry-overview">Entry overview</h2>
+        <p>Added the CAN-message log table, reviewed the received diagnostics page, began rebuilding it around live database records, and updated the Sabbath-mode code for the new operation_mode design.</p>
+
+        <h3 id="key-details">Key details</h3>
+        <ul class="clean-list">
+          <li><strong>Purpose:</strong> Integrate CAN logging into the database and repair the diagnostics and elevator-control work needed for the Phase 2 deadline.</li>
+          <li><strong>Components:</strong> CAN logging, diagnostics, PHP, JavaScript, CSS, and operation modes</li>
+          <li><strong>Result:</strong> Created can_message_log locally, documented the diagnostics issues, and updated the Sabbath workflow to use operation_mode.</li>
+          <li><strong>Team contribution:</strong> Nick Kapuka</li>
+        </ul>
+      </section>
+
+      <section class="logbook-entry-content">
+<h2 id="can-logging">CAN Logging</h2>
+<h3 id="sql-table-and-progress-update">SQL table and progress update:</h3>
+<p>On the 26th I finally received the CAN message logging table made by RY. Initially, the table she provided was sent over Discord and poorly formatted:</p>
+<figure>
+<img class="img_med" src="../../media/images/SQL_ReceivedCANTable.png" alt="CAN-message table originally received over Discord" />
+<figcaption><b>CAN-message table originally received over Discord</b></figcaption>
+</figure>
+<p>This table was alright, but I did ask for her to fix the formatting by either sending me the full file or using the backtick characters to format it as a Discord codeblock. Neither was provided...</p>
+<p>However, the following morning she uploaded it to GitHub - perfect. I pulled from there and remade her table locally using:</p>
+<pre class="code-block language-sql"><code class="language-sql">CREATE TABLE lif_elevator.can_message_log (
+    log_id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    elevator_request_id INT UNSIGNED DEFAULT NULL,
+    can_id VARCHAR(6) NOT NULL,
+    direction ENUM(&#39;tx&#39;, &#39;rx&#39;) NOT NULL,
+    raw_byte TINYINT UNSIGNED NOT NULL,
+    dlc TINYINT UNSIGNED NOT NULL DEFAULT 1,
+    source_controller VARCHAR(30) NOT NULL,
+    logged_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (log_id),
+    INDEX idx_can_log_request (elevator_request_id),
+    INDEX idx_can_log_can_id (can_id),
+    INDEX idx_can_log_logged_at (logged_at),
+    CONSTRAINT fk_can_log_request
+        FOREIGN KEY (elevator_request_id)
+        REFERENCES lif_elevator.elevator_requests (elevator_request_id)
+        ON DELETE SET NULL
+        ON UPDATE CASCADE
+) ENGINE=InnoDB
+  DEFAULT CHARSET=utf8mb4
+  COLLATE=utf8mb4_general_ci;</code></pre>
+<p>With the table finally made, I could begin making a CAN logging function in CPP and eventually move onto the diagnostics page for the website as I've heard from MR that RY communicated with him about dropping that task. MR told her to communicate and confirm with me, as I would be the person best suited to take over the task.</p>
+<p>She did not formally communicate this with me, provided me no update regarding this on either Saturday the 26th, nor Sunday the 27th. As it is currently 1:03AM on Monday the 27th and with nothing new has been pushed to main, I'm assuming she did end up dropping this <strong>required</strong> task.</p>
+<p>Since it is literally due less than 24 hours from now, I will be taking it over - my grade should not have to suffer from incomplete work by my group member and their lack of communication.</p>
+<h3 id="diagnostic-page-update">Diagnostic Page update:</h3>
+<p>RY claimed she did end up updating the PHP and after some time, she did eventually push her changes to main.</p>
+<p>Few things to note right away.</p>
+<figure>
+<img class="img_med" src="../../media/images/Diagnostics_ReceivedPage.png" alt="Initial diagnostics page received from a teammate" />
+<figcaption><b>Initial diagnostics page received from a teammate</b></figcaption>
+</figure>
+<p>The page I received was quite messy and lacked CSS entirely. This was caused by her linking a non-existing CSS file.</p>
+<figure>
+<img class="img_med" src="../../media/images/Diagnostics_MissingCSSIssue.png" alt="Broken CSS reference on the received diagnostics page" />
+<figcaption><b>Broken CSS reference on the received diagnostics page</b></figcaption>
+</figure>
+<p>Removing the "additions" did not fix the problem either (as diagnostics.css did exist)</p>
+<p>Additionally, I asked her to add "back to members" and "log out" buttons after providing her with the EXACT divs needed... She put them in the wrong place, causing this:</p>
+<figure>
+<img class="img_med" src="../../media/images/Diagnostics_WrongButtonPlacement.png" alt="Back and logout buttons placed below the page content" />
+<figcaption><b>Back and logout buttons placed below the page content</b></figcaption>
+</figure>
+<p>They sat right at the bottom of the HTML section:</p>
+<pre class="code-block language-markup"><code class="language-markup">            &lt;div class=&quot;button-row&quot;&gt;
+                &lt;a href=&quot;members.php&quot; class=&quot;button secondary-button&quot;&gt;Back to Members&lt;/a&gt;
+                &lt;a href=&quot;logout.php&quot; class=&quot;button primary-button&quot;&gt;Log Out&lt;/a&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/main&gt;</code></pre>
+<p>Even when I sent her these two images:</p>
+<figure>
+<img class="img_med" src="../../media/images/Diagnostics_ButtonPlacementReference.png" alt="Reference page showing the intended button placement" />
+<figcaption><b>Reference page showing the intended button placement</b></figcaption>
+</figure>
+<figure>
+<img class="img_med" src="../../media/images/Diagnostics_ButtonPlacementRequest.png" alt="Message specifying the requested button placement" />
+<figcaption><b>Message specifying the requested button placement</b></figcaption>
+</figure>
+<p>I don't think I could've made it much more obvious as she had <strong>4</strong> separate files that ALL have the exact same buttons + the code was provided in my message using:</p>
+<figure>
+<img class="img_med" src="../../media/images/Diagnostics_ButtonPlacementCodeSample.png" alt="HTML button-row example provided as a reference" />
+<figcaption><b>HTML button-row example provided as a reference</b></figcaption>
+</figure>
+<p>She also kept her massive CAN look-up table which both MR and I requested her to remove and replace with proper CAN logging, while keeping an elevator_requests table.</p>
+<p>Her PHP essentially read values and translated them:</p>
+<pre class="code-block language-php"><code class="language-php">    //   &quot;en_floor&quot;   -&gt; bit 2 = enable bit, bits 1-0 = floor number (0-3)
+    //   &quot;single_bit&quot; -&gt; bit 0 = request bit, no enable bit
+    $canMessages = [
+        &quot;web_floor_station&quot; =&gt; [
+            &quot;can_id&quot;      =&gt; &quot;0x100&quot;,
+            &quot;transmitter&quot; =&gt; &quot;SC&quot;,
+            &quot;recipient&quot;   =&gt; &quot;EC&quot;,
+            &quot;message&quot;     =&gt; &quot;Supervisor Floor Request&quot;,
+            &quot;bit_layout&quot;  =&gt; &quot;en_floor&quot;,
+            &quot;en_label&quot;    =&gt; &quot;SC_EN&quot;,
+            &quot;field_label&quot; =&gt; &quot;SC_FloorReq&quot;,
+        ],
+        &quot;web_car_controller&quot; =&gt; [
+            &quot;can_id&quot;      =&gt; &quot;0x200&quot;,
+            &quot;transmitter&quot; =&gt; &quot;CC&quot;,
+            &quot;recipient&quot;   =&gt; &quot;SC&quot;,
+            &quot;message&quot;     =&gt; &quot;Car Controller Floor Request&quot;,
+            &quot;bit_layout&quot;  =&gt; &quot;en_floor&quot;,
+            &quot;en_label&quot;    =&gt; &quot;CC_EN&quot;,
+            &quot;field_label&quot; =&gt; &quot;CC_FloorReq&quot;,
+        ],
+        &quot;elevator_controller&quot; =&gt; [
+            &quot;can_id&quot;      =&gt; &quot;0x101&quot;,
+            &quot;transmitter&quot; =&gt; &quot;EC&quot;,
+            &quot;recipient&quot;   =&gt; &quot;ALL&quot;,
+            &quot;message&quot;     =&gt; &quot;Elevator Position Broadcast&quot;,
+            &quot;bit_layout&quot;  =&gt; &quot;en_floor&quot;,
+            &quot;en_label&quot;    =&gt; &quot;EC_EN&quot;,
+            &quot;field_label&quot; =&gt; &quot;EC_Position&quot;,
+        ],
+        &quot;floor_1&quot; =&gt; [
+            &quot;can_id&quot;      =&gt; &quot;0x201&quot;,
+            &quot;transmitter&quot; =&gt; &quot;F1&quot;,
+            &quot;recipient&quot;   =&gt; &quot;SC&quot;,
+            &quot;message&quot;     =&gt; &quot;F1 Cart Request&quot;,
+            &quot;bit_layout&quot;  =&gt; &quot;single_bit&quot;,
+            &quot;en_label&quot;    =&gt; null,
+            &quot;field_label&quot; =&gt; &quot;F1_Req&quot;,
+        ]</code></pre>
+<p>Which... Does not seem like "CAN" logging. She later did remake the table, and when confronted about if it used the new <code>CAN_message_log</code> table <strong>she</strong> made, she said it did.</p>
+<figure>
+<img class="img_med" src="../../media/images/Diagnostics_WrongTable.png" alt="Received diagnostics page showing the incorrect CAN table" />
+<figcaption><b>Received diagnostics page showing the incorrect CAN table</b></figcaption>
+</figure>
+<p>As seen here,</p>
+<figure>
+<img class="img_med" src="../../media/images/SQL_ReceivedCANTable.png" alt="CAN-message table originally received over Discord" />
+<figcaption><b>CAN-message table originally received over Discord</b></figcaption>
+</figure>
+<p>The table was explicitly called "can_message_log", and when using ctrl+F to search, that name does not popup in her file.</p>
+<figure>
+<img class="img_med" src="../../media/images/Diagnostics_CtrlF_Fail.png" alt="Search showing that can_message_log was not used" />
+<figcaption><b>Search showing that can_message_log was not used</b></figcaption>
+</figure>
+<p>So... Her CAN logging didn't do much logging of CAN - lol.</p>
+<p>When MR pointed it out, she recommended to add this statement:</p>
+<pre class="code-block language-php"><code class="language-php">    $canLog = [];
+    $canLogError = &#39;&#39;;
+ 
+    try {
+        $canLogQuery = &quot;SELECT * FROM can_message_log ORDER BY logged_at DESC&quot;;
+ 
+        $canLogStatement = $pdo-&gt;prepare($canLogQuery);
+        $canLogStatement-&gt;execute();
+ 
+        $canLog = $canLogStatement-&gt;fetchAll(PDO::FETCH_ASSOC);
+ 
+    } catch (PDOException $e) {
+        error_log($e-&gt;getMessage());
+        $canLogError = &quot;Could not load the CAN message log right now. Please try again shortly.&quot;;
+    }</code></pre>
+<p>Which, was of course not pasted in Discord code-block form (as I've asked...) but whatever.</p>
+<p>This is a cool query - it does call that table and pulls everything... But it also does nothing without more code - it just fills an array.</p>
+<p>Given that she did not provide anything except for this to go along with her "missing PHP"... I just took it over and remade the entire thing myself.</p>
+<p>Fixing her bugs + understanding the JS (which she asked <strong>me</strong> to explain to <strong>her</strong> after <strong>she</strong> wrote it and claimed <strong>she</strong> does not fully understand it) would take too long. As it is almost 6AM on Monday July 27th, I will continue work on my original "elevator_diagnostics.php" file.</p>
+<p>Speaking of that, I provided her with that file, told her which other php files to cross-reference if she got stuck... And instead she made her own file.</p>
+<p>Something else to note about general code style is that it heavily lacks comments. I personally like to "over-comment" to ensure I can remember what the code does, plus it makes it easier for others to understand. Her code was under-commented with entire functions only receiving 1-2 words, or just strange comments like:</p>
+<pre class="code-block language-php"><code class="language-php">// Add a new entry here any time a new controller/message type is added.</code></pre>
+<p>But I won't judge.</p>
+<h3 id="rebuilding-diagnostics-page">Rebuilding diagnostics page</h3>
+<p>The diagnostics page was rebuilt</p>
+<h3 id="fixing-old-php-issues">Fixing old PHP issues</h3>
+<p>In between work, I fixed a PHP-DB issue. I had to change one of the entry types from int into a string with different values. The dedicated "sabbath_mode" column which would flip between 0 and 1 has been changed to "operation_modes" (as this works better with the CPP and prevents multiple modes running at once by having one control column).</p>
+<p>The original function was made as such:</p>
+<pre class="code-block language-php"><code class="language-php">if($requestAction === &#39;sabbath&#39;) {
+        // JS replies with enable or disabled
+        $submittedSabbathState = $_POST[&#39;sabbath_state&#39;] ?? &#39;&#39;;
+
+        $allowedSabbathStates = [&#39;enabled&#39;, &#39;disabled&#39;];
+
+        if(!in_array($submittedSabbathState, $allowedSabbathStates, true)) {
+            echo json_encode([
+                &#39;success&#39; =&gt; false,
+                &#39;message&#39; =&gt; &#39;invalid sabbath state&#39;
+            ]);
+            exit;
+        }
+        // convert text into 0/1 for DB state
+        $sabbathEnabled = 0;
+
+        if($submittedSabbathState === &#39;enabled&#39;) {
+            $sabbathEnabled = 1;
+        }
+
+        try {
+            $query = &quot;
+                UPDATE elevator_state
+                SET sabbath_enabled = :sabbath_enabled
+                WHERE state_id = 1
+            &quot;;
+
+            $statement = $pdo-&gt;prepare($query);
+
+            $params = [&#39;sabbath_enabled&#39; =&gt; $sabbathEnabled];
+
+            $result = $statement-&gt;execute($params);
+
+            if($result) {
+                // sucessful
+                echo json_encode([
+                    &#39;success&#39; =&gt; true,
+                    &#39;message&#39; =&gt; &#39;sabbath mode updated&#39;,
+                    &#39;sabbath_state&#39; =&gt; $submittedSabbathState
+                ]);
+            } else {
+                echo json_encode([
+                    &#39;success&#39; =&gt; false,
+                    &#39;message&#39; =&gt; &#39;sabbath mode could not be enabled&#39;
+                ]);
+            }
+        } catch (PDOException $e) {
+            error_log($e-&gt;getMessage());
+            echo json_encode([
+                &#39;success&#39; =&gt; false,
+                &#39;message&#39; =&gt; &#39;a database error prevented sabbath toggle&#39;,
+            ]);
+        }
+        exit;
+    }</code></pre>
+<p>But only a few small changes had to be made. Particularly, this part:</p>
+<pre class="code-block language-php"><code class="language-php">        // convert text into 0/1 for DB state
+        $sabbathEnabled = 0;
+
+        if($submittedSabbathState === &#39;enabled&#39;) {
+            $sabbathEnabled = 1;
+        }</code></pre>
+<p>Had to be swapped to this:</p>
+<pre class="code-block language-php"><code class="language-php">        // convert submitted Sabbath state into an elevator operation mode
+        $operationMode = &#39;normal&#39;;
+
+        if($submittedSabbathState === &#39;enabled&#39;) {
+            $operationMode = &#39;sabbath&#39;;
+        }</code></pre>
+<p>This now avoids the hardcoded 0-1 transition as it is no longer supported.</p>
+<p>Additionally, the query had to be changed as well.</p>
+<p>The updated one looks like such:</p>
+<pre class="code-block language-php"><code class="language-php">            $query = &quot;
+                UPDATE elevator_state
+                SET operation_mode = :operation_mode
+                WHERE state_id = 1
+            &quot;;
+
+            $statement = $pdo-&gt;prepare($query);
+
+            $params = [&#39;operation_mode&#39; =&gt; $operationMode];</code></pre>
+<p>This changes the 'operation_mode' column with the new value of 'operation_mode' (which is sabbath in this case).</p>
+<p>Additionally, I noticed that the CSS element on the sabbath toggle was missing so I fixed it with:</p>
+<pre class="code-block language-css"><code class="language-css">.sabbath-toggle {
+  margin-top: 22px;
+  padding: 16px;
+  background-color: white;
+  border-left: 4px solid var(--orange);
+  border-radius: 10px;
+  box-shadow: 0 3px 10px var(--shadow);
+}</code></pre>
+<p>But this will likely be changed as I plan to move this element later - which means recolouring it.</p>
+<p>One more "mistake" I noticed is that I forgot to make the operation mode dynamic. If you enabled Sabbath mode, it would update, but if you refreshed the page it would revert back. The behaviour is:</p>
+<p>Sabbath enable on website = Sabbath enable in DB refresh page Sabbath disabled on website = Sabbath enable in DB</p>
+<p>This was because refreshing did not query the DB to pull the latest value from the DB.</p>
+<p>First change:</p>
+<pre class="code-block language-php"><code class="language-php">$initialOperationMode = &#39;normal&#39;;</code></pre>
+<p>Default to normal until DB queried.</p>
+<p>Second change:</p>
+<pre class="code-block language-php"><code class="language-php">    // read from DB to load page with the data
+    $query = &quot;
+        SELECT doors_open
+        FROM elevator_state
+        WHERE state_id = 1
+        LIMIT 1
+    &quot;;</code></pre>
+<p>updated to:</p>
+<pre class="code-block language-php"><code class="language-php">    // read from DB to load page with the data
+    $query = &quot;
+        SELECT doors_open, operation_mode
+        FROM elevator_state
+        WHERE state_id = 1
+        LIMIT 1
+    &quot;;</code></pre>
+<p>Read both values from the same table - might as well.</p>
+<p>Next, add this line:</p>
+<pre class="code-block language-php"><code class="language-php">    // maria DB returns 0 or 1 for door state, convert it into a PHP bool
+    if($elevatorState) {
+        $initialDoorsOpen = (int) $elevatorState[&#39;doors_open&#39;] === 1;
+        $initialOperationMode = $elevatorState[&#39;operation_mode&#39;];
+    }</code></pre>
+<p>Next, add this line to the main section's class:</p>
+<pre class="code-block language-php"><code class="language-php">data-operation-mode=&quot;&lt;?php echo htmlspecialchars($initialOperationMode, ENT_QUOTES, &#39;UTF-8&#39;); ?&gt;&quot;&gt;</code></pre>
+<p>And update the div below:</p>
+<pre class="code-block language-php"><code class="language-php">&lt;div class=&quot;sabbath-toggle&quot;
+    data-operation-mode=&quot;&lt;?php echo htmlspecialchars($initialOperationMode, ENT_QUOTES, &#39;UTF-8&#39;); ?&gt;&quot;&gt;
+
+    &lt;p class=&quot;section-label&quot;&gt;&lt;b&gt;Sabbath Toggle&lt;/b&gt;&lt;/p&gt;
+
+    &lt;button type=&quot;button&quot; id=&quot;sabbathToggle&quot; class=&quot;sabbath-toggle-button&quot;&gt;
+        Sabbath Mode
+    &lt;/button&gt;
+&lt;/div&gt;</code></pre>
+<p>And lastly, review/update the JS.</p>
+<pre class="code-block language-javascript"><code class="language-javascript">    const initialOperationMode = elevatorControlPage.dataset.operationMode;</code></pre>
+<p>And initialize the JS:</p>
+<pre class="code-block language-javascript"><code class="language-javascript">    // update the Sabbath toggle using the operation mode loaded by PHP
+    updateSabbathDisplay(initialOperationMode === &quot;sabbath&quot;);</code></pre>
+<p>I planned to include all of these in this entry, however I was tired (Monday July 27th) and decided to push all of these topics under another entry - phase2_Final. This "final" document roughly outlines everything done over the last few days of the phase. Due to work being done past-midnight it was hard to keep track of what was done what day exactly so the new entry will feature a bit of everything.</p>
+<h3 id="addition-of-maintenance-mode-in-elevator_control">Addition of maintenance mode in elevator_control</h3>
+<h3 id="assisting-mr-with-r-pi-db-related-work">Assisting MR with R-Pi DB-related work</h3>
+<h3 id="setting-up-sqlc-connector-on-windows-to-test-c-code">Setting up SQL/C++ Connector on Windows to test C++ code</h3>
+      </section>
+
+      <p class="top-link">
+        <a href="#page_top">Go to the top of this page</a>
+      </p>
+    </main>
+
+    <footer class="site-footer">
+      <p>Copyright &copy; Nick Kapuka</p>
+    </footer>
+
+    <!-- Prism.js scripts for code formatting -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+  </body>
+</html>
