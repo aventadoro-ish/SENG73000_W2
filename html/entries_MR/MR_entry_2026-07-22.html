@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<!--
+Author: Matvey Regentov
+-->
+
+<html lang="en">
+
+<head>
+	<title>MR Logbook Entry - 2026-07-22</title>
+	<meta charset="UTF-8">
+	<meta name="author" content="Matvey Regentov">
+	<meta name="description" content="MR Logbook Entry for 2026-07-22">
+	<meta name="robots" content="index, follow">
+	<meta http-equiv="Pragma" content="no-cache">
+
+	<link rel="icon" href="../../media/icons/LiF_icon.ico" type="image/x-icon">
+	<link rel="stylesheet" href="../../css/base.css">
+	<link rel="stylesheet" href="../../css/logbook_entry.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css">
+	<link rel="stylesheet" href="../../css/code_formatting.css">
+	<script>
+		window.MathJax = {
+			tex: {
+				inlineMath: [['\\(', '\\)'], ['$', '$']],
+				displayMath: [['\\[', '\\]'], ['$$', '$$']]
+			},
+			svg: { fontCache: 'global' }
+		};
+	</script>
+	<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+</head>
+
+<body>
+	<div id="navbar-placeholder" data-root="../../"></div>
+	<script src="../../js/navbar.js"></script>
+
+	<main class="page-wrapper">
+		<section class="intro-section logbook-entry-intro" id="page_top">
+			<div class="intro-text">
+				<p class="section-label">Daily Logbook Entry</p>
+				<h1>Logbook Entry, 2026-07-22 by Matvey Regentov</h1>
+				<p class="intro-description">Request-table scheduler implementation and manual testing</p>
+				<div class="button-row">
+					<a href="../logbook_MR.html" class="button secondary-button">My Logbook Cover Page</a>
+					<a href="#log" class="button primary-button">Jump to Entry</a>
+					<a href="MR_entry_2026-07-21.html" class="button secondary-button">Previous Entry</a>
+					<a href="MR_entry_2026-07-23.html" class="button secondary-button">Next Entry</a>
+				</div>
+			</div>
+			<aside class="summary-card">
+				<h2>Entry Snapshot</h2>
+				<p><b>Date:</b> 2026-07-22</p>
+				<p><b>Author:</b> Matvey Regentov</p>
+				<p><b>Focus:</b> Request-table scheduler implementation and manual testing</p>
+			</aside>
+		</section>
+
+		<section class="logbook-entry-content" id="log">
+			<h2 id="new-approach-to-the-scheduling-algorithm">New Approach to the Scheduling Algorithm</h2>
+			<p>I concluded that a custom priority queue would not be suitable for this scheduling algorithm. Its entries
+				would need to be rearranged whenever a request was added or completed, and the target floor could change
+				while the car was moving. Instead, I decided to use flag tables to represent the pending requests.</p>
+			<p>The tables track:</p>
+			<ul>
+				<li>Upward floor requests.</li>
+				<li>Downward floor requests.</li>
+				<li>Car requests.</li>
+			</ul>
+			<p>The scheduler also requires the following state variables:</p>
+			<ul>
+				<li>The travel direction, which may be upward, downward, or stationary.</li>
+				<li>The dynamic travel limit, which indicates how far the elevator will travel before changing
+					direction.</li>
+				<li>The current target floor, which allows external modules to detect when a new request changes the
+					target.</li>
+				<li>The current floor, which is updated both externally and within the scheduling logic.</li>
+			</ul>
+			<p>I added an initial implementation of the algorithm. Its broad behaviour is as follows:</p>
+			<ul>
+				<li>If no requests are pending, the car remains stationary.</li>
+				<li>If one request is pending, the car travels to that request.</li>
+				<li>If the car is already moving when a new request arrives:<ul>
+						<li>A request in the current direction of travel and closer than the dynamic travel limit may
+							become the new target floor, unless the existing target is closer.</li>
+						<li>An opposite-direction request beyond the current dynamic travel limit extends the limit and
+							may become the new target, unless the existing target is closer.</li>
+					</ul>
+				</li>
+			</ul>
+			<p>The scheduler runs whenever a new request is added or the elevator stops at a floor to service requests.
+			</p>
+			<p>I also added a function that clears requests when the elevator stops at a floor. The current
+				implementation assumes that, when an upward-moving car stops, passengers who requested that floor exit
+				and passengers who want to travel upward enter.</p>
+			<h3 id="manual-test-interface">Manual Test Interface</h3>
+			<p>I asked ChatGPT to generate the initial console-based test-interface code from my specification<sup><a
+						href="#source-1" aria-label="Source 1">[1]</a></sup>. I did not use generative AI for the
+				subsequent debugging and troubleshooting. My prompt was:</p>
+			<blockquote>
+				<p>I am developing a scheduling algorithm for an elevator with request-direction prioritization: a user
+					on a given floor can request the car to travel either upward or downward. I want to test the
+					algorithm manually by providing console commands to the module. Can you implement a manual test
+					function for me?</p>
+			</blockquote>
+			<p>The requested interface included:</p>
+			<ul>
+				<li>The <code>tick</code> command advances the simulation by one step.<ul>
+						<li>If the car is moving, the command increases or decreases the current floor number and calls
+							<code>update_car_position()</code>.</li>
+						<li>If the car reaches the floor returned by <code>get_target_floor()</code>, the command stops
+							the car and calls <code>register_car_stop()</code>.</li>
+					</ul>
+				</li>
+				<li>The <code>FdD</code> command adds a floor request.<ul>
+						<li><code>F</code> identifies the request as a floor request.</li>
+						<li><code>d</code> is the requesting floor number, from 1 to <code>NUM_FLOORS</code>.</li>
+						<li><code>D</code> is either <code>U</code> for upward travel or <code>D</code> for downward
+							travel.</li>
+					</ul>
+				</li>
+				<li>The <code>Cd</code> command adds a car request.<ul>
+						<li><code>C</code> identifies the request as a car request.</li>
+						<li><code>d</code> is the requested floor number, from 1 to <code>NUM_FLOORS</code>.</li>
+					</ul>
+				</li>
+				<li>The <code>print</code> command displays the Scheduler object&#39;s internal state and the external
+					simulation variables in a readable format.</li>
+				<li>The <code>exit</code> command stops the simulation.</li>
+			</ul>
+			<p>During troubleshooting, I added another rule: a car request in the current direction of travel extends
+				the dynamic travel limit when its floor lies beyond that limit. This change resolved a minor issue and
+				provides reasonable elevator behaviour.</p>
+			<h3 id="six-floor-test-case">Six-Floor Test Case</h3>
+			<p>I tested the scheduler with three-floor and six-floor configurations. The six-floor test used the
+				following sequence:</p>
+			<ol>
+				<li>A downward floor request is made from floor 3.</li>
+				<li>While the elevator is moving, a downward floor request from floor 6 and an upward floor request from
+					floor 4 are added.</li>
+				<li>The elevator first travels to floor 4 to pick up the upward-travelling passenger.</li>
+				<li>The new passenger requests floor 5 through the car interface.</li>
+				<li>The elevator travels to floor 5 and drops off the passenger.</li>
+				<li>The elevator travels to floor 6 and picks up the downward-travelling passenger. It reaches the
+					dynamic travel limit and reverses direction.</li>
+				<li>The new passenger requests floor 2 through the car interface.</li>
+				<li>The elevator travels to floor 3 and picks up the downward-travelling passenger, who requests floor
+					1.</li>
+				<li>The elevator travels to floor 2 and drops off the passenger from floor 6.</li>
+				<li>The elevator travels to floor 1 and drops off the passenger from floor 3.</li>
+			</ol>
+			<p>The test passed successfully. Two demonstration videos still need to be added.</p>
+			<p>A simple FIFO implementation with basic prioritization would require 16 time steps: six for the initial
+				floor-3 request, five for the intermediate upward request, and five for the downward request from floor
+				6. This estimate assumes that the intermediate request is serviced before floor 6, which itself requires
+				some prioritization. My algorithm completed the same scenario in 11 time steps.</p>
+
+			<figure>
+				<video class="logbook-figure" controls style="max-width: 100%; height: auto;">
+					<source src="../../media/video/Phase2_Scheduling_Algo_Demo3.mp4"
+						alt="Demo of LCD Module Working on EC">
+				</video>
+				<figcaption>Example of the custom scheduling algorithm, 3 floors</figcaption>
+			</figure>
+
+			<figure>
+				<video class="logbook-figure" controls style="max-width: 100%; height: auto;">
+					<source src="../../media/video/Phase2_Scheduling_Algo_Demo6.mp4"
+						alt="Demo of LCD Module Working on EC">
+				</video>
+				<figcaption>Example of the custom scheduling algorithm, 6 floors</figcaption>
+			</figure>
+
+
+		</section>
+
+		<section class="logbook-entry-content sources-section" id="sources">
+			<h2>Sources</h2>
+			<ol class="source-list">
+				<li id="source-1"><span class="citation-label">[1]</span> OpenAI, ChatGPT, used to generate the initial
+					console-based test-interface code from the prompt reproduced in this entry. <a
+						href="https://chatgpt.com/">https://chatgpt.com/</a></li>
+			</ol>
+		</section>
+
+		<nav class="entry-date-nav" aria-label="Logbook date navigation">
+			<a href="MR_entry_2026-07-21.html" class="button secondary-button">Previous Entry</a>
+			<a href="MR_entry_2026-07-23.html" class="button secondary-button">Next Entry</a>
+		</nav>
+		<p class="top-link"><a href="#page_top">Go to the top of this page</a></p>
+	</main>
+
+	<footer class="site-footer">
+		<p>Copyright &copy; Matvey Regentov</p>
+	</footer>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+</body>
+
+</html>

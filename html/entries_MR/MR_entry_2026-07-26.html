@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<!--
+Author: Matvey Regentov
+-->
+
+<html lang="en">
+
+<head>
+	<title>MR Logbook Entry - 2026-07-26</title>
+	<meta charset="UTF-8">
+	<meta name="author" content="Matvey Regentov">
+	<meta name="description" content="MR Logbook Entry for 2026-07-26">
+	<meta name="robots" content="index, follow">
+	<meta http-equiv="Pragma" content="no-cache">
+
+	<link rel="icon" href="../../media/icons/LiF_icon.ico" type="image/x-icon">
+	<link rel="stylesheet" href="../../css/base.css">
+	<link rel="stylesheet" href="../../css/logbook_entry.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css">
+	<link rel="stylesheet" href="../../css/code_formatting.css">
+	<script>
+		window.MathJax = {
+			tex: {
+				inlineMath: [['\\(', '\\)'], ['$', '$']],
+				displayMath: [['\\[', '\\]'], ['$$', '$$']]
+			},
+			svg: { fontCache: 'global' }
+		};
+	</script>
+	<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+</head>
+
+<body>
+	<div id="navbar-placeholder" data-root="../../"></div>
+	<script src="../../js/navbar.js"></script>
+
+	<main class="page-wrapper">
+		<section class="intro-section logbook-entry-intro" id="page_top">
+			<div class="intro-text">
+				<p class="section-label">Daily Logbook Entry</p>
+				<h1>Logbook Entry, 2026-07-26 by Matvey Regentov</h1>
+				<p class="intro-description">CAN and FSM development, elevator hardware assembly, and sensor wiring</p>
+				<div class="button-row">
+					<a href="../logbook_MR.html" class="button secondary-button">My Logbook Cover Page</a>
+					<a href="#log" class="button primary-button">Jump to Entry</a>
+					<a href="MR_entry_2026-07-25.html" class="button secondary-button">Previous Entry</a>
+					<a href="MR_entry_2026-07-27.html" class="button secondary-button">Next Entry</a>
+				</div>
+			</div>
+			<aside class="summary-card">
+				<h2>Entry Snapshot</h2>
+				<p><b>Date:</b> 2026-07-26</p>
+				<p><b>Author:</b> Matvey Regentov</p>
+				<p><b>Focus:</b> CAN and FSM development, elevator hardware assembly, and sensor wiring</p>
+			</aside>
+		</section>
+
+		<section class="logbook-entry-content" id="log">
+			<h2 id="finished-refactored-can-module">Finished Refactored CAN Module</h2>
+			<p>I completed the refactored CAN module and tested it with the physical PEAK CAN adapter. I also resolved
+				all compiler warnings produced by this module.</p>
+
+		</section>
+
+		<section class="logbook-entry-content" id="topic-2">
+			<h2 id="fsm-development">FSM Development</h2>
+			<p>I merged Nick&#39;s partially implemented database module and began integrating it into the FSM. The FSM
+				now needs to support:</p>
+			<ul>
+				<li>Normal operating mode.</li>
+				<li>Sabbath operating mode.</li>
+				<li>Maintenance mode.</li>
+				<li>Fault mode.</li>
+			</ul>
+			<p>Fault mode can be cleared by toggling maintenance mode through the web interface. The reasoning is that
+				maintenance personnel need a controlled way to return the elevator to service after correcting a fault.
+			</p>
+			<p>I also fixed the remaining scheduler-module compiler warning and integrated the scheduler into the FSM.
+				For the current Phase 2 implementation, the scheduler treats all floor requests as upward requests so
+				that the existing Floor Controller code does not need to be changed.</p>
+
+		</section>
+
+		<section class="logbook-entry-content" id="topic-3">
+			<h2 id="distance-sensor-wiring">Distance-Sensor Wiring</h2>
+			<p>I planned a proper cable for the I²C ToF sensor connected to the MoP Communications PCB used by the
+				Elevator Controller. The cable uses a JST-PH2.0 connector at the DFRobot ToF board and JST-SM connectors
+				at the Elevator Controller PCB. The required I²C pinout is shown below.</p>
+			<figure class="logbook-figure">
+				<img src="../../media/images/MoP_I2C_pinout_layout.png" alt="MoP Communications PCB I²C pinout"
+					class="logbook-image centered-image" style="max-width: 100%; height: auto;">
+				<figcaption>MoP Communications PCB I²C pinout</figcaption>
+			</figure>
+
+
+		</section>
+
+		<section class="logbook-entry-content" id="topic-4">
+			<h2 id="installing-the-new-hardware">Installing the New Hardware</h2>
+			<p>I laid out the components for the third revision of the pulley-mount assembly.</p>
+			<figure class="logbook-figure">
+				<img src="../../media/images/LiF_Pulley_Mount_rev_3_parts.png"
+					alt="Revision 3 pulley-mount components" class="logbook-image centered-image"
+					style="max-width: 100%; height: auto;">
+				<figcaption>Revision 3 pulley-mount components</figcaption>
+			</figure>
+
+
+
+			<p>I then assembled the new pulley mount.</p>
+			<figure class="logbook-figure">
+				<img src="../../media/images/LiF_Pulley_Mount_rev_3_assembled.png"
+					alt="Assembled revision 3 pulley mount" class="logbook-image centered-image"
+					style="max-width: 100%; height: auto;">
+				<figcaption>Assembled revision 3 pulley mount</figcaption>
+			</figure>
+
+
+
+			<p>
+				The new pulley system works much better, and the rope now
+				follows the expected path. However, the motor still skips steps intermittently. Leighton later suggested
+				that the issue might be related to motor temperature, and I observed that skipped steps occur more
+				frequently when the motor is hot.
+			</p>
+
+			<figure>
+				<video class="logbook-figure" controls style="max-width: 100%; height: auto;">
+					<source src="../../media/video/Pulley_Demo.mp4"
+						alt="New Pulley System Manual Demo">
+				</video>
+				<figcaption>New Pulley System Manual Demo</figcaption>
+			</figure>
+
+			<p>I also assembled the speaker mount.</p>
+
+
+			<figure class="logbook-figure">
+				<img src="../../media/images/LiF_Speaker_Mount_1.png" alt="Assembled speaker mount"
+					class="logbook-image centered-image" style="max-width: 100%; height: auto;">
+				<figcaption>Assembled speaker mount</figcaption>
+			</figure>
+
+
+
+			<figure class="logbook-figure">
+				<img src="../../media/images/LiF_Speaker_Mount_2.png"
+					alt="Rear view of the speaker mount with the wiring installed" class="logbook-image centered-image"
+					style="max-width: 100%; height: auto;">
+				<figcaption>Rear view of the speaker mount with the wiring installed</figcaption>
+			</figure>
+
+
+
+			<p>I added a hole for the speaker wires.</p>
+			<figure class="logbook-figure">
+				<img src="../../media/images/LiF_Speaker_Mount_Installed.png"
+					alt="Speaker mount installed on the elevator frame" class="logbook-image centered-image"
+					style="max-width: 100%; height: auto;">
+				<figcaption>Speaker mount installed on the elevator frame</figcaption>
+			</figure>
+
+
+
+			<p>I modified the new Raspberry Pi enclosure by adding an opening for the GPIO header. The original model
+				did not include this opening, but the project requires GPIO access for the I²S amplifier wiring.</p>
+			<figure class="logbook-figure">
+				<img src="../../media/images/LiF_RPi_enclosure_modified.png" alt="Modified Raspberry Pi enclosure"
+					class="logbook-image centered-image" style="max-width: 100%; height: auto;">
+				<figcaption>Modified Raspberry Pi enclosure</figcaption>
+			</figure>
+
+
+
+			<p>I accidentally cracked the enclosure while modifying it.</p>
+			<figure class="logbook-figure">
+				<img src="../../media/images/LiF_RPi_enclosure_modified_crack.png"
+					alt="Crack caused while modifying the enclosure" class="logbook-image centered-image"
+					style="max-width: 100%; height: auto;">
+				<figcaption>Crack caused while modifying the enclosure</figcaption>
+			</figure>
+
+
+
+			<p>The enclosure also required M2.5 screws. Because of the printed-hole tolerances, only two of the four
+				screws held securely; the other two did not engage. The enclosure halves also did not snap together, so
+				I used hot glue to hold them in place.</p>
+			<figure class="logbook-figure">
+				<img src="../../media/images/LiF_Phase_2_Assembly_additions.png"
+					alt="Phase 2 hardware additions—view 1" class="logbook-image centered-image"
+					style="max-width: 100%; height: auto;">
+				<figcaption>Phase 2 hardware additions—view 1</figcaption>
+			</figure>
+
+
+
+			<figure class="logbook-figure">
+				<img src="../../media/images/LiF_Phase_2_Assembly_additions_2.png"
+					alt="Phase 2 hardware additions—view 2" class="logbook-image centered-image"
+					style="max-width: 100%; height: auto;">
+				<figcaption>Phase 2 hardware additions—view 2</figcaption>
+			</figure>
+
+
+		</section>
+
+		<section class="logbook-entry-content" id="log">
+			<h2 id="new-pulley-mount-configuration">New Pulley-Mount Configuration</h2>
+			<p>The new pulley mount uses a different drive-pulley diameter, so I reviewed the Elevator Controller
+				stepper-motor configuration.</p>
+			<p>The ToF sensor reports a travel range from approximately 56 mm to 850 mm, or about 800 mm of usable
+				travel. This motion corresponds to approximately 3,140 half-steps.</p>
+			<p>I determined that I can reuse the travel-distance calibration already measured and stored in the Elevator
+				Controller code rather than creating a new independent calibration.</p>
+
+		</section>
+
+		<section class="logbook-entry-content sources-section" id="sources">
+			<h2>Sources</h2>
+			<p>No external sources were cited in this entry.</p>
+		</section>
+
+		<nav class="entry-date-nav" aria-label="Logbook date navigation">
+			<a href="MR_entry_2026-07-25.html" class="button secondary-button">Previous Entry</a>
+			<a href="MR_entry_2026-07-27.html" class="button secondary-button">Next Entry</a>
+		</nav>
+		<p class="top-link"><a href="#page_top">Go to the top of this page</a></p>
+	</main>
+
+	<footer class="site-footer">
+		<p>Copyright &copy; Matvey Regentov</p>
+	</footer>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+</body>
+
+</html>

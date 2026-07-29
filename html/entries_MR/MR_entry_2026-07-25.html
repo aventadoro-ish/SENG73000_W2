@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<!--
+Author: Matvey Regentov
+-->
+
+<html lang="en">
+
+<head>
+	<title>MR Logbook Entry - 2026-07-25</title>
+	<meta charset="UTF-8">
+	<meta name="author" content="Matvey Regentov">
+	<meta name="description" content="MR Logbook Entry for 2026-07-25">
+	<meta name="robots" content="index, follow">
+	<meta http-equiv="Pragma" content="no-cache">
+
+	<link rel="icon" href="../../media/icons/LiF_icon.ico" type="image/x-icon">
+	<link rel="stylesheet" href="../../css/base.css">
+	<link rel="stylesheet" href="../../css/logbook_entry.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css">
+	<link rel="stylesheet" href="../../css/code_formatting.css">
+	<script>
+		window.MathJax = {
+			tex: {
+				inlineMath: [['\\(', '\\)'], ['$', '$']],
+				displayMath: [['\\[', '\\]'], ['$$', '$$']]
+			},
+			svg: { fontCache: 'global' }
+		};
+	</script>
+	<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+</head>
+
+<body>
+	<div id="navbar-placeholder" data-root="../../"></div>
+	<script src="../../js/navbar.js"></script>
+
+	<main class="page-wrapper">
+		<section class="intro-section logbook-entry-intro" id="page_top">
+			<div class="intro-text">
+				<p class="section-label">Daily Logbook Entry</p>
+				<h1>Logbook Entry, 2026-07-25 by Matvey Regentov</h1>
+				<p class="intro-description">Speaker-mount design and Raspberry Pi enclosure selection</p>
+				<div class="button-row">
+					<a href="../logbook_MR.html" class="button secondary-button">My Logbook Cover Page</a>
+					<a href="#log" class="button primary-button">Jump to Entry</a>
+					<a href="MR_entry_2026-07-24.html" class="button secondary-button">Previous Entry</a>
+					<a href="MR_entry_2026-07-26.html" class="button secondary-button">Next Entry</a>
+				</div>
+			</div>
+			<aside class="summary-card">
+				<h2>Entry Snapshot</h2>
+				<p><b>Date:</b> 2026-07-25</p>
+				<p><b>Author:</b> Matvey Regentov</p>
+				<p><b>Focus:</b> Speaker-mount design and Raspberry Pi enclosure selection</p>
+			</aside>
+		</section>
+
+		<section class="logbook-entry-content" id="log">
+			<h2 id="speaker-mount">Speaker Mount</h2>
+			<p>I measured the speaker and prepared a dimensioned drawing.</p>
+			<figure class="logbook-figure">
+				<img src="../../media/images/LiF_Speaker_Dimensions_Drawing.png"
+					alt="Speaker dimensions used for the mount" class="logbook-image centered-image"
+					style="max-width: 100%; height: auto;">
+				<figcaption>Speaker dimensions used for the mount</figcaption>
+			</figure>
+
+
+
+			<p>I then designed the speaker mount.</p>
+			<figure class="logbook-figure">
+				<img src="../../media/images/LiF_Speaker_Mount_CAD_render_1.png"
+					alt="Speaker-mount CAD render—view 1" class="logbook-image centered-image"
+					style="max-width: 100%; height: auto;">
+				<figcaption>Speaker-mount CAD render—view 1</figcaption>
+			</figure>
+
+
+
+			<figure class="logbook-figure">
+				<img src="../../media/images/LiF_Speaker_Mount_CAD_render_2.png"
+					alt="Speaker-mount CAD render—view 2" class="logbook-image centered-image"
+					style="max-width: 100%; height: auto;">
+				<figcaption>Speaker-mount CAD render—view 2</figcaption>
+			</figure>
+
+
+
+			<p>I initially consulted Adafruit&#39;s MAX98357 module documentation for the amplifier dimensions<sup><a
+						href="#source-1" aria-label="Source 1">[1]</a></sup>. However, the physical module available for
+				this project differs from the Adafruit version, so I used measurements from the actual hardware instead.
+			</p>
+			<p>I also asked Nick to print a Raspberry Pi 4 enclosure designed for mounting to 2020 aluminium
+				extrusion<sup><a href="#source-2" aria-label="Source 2">[2]</a></sup>.</p>
+
+		</section>
+
+		<section class="logbook-entry-content sources-section" id="sources">
+			<h2>Sources</h2>
+			<ol class="source-list">
+				<li id="source-1"><span class="citation-label">[1]</span> Adafruit Learning System, “Adafruit MAX98357
+					I2S Class-D Mono Amp—Downloads.” <a
+						href="https://learn.adafruit.com/adafruit-max98357-i2s-class-d-mono-amp/downloads">https://learn.adafruit.com/adafruit-max98357-i2s-class-d-mono-amp/downloads</a>
+				</li>
+				<li id="source-2"><span class="citation-label">[2]</span> Printables, “RPi 4B Case—2020 Extrusion
+					Mount.” <a
+						href="https://www.printables.com/model/268857-rpi-4b-case-2020-extrusion-mount">https://www.printables.com/model/268857-rpi-4b-case-2020-extrusion-mount</a>
+				</li>
+			</ol>
+		</section>
+
+		<nav class="entry-date-nav" aria-label="Logbook date navigation">
+			<a href="MR_entry_2026-07-24.html" class="button secondary-button">Previous Entry</a>
+			<a href="MR_entry_2026-07-26.html" class="button secondary-button">Next Entry</a>
+		</nav>
+		<p class="top-link"><a href="#page_top">Go to the top of this page</a></p>
+	</main>
+
+	<footer class="site-footer">
+		<p>Copyright &copy; Matvey Regentov</p>
+	</footer>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+</body>
+
+</html>

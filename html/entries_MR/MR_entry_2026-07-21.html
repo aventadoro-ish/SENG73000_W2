@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<!--
+Author: Matvey Regentov
+-->
+
+<html lang="en">
+
+<head>
+	<title>MR Logbook Entry - 2026-07-21</title>
+	<meta charset="UTF-8">
+	<meta name="author" content="Matvey Regentov">
+	<meta name="description" content="MR Logbook Entry for 2026-07-21">
+	<meta name="robots" content="index, follow">
+	<meta http-equiv="Pragma" content="no-cache">
+
+	<link rel="icon" href="../../media/icons/LiF_icon.ico" type="image/x-icon">
+	<link rel="stylesheet" href="../../css/base.css">
+	<link rel="stylesheet" href="../../css/logbook_entry.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css">
+	<link rel="stylesheet" href="../../css/code_formatting.css">
+	<script>
+		window.MathJax = {
+			tex: {
+				inlineMath: [['\\(', '\\)'], ['$', '$']],
+				displayMath: [['\\[', '\\]'], ['$$', '$$']]
+			},
+			svg: { fontCache: 'global' }
+		};
+	</script>
+	<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+</head>
+
+<body>
+	<div id="navbar-placeholder" data-root="../../"></div>
+	<script src="../../js/navbar.js"></script>
+
+	<main class="page-wrapper">
+		<section class="intro-section logbook-entry-intro" id="page_top">
+			<div class="intro-text">
+				<p class="section-label">Daily Logbook Entry</p>
+				<h1>Logbook Entry, 2026-07-21 by Matvey Regentov</h1>
+				<p class="intro-description">Elevator scheduling research and Supervisory Controller test setup</p>
+				<div class="button-row">
+					<a href="../logbook_MR.html" class="button secondary-button">My Logbook Cover Page</a>
+					<a href="#log" class="button primary-button">Jump to Entry</a>
+					<a href="MR_entry_2026-07-20.html" class="button secondary-button">Previous Entry</a>
+					<a href="MR_entry_2026-07-22.html" class="button secondary-button">Next Entry</a>
+				</div>
+			</div>
+			<aside class="summary-card">
+				<h2>Entry Snapshot</h2>
+				<p><b>Date:</b> 2026-07-21</p>
+				<p><b>Author:</b> Matvey Regentov</p>
+				<p><b>Focus:</b> Elevator scheduling research and Supervisory Controller test setup</p>
+			</aside>
+		</section>
+
+		<section class="logbook-entry-content" id="log">
+			<h2 id="queuing-and-scheduling-algorithm">Queuing and Scheduling Algorithm</h2>
+			<p>After I started implementing a custom priority-queuing algorithm yesterday, I realized that proper
+				elevator-scheduling logic would be more complex than I had initially thought. I researched the <a
+					href="https://elevation.fandom.com/wiki/Elevator_algorithm">elevator algorithm</a><sup><a
+						href="#source-1" aria-label="Source 1">[1]</a></sup>, <a
+					href="https://elevation.fandom.com/wiki/Destination_dispatch">destination dispatch</a><sup><a
+						href="#source-2" aria-label="Source 2">[2]</a></sup>, and an additional resource on programming
+				an elevator system for a multi-storey building<sup><a href="#source-3"
+						aria-label="Source 3">[3]</a></sup>.</p>
+			<p>The scheduling methods I reviewed included:</p>
+			<ul>
+				<li>First Come, First Served (FCFS).</li>
+				<li>Shortest Seek Time First (SSTF).</li>
+				<li>SCAN, in which the car travels all the way upward and then downward.</li>
+				<li>LOOK, in which the car travels to the highest requested floor and then reverses direction.</li>
+			</ul>
+			<p>The resources I found did not explain how to handle the requested direction of travel from a floor—for
+				example, whether a passenger wants to travel upward or downward. I therefore decided to develop a custom
+				algorithm inspired by the algorithms from my research.</p>
+			<p>The proposed approach is similar to LOOK:</p>
+			<ul>
+				<li>A <em>dynamic travel limit</em> variable determines how far the elevator car should travel before
+					reconsidering its direction.</li>
+				<li>Upward and downward requests from each floor are considered separately.</li>
+			</ul>
+
+			<figure class="logbook-figure">
+				<img src="../../media/images/LiF_SC_Scheduling_Example_Diagram.png"
+					alt="Example of the custom scheduling algorithm" class="logbook-image centered-image"
+					style="max-width: 100%; height: auto;">
+				<figcaption>Example of the custom scheduling algorithm</figcaption>
+			</figure>
+
+
+
+			<p>The diagram illustrates the following sequence:</p>
+			<ol>
+				<li>At time point <em>a</em>, the system receives a request to travel downward from floor 2. The
+					car&#39;s new direction is set to upward, and its dynamic travel limit is set to floor 2.</li>
+				<li>As the car starts moving upward at time point <em>b</em>, two new requests arrive: an upward request
+					from floor 4 and a downward request from floor 5.<ol>
+						<li>The car has not yet reached its dynamic travel limit. Because it receives an
+							opposite-direction request from floor 5 beyond that limit, it continues past floor 2 and
+							extends its planned travel.</li>
+						<li>The request from floor 4 is in the same direction as the car&#39;s current travel and is
+							below the new dynamic travel limit, so the car will stop at floor 4 on its way to floor 5.
+						</li>
+					</ol>
+				</li>
+				<li>At time point <em>c</em>, the car stops at floor 4 to pick up a passenger and then continues toward
+					its dynamic travel limit of floor 5. The passenger requests floor 6 through the car interface.
+					Because this destination lies beyond the current limit, it is deferred until after the car services
+					the requests within the current travel plan.</li>
+				<li>At time point <em>d</em>, the car picks up the passenger at floor 5, who requests floor 1 through
+					the car interface. The car has reached its dynamic travel limit and still has pending requests, so
+					it reverses direction. The new dynamic travel limit becomes floor 1, the lowest currently requested
+					floor.</li>
+				<li>At time point <em>e</em>, the car picks up the passenger waiting at floor 2.</li>
+				<li>At time point <em>f</em>, the car reaches its dynamic travel limit at floor 1 and reverses
+					direction. The new dynamic travel limit becomes floor 6.</li>
+				<li>The car travels to floor 6 and reaches its dynamic travel limit. Because no additional requests have
+					been made, the car becomes stationary.</li>
+			</ol>
+			<p>The terminology used in the algorithm is:</p>
+			<ul>
+				<li>DTL means dynamic travel limit.</li>
+				<li>RQ means request.<ul>
+						<li>RQC means car request.</li>
+						<li>RQF means floor request.</li>
+					</ul>
+				</li>
+				<li>TD means the car&#39;s travel direction.</li>
+				<li>TRD means the requested travel direction.</li>
+			</ul>
+			<p>The initial request-execution priorities were:</p>
+			<ol>
+				<li>A car request that is closer than the dynamic travel limit.</li>
+				<li>A floor request whose requested direction is opposite to the car&#39;s current direction when it
+					extends the required range of travel.</li>
+			</ol>
+			<p>I stopped documenting the remaining rules so that I could begin implementing and testing the algorithm
+				directly. Expressing every interaction in natural language was becoming less efficient than working
+				through the behaviour in code, and I also needed to continue with the other project tasks.</p>
+
+		</section>
+
+		<section class="logbook-entry-content" id="topic-2">
+			<h2 id="refactoring-the-fsm">Refactoring the FSM</h2>
+			<p>To test the FSM code, I connected my own Raspberry Pi 5 and began configuring proxy versions of the CAN
+				and database libraries. I added the following flags:</p>
+			<pre><code class="language-cpp">#define DO_USE_DB
+#define DO_USE_CAN
+</code></pre>
+			<p>These flags in <code>main.cpp</code> allow the program to compile proxy versions of the
+				<code>pcanFunctions</code> and <code>databaseFunctions</code> modules, which do not require database
+				configuration or CAN hardware.
+			</p>
+			<p>The build still produced the following errors:</p>
+			<pre><code class="language-text">/home/rita/LiF_SC/src/mainFunctions.cpp:17: multiple definition of `main&#39;; obj/main.o:/home/rita/LiF_SC/src/main.cpp:107: first defined here
+/usr/bin/ld: cannot find -l:libmysqlcppconn.so: No such file or directory
+/usr/bin/ld: cannot find -lpcan: No such file or directory
+</code></pre>
+			<p>To allow the proxy build to proceed, I commented out the following line in the Makefile:</p>
+			<pre><code class="language-makefile">LDLIBS := -l:libmysqlcppconn.so -lpcan
+</code></pre>
+			<p>I also removed <code>main()</code> from <code>mainFunctions.cpp</code>.</p>
+			<p>The following functions and variables were also missing from <code>mainFunctions.cpp</code>:</p>
+			<ul>
+				<li><code>enqueueFloor(int)</code></li>
+				<li><code>queueCount</code></li>
+				<li><code>dequeueFloor()</code></li>
+				<li><code>HexFromFloor(int)</code></li>
+			</ul>
+			<p>After reviewing the repository history, I found that these items had been removed from
+				<code>main.cpp</code> in one commit<sup><a href="#source-4" aria-label="Source 4">[4]</a></sup> and from
+				<code>mainFunctions.cpp</code> in another commit<sup><a href="#source-5"
+						aria-label="Source 5">[5]</a></sup>.
+			</p>
+			<p>After resolving these issues, the code compiled, although it still produced many warnings. I also added
+				proxy definitions and functions for <code>libpcan.h</code> so that the language server on my Windows
+				computer would not report false errors when the real Raspberry Pi library was unavailable.</p>
+
+		</section>
+
+		<section class="logbook-entry-content sources-section" id="sources">
+			<h2>Sources</h2>
+			<ol class="source-list">
+				<li id="source-1"><span class="citation-label">[1]</span> Elevation Wiki, “Elevator algorithm.” <a
+						href="https://elevation.fandom.com/wiki/Elevator_algorithm">https://elevation.fandom.com/wiki/Elevator_algorithm</a>
+				</li>
+				<li id="source-2"><span class="citation-label">[2]</span> Elevation Wiki, “Destination dispatch.” <a
+						href="https://elevation.fandom.com/wiki/Destination_dispatch">https://elevation.fandom.com/wiki/Destination_dispatch</a>
+				</li>
+				<li id="source-3"><span class="citation-label">[3]</span> Double Pointer, “System Design Interview:
+					Elevator System for a Multi-Storey Building,” Medium. <a
+						href="https://medium.com/double-pointer/system-design-interview-elevator-system-for-a-multi-storey-building-b854e766adc7">https://medium.com/double-pointer/system-design-interview-elevator-system-for-a-multi-storey-building-b854e766adc7</a>
+				</li>
+				<li id="source-4"><span class="citation-label">[4]</span> SENG73000_W2 GitHub repository, commit
+					26a92518e073c82649020d2168b6882d2d282735. <a
+						href="https://github.com/aventadoro-ish/SENG73000_W2/commit/26a92518e073c82649020d2168b6882d2d282735">https://github.com/aventadoro-ish/SENG73000_W2/commit/26a92518e073c82649020d2168b6882d2d282735</a>
+				</li>
+				<li id="source-5"><span class="citation-label">[5]</span> SENG73000_W2 GitHub repository, commit
+					177c1d55dbbb55fd7862b6649490fc0886223ba0. <a
+						href="https://github.com/aventadoro-ish/SENG73000_W2/commit/177c1d55dbbb55fd7862b6649490fc0886223ba0#diff-52cc69355a1aff96878ca3c95ffe4a930efc956571df7fbfaed47d427f33d48c">https://github.com/aventadoro-ish/SENG73000_W2/commit/177c1d55dbbb55fd7862b6649490fc0886223ba0#diff-52cc69355a1aff96878ca3c95ffe4a930efc956571df7fbfaed47d427f33d48c</a>
+				</li>
+			</ol>
+		</section>
+
+		<nav class="entry-date-nav" aria-label="Logbook date navigation">
+			<a href="MR_entry_2026-07-20.html" class="button secondary-button">Previous Entry</a>
+			<a href="MR_entry_2026-07-22.html" class="button secondary-button">Next Entry</a>
+		</nav>
+		<p class="top-link"><a href="#page_top">Go to the top of this page</a></p>
+	</main>
+
+	<footer class="site-footer">
+		<p>Copyright &copy; Matvey Regentov</p>
+	</footer>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+</body>
+
+</html>
