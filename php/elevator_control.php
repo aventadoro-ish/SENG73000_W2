@@ -9,6 +9,103 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
     exit;
 }
 
+// re turn the latest physical elevator state to JS by querying CAN DB
+if ($_SERVER['REQUEST_METHOD'] === 'GET' && ($_GET['request_action'] ?? '') === 'status') {
+    header('Content-Type: application/json');
+    header('Cache-Control: no-store');
+
+
+    // retire the door and operating mode states
+    try {
+        $query = "
+            SELECT doors_open, operation_mode
+            FROM elevator_state
+            WHERE state_id = 1
+            LIMIT 1
+        ";
+
+        $statement = $pdo->query($query);
+        $elevatorState = $statement->fetch();
+
+        if(!$elevatorState) {
+            echo json_encode([
+                'success' => false,
+                'message' => 'elevator state is unavailable'
+            ]);
+
+            exit;
+        }
+
+        $query = "
+            SELECT raw_byte
+            FROM can_message_log
+            WHERE can_id = '0x101'
+                AND direction = 'rx'
+                AND (raw_byte & 4) = 4
+                AND (raw_byte & 3) BETWEEN 1 and 3
+            ORDER BY log_id DESC
+            LIMIT 1
+        ";
+
+        $statement = $pdo->query($query);
+        $latestPosition = $statement->fetch();
+
+        // no position exists until the EC logs its first message
+        $positionAvailable = false;
+        $currentFloor = null;
+
+        if($latestPosition) {
+
+            // bits 1-0 contain the current floor
+            $currentFloor =
+                ((int) $latestPosition['raw_byte']) & 0x03;
+
+            $positionAvailable = true;
+        }
+
+        // return the current physical state
+        echo json_encode([
+            'sucess' => true,
+            'position_available' => $positionAvailable,
+            'current_floor' => $currentFloor,
+            'doors_open' => (int) $elevatorState['doors_open'] === 1,
+            'operation_mode' => $elevatoreState['operation_mode']    
+        ]);
+
+    } catch (PDOException $e) {
+        error_log($e->getMessage());
+
+        echo json_encode([
+            'sucess' => false,
+            'message' =>  'elevator status could not be loaded at this time.'
+        ]);
+    }
+
+
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // elevator_control JS sends a POST request when an elevator button is pressed
 // read it here
 if($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -452,7 +549,7 @@ $safeUsername = htmlspecialchars($_SESSION['username'] ?? 'Member', ENT_QUOTES, 
 
     <main class="page-wrapper" id="elevatorControlPage" data-initial-floor="<?php echo $initialFloor; ?>"
         data-initial-request-id="<?php echo $initialRequestID; ?>" data-initial-source="<?php echo $initialSource; ?>"
-        data-operation-mode="<?php echo htmlspecialchars($initialOperationMode, ENT_QUOTES, 'UTF-8'); ?>">>
+        data-operation-mode="<?php echo htmlspecialchars($initialOperationMode, ENT_QUOTES, 'UTF-8'); ?>">
         <section class="intro-section elevator-control-intro" id="page_top">
 
             <div class="intro-text">
@@ -593,7 +690,7 @@ $safeUsername = htmlspecialchars($_SESSION['username'] ?? 'Member', ENT_QUOTES, 
                             </button>
                         </div>
 
-                        <!-- reuse the Sabbath classes so this card matches without extra CSS -->
+                        <?php if ($_SESSION['user_role'] === 'admin'): ?>
                         <div class="sabbath-toggle maintenance-toggle">
 
                             <p class="section-label"><b>Maintenance Toggle</b></p>
@@ -603,6 +700,8 @@ $safeUsername = htmlspecialchars($_SESSION['username'] ?? 'Member', ENT_QUOTES, 
                                 Maintenance Mode
                             </button>
                         </div>
+                        <?php endif ?>
+
                     </div>
                 </aside>
             </div>
