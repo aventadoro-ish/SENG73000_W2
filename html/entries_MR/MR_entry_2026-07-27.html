@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<!--
+Author: Matvey Regentov
+-->
+
+<html lang="en">
+
+<head>
+	<title>MR Logbook Entry - 2026-07-27</title>
+	<meta charset="UTF-8">
+	<meta name="author" content="Matvey Regentov">
+	<meta name="description" content="MR Logbook Entry for 2026-07-27">
+	<meta name="robots" content="index, follow">
+	<meta http-equiv="Pragma" content="no-cache">
+
+	<link rel="icon" href="../../media/icons/LiF_icon.ico" type="image/x-icon">
+	<link rel="stylesheet" href="../../css/base.css">
+	<link rel="stylesheet" href="../../css/logbook_entry.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css">
+	<link rel="stylesheet" href="../../css/code_formatting.css">
+	<script>
+		window.MathJax = {
+			tex: {
+				inlineMath: [['\\(', '\\)'], ['$', '$']],
+				displayMath: [['\\[', '\\]'], ['$$', '$$']]
+			},
+			svg: { fontCache: 'global' }
+		};
+	</script>
+	<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+</head>
+
+<body>
+	<div id="navbar-placeholder" data-root="../../"></div>
+	<script src="../../js/navbar.js"></script>
+
+	<main class="page-wrapper">
+		<section class="intro-section logbook-entry-intro" id="page_top">
+			<div class="intro-text">
+				<p class="section-label">Daily Logbook Entry</p>
+				<h1>Logbook Entry, 2026-07-27 by Matvey Regentov</h1>
+				<p class="intro-description">Phase 2 communication, final assembly, and system integration</p>
+				<div class="button-row">
+					<a href="../logbook_MR.html" class="button secondary-button">My Logbook Cover Page</a>
+					<a href="#log" class="button primary-button">Jump to Entry</a>
+					<a href="MR_entry_2026-07-26.html" class="button secondary-button">Previous Entry</a>
+					<a class="button secondary-button">Next Entry</a>
+				</div>
+			</div>
+			<aside class="summary-card">
+				<h2>Entry Snapshot</h2>
+				<p><b>Date:</b> 2026-07-27</p>
+				<p><b>Author:</b> Matvey Regentov</p>
+				<p><b>Focus:</b> Phase 2 communication, final assembly, and system integration</p>
+			</aside>
+		</section>
+
+		<section class="logbook-entry-content" id="log">
+			<h2 id="communication-issue-with-the-diagnostics-page">Communication Issue with the Diagnostics Page</h2>
+			<p>I prepared the following email to document a communication issue that could affect delivery of the CAN
+				diagnostics functionality for the Phase 2 demonstration.</p>
+			<h3 id="draft-email">Draft Email</h3>
+			<p>Hello Professor,</p>
+			<p>I am writing to inform you about an issue with the implementation of the CAN diagnostics page. As you
+				know, Nick and I previously raised concerns about Rita&#39;s project contributions and the lack of clear
+				communication concerning the tasks for which she was responsible. In short, we may not deliver the CAN
+				diagnostics features for the Phase 2 demonstration because Rita did not clearly communicate to the rest
+				of the group that she intended to drop the task. A full explanation follows.</p>
+			<p>After your July 15 announcement outlining the Phase 2 deliverables, I created a TODO list containing the
+				19 tasks that the group needed to complete. I asked the group members to assign themselves the tasks for
+				which they wanted to be responsible. I also assigned several tasks based on my understanding of each
+				member&#39;s current work. I assigned the I²S audio-announcement task to Rita because we had discussed
+				it in person before the announcement, probably on July 13 or during the preceding weekend.</p>
+			<p>Nick and I continued updating the spreadsheet and taking on new tasks as we completed our existing work.
+				Rita did not assign herself any additional tasks or update the TODO list.</p>
+			<p>During our July 20 debrief, Rita presented her I²S work and learned that all of the other tasks had
+				already been assigned. Nick and I therefore transferred the CAN diagnostics-page task from Nick to Rita.
+				Nick had only just started it and was occupied with other features, so this change gave Rita another
+				project task. We discussed the expected functionality of the diagnostics page.</p>
+			<p>Rita&#39;s I²S work consisted of three Raspberry Pi configuration lines and approximately 20 lines of C++
+				code. Raspberry Pi I²S examples and tutorials are widely available, and a feature of this scope would
+				normally take substantially less than a week to implement. It was the only feature on which she worked
+				during that period.</p>
+			<p>By Wednesday, July 22, Rita had pushed the first version of the CAN diagnostics page to the GitHub
+				repository. The page did not use CAN logging or display CAN messages; instead, it retrieved data from
+				the unrelated Elevator Requests page. Nick provided detailed written feedback describing the changes
+				that were required.</p>
+			<p>On Friday, Rita asked me whether she could drop the CAN diagnostics task in favour of completing a Data
+				Communications and Networks lab, for which we are in the same group. Although the lab was a
+				significantly smaller task, I told her that I did not object, provided that she first discussed the
+				change with Nick because he had been leading the website and database work.</p>
+			<p>Around midnight, she sent Nick her unpushed changes through a private Discord message. Discord formatting
+				distorted the code, and her message did not mention dropping the task; it only requested feedback. Nick
+				asked her to resend the work as a file or correct the formatting. The following morning, a GitHub commit
+				added only the CAN-message-log database table, with no additional work on the webpage.</p>
+			<p>As of 2:00 a.m. on July 27, Rita still had not told Nick that she was dropping the task. Nick therefore
+				formally took over the work and began preparing the functionality for that day&#39;s demonstration.</p>
+			<p>I would like to ask you to consider this information when grading our upcoming Phase 2 submission.</p>
+			<p>There are other issues that I have not included because this email is already lengthy. If helpful, we can
+				discuss them after today&#39;s demonstration.</p>
+			<p>Thank you for your understanding,</p>
+			<p>Matvey</p>
+
+		</section>
+
+		<section class="logbook-entry-content" id="topic-2">
+			<h2 id="transporting-the-updated-assembly">Transporting the Updated Assembly</h2>
+			<p>I transported the updated elevator assembly to the lab.</p>
+			<figure class="logbook-figure">
+				<img src="../../media/images/LiF_Phase_2_Transportation_configuration.png"
+					alt="Phase 2 assembly configured for transportation" class="logbook-image centered-image"
+					style="max-width: 100%; height: auto;">
+				<figcaption>Phase 2 assembly configured for transportation</figcaption>
+			</figure>
+
+
+
+			<figure class="logbook-figure">
+				<img src="../../media/images/LiF_Phase_2_Final_Assembly_Installed.png"
+					alt="Final Phase 2 assembly installed in the lab" class="logbook-image centered-image"
+					style="max-width: 100%; height: auto;">
+				<figcaption>Final Phase 2 assembly installed in the lab</figcaption>
+			</figure>
+
+
+		</section>
+
+		<section class="logbook-entry-content" id="topic-3">
+			<h2 id="fsm-and-can-protocol-updates">FSM and CAN-Protocol Updates</h2>
+			<p>Implementing the new FSM required several minor changes to the CAN protocol:</p>
+			<ul>
+				<li>Elevator Controller heartbeat messages now include an <code>is_moving</code> bit.<ul>
+						<li>A position value of zero is no longer used to indicate that the elevator car is moving.</li>
+					</ul>
+				</li>
+				<li>Message ID <code>0x201</code> is reserved for a virtual door-open command, although the command is
+					not yet implemented.<ul>
+						<li>This message will support web-based door-open and door-close commands.</li>
+						<li>Web commands must have lower priority than Car Controller messages but higher priority than
+							Floor Controller messages.</li>
+					</ul>
+				</li>
+				<li>Message ID <code>0x090</code> indicates a fault condition to every node.</li>
+			</ul>
+			<p>The updated Floor Controller identifiers are:</p>
+			<ul>
+				<li>Floor 1: <code>0x301</code>.</li>
+				<li>Floor 2: <code>0x302</code>.</li>
+				<li>Floor 3: <code>0x303</code>.</li>
+			</ul>
+
+		</section>
+
+		<section class="logbook-entry-content" id="topic-4">
+			<h2 id="system-integration">System Integration</h2>
+			<p>Nick and I met in the lab before the demonstration to merge the project changes and resolve the remaining
+				integration problems. We encountered and fixed the following issues:</p>
+			<ul>
+				<li>The database schema on the Raspberry Pi was out of date because the latest schema had not been
+					exported to an SQL file and installed on the Pi.</li>
+				<li>The Supervisory Controller received message ID <code>0x001</code> because the PCAN adapter emitted a
+					non-frame status message that the software interpreted as a CAN frame. The <code>can</code> module
+					now ignores this message type.</li>
+				<li>The system reported unknown CAN identifiers because the Floor Controllers had not yet been reflashed
+					with the current firmware.</li>
+				<li>Scheduler integration required an Elevator Controller update so that the current floor would be
+					reported correctly.</li>
+				<li>Database request completion did not work correctly because the implementation assumed that only one
+					request could be active. Completing a request therefore overwrote the active-request state.</li>
+				<li>The database module issued commands that had accumulated before the FSM started. I added logic so
+					that the FSM only executes database commands created after the program begins running.</li>
+			</ul>
+			<p>I also implemented remote door-open and door-close control. I wired the I²S amplifier on the elevator
+				platform and integrated Rita&#39;s announcement code so that the system announces the floor at which the
+				elevator arrives.</p>
+			<figure class="logbook-figure">
+				<img src="../../media/images/LiF_Phase_2_integration_hell.png"
+					alt="Database issues observed at the beginning of the integration session"
+					class="logbook-image centered-image" style="max-width: 100%; height: auto;">
+				<figcaption>Database issues observed at the beginning of the integration session</figcaption>
+			</figure>
+
+			
+			
+			<figure>
+				<video class="logbook-figure" controls style="max-width: 100%; height: auto;">
+					<source src="../../media/video/Maintenance_Lockout_And_State.mp4"
+						alt="Maintenance Mode and lockout">
+				</video>
+				<figcaption>Maintenance Mode and lockout</figcaption>
+			</figure>
+
+			<figure>
+				<video class="logbook-figure" controls style="max-width: 100%; height: auto;">
+					<source src="../../media/video/Phy_And_Web Sync.mp4"
+						alt="Physical and Web requests updating webpage">
+				</video>
+				<figcaption>Physical and Web requests updating webpage</figcaption>
+			</figure>
+
+			<figure>
+				<video class="logbook-figure" controls style="max-width: 100%; height: auto;">
+					<source src="../../media/video/Sabbath_Mode.mp4"
+						alt="Sabbath mode working">
+				</video>
+				<figcaption>Sabbath mode working</figcaption>
+			</figure>
+
+			<figure>
+				<video class="logbook-figure" controls style="max-width: 100%; height: auto;">
+					<source src="../../media/video/Sabbath_Mode_Door.mp4"
+						alt="Sabbath mode and open door">
+				</video>
+				<figcaption>Sabbath mode and open door</figcaption>
+			</figure>
+
+			<figure>
+				<video class="logbook-figure" controls style="max-width: 100%; height: auto;">
+					<source src="../../media/video/Announcements.mp4"
+						alt="Audio announcements working">
+				</video>
+				<figcaption>Audio announcements working</figcaption>
+			</figure>
+
+
+		</section>
+
+		<section class="logbook-entry-content sources-section" id="sources">
+			<h2>Sources</h2>
+			<p>No external sources were cited in this entry.</p>
+		</section>
+
+		<nav class="entry-date-nav" aria-label="Logbook date navigation">
+			<a href="MR_entry_2026-07-26.html" class="button secondary-button">Previous Entry</a>
+			<a href="MR_entry_2026-07-29.html" class="button secondary-button">Next Entry</a>
+		</nav>
+		<p class="top-link"><a href="#page_top">Go to the top of this page</a></p>
+	</main>
+
+	<footer class="site-footer">
+		<p>Copyright &copy; Matvey Regentov</p>
+	</footer>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<!--
+Author: Matvey Regentov
+-->
+
+<html lang="en">
+
+<head>
+	<title>MR Logbook Entry - 2026-07-23</title>
+	<meta charset="UTF-8">
+	<meta name="author" content="Matvey Regentov">
+	<meta name="description" content="MR Logbook Entry for 2026-07-23">
+	<meta name="robots" content="index, follow">
+	<meta http-equiv="Pragma" content="no-cache">
+
+	<link rel="icon" href="../../media/icons/LiF_icon.ico" type="image/x-icon">
+	<link rel="stylesheet" href="../../css/base.css">
+	<link rel="stylesheet" href="../../css/logbook_entry.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css">
+	<link rel="stylesheet" href="../../css/code_formatting.css">
+	<script>
+		window.MathJax = {
+			tex: {
+				inlineMath: [['\\(', '\\)'], ['$', '$']],
+				displayMath: [['\\[', '\\]'], ['$$', '$$']]
+			},
+			svg: { fontCache: 'global' }
+		};
+	</script>
+	<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+</head>
+
+<body>
+	<div id="navbar-placeholder" data-root="../../"></div>
+	<script src="../../js/navbar.js"></script>
+
+	<main class="page-wrapper">
+		<section class="intro-section logbook-entry-intro" id="page_top">
+			<div class="intro-text">
+				<p class="section-label">Daily Logbook Entry</p>
+				<h1>Logbook Entry, 2026-07-23 by Matvey Regentov</h1>
+				<p class="intro-description">Raspberry Pi workflow, database integration, and CAN-module refactoring</p>
+				<div class="button-row">
+					<a href="../logbook_MR.html" class="button secondary-button">My Logbook Cover Page</a>
+					<a href="#log" class="button primary-button">Jump to Entry</a>
+					<a href="MR_entry_2026-07-22.html" class="button secondary-button">Previous Entry</a>
+					<a href="MR_entry_2026-07-24.html" class="button secondary-button">Next Entry</a>
+				</div>
+			</div>
+			<aside class="summary-card">
+				<h2>Entry Snapshot</h2>
+				<p><b>Date:</b> 2026-07-23</p>
+				<p><b>Author:</b> Matvey Regentov</p>
+				<p><b>Focus:</b> Raspberry Pi workflow, database integration, and CAN-module refactoring</p>
+			</aside>
+		</section>
+
+		<section class="logbook-entry-content" id="log">
+			<h2 id="raspberry-pi-workflow-when-switching-units">Raspberry Pi Workflow When Switching Units</h2>
+			<p>When I used a different physical Raspberry Pi, SSH displayed the following warning:</p>
+			<pre><code class="language-text">@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@    WARNING: REMOTE HOST IDENTIFICATION HAS CHANGED!     @
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+</code></pre>
+			<p>The warning appears because the new Raspberry Pi presents a different SSH host key for the same hostname.
+				I removed the saved key by running:</p>
+			<pre><code class="language-bash">ssh-keygen -R lif.local
+</code></pre>
+			<p>I then recreated the SSH keys by following the process documented in <em>RPi Deployment Setup for VSCode
+					Build Task</em>.</p>
+
+		</section>
+
+		<section class="logbook-entry-content" id="topic-2">
+			<h2 id="database-integration">Database Integration</h2>
+			<p>I defined the interface for a <code>DB</code> class for Nick to implement. The outline and function
+				descriptions were:</p>
+			<pre><code class="language-cpp">class DB {
+    // Database state and implementation-specific variables
+
+public:
+    enum class Tables {
+        CAN_LOGS
+        // Additional tables
+    };
+
+    enum class OperationMode {
+        NORMAL,
+        SABBATH,
+        MAINTENANCE,
+        FAULT
+    };
+
+    std::string map_table_name(DB::Tables table);
+
+    /**
+     * @brief Add a database entry containing a CAN frame.
+     * @param id Message identifier defined by the CAN protocol.
+     * @param data Pointer to an integer array of the given length.
+     * @param length Length of the data array.
+     * @return 0 if successful, or -1 if an error occurs.
+     */
+    int log_can_message(int id, int* data, uint8_t length);
+
+    /**
+     * @brief Read a newly requested floor from the database.
+     * @return 0 if no new request exists, -1 if an error occurs,
+     * or the requested floor number otherwise.
+     */
+    int read_floor_request();
+
+    /**
+     * @brief Read the current operating mode from the database.
+     * @return The current operating-mode value.
+     */
+    DB::OperationMode get_operation_mode();
+
+    /**
+     * @brief Check whether the database is active and reachable.
+     * @return true if connected, or false if disconnected.
+     */
+    bool is_db_connected();
+};
+</code></pre>
+			<p>I implemented table-name lookup with a function that maps enumeration values to strings:</p>
+			<pre><code class="language-cpp">std::string DB::map_table_name(DB::Tables table) {
+    switch (table)
+    {
+    case Tables::CAN_LOGS:
+        return std::string(&quot;can_table_name&quot;);
+    default:
+        std::cerr &lt;&lt; &quot;Invalid DB table value&quot; &lt;&lt; std::endl;
+        break;
+    }
+    return std::string();
+}
+</code></pre>
+
+		</section>
+
+		<section class="logbook-entry-content" id="topic-3">
+			<h2 id="can-module">CAN Module</h2>
+			<p>The existing CAN module, <code>pcanFunctions</code>, provides basic communication but leaves CAN-data
+				interpretation to the main control logic. This arrangement is difficult to extend because every instance
+				of frame interpretation must be changed whenever the CAN protocol or supported functionality changes.
+			</p>
+			<p>I therefore began refactoring the code into a dedicated <code>can</code> module. The module will:</p>
+			<ul>
+				<li>Interact with <code>libpcan</code>.</li>
+				<li>Handle errors associated with the CAN hardware.</li>
+				<li>Interpret incoming CAN messages.</li>
+				<li>Provide an easy-to-use API for other modules.<ul>
+						<li>For example, <code>ec_request_floor</code> accepts a floor number and the Elevator
+							Controller&#39;s enabled status.</li>
+						<li>Incoming messages can be returned as structures with decoded fields. An Elevator Controller
+							heartbeat structure, for example, contains the current position, enabled state, and moving
+							state.</li>
+					</ul>
+				</li>
+			</ul>
+			<p>This design removes bit-level operations from the main FSM and will make it easier to add functionality
+				during Phase 3.</p>
+
+		</section>
+
+		<section class="logbook-entry-content sources-section" id="sources">
+			<h2>Sources</h2>
+			<p>No external sources were cited in this entry.</p>
+		</section>
+
+		<nav class="entry-date-nav" aria-label="Logbook date navigation">
+			<a href="MR_entry_2026-07-22.html" class="button secondary-button">Previous Entry</a>
+			<a href="MR_entry_2026-07-24.html" class="button secondary-button">Next Entry</a>
+		</nav>
+		<p class="top-link"><a href="#page_top">Go to the top of this page</a></p>
+	</main>
+
+	<footer class="site-footer">
+		<p>Copyright &copy; Matvey Regentov</p>
+	</footer>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+</body>
+
+</html>

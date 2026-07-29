@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<!--
+Author: Matvey Regentov
+-->
+
+<html lang="en">
+
+<head>
+	<title>MR Logbook Entry - 2026-07-24</title>
+	<meta charset="UTF-8">
+	<meta name="author" content="Matvey Regentov">
+	<meta name="description" content="MR Logbook Entry for 2026-07-24">
+	<meta name="robots" content="index, follow">
+	<meta http-equiv="Pragma" content="no-cache">
+
+	<link rel="icon" href="../../media/icons/LiF_icon.ico" type="image/x-icon">
+	<link rel="stylesheet" href="../../css/base.css">
+	<link rel="stylesheet" href="../../css/logbook_entry.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css">
+	<link rel="stylesheet" href="../../css/code_formatting.css">
+	<script>
+		window.MathJax = {
+			tex: {
+				inlineMath: [['\\(', '\\)'], ['$', '$']],
+				displayMath: [['\\[', '\\]'], ['$$', '$$']]
+			},
+			svg: { fontCache: 'global' }
+		};
+	</script>
+	<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+</head>
+
+<body>
+	<div id="navbar-placeholder" data-root="../../"></div>
+	<script src="../../js/navbar.js"></script>
+
+	<main class="page-wrapper">
+		<section class="intro-section logbook-entry-intro" id="page_top">
+			<div class="intro-text">
+				<p class="section-label">Daily Logbook Entry</p>
+				<h1>Logbook Entry, 2026-07-24 by Matvey Regentov</h1>
+				<p class="intro-description">PCAN driver installation and configurable PCB BOM preparation</p>
+				<div class="button-row">
+					<a href="../logbook_MR.html" class="button secondary-button">My Logbook Cover Page</a>
+					<a href="#log" class="button primary-button">Jump to Entry</a>
+					<a href="MR_entry_2026-07-23.html" class="button secondary-button">Previous Entry</a>
+					<a href="MR_entry_2026-07-25.html" class="button secondary-button">Next Entry</a>
+				</div>
+			</div>
+			<aside class="summary-card">
+				<h2>Entry Snapshot</h2>
+				<p><b>Date:</b> 2026-07-24</p>
+				<p><b>Author:</b> Matvey Regentov</p>
+				<p><b>Focus:</b> PCAN driver installation and configurable PCB BOM preparation</p>
+			</aside>
+		</section>
+
+		<section class="logbook-entry-content" id="log">
+			<h2 id="installing-libpcan-on-the-raspberry-pi">Installing <code>libpcan</code> on the Raspberry Pi</h2>
+			<p>I downloaded the <code>peak-linux-driver-8.16.0.tar</code> archive from the course shell<sup><a
+						href="#source-1" aria-label="Source 1">[1]</a></sup> and transferred it to the Raspberry Pi with
+				a USB flash drive. I used <code>lsblk</code> to list block devices and <code>blkid</code> to identify
+				the drive as <code>/dev/sda1</code>. I then mounted it under <code>/media/usb_drive</code>:</p>
+			<pre><code class="language-bash">sudo mkdir -p /media/usb_drive
+sudo mount /dev/sda1 /media/usb_drive
+</code></pre>
+			<p>After mounting the drive, I could access the archive files.</p>
+			<figure class="logbook-figure">
+				<img src="../../media/images/Pasted_image_20260724045824.png"
+					alt="PEAK Linux driver archive on the mounted USB drive" class="logbook-image centered-image"
+					style="max-width: 100%; height: auto;">
+				<figcaption>PEAK Linux driver archive on the mounted USB drive</figcaption>
+			</figure>
+
+
+
+			<p>I followed the archive&#39;s README and ran <code>sudo make install</code>, but the installation failed:
+			</p>
+			<pre><code class="language-text">make[1]: Entering directory &#39;/home/rita/peak-linux-driver-8.16.0/driver&#39;
+Info: Left current &#39;pcan&#39;-entry in /etc/modprobe.d/pcan.conf untouched.
+mkdir -p /usr/local/bin
+cp -f udev/pcan_usb_minor_check.bash /usr/local/bin
+chmod 744 /usr/local/bin/pcan_usb_minor_check.bash
+cp -f udev/45-pcan.rules /etc/udev/rules.d
+Info: Copied 45-pcan.rules to /etc/udev/rules.d.
+cp -f udev/blacklist-peak.conf /etc/modprobe.d
+chmod 644 /etc/modprobe.d/blacklist-peak.conf
+Info: mainline drivers removed and blacklisted in
+      /etc/modprobe.d/blacklist-peak.conf
+udevadm control --reload-rules
+make[1]: *** No rule to make target &#39;pcan.ko&#39;, needed by &#39;install_module&#39;.  Stop.
+make[1]: Leaving directory &#39;/home/rita/peak-linux-driver-8.16.0/driver&#39;
+make: *** [Makefile:98: install] Error 2
+</code></pre>
+			<p>The installer could not find the <code>pcan.ko</code> kernel module. I searched the PEAK forums without
+				finding a solution, then updated the system and installed the build dependencies:</p>
+			<pre><code class="language-bash">sudo apt update
+sudo apt full-upgrade
+sudo apt install build-essential libpopt-dev linux-headers-rpi-2712
+sudo reboot
+</code></pre>
+			<p>I verified the running kernel and its header path:</p>
+			<pre><code class="language-bash">uname -r
+readlink -f /lib/modules/&quot;$(uname -r)&quot;/build
+</code></pre>
+			<p>The same error remained. I cleaned and rebuilt the driver:</p>
+			<pre><code class="language-bash">make clean
+make -j&quot;$(nproc)&quot;   # -j specifies the number of parallel compilation jobs.
+</code></pre>
+			<p>This build failed with:</p>
+			<pre><code class="language-text">src/pcan_filter.c:29:10: fatal error: src/pcan_common.h: No such file or directory
+</code></pre>
+			<p>I then consulted the PEAK-System Linux website<sup><a href="#source-2"
+						aria-label="Source 2">[2]</a></sup>. The kernel configuration contained:</p>
+			<pre><code class="language-text"># CONFIG_CAN_PEAK_PCIEFD is not set
+CONFIG_CAN_PEAK_USB=m
+</code></pre>
+			<p>The disabled <code>CONFIG_CAN_PEAK_PCIEFD</code> option was not relevant because the project uses a PEAK
+				USB adapter rather than a PCIe FD device.</p>
+			<p>I also downloaded and ran PEAK&#39;s kernel-version-checking script<sup><a href="#source-3"
+						aria-label="Source 3">[3]</a></sup>, which reported:</p>
+			<pre><code class="language-text">Bus 001 Device 002: ID 0c72:000c PEAK System PCAN-USB needs Linux v3.4
+</code></pre>
+			<p>I initially interpreted this result as a possible compatibility issue with the Raspberry Pi&#39;s Linux
+				6.18 kernel. I therefore downloaded the current driver release<sup><a href="#source-4"
+						aria-label="Source 4">[4]</a></sup> and installed version 9.2.0:</p>
+			<pre><code class="language-bash"># Download the current version.
+wget -O peak-linux-driver.tar.gz   https://www.peak-system.com/quick/PCAN-Linux-Driver
+
+# Confirm that the archive was downloaded.
+ls
+
+# Extract and enter the archive directory.
+tar -xzf peak-linux-driver.tar.gz
+cd peak-linux-driver-9.2.0
+
+# Build the driver.
+make clean
+make -j&quot;$(nproc)&quot;
+
+# Confirm that the module was produced.
+ls -l driver/pcan.ko
+
+# Install the driver and regenerate module dependencies.
+sudo make install
+sudo depmod -a
+
+# Load the new module.
+sudo modprobe pcan
+</code></pre>
+			<p>The new driver installed successfully, and I tested my C++ CAN library. The test revealed two issues:</p>
+			<ol>
+				<li>Declaring the CAN module as a global variable initialized it once, while a separate
+					<code>CAN();</code> expression inside <code>main()</code> caused an unnecessary second construction.
+				</li>
+				<li>During initialization, the status may be <code>0x20</code> (<code>CAN_ERR_QRCVEMPTY</code>), which
+					only indicates that the receive queue is empty. The code had incorrectly treated this status as a
+					failure.</li>
+			</ol>
+			<p>I fixed both issues and successfully transmitted ten test messages to the Elevator Controller.</p>
+			<figure>
+				<video class="logbook-figure" controls style="max-width: 100%; height: auto;">
+					<source src="../../media/video/Refactored_Can_On_Sc.mp4"
+						alt="New CAN SC module communication demo with EC">
+				</video>
+				<figcaption>New CAN SC module communication demo with EC</figcaption>
+			</figure>
+		</section>
+
+		<section class="logbook-entry-content" id="topic-2">
+			<h2 id="parts-ordering">Parts Ordering</h2>
+			<p>I exported the bill of materials from the KiCad project. The PCB portion of the project is complex, so I
+				decided to automate the BOM-generation process. There are two PCB designs, with three configurations for
+				PCB 1 and two configurations for PCB 2. Ordering every component required to populate every subsystem on
+				every board would unnecessarily increase the DigiKey order cost.</p>
+			<p>I proposed the following workflow:</p>
+			<ol>
+				<li>Copy the KiCad schematic text for each configurable module into a separate text file.</li>
+				<li>Run a Python script that exports a CSV file containing the source filename and every reference
+					designator found in that module.</li>
+				<li>Import the CSV file into the BOM-generator sheet and enter the required quantity for each module.
+				</li>
+				<li>Import the master BOM exported from KiCad.</li>
+				<li>Generate a master ordering BOM containing the configured quantities and DigiKey part numbers.</li>
+			</ol>
+			<p>I implemented the BOM generator in the team&#39;s master Google Sheets workbook and began preparing the
+				DigiKey order.</p>
+			<p>The <code>EXB-2HV471JV</code> 470-ohm resistor array was out of stock, and I could not find a
+				footprint-compatible substitute with the same resistance. I therefore selected the
+				<code>EXB-2HV561JV</code> 560-ohm resistor array<sup><a href="#source-5"
+						aria-label="Source 5">[5]</a></sup>, DigiKey part number <code>Y1561CT-ND</code>.</p>
+			<p>The initial cost calculations were:</p>
+			<ul>
+				<li>The original BOM cost was USD 293.29.</li>
+				<li>The first optimized BOM cost was USD 291.04.</li>
+				<li>BOM version 2 had an original cost of CAD 456.85 and an optimized cost of CAD 452.89.</li>
+			</ul>
+			<p>The initial final order total was:</p>
+			<ul>
+				<li>Subtotal: CAD 452.89.</li>
+				<li>HST: CAD 58.88.</li>
+				<li>Shipping: CAD 0.</li>
+				<li>Other charges: CAD 0.</li>
+				<li>Total: CAD 511.77.</li>
+			</ul>
+			<p>The 73.2 kΩ resistors also became unavailable. I replaced ten units of
+				<code>738-RMCF0805FT73K2CT-ND</code> with <code>ERJ-6ENF7322V</code>, DigiKey part number
+				<code>541-73.2KCCT-ND</code>, despite its higher price. I also replaced 59 units of
+				<code>490-6473-1-ND</code> with the selected alternative, DigiKey part number
+				<code>1276-1052-1-ND</code>.</p>
+			<p>After the out-of-stock substitutions, the order subtotal was CAD 452.49, shipping remained free, and HST
+				was CAD 58.82.</p>
+			<figure class="logbook-figure">
+				<img src="../../media/images/LiF_DK_Order_placement.png" alt="Final DigiKey order placement"
+					class="logbook-image centered-image" style="max-width: 100%; height: auto;">
+				<figcaption>Final DigiKey order placement</figcaption>
+			</figure>
+
+
+
+			<p>I then placed the order.</p>
+
+		</section>
+
+		<section class="logbook-entry-content sources-section" id="sources">
+			<h2>Sources</h2>
+			<ol class="source-list">
+				<li id="source-1"><span class="citation-label">[1]</span> Conestoga College eConestoga course shell,
+					<em>peak-linux-driver-8.16.0.tar</em>. <a
+						href="https://conestoga.desire2learn.com/d2l/le/content/1564076/viewContent/32953003/View">https://conestoga.desire2learn.com/d2l/le/content/1564076/viewContent/32953003/View</a>
+				</li>
+				<li id="source-2"><span class="citation-label">[2]</span> PEAK-System, “PEAK-System Linux Website.” <a
+						href="https://www.peak-system.com/fileadmin/media/linux/index.php">https://www.peak-system.com/fileadmin/media/linux/index.php</a>
+				</li>
+				<li id="source-3"><span class="citation-label">[3]</span> PEAK-System, <em>pcan-kernel-version.sh</em>
+					archive. <a
+						href="https://www.peak-system.com/fileadmin/media/linux/files/pcan-kernel-version.sh.tar.gz">https://www.peak-system.com/fileadmin/media/linux/files/pcan-kernel-version.sh.tar.gz</a>
+				</li>
+				<li id="source-4"><span class="citation-label">[4]</span> PEAK-System, current PCAN Linux driver
+					download. <a
+						href="https://www.peak-system.com/quick/PCAN-Linux-Driver">https://www.peak-system.com/quick/PCAN-Linux-Driver</a>
+				</li>
+				<li id="source-5"><span class="citation-label">[5]</span> Panasonic Industry, EXB-2HV561JV resistor
+					array, DigiKey product page. <a
+						href="https://www.digikey.ca/en/products/detail/panasonic-industry/EXB-2HV561JV/285316">https://www.digikey.ca/en/products/detail/panasonic-industry/EXB-2HV561JV/285316</a>
+				</li>
+			</ol>
+		</section>
+
+		<nav class="entry-date-nav" aria-label="Logbook date navigation">
+			<a href="MR_entry_2026-07-23.html" class="button secondary-button">Previous Entry</a>
+			<a href="MR_entry_2026-07-25.html" class="button secondary-button">Next Entry</a>
+		</nav>
+		<p class="top-link"><a href="#page_top">Go to the top of this page</a></p>
+	</main>
+
+	<footer class="site-footer">
+		<p>Copyright &copy; Matvey Regentov</p>
+	</footer>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+</body>
+
+</html>

@@ -469,7 +469,7 @@ Contributors to this page:
 		<section class="week-entry-box" id="week-10">
 			<div class="week-header">
 				<p class="section-label">Week 10</p>
-				<h2>Phase 2 completion and Supervisory Controller development</h2>
+				<h2>Supervisory Controller scheduling, communication, and system integration</h2>
 			</div>
 
 			<article class="entry-summary">
@@ -479,6 +479,94 @@ Contributors to this page:
 					<li>Planned the required Supervisory Controller FSM changes.</li>
 					<li>Defined the Sabbath-mode, maintenance-lockout, and database-command requirements.</li>
 					<li>Planned support for additional floors and new controller-PCB data frames.</li>
+				</ul>
+			</article>
+
+			<article class="entry-summary">
+				<h3><a href="./entries_MR/MR_entry_2026-07-21.html">Entry 2 - 2026-07-21</a></h3>
+				<ul>
+					<li>Researched common elevator-scheduling algorithms.</li>
+					<li>Developed a custom scheduling approach based on the LOOK algorithm.</li>
+					<li>Introduced direction-specific floor requests and a dynamic travel limit.</li>
+					<li>Started refactoring the Supervisory Controller FSM.</li>
+				</ul>
+			</article>
+
+			<article class="entry-summary">
+				<h3><a href="./entries_MR/MR_entry_2026-07-22.html">Entry 3 - 2026-07-22</a></h3>
+				<ul>
+					<li>Replaced the custom priority queue with request-flag tables.</li>
+					<li>Implemented the initial version of the new scheduling algorithm.</li>
+					<li>Created a manual command-line interface for scheduler testing.</li>
+					<li>Developed and tested a six-floor request sequence.</li>
+				</ul>
+			</article>
+
+			<article class="entry-summary">
+				<h3><a href="./entries_MR/MR_entry_2026-07-23.html">Entry 4 - 2026-07-23</a></h3>
+				<ul>
+					<li>Documented the SSH workflow for switching between Raspberry Pi units.</li>
+					<li>Defined the database-module interface for Supervisory Controller integration.</li>
+					<li>Integrated database request handling into the controller software.</li>
+					<li>Planned a refactored CAN module with message decoding and error handling.</li>
+				</ul>
+			</article>
+
+			<article class="entry-summary">
+				<h3><a href="./entries_MR/MR_entry_2026-07-24.html">Entry 5 - 2026-07-24</a></h3>
+				<ul>
+					<li>Installed and configured the PEAK Linux CAN driver on the Raspberry Pi.</li>
+					<li>Diagnosed CAN initialization and receive-queue status handling.</li>
+					<li>Developed a parser for configurable KiCad schematic modules.</li>
+					<li>Prepared and optimized the PCB bill of materials for ordering.</li>
+				</ul>
+			</article>
+
+			<article class="entry-summary">
+				<h3><a href="./entries_MR/MR_entry_2026-07-25.html">Entry 6 - 2026-07-25</a></h3>
+				<ul>
+					<li>Measured the speaker and prepared a dimensioned drawing.</li>
+					<li>Designed a custom speaker mount for the elevator assembly.</li>
+					<li>Selected an enclosure for the Supervisory Controller Raspberry Pi.</li>
+				</ul>
+			</article>
+
+			<article class="entry-summary">
+				<h3><a href="./entries_MR/MR_entry_2026-07-26.html">Entry 7 - 2026-07-26</a></h3>
+				<ul>
+					<li>Completed and tested the refactored CAN module.</li>
+					<li>Integrated the scheduler and database modules into the FSM.</li>
+					<li>Implemented normal, Sabbath, maintenance, and fault operating modes.</li>
+					<li>Completed the distance-sensor wiring and installed the new elevator hardware.</li>
+				</ul>
+			</article>
+		</section>
+
+
+		<!-- Week 11 -->
+		<section class="week-entry-box" id="week-11">
+			<div class="week-header">
+				<p class="section-label">Week 11</p>
+				<h2>Phase 2 integration and mechanical recalibration</h2>
+			</div>
+
+			<article class="entry-summary">
+				<h3><a href="./entries_MR/MR_entry_2026-07-27.html">Entry 1 - 2026-07-27</a></h3>
+				<ul>
+					<li>Documented a communication issue affecting the CAN diagnostics page.</li>
+					<li>Transported and prepared the updated elevator assembly.</li>
+					<li>Revised the FSM and CAN protocol for system integration.</li>
+					<li>Diagnosed database, CAN-message, firmware, and scheduler integration issues.</li>
+					<li>Updated database request handling to support multiple active requests.</li>
+				</ul>
+			</article>
+
+			<article class="entry-summary">
+				<h3><a href="./entries_MR/MR_entry_2026-07-29.html">Entry 2 - 2026-07-29</a></h3>
+				<ul>
+					<li>Reviewed the Elevator Controller configuration for the new pulley mount.</li>
+					<li>Compared the ToF sensor travel range with the stepper-motor travel distance.</li>
+					<li>Confirmed that the existing travel-distance calibration could be reused.</li>
 				</ul>
 			</article>
 		</section>
