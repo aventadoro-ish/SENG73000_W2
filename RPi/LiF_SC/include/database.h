@@ -14,8 +14,8 @@
 #include <cppconn/statement.h>
 #include <cppconn/prepared_statement.h>
 
-class DB
-{
+
+class DB {
     // stores shared DB connection used by DB object
     // not defined yet so nullptr
     sql::Connection *con = nullptr;

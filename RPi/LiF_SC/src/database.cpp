@@ -14,8 +14,7 @@
 #include "../include/database.h"
 
 // reformatted this block since I'm more used to this type of switch-case, mb
-std::string DB::map_table_name(DB::Tables table)
-{
+std::string DB::map_table_name(DB::Tables table) {
     switch (table)
     {
     case Tables::CAN_LOGS:
@@ -30,8 +29,7 @@ std::string DB::map_table_name(DB::Tables table)
     return std::string();
 }
 
-std::string DB::map_operation_mode(DB::OperationMode operationMode)
-{
+std::string DB::map_operation_mode(DB::OperationMode operationMode) {
     switch (operationMode)
     {
     case OperationMode::NORMAL:
@@ -103,10 +101,8 @@ bool DB::db_connect()
     }
 }
 
-int DB::read_floor_request()
-{
-    if (!db_connect())
-    {
+int DB::read_floor_request() {
+    if (!db_connect()) {
         return -1;
     }
 
@@ -114,22 +110,19 @@ int DB::read_floor_request()
     sql::ResultSet *result = nullptr;
     sql::PreparedStatement *prepared_statement = nullptr;
 
-    try
-    {
+    try {
         /*
          * On the first call, remember the newest existing request.
          * Requests from previous program runs will be ignored.
          */
-        if (!request_reader_initialized)
-        {
+        if (!request_reader_initialized) {
             statement = con->createStatement();
 
             result = statement->executeQuery(
                 "SELECT COALESCE(MAX(elevator_request_id), 0) AS latest_id "
                 "FROM elevator_requests");
 
-            if (result->next())
-            {
+            if (result->next()) {
                 startup_request_id = result->getInt("latest_id");
             }
 
@@ -158,8 +151,7 @@ int DB::read_floor_request()
         prepared_statement->setInt(1, last_read_request_id);
         result = prepared_statement->executeQuery();
 
-        if (!result->next())
-        {
+        if (!result->next()) {
             delete result;
             delete prepared_statement;
             return 0;
@@ -175,21 +167,16 @@ int DB::read_floor_request()
         delete prepared_statement;
 
         return requested_floor;
-    }
-    catch (sql::SQLException &error)
-    {
-        if (result != nullptr)
-        {
+    } catch (sql::SQLException &error) {
+        if (result != nullptr) {
             delete result;
         }
 
-        if (statement != nullptr)
-        {
+        if (statement != nullptr) {
             delete statement;
         }
 
-        if (prepared_statement != nullptr)
-        {
+        if (prepared_statement != nullptr) {
             delete prepared_statement;
         }
 
@@ -204,8 +191,7 @@ int DB::read_floor_request()
 
 bool DB::complete_elevator_request(int completedFloor)
 {
-    if (completedFloor <= 0)
-    {
+    if (completedFloor <= 0) {
         std::cerr
             << "Invalid floor passed to complete_elevator_request(): "
             << completedFloor
@@ -214,8 +200,7 @@ bool DB::complete_elevator_request(int completedFloor)
         return false;
     }
 
-    if (!request_reader_initialized)
-    {
+    if (!request_reader_initialized) {
         std::cerr
             << "Request reader has not been initialized"
             << std::endl;
@@ -223,15 +208,13 @@ bool DB::complete_elevator_request(int completedFloor)
         return false;
     }
 
-    if (!db_connect())
-    {
+    if (!db_connect()) {
         return false;
     }
 
     sql::PreparedStatement *statement = nullptr;
 
-    try
-    {
+    try {
         /*
          * Complete every request for the floor that was actually served.
          *
@@ -257,8 +240,7 @@ bool DB::complete_elevator_request(int completedFloor)
 
         delete statement;
 
-        if (updatedRows == 0)
-        {
+        if (updatedRows == 0) {
             std::cerr
                 << "No pending DB requests found for floor "
                 << completedFloor
@@ -275,10 +257,8 @@ bool DB::complete_elevator_request(int completedFloor)
 
         return true;
     }
-    catch (sql::SQLException &error)
-    {
-        if (statement != nullptr)
-        {
+    catch (sql::SQLException &error) {
+        if (statement != nullptr) {
             delete statement;
         }
 
@@ -294,18 +274,15 @@ bool DB::complete_elevator_request(int completedFloor)
 
 // log a successful CAN message in the CAN_message_log table in DB
 // returns 1 for successful log, 0 for invalid data/no inserted row, and -1 for DB failure
-int DB::log_can_message(int id, int *data, uint8_t length)
-{
+int DB::log_can_message(int id, int *data, uint8_t length) {
     // the table requires at least one data byte so ensure the passed in values fit
-    if (data == nullptr || length == 0 || length > 8)
-    {
+    if (data == nullptr || length == 0 || length > 8) {
         std::cerr << "CAN message was not logged: invalid data or length" << std::endl;
         return 0;
     }
 
     // the rawbyte was stored as a tinyint inside the table so restrict its value
-    if (data[0] < 0 || data[0] > 255)
-    {
+    if (data[0] < 0 || data[0] > 255) {
         std::cerr << "CAN message was not logged: data[0] is outside of its 0-255 range" << std::endl;
         return 0;
     }
@@ -316,51 +293,37 @@ int DB::log_can_message(int id, int *data, uint8_t length)
     std::string sourceController;
 
     // RY also made can IDs store as string in the DB - fine. Will have to use table to convert int to string
-    if (id == 0x100)
-    {
+    if (id == 0x100) {
         canIDText = "0x100";
         direction = "tx";
         sourceController = "SC";
-    }
-    else if (id == 0x101)
-    {
+    } else if (id == 0x101) {
         canIDText = "0x101";
         direction = "rx";
         sourceController = "EC";
-    }
-    else if (id == 0x200)
-    {
+    } else if (id == 0x200) {
         canIDText = "0x200";
         direction = "rx";
         sourceController = "CC";
-    }
-    else if (id == 0x301)
-    {
+    } else if (id == 0x301) {
         canIDText = "0x201";
         direction = "rx";
         sourceController = "F1";
-    }
-    else if (id == 0x302)
-    {
+    } else if (id == 0x302) {
         canIDText = "0x202";
         direction = "rx";
         sourceController = "F2";
-    }
-    else if (id == 0x303)
-    {
+    } else if (id == 0x303) {
         canIDText = "0x203";
         direction = "rx";
         sourceController = "F3";
-    }
-    else
-    {
+    } else {
         std::cerr << "CAN message was not logged: unknown CAN id provided" << std::endl;
         return 0;
     }
 
     // ensure the shared database connection exists
-    if (!db_connect())
-    {
+    if (!db_connect()) {
         return -1;
     }
 
@@ -368,8 +331,7 @@ int DB::log_can_message(int id, int *data, uint8_t length)
     sql::PreparedStatement *statement = nullptr;
 
     // query DB
-    try
-    {
+    try {
         statement = con->prepareStatement(
             "INSERT INTO can_message_log ( "
             "elevator_request_id, "
@@ -405,20 +367,16 @@ int DB::log_can_message(int id, int *data, uint8_t length)
         delete statement;
 
         // ensure the query worked
-        if (insertedRows == 1)
-        {
+        if (insertedRows == 1) {
             return 1;
         }
 
         // if function does not return 1, query failed so print error
         std::cerr << "CAN message was not logged: no row was inserted";
         return 0;
-    }
-    catch (sql::SQLException &error)
-    {
+    } catch (sql::SQLException &error) {
         // clean up pointer if it was made but query failed
-        if (statement != nullptr)
-        {
+        if (statement != nullptr) {
             delete statement;
         }
 
@@ -429,12 +387,10 @@ int DB::log_can_message(int id, int *data, uint8_t length)
 
 // logs a manual (physical) request that was received over CAN into the main elevator DB
 // returns 1 for success, 0 for invalid data/insertion failed, and -1 for DB fail
-int DB::log_elevator_request(int requestedFloor, int sourceID)
-{
+int DB::log_elevator_request(int requestedFloor, int sourceID) {
 
     // check if the requested floor is valid
-    if (requestedFloor < 1 || requestedFloor > 3)
-    {
+    if (requestedFloor < 1 || requestedFloor > 3) {
         std::cerr << "invalid requested floor" << std::endl;
         return 0;
     }
@@ -444,38 +400,31 @@ int DB::log_elevator_request(int requestedFloor, int sourceID)
     std::string sourceController;
 
     // determine the source controller based on CAN ID
-    if (sourceID == 0x200)
-    {
+    if (sourceID == 0x200) {
         sourceController = "CC";
     }
-    else if (sourceID == 0x201)
-    {
+    else if (sourceID == 0x201) {
         sourceController = "F1";
     }
-    else if (sourceID == 0x202)
-    {
+    else if (sourceID == 0x202) {
         sourceController = "F2";
     }
-    else if (sourceID == 0x203)
-    {
+    else if (sourceID == 0x203) {
         sourceController = "F3";
     }
-    else
-    {
+    else {
         std::cerr << "Invalid request source CAN ID" << std::endl;
         return 0;
     }
 
     // check DB connection and connect if not
-    if (!db_connect())
-    {
+    if (!db_connect()) {
         return -1;
     }
 
     sql::PreparedStatement *statement = nullptr;
 
-    try
-    {
+    try {
         statement = con->prepareStatement(
             "INSERT INTO elevator_requests ( "
             "request_type, "
@@ -502,8 +451,7 @@ int DB::log_elevator_request(int requestedFloor, int sourceID)
         delete statement;
 
         // should be 1 if success
-        if (insertedRows == 1)
-        {
+        if (insertedRows == 1) {
             return 1;
         }
 
@@ -512,11 +460,9 @@ int DB::log_elevator_request(int requestedFloor, int sourceID)
 
         return 0;
     }
-    catch (sql::SQLException &error)
-    {
+    catch (sql::SQLException &error) {
         // if made but didn't execute properly
-        if (statement != nullptr)
-        {
+        if (statement != nullptr) {
             delete statement;
         }
 
@@ -529,8 +475,7 @@ int DB::log_elevator_request(int requestedFloor, int sourceID)
 DB::OperationMode DB::get_operation_mode()
 {
     // make sure the DB connection exists before querying
-    if (!db_connect())
-    {
+    if (!db_connect()) {
         return OperationMode::UNKNOWN;
     }
 
@@ -539,8 +484,7 @@ DB::OperationMode DB::get_operation_mode()
     sql::ResultSet *result = nullptr;
 
     // query the DB:
-    try
-    {
+    try {
         statement = con->createStatement();
 
         result = statement->executeQuery(
@@ -551,8 +495,7 @@ DB::OperationMode DB::get_operation_mode()
 
         // check if the query returned 0 rows
         // basically an empty table/queue case
-        if (!result->next())
-        {
+        if (!result->next()) {
 
             // remove query objects since nothing was returned
             delete result;
@@ -570,34 +513,27 @@ DB::OperationMode DB::get_operation_mode()
         delete statement;
 
         // map the returned operation_mode into the enum class
-        if (operationMode == "normal")
-        {
+        if (operationMode == "normal") {
             return OperationMode::NORMAL;
         }
-        else if (operationMode == "sabbath")
-        {
+        else if (operationMode == "sabbath") {
             return OperationMode::SABBATH;
         }
-        else if (operationMode == "maintenance")
-        {
+        else if (operationMode == "maintenance") {
             return OperationMode::MAINTENANCE;
         }
-        else if (operationMode == "fault")
-        {
+        else if (operationMode == "fault") {
             return OperationMode::FAULT;
         }
 
         return OperationMode::UNKNOWN;
     }
-    catch (sql::SQLException &error)
-    {
+    catch (sql::SQLException &error) {
         // delete either object if it was created
-        if (result != nullptr)
-        {
+        if (result != nullptr) {
             delete result;
         }
-        if (statement != nullptr)
-        {
+        if (statement != nullptr) {
             delete statement;
         }
 
@@ -611,18 +547,15 @@ DB::OperationMode DB::get_operation_mode()
 // update the DB with the new method of operation if changed
 // true if successfully updated, false if invalid mode or DB error
 // use: DB.set_operation_mode(OperationMode::SABBATH);
-bool DB::set_operation_mode(OperationMode operationMode)
-{
+bool DB::set_operation_mode(OperationMode operationMode) {
     // prevent UNKNOWN being set as the state
-    if (operationMode == OperationMode::UNKNOWN)
-    {
+    if (operationMode == OperationMode::UNKNOWN) {
         std::cerr << "Cannot set mode to UNKNOWN bruh" << std::endl;
         return false;
     }
 
     // check if DB connection valid
-    if (!db_connect())
-    {
+    if (!db_connect()) {
         return false;
     }
 
@@ -633,8 +566,7 @@ bool DB::set_operation_mode(OperationMode operationMode)
     // hold the prepared text in a statement
     sql::PreparedStatement *statement = nullptr;
 
-    try
-    {
+    try {
         // make the statement (? is placeholder)
         statement = con->prepareStatement(
             "UPDATE elevator_state "
@@ -654,11 +586,9 @@ bool DB::set_operation_mode(OperationMode operationMode)
         // if successful logging, return true
         return true;
     }
-    catch (sql::SQLException &error)
-    {
+    catch (sql::SQLException &error) {
         // delete statement if created but didn't complete query
-        if (statement != nullptr)
-        {
+        if (statement != nullptr) {
             delete statement;
         }
 
@@ -670,11 +600,9 @@ bool DB::set_operation_mode(OperationMode operationMode)
     }
 }
 
-bool DB::set_doors_open(bool doorsOpen)
-{
+bool DB::set_doors_open(bool doorsOpen) {
     // check if DB connection exists
-    if (!db_connect())
-    {
+    if (!db_connect()) {
         return false;
     }
 
@@ -682,8 +610,7 @@ bool DB::set_doors_open(bool doorsOpen)
     sql::PreparedStatement *statement = nullptr;
 
     // query DB
-    try
-    {
+    try {
         // make statement (? is place holder)
         statement = con->prepareStatement(
             "UPDATE elevator_state "
@@ -702,12 +629,10 @@ bool DB::set_doors_open(bool doorsOpen)
         // true for valid execution
         return true;
     }
-    catch (sql::SQLException &error)
-    {
+    catch (sql::SQLException &error) {
 
         // delete statement if it was created
-        if (statement != nullptr)
-        {
+        if (statement != nullptr) {
             delete statement;
         }
 
@@ -719,11 +644,9 @@ bool DB::set_doors_open(bool doorsOpen)
     }
 }
 
-int DB::get_doors_open()
-{
+int DB::get_doors_open() {
     // ensure DB connection exists
-    if (!db_connect())
-    {
+    if (!db_connect()) {
         return -1;
     }
 
@@ -731,8 +654,7 @@ int DB::get_doors_open()
     sql::Statement *statement = nullptr;
     sql::ResultSet *result = nullptr;
 
-    try
-    {
+    try {
         statement = con->createStatement();
 
         result = statement->executeQuery(
@@ -742,8 +664,7 @@ int DB::get_doors_open()
             "LIMIT 1");
 
         // the row was not found???
-        if (!result->next())
-        {
+        if (!result->next()) {
             delete result;
             delete statement;
 
@@ -759,17 +680,14 @@ int DB::get_doors_open()
 
         return doorState;
     }
-    catch (sql::SQLException &error)
-    {
+    catch (sql::SQLException &error) {
         // if it was created but query failed, delete it
-        if (result != nullptr)
-        {
+        if (result != nullptr) {
             delete result;
         }
 
         // if it was created but query failed, delete it
-        if (statement != nullptr)
-        {
+        if (statement != nullptr) {
             delete statement;
         }
 

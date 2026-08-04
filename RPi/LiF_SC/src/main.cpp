@@ -130,17 +130,8 @@ void announceFloor(int floor);
 // Main
 // -----------------------------------------------------------------------------
 int main() {
-	// run_scheduler_manual_test();
-	// return 0;
-
 	scheduler = Scheduler();
 
-	// for (int i = 0; i < 10; i++) {
-	// 	int res = can_link.pcanTx(0x100, i);
-	// 	std::cout << "Tx message test result " << std::hex << res << std::dec  << std::endl;
-	// 	sleep(1);
-	// }
-	// return 1;
 
 	for (int i = 0; i < (int) NUM_FLOORS; i++) {
 		floor_requests_from_DB[i] = 0;
@@ -218,11 +209,6 @@ void FSM_normal_mode() {
 			time_move_finish = current_time();
 			state = SC_State::IDLE;
 			announceFloor(current_floor);
-			if (floor_requests_from_DB[current_floor - 1]) {
-				if (database.complete_elevator_request(current_floor)) {
-					floor_requests_from_DB[current_floor - 1] = false;
-				}
-			}
 		}
 	}
 
@@ -232,17 +218,14 @@ void FSM_normal_mode() {
 	if (db_request > 0 &&
 		db_request <= static_cast<int>(NUM_FLOORS)) {
 
-		std::cout << "DB request to floor "
-				<< db_request << " ";
+		std::cout << "DB - Web Request for floor " << db_request << " ";
 
 		if (current_floor == db_request) {
-			std::cout << "already completed" << std::endl;
-
-			if (database.complete_elevator_request(db_request)) {
-				floor_requests_from_DB[db_request - 1] = false;
-			}
+			std::cout << "\t->already on requested floor. Mark Completed" << std::endl;
+			database.complete_elevator_request(db_request)
+		
 		} else {
-			std::cout << "added to scheduler" << std::endl;
+			std::cout << "\t->Adding DB Web request to scheduler" << std::endl;
 
 			Request rq;
 			rq.dir = RequestDir::NA;
@@ -250,13 +233,10 @@ void FSM_normal_mode() {
 			rq.type = RequestType::CAR;
 
 			scheduler.add_request(rq);
-
-			// Multiple DB rows for this floor require only one stop.
-			floor_requests_from_DB[db_request - 1] = true;
 		}
+
 	} else if (db_request < 0) {
-		std::cerr << "Failed to read DB floor request"
-				<< std::endl;
+		std::cerr << "Failed to read DB floor request" << std::endl;
 	}
 	
 	// check for new target floor
@@ -269,7 +249,7 @@ void FSM_normal_mode() {
 		if ((current_time() - time_move_finish > FLOOR_WAIT_DELAY_MS) && state == SC_State::IDLE) {
 			if (!is_CC_door_open) {
 				can_link.ec_go_to_floor(new_target);
-				database.log_elevator_request(new_target, 0x200);
+
 				current_target = new_target;
 				is_car_moving = true;
 				time_move_start = current_time();
@@ -278,7 +258,6 @@ void FSM_normal_mode() {
 		} else if (state == SC_State::MOVING) {
 			// no check for door open, as it was closed when the move started
 			can_link.ec_go_to_floor(new_target);
-			database.log_elevator_request(new_target, 0x200);
 			current_target = new_target;
 			is_car_moving = true;
 			time_move_start = current_time();
@@ -649,18 +628,25 @@ void process_CAN_CC_msg(CAN::RxFrame rxMsg) {
         rxMsg.data.cc_request.is_door_open
     );
 
-    // Existing floor-request handling remains unchanged.
+	// Filter state to only be normal operations mode
+	//	Ignore floor requests in maintenance and sabbath mode
     if ((state == SC_State::IDLE) ||
         (state == SC_State::MOVING)) {
 
         if (rxMsg.data.cc_request.floor_request != 0) {
+			// Add request to scheduler
             Request rq;
             rq.dir = RequestDir::NA;
             rq.floor = rxMsg.data.cc_request.floor_request;
             rq.type = RequestType::CAR;
             scheduler.add_request(rq);
+
+			// Log request to database
+			database.log_elevator_request(floor_num, rxMsg.id);
         }
-    }
+    } else {
+		std::cout << "Ignored Car Request from floor " << floor_num << " in non-NORMAL mode of operation" << std::endl;
+	}
 }
 
 void process_CAN_Fx_msg(CAN::RxFrame rxMsg) {
@@ -675,14 +661,23 @@ void process_CAN_Fx_msg(CAN::RxFrame rxMsg) {
 	}
 
 	if (rxMsg.data.fx_request.is_requested) {
+		// Filter state to only be normal operations mode
+		//	Ignore floor requests in maintenance and sabbath mode
 		if ((state == SC_State::IDLE) ||
 	        (state == SC_State::MOVING)) {
-
+			
+			// Add request to scheduler
+			// TODO: update with request direction
 			Request rq;
 			rq.dir = RequestDir::UP;	// TODO: fix when new CAN format is implemented
 			rq.floor = floor_num;
 			rq.type = RequestType::FLOOR;
 			scheduler.add_request(rq);
+
+			// Log request to database
+			database.log_elevator_request(floor_num, rxMsg.id);
+		} else {
+			std::cout << "Ignored Floor Request from floor " << floor_num << " in non-NORMAL mode of operation" << std::endl;
 		}
 	}
 
@@ -715,6 +710,11 @@ void process_CAN_EC_msg(CAN::RxFrame rxMsg) {
 	// check if EC finished moving the car
 	if (is_car_moving && !stat.is_moving) {
 		is_car_moving = false;
+
+		// clear database requests if necessary
+		if (database.complete_elevator_request(current_floor)) {
+			std::cout << "Completed DB request to floor " << current_floor << std::endl;
+		}
 
 		if (state == SC_State::MOVING) {
 			scheduler.register_car_stop();
@@ -750,8 +750,7 @@ void initialize_door_monitor()
     door_db_monitor_initialized = true;
 }
 
-void process_DB_door_command()
-{
+void process_DB_door_command() {
     int db_door_state = database.get_doors_open();
 
     if (db_door_state < 0) {
@@ -781,8 +780,7 @@ void process_DB_door_command()
     }
 }
 
-void update_door_state_from_CAN(bool can_door_open)
-{
+void update_door_state_from_CAN(bool can_door_open) {
     if (!can_door_state_initialized) {
         last_CAN_door_open = can_door_open;
         can_door_state_initialized = true;
