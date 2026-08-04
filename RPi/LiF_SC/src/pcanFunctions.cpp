@@ -10,16 +10,23 @@
 #include <fcntl.h>    					// O_RDWR
 #include <unistd.h>
 #include <ctype.h>
-#include <libpcan.h>   					// PCAN library
 
+#ifdef DO_USE_CAN
+#include <libpcan.h>   					// PCAN library
+#else 
+// define proxy for the datatypes used by the library
+
+#endif
 
 // Globals
 // ***********************************************************************************************************
+#ifdef DO_USE_CAN
 HANDLE h;
 HANDLE h2;
 TPCANMsg Txmsg;
 TPCANMsg Rxmsg;
 DWORD status;
+#endif
 
 // Code
 // ***********************************************************************************************************
@@ -29,20 +36,28 @@ DWORD status;
 
 //New functions for FSM
 int pcanRxInit(){
+#ifdef DO_USE_CAN
+
     h2 = LINUX_CAN_Open("/dev/pcanusb32", O_RDWR);
     status = CAN_Init(h2, CAN_BAUD_125K, CAN_INIT_TYPE_ST);
     status = CAN_Status(h2);
-    return 0;
+
+	#endif
+	return 0;
 }
 
 int pcanRxClose(){
+#ifdef DO_USE_CAN
     CAN_Close(h2);
+#endif
+	printf("Proxy CAN pcanRxClose call");
     return 0;
 }
 
 
 
-int pcanRxState(TPCANMsg *msg); // 1 = message received, 0 = no message waiting, -1 = real CAN error    status = CAN_Read(h2, msg);
+int pcanRxState(TPCANMsg *msg) { // 1 = message received, 0 = no message waiting, -1 = real CAN error    status = CAN_Read(h2, msg);
+#ifdef DO_USE_CAN
 	
 	//Message received adn valid
     if (status == PCAN_NO_ERROR) {
@@ -55,11 +70,16 @@ int pcanRxState(TPCANMsg *msg); // 1 = message received, 0 = no message waiting,
     // anything else is a real error - rx. hardware disconnected
     printf("CAN Rx error: 0x%x\n", (int)status);
     return -1;
+#else
+	printf("Proxy CAN RXState call");
+	return 0;
+#endif
 }
 
 // *****************************************************************
 
 int pcanTx(int id, int data){
+#ifdef DO_USE_CAN
 	h = LINUX_CAN_Open("/dev/pcanusb32", O_RDWR);		// Open PCAN channel
 
 	// Initialize an opened CAN 2.0 channel with a 125kbps bitrate, accepting standard frames
@@ -80,9 +100,14 @@ int pcanTx(int id, int data){
 	// Close CAN 2.0 channel and exit	
 	CAN_Close(h);
     return status;
+#else
+	printf("Proxy CAN pcanTx call");
+	return 0;
+#endif
 }
 
-int pcanRx(int num_msgs){
+int pcanRx(int num_msgs) {
+#ifdef DO_USE_CAN
 	int i = 0;
 
 	// Open a CAN channel 
@@ -124,5 +149,9 @@ int pcanRx(int num_msgs){
 	CAN_Close(h2);
 	//printf("\nEnd Rx\n");
 	return ((int)Rxmsg.DATA[0]);						// Return the last value received
+#else
+	printf("Proxy CAN pcanRx call");
+	return 0;
+#endif
 }
 

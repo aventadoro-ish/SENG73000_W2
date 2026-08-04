@@ -14,186 +14,179 @@ using namespace std;
 State currentState = STATE_IDLE;
 
 
-// ******************************************************************
 
-int main() {
 
-	int choice; 
-	int ID; 
-	int data; 
-	int numRx;
-	int floorNumber = 1, prev_floorNumber = 1;
+int requestQueue[QUEUE_SIZE];
+int queueHead = 0;   // next item to serve
+int queueTail = 0;   // next empty slot
+int queueCount = 0;  // how many items currently waiting
+
+int menu(){
+
+	//State currentState = STATE_IDLE; --> won't assume idle at first
+	
+	int usrchoice = 0;
+	system("@cls||clear");
 
 	while(1) {
-		system("@cls||clear");
-		choice = menu(); 
-		switch (choice) {
-			case 1: 
-				ID = chooseID();		// user to select ID depending on intended recipient
-				data = chooseMsg();		// user to select message data
-				pcanTx(ID, data);		// transmit ID and data 
-				db_setFloorNum(FloorFromHex(data)); 		// change floor number in database ** NEW **
-				break; 
-				
-			case 2:
-				printf("\nHow many messages to receive? ");
-				scanf("%d", &numRx);
-				pcanRx(numRx);
-				break;
-				
-			case 3:
-				printf("\nNow listening to commands from the website - press ctrl-z to cancel\n");
-				
-				pcanRxInit();
-	
-				// Synchronize elevator db and CAN (start at 1st floor)
-				pcanTx(ID_SC_TO_EC, GO_TO_FLOOR1);
-				db_setFloorNum(1);
-				currentState = STATE_IDLE;
+		printf("\n\nMenu - Transmit/Receive CAN Messages\n");
+		printf("1. Transmit CAN message using this program\n");
+		printf("2. Receive CAN message(s) using this program\n");
+		printf("3. Control elevator from website\n");
+		printf("4. Exit program\n");
+		printf("\nYour choice: ");
+		scanf("%d", &usrchoice);
 
-				{
-					TPCANMsg incoming;
-					int targetFloor = 1;
-					//int activeTargetFloor = -1;
-					time_t moveStartTime = 0;
-
-					while(1){			
-
-						//Check if there is a new message request, flag
-						int pendingFloor = -1; //no other message in the queue
-						bool newRequest = false;
-
-						//Check database for requests
-
-						floorNumber = db_getFloorNum();
-						if (prev_floorNumber != floorNumber) {								// If floor number changes in database
-							pendingFloor = floorNumber;
-							enqueueFloor(floorNumber);
-						}
-
-						prev_floorNumber = floorNumber; 
-
-						// Check CAN for floor requests
-						int gotMessage = pcanRxState(&incoming);
-						if (gotMessage)
-						{
-							switch(incoming.ID) {
-								case ID_F1_TO_SC:
-									enqueueFloor(1);
-									break;
-								case ID_F2_TO_SC:
-									enqueueFloor(2);
-									break;
-								case ID_F3_TO_SC:
-									enqueueFloor(3);
-									break;
-								case ID_CC_TO_SC:
-									// CC_FloorReq is bits 1-0 of the data byte
-									enqueueFloor(incoming.DATA[0] & 0x03);
-									break;
-								case ID_EC_TO_ALL:
-						
-									break;
-							}
-						}
-
-						//FSM Logic
-						switch(currentState) {
-
-						case STATE_IDLE:
-							if (ccDoorClosed && queueCount > 0) {
-								targetFloor = dequeueFloor();
-								pcanTx(ID_SC_TO_EC, HexFromFloor(targetFloor));
-								currentState = STATE_MOVING;
-							}
-							// else: stay IDLE, request stays queued — no info lost
-							break;
-
-						case STATE_MOVING:
-	
-							if ((time(NULL) - moveStartTime)
-								> MOVE_TIMEOUT_SEC)
-							{
-								printf("ERROR: Elevator timeout\n");
-
-								currentState = STATE_FAULT;
-								break;
-							}
-
-							if (gotMessage &&
-								incoming.ID == ID_EC_TO_ALL)
-							{
-								int reportedFloor =
-									incoming.DATA[0] & 0x03;
-
-								if (reportedFloor == targetFloor)
-								{
-									currentState =
-										STATE_ARRIVED;
-								}
-							}
-
-							break;
-					
-
-						case STATE_ARRIVED:
-							db_setFloorNum(targetFloor);
-							announceFloor(targetFloor);
-							currentState = STATE_IDLE;
-							break;
-					
-
-						// Error handler
-						case STATE_FAULT:
-
-							printf("\nFAULT STATE\n");
-							printf("Elevator did not arrive within timeout\n");
-
-							while(queueCount > 0)
-							{
-								dequeueFloor();
-							}
-
-							sleep(3);
-
-							currentState = STATE_IDLE;
-
-							break;
-						}
-					}
-					pcanRxClose();
-				}
-				break;
-				
-			case 4: 
-				return(0);
-			
-			default:
-				printf("Error on input values");
-				sleep(3);
-				break;
+		if (usrchoice >=1 && usrchoice <= 4) {	
+			return usrchoice;
+		} else {
+			printf("\nPLEASE SELECT FROM CHOICES 1-4 ONLY!\n\n");
+			sleep(3);
+			system("@cls||clear");
 		}
-		sleep(1);					// delay between send/receive
 	}
 	
-	return(0);
-}
-
-///////NEW AUDIO FUNCTION/////////
-void announceFloor(int floor)
-{
-    std::string cmd =
-        std::string("/usr/bin/aplay ") +
-        AUDIO_PATH +
-        "floor" +
-        std::to_string(floor) +
-        ".wav &";
-    system(cmd.c_str());
-
 }
 
 
+int chooseID(){
+
+	int IdChoice = 0;		// Menu item number
+	int IDvalue = 0 ;		// ID value in HEX
+	while(1) {
+		system("@cls||clear");
+		printf("\nChoose sender and receiver for message\n");
+		printf("1. Message from Supervisory controller (i.e. this node) to Elecvator Controller\n");
+		printf("2. Message from Elevator controller to all other nodes\n");
+		printf("3. Message from Car controller to supervisory controller (this node)\n");
+		printf("4. Message from floor 1 controller to supervisory controller (this node)\n");
+		printf("5. Message from floor 2 controller to supervisory controller (this node)\n");
+		printf("6. Message from floor 3 controller to supervisory controller (this node)\n");
+
+		printf("\nYour choice: ");
+		scanf("%d", &IdChoice);
+
+		if (IdChoice >=1 && IdChoice <= 6) {	
+			switch(IdChoice) {
+				case 1:
+					IDvalue = ID_SC_TO_EC; // SC ID = 0x100
+					return(IDvalue);
+				case 2:
+					IDvalue = ID_EC_TO_ALL; // EC ID = 0x101
+					return(IDvalue);
+				case 3:
+					IDvalue = ID_CC_TO_SC; // CC ID = 0x200
+					return(IDvalue);
+				case 4:
+					IDvalue = ID_F1_TO_SC; // F1 ID = 0x201
+					return(IDvalue);
+				case 5:
+					IDvalue = ID_F2_TO_SC; // F2 ID = 0x202
+					return(IDvalue);
+				case 6:
+					IDvalue = ID_F3_TO_SC; 	// F3 ID = 0x203
+					return(IDvalue);
+			}
+
+		} else {
+			printf("\nPLEASE SELECT FROM CHOICES 1-6 ONLY!\n\n");
+			sleep(3);
+		}
+
+	}
+}
+
+int chooseMsg(){
+	int messageChoice = 0; 
+	int messageValue = 0;
+	
+	while(1) {
+		system("@cls||clear");
+		printf("\nChoose Message\n");
+		printf("1. Go to floor 1\n");
+		printf("2. Go to floor 2\n");
+		printf("3. Go to floor 3\n");
+		sleep(1);
+		printf("\nYour choice: ");
+		scanf("%d", &messageChoice);
+
+		if (messageChoice >=1 && messageChoice <= 3) {	
+			switch(messageChoice) {
+				case 1:
+					messageValue = GO_TO_FLOOR1; // 0x05
+					return(messageValue);
+					break;
+				case 2:
+					messageValue = GO_TO_FLOOR2; // 0x06
+					return(messageValue);
+					break;
+				case 3:
+					messageValue = GO_TO_FLOOR3; // 0x07
+					return(messageValue);
+					break;
+			}
+
+		} else {
+			printf("PLEASE SELECT FROM CHOICES 1-3 ONLY!\n\n");
+			sleep(3);
+		}
+	}
+}
 
 
+int HexFromFloor(int floorVal) {
 
+	switch(floorVal) {
+		case 1:
+			return(GO_TO_FLOOR1);
+			break;
+		case 2:
+			return(GO_TO_FLOOR2);
+			break;
+		case 3: 
+			return(GO_TO_FLOOR3);
+			break;
+		default:
+			return(GO_TO_FLOOR1);			// Default is to reset to floor 1 on bad input
+		}
+}
+
+int FloorFromHex(int Hex){
+		
+	switch(Hex) {
+		case GO_TO_FLOOR1:
+			return(1);
+			break;
+		case GO_TO_FLOOR2:
+			return(2);
+			break;
+		case GO_TO_FLOOR3:
+			return(3);
+			break;
+		default:
+			return(1);							// Default is to reset to floor 1 on bad input
+		}
+}
+
+//Queue of new floor requests
+void enqueueFloor(int floor) {
+    // avoid duplicate floor requests already waiting
+    for (int i = 0; i < queueCount; i++) {
+        int idx = (queueHead + i) % QUEUE_SIZE;
+        if (requestQueue[idx] == floor) return;  // already queued, skip
+    }
+    if (queueCount < QUEUE_SIZE) {
+        requestQueue[queueTail] = floor;
+        queueTail = (queueTail + 1) % QUEUE_SIZE;
+        queueCount++;
+    }
+}
+
+int dequeueFloor() {
+    if (queueCount == 0) return -1;  // nothing waiting
+    int floor = requestQueue[queueHead];
+    queueHead = (queueHead + 1) % QUEUE_SIZE;
+    queueCount--;
+    return floor;
+}
 	

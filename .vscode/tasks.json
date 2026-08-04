@@ -22,7 +22,8 @@
                 "reveal": "always",
                 "panel": "shared",
                 "clear": true
-            }
+            },
+            "group": "build"
         },
         {
             "label": "Build LiF_SC on Raspberry Pi",

@@ -1,7 +1,13 @@
 #ifndef PCAN_FUNCTIONS
 #define PCAN_FUNCTIONS
 
+
+#if !defined(DO_USE_CAN) || defined(_WIN32) || defined(_WIN64)
+#include "pcan_proxy.h"
+#else 
 #include <libpcan.h> // used for TPCANMsg
+#endif
+
 
 // Defines
 // ***********************************************************************************************************

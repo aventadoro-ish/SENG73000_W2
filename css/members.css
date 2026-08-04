@@ -70,3 +70,19 @@
 .logout-card {
   border-top-color: var(--ember);
 }
+
+.elevator-card {
+  border-top-color: var(--deep-blue);
+}
+
+.manage-req {
+  border-top-color: rgb(115, 0, 255);
+}
+
+.elevator-diagnostics {
+  border-top-color: var(--cyan);
+}
+
+.maintainence-page {
+  border-top-color: var(--yellow);
+}

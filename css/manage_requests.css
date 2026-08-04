@@ -1,0 +1,84 @@
+.admin-content-section {
+  margin-top: 28px;
+  padding: 28px;
+  background-color: var(--card-bg);
+  border-radius: 14px;
+  border-left: 5px solid var(--aqua);
+  box-shadow: 0 4px 14px var(--shadow);
+}
+
+.requests-table-section {
+  margin-top: 28px;
+  padding: 28px;
+  overflow-x: auto;
+  background-color: var(--card-bg);
+  border-radius: 12px;
+  border-left: 5px solid var(--yellow);
+  box-shadow: 0 4px 14px var(--shadow);
+}
+
+.requests-heading h2 {
+  margin-top: 0;
+  color: var(--deep-blue);
+}
+
+.requests-table-wrapper {
+  margin-top: 28px;
+  overflow-x: auto;
+  border-radius: 12px;
+  border: 1px solid rgba(9, 124, 135, 0.22);
+  box-shadow: 0 4px 14px var(--shadow);
+}
+
+.requests-table {
+  width: 100%;
+  /* table is wide so account for that */
+  min-width: 1100px;
+
+  /* combine neighbouring cells into single lines */
+  border-collapse: collapse;
+
+  background-color: #fff4df;
+}
+
+/* apply consistent spacing and borders to every cell */
+.requests-table th,
+.requests-table td {
+  padding: 14px 12px;
+  border: 1px solid rgba(9, 124, 135, 0.22);
+  text-align: left;
+  vertical-align: top;
+}
+
+/* column heading row */
+.requests-table th {
+  color: white;
+  background-color: var(--deep-blue);
+  font-size: 0.95rem;
+  letter-spacing: 0.02rem;
+  white-space: nowrap;
+}
+
+/* give alternating rows slightly different colours for legibility */
+.requests-table tbody tr:nth-child(even) td {
+  background-color: rgba(161, 204, 166, 0.18);
+}
+
+/* highlight current row */
+.requests-table tbody tr:hover td {
+  background-color: rgba(249, 219, 121, 0.32);
+}
+
+/* make request ID visually unique */
+.requests-table td:first-child {
+  width: 80px;
+  font-weight: bold;
+  color: var(--deep-blue);
+  text-align: center;
+  background-color: #fffbdf;
+}
+
+/* wrap long emails around */
+.requests-table td:nth-child(3) {
+  overflow-wrap: anywhere;
+}

@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<!-- Author: Rita Yevtushenko -->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>RY's Logbook - 2026-07-24</title>
+    <meta name="author" content="Rita Yevtushenko">
+    <meta name="description" content="Lithium Firefly Logbook Entry">
+    <meta name="robots" content="index, follow">
+    <link rel="icon" href="../../media/icons/LiF_icon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="../../css/base.css">
+    <link rel="stylesheet" href="../../css/logbook_entry.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css">
+    <link rel="stylesheet" href="../../css/code_formatting.css">
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['\\(', '\\)'], ['$', '$']],
+                displayMath: [['\\[', '\\]'], ['$$', '$$']]
+            },
+            svg: { fontCache: 'global' }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+</head>
+<body>
+    <div id="navbar-placeholder" data-root="../../"></div>
+    <script src="../../js/navbar.js"></script>
+
+    <main class="page-wrapper">
+        <section class="intro-section logbook-entry-intro" id="page_top">
+            <div class="intro-text">
+                <p class="section-label">Daily Logbook Entry</p>
+                <h1>Logbook Entry, 2026-07-24 by Rita Yevtushenko</h1>
+                <p class="intro-description">Real Data, Real Connection, Real Bugs</p>
+                <div class="button-row">
+                    <a href="../logbook_MR.html" class="button secondary-button">My Logbook Cover Page</a>
+                    <a href="#log" class="button primary-button">Jump to Entry</a>
+                    <a href="RY_entry_2026-07-23.html" class="button secondary-button">Previous Entry</a>
+                    <a href="RY_entry_2026-07-27.html" class="button secondary-button">Next Entry</a>
+                </div>
+            </div>
+            <aside class="summary-card">
+                <h2>Entry Snapshot</h2>
+                <p><b>Date:</b> 2026-07-24</p>
+                <p><b>Author:</b> Rita Yevtushenko</p>
+                <p><b>Focus:</b> Real Data, Real Connection, Real Bugs</p>
+            </aside>
+        </section>
+        <!-- ======================================================= -->
+        <section class="logbook-entry-intro">
+            <div>
+                <h1>Logbook Entry</h1>
+                <h2>Summary</h2>
+                <p class="logbook_summary">
+                    Verified which SQL schema actually matches the live setup, traced a
+                    "diagnostics page isn't connected" report to a bad assumption in
+                    <code>db.php</code>, and added a second table to
+                    <code>elevator_diagnostics.php</code> after feedback from Nick that the
+                    page behaved more like a CAN translation table than a full diagnostic
+                    report. Also designed <code>can_message_log</code>, a new table for
+                    recording actual CAN bus traffic, and found a compile-breaking bug in
+                    the RPi4 CAN receive code.
+                </p>
+                <a href="../logbook_RY.html">
+                    &larr; Return to Logbook Cover Page
+                </a>
+            </div>
+        </section>
+        <!-- ======================================================= -->
+        <section class="logbook-entry-content">
+            <h2>Schema Verification</h2>
+            <p>
+                Compared two SQL dumps against the live setup. <code>elevator_schema.sql</code>
+                turned out to be a stale dump: different database name, and missing
+                <code>elevator_requests</code> and <code>elevator_state</code> entirely.
+                <code>lif_elevator.sql</code> matched the actual MySQL 8.4 / Ubuntu LAMP
+                stack and was confirmed as the live schema.
+            </p>
+
+            <!-- ======================================================= -->
+            <h2>Tracing the Connection Bug</h2>
+            <p>
+                Traced a "diagnostics page isn't connected" report from teammates to
+                <code>db.php</code> using <code>$host = 'localhost'</code>, which is only
+                correct if MySQL and Apache/PHP share a machine. Confirmed that MySQL
+                actually lives on the RPi4, not the VM running Apache.
+            </p>
+            <p>
+                Documented the RPi4-side changes needed for a remote connection: setting
+                <code>bind-address</code>, granting <code>LiF_Admin</code> access from the
+                VM's IP, and opening the firewall port, plus a <code>mysql -h</code> command
+                to test the connection before trusting the PHP page.
+            </p>
+
+            <!-- ======================================================= -->
+            <h2>Computed CAN Byte Decoding</h2>
+            <p>
+                Since <code>elevator_requests</code> has no stored raw payload byte, added
+                <code>encodeCanByte()</code> to reconstruct Byte 0 (hex and bit breakdown)
+                from <code>source_controller</code> and <code>requested_floor</code>, based
+                on the EN-bit/floor-bits layout from the CAN Protocol Reference table.
+                Flagged this as inferred from documentation, not verified against firmware.
+            </p>
+
+            <!-- ======================================================= -->
+            <h2>Feedback from Nick</h2>
+            <p>
+                Nick reviewed the diagnostics page and felt it was solid as a human-readable
+                CAN translation table, but noted it wasn't yet a full diagnostic page. His
+                suggestion was to keep the existing table as-is and add a second table
+                answering: what type of request was it, which account requested the
+                elevator, from what source, whether it was approved, whether it was denied,
+                and whether it failed or succeeded.
+            </p>
+            <p>
+                He mapped each question to a column already sitting in
+                <code>elevator_requests</code>: <code>request_type</code>,
+                <code>requested_by_user_id</code>, <code>source_controller</code>,
+                <code>accepted_at</code>, <code>completed_at</code>, and
+                <code>failure_reason</code>, and suggested either a full explicit column
+                list or simply querying the whole table.
+            </p>
+
+            <!-- ======================================================= -->
+            <h2>Request Details Table</h2>
+            <p>
+                Went with the simpler of the two options and added a second query,
+                <code>SELECT * FROM elevator_requests</code>, in its own try/catch block:
+            </p>
+            <pre><code>$requestDetails = [];
+$detailsLoadError = '';
+
+try {
+    $detailsQuery = "SELECT * FROM elevator_requests ORDER BY requested_at DESC";
+    $detailsStatement = $pdo->prepare($detailsQuery);
+    $detailsStatement->execute();
+    $requestDetails = $detailsStatement->fetchAll(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    error_log($e->getMessage());
+    $detailsLoadError = "Could not load request details right now. Please try again shortly.";
+}</code></pre>
+            <p>
+                Paired it with a Request Details table showing
+                <code>request_type</code>, <code>requested_by_user_id</code>,
+                <code>source_controller</code>, <code>accepted_at</code>,
+                <code>completed_at</code>, and <code>failure_reason</code>, answering
+                Nick's what/who/from-where/approved/completed/failed questions per request.
+            </p>
+            <p>
+                Later added derived <b>Approved</b>, <b>Succeeded</b>, and <b>Failed</b>
+                Yes/No columns based on <code>IS NOT NULL</code> checks on the three
+                timestamp/reason columns, using a small helper:
+            </p>
+            <pre><code>function yesNo(bool $isTrue): string {
+    return $isTrue ? "Yes" : "No";
+}</code></pre>
+
+            <!-- ======================================================= -->
+            <h2>diagnostics.js Refactor</h2>
+            <p>
+                Refactored <code>diagnostics.js</code> into a reusable
+                <code>initDiagnosticsTable()</code> function so multiple tables on the same
+                page get independent search, sort, and pagination instead of sharing state.
+                Also added the "Back to Members" / "Log Out" button row, and fixed the CAN
+                Protocol Reference link to point at <code>../html/CAN_protocol.html</code>.
+            </p>
+
+            <!-- ======================================================= -->
+            <h2>Designing can_message_log</h2>
+            <p>
+                Designed <code>can_message_log</code>, a new table to hold actual CAN bus
+                traffic: direction, raw byte, CAN ID, DLC, source controller, and timestamp,
+                with a nullable foreign key back to <code>elevator_requests</code> for
+                non-broadcast messages. Wrote <code>can_message_log.sql</code> to create it.
+            </p>
+            <pre><code>CREATE TABLE can_message_log (
+    log_id int(10) unsigned NOT NULL AUTO_INCREMENT,
+    elevator_request_id int(10) unsigned DEFAULT NULL,
+    can_id varchar(6) NOT NULL,
+    direction enum('tx','rx') NOT NULL,
+    raw_byte tinyint(3) unsigned NOT NULL,
+    dlc tinyint(3) unsigned NOT NULL DEFAULT 1,
+    source_controller varchar(30) NOT NULL,
+    logged_at datetime NOT NULL DEFAULT current_timestamp(),
+    PRIMARY KEY (log_id),
+    CONSTRAINT fk_can_log_request FOREIGN KEY (elevator_request_id)
+        REFERENCES elevator_requests (elevator_request_id)
+        ON DELETE SET NULL ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;</code></pre>
+
+            <h2>Engineering Discussion</h2>
+            <p>
+                Nick's feedback was a useful reframe: the page was a correct CAN translation
+                table, but a diagnostic page also needs to answer who/what/why for each
+                request, not just what the bytes on the wire look like. Reusing the whole
+                row via <code>SELECT *</code> for the details table was the more pragmatic
+                choice given the schema is small and stable, versus maintaining a second
+                explicit column list in parallel with the first query.
+            </p>
+            <p>
+                Designing <code>can_message_log</code> now, ahead of anything actually
+                writing to it, sets up the next step cleanly: once
+                <code>pcan_functions.cpp</code> logs to the table instead of only printing,
+                the diagnostics page will have a third, real-traffic table to read from.
+            </p>
+
+            <!-- ======================================================= -->
+            <h2>Next Steps</h2>
+            <ul>
+                <li>Add a <code>logCanMessage()</code> function to <code>pcan_functions.cpp</code> so bus traffic gets written to <code>can_message_log</code>.</li>
+                <li>Wire a third table into <code>elevator_diagnostics.php</code> once <code>can_message_log</code> has real data.</li>
+            </ul>
+        </section>
+
+        <nav class="entry-date-nav" aria-label="Logbook date navigation">
+            <a href="RY_entry_2026-07-23.html" class="button secondary-button">Previous Entry</a>
+            <a href="RY_entry_2026-07-27.html" class="button secondary-button">Next Entry</a>
+        </nav>
+        <p class="top-link"><a href="#page_top">Go to the top of this page</a></p>
+    </main>
+
+    <footer class="site-footer">
+        <p>Copyright &copy; Rita Yevtushenko</p>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+</body>
+</html>
