@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<!--
+Author: Matvey Regentov
+-->
+
+<html lang="en">
+
+<head>
+	<title>MR Logbook Entry - 2026-08-04</title>
+	<meta charset="UTF-8">
+	<meta name="author" content="Matvey Regentov">
+	<meta name="description" content="MR Logbook Entry for 2026-08-04">
+	<meta name="robots" content="index, follow">
+	<meta http-equiv="Pragma" content="no-cache">
+
+	<link rel="icon" href="../../media/icons/LiF_icon.ico" type="image/x-icon">
+	<link rel="stylesheet" href="../../css/base.css">
+	<link rel="stylesheet" href="../../css/logbook_entry.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css">
+	<link rel="stylesheet" href="../../css/code_formatting.css">
+	<script>
+		window.MathJax = {
+			tex: {
+				inlineMath: [['\\(', '\\)'], ['$', '$']],
+				displayMath: [['\\[', '\\]'], ['$$', '$$']]
+			},
+			svg: { fontCache: 'global' }
+		};
+	</script>
+	<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+</head>
+
+<body>
+	<div id="navbar-placeholder" data-root="../../"></div>
+	<script src="../../js/navbar.js"></script>
+
+	<main class="page-wrapper">
+		<section class="intro-section logbook-entry-intro" id="page_top">
+			<div class="intro-text">
+				<p class="section-label">Daily Logbook Entry</p>
+				<h1>Logbook Entry, 2026-08-04 by Matvey Regentov</h1>
+				<p class="intro-description">Service PCB completion, power-path testing, and ESP32-S3 validation</p>
+				<div class="button-row">
+					<a href="../logbook_MR.html" class="button secondary-button">My Logbook Cover Page</a>
+					<a href="#log" class="button primary-button">Jump to Entry</a>
+					<a href="MR_entry_2026-08-02.html" class="button secondary-button">Previous Entry</a>
+				</div>
+			</div>
+			<aside class="summary-card">
+				<h2>Entry Snapshot</h2>
+				<p><b>Date:</b> 2026-08-04</p>
+				<p><b>Author:</b> Matvey Regentov</p>
+				<p><b>Focus:</b> Service PCB completion, power-path testing, and ESP32-S3 validation</p>
+			</aside>
+		</section>
+
+		<section class="logbook-entry-content" id="log">
+			<h2 id="boot-up-and-initial-testing">Boot-Up and Initial Testing</h2>
+			<p>Today, I wanted to test the PCB's basic functions, particularly the ESP32-S3. Before testing, I first needed to complete the assembly. I selected PCB unit 1 because it was the only board with all SMD components installed.</p>
+			<p>The remaining manual-soldering tasks were:</p>
+			<ul>
+				<li>Solder the LEDs on the bottom side.</li>
+				<li>Solder the test points.</li>
+				<li>Solder the switches.</li>
+				<li>Solder the fuses, which had not been installed earlier because the PCB used the wrong footprint.</li>
+			</ul>
+
+			<h3 id="manual-assembly-and-cleaning">Manual Assembly and Cleaning</h3>
+			<p>After completing most of the soldering, I cleaned the flux residue with isopropyl alcohol (IPA). The laboratory's IPA bottle had rusted through and deposited rust particles on the PCB. I signed out another IPA bottle from the tool room and continued cleaning. Some white residue remained, particularly between IC pins, so I planned to finish cleaning the board at home with an IPA spray bottle.</p>
+			<figure class="logbook-figure">
+				<img src="../../media/images/LiF_PCB_Initial_Manual_Assembly_for_Unit_1.png" alt="Initial manual assembly of PCB unit 1" class="logbook-image centered-image" style="max-width: 100%; height: auto;">
+				<figcaption>Initial manual assembly of PCB unit 1</figcaption>
+			</figure>
+			<p>I installed the 1812 fuses vertically and at an angle so they could connect to the 0805 footprints. I replaced the downstream 3 A fuse with a solder bridge because its pads had started to lift from the PCB.</p>
+
+			<h3 id="power-path-and-mcu-testing">Power-Path and MCU Testing</h3>
+			<p>I then tested the power path in the following sequence:</p>
+			<ol>
+				<li>I tested the programming USB input and the system power OR-ing circuit; both operated correctly.</li>
+				<li>I tested the 3.3 V regulator, which produced 3.34 V without a load.</li>
+				<li>I wrote and flashed a simple UART-mirroring program for the ESP32-S3.</li>
+			</ol>
+			<p>The UART-mirroring program operated correctly, demonstrating that the MCU was functional.</p>
+			<figure class="logbook-figure">
+				<img src="../../media/images/LiF_PCB_Initial_Power_On_with_PROG_USB.png" alt="Initial PCB power-on test using the programming USB input" class="logbook-image centered-image" style="max-width: 100%; height: auto;">
+				<figcaption>Initial power-on test using the programming USB input</figcaption>
+			</figure>
+			<figure class="logbook-figure">
+				<img src="../../media/images/LiF_PCB_Initial_Power_On-Top_Side.png" alt="Top side of the PCB during the initial power-on test" class="logbook-image centered-image" style="max-width: 100%; height: auto;">
+				<figcaption>Top side of the PCB during the initial power-on test</figcaption>
+			</figure>
+			<figure class="logbook-figure">
+				<video controls class="logbook-image centered-image" style="max-width: 100%; height: auto;">
+					<source src="../../media/video/LiF_ESP32-S3_USB-UART_flashing_and_communication.mp4" type="video/mp4">
+				</video>
+				<figcaption>Demonstration of ESP32-S3 USB-UART flashing and communication</figcaption>
+			</figure>
+
+			<p>I also tested the CAN/auxiliary power OR-ing circuit. It behaved correctly: the CAN voltage input was prioritized over the programming USB input.</p>
+			<figure class="logbook-figure">
+				<video controls class="logbook-image centered-image" style="max-width: 100%; height: auto;">
+					<source src="../../media/video/LiF_Power_OR-ing_circuit_demo.mp4" type="video/mp4">
+				</video>
+				<figcaption>Demonstration of the power OR-ing circuit</figcaption>
+			</figure>
+
+			<h3 id="configuration-resistors">Configuration Resistors</h3>
+			<p>To perform these tests, I populated the following 0 Ω resistors:</p>
+			<ul>
+				<li><code>R1</code> — enabled the 5 V bus connection to the system power OR-ing input.</li>
+				<li><code>R4</code> — enabled the CAN 5 V power OR-ing input.</li>
+				<li><code>R5</code> — enabled the programming USB connection to the system power OR-ing input.</li>
+				<li><code>R6</code> — enabled the 5 V input to the 3.3 V regulator.</li>
+				<li><code>R8</code> — enabled the 3.3 V regulator output.</li>
+				<li><code>R25</code> — enabled the ESP32 3.3 V supply.</li>
+			</ul>
+		</section>
+
+		<section class="logbook-entry-content sources-section" id="sources">
+			<h2>Sources</h2>
+			<p>No external sources were cited in this entry.</p>
+		</section>
+
+		<nav class="entry-date-nav" aria-label="Logbook date navigation">
+			<a href="MR_entry_2026-08-02.html" class="button secondary-button">Previous Entry</a>
+		</nav>
+		<p class="top-link"><a href="#page_top">Go to the top of this page</a></p>
+	</main>
+
+	<footer class="site-footer"><p>Copyright &copy; Matvey Regentov</p></footer>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+</body>
+
+</html>

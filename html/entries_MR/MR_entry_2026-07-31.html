@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<!--
+Author: Matvey Regentov
+-->
+
+<html lang="en">
+
+<head>
+	<title>MR Logbook Entry - 2026-07-31</title>
+	<meta charset="UTF-8">
+	<meta name="author" content="Matvey Regentov">
+	<meta name="description" content="MR Logbook Entry for 2026-07-31">
+	<meta name="robots" content="index, follow">
+	<meta http-equiv="Pragma" content="no-cache">
+
+	<link rel="icon" href="../../media/icons/LiF_icon.ico" type="image/x-icon">
+	<link rel="stylesheet" href="../../css/base.css">
+	<link rel="stylesheet" href="../../css/logbook_entry.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css">
+	<link rel="stylesheet" href="../../css/code_formatting.css">
+	<script>
+		window.MathJax = {
+			tex: {
+				inlineMath: [['\\(', '\\)'], ['$', '$']],
+				displayMath: [['\\[', '\\]'], ['$$', '$$']]
+			},
+			svg: { fontCache: 'global' }
+		};
+	</script>
+	<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+</head>
+
+<body>
+	<div id="navbar-placeholder" data-root="../../"></div>
+	<script src="../../js/navbar.js"></script>
+
+	<main class="page-wrapper">
+		<section class="intro-section logbook-entry-intro" id="page_top">
+			<div class="intro-text">
+				<p class="section-label">Daily Logbook Entry</p>
+				<h1>Logbook Entry, 2026-07-31 by Matvey Regentov</h1>
+				<p class="intro-description">Service PCB population, reflow, and assembly-process review</p>
+				<div class="button-row">
+					<a href="../logbook_MR.html" class="button secondary-button">My Logbook Cover Page</a>
+					<a href="#log" class="button primary-button">Jump to Entry</a>
+					<a href="MR_entry_2026-07-29.html" class="button secondary-button">Previous Entry</a>
+					<a href="MR_entry_2026-08-02.html" class="button secondary-button">Next Entry</a>
+				</div>
+			</div>
+			<aside class="summary-card">
+				<h2>Entry Snapshot</h2>
+				<p><b>Date:</b> 2026-07-31</p>
+				<p><b>Author:</b> Matvey Regentov</p>
+				<p><b>Focus:</b> Service PCB population, reflow, and assembly-process review</p>
+			</aside>
+		</section>
+
+		<section class="logbook-entry-content" id="log">
+			<h2 id="pcb-assembly">PCB Assembly</h2>
+			<p>Today, we needed to assemble the PCBs because the work required access to a reflow oven. By reflowing the boards today, I could use the long weekend to finish the assembly through manual cleanup and bottom-side component population.</p>
+
+			<p>The PCB design uses components with challenging packages, including:</p>
+			<ul>
+				<li>The LGA package used by the <code>BMA400</code> accelerometer IC.</li>
+				<li>The DRL package used by the <code>TPS2117DRLR</code> power OR-ing ICs.</li>
+			</ul>
+			<p>From my prior experience, I noticed that the longer solder paste sits on a board during component placement, the poorer the reflow quality becomes. It is therefore advantageous to populate each board quickly. Populating several boards in parallel is also faster overall than completing one board at a time.</p>
+			<p>I decided to produce three boards initially, with all submodules installed in the Car Controller (CC) PCB configuration. In contrast, the Floor Controller (FC) configuration excludes the following modules:</p>
+			<ul>
+				<li>The accelerometer module.</li>
+				<li>The load-cell module.</li>
+				<li>The 5 V regulator.</li>
+			</ul>
+
+			<h3 id="collaborative-population-procedure">Collaborative Population Procedure</h3>
+			<p>To accelerate the component-placement process, I asked <a href="../logbook_NK.html">Nick Kapuka</a> to help. I developed the following procedure for collaborative PCB population:</p>
+			<ol>
+				<li>Label each DigiKey component bag with a number that is easier to read than the part number printed on the bag.</li>
+				<li>Separate the bags into groups based on placement priority:
+					<ol>
+						<li>Passive components, including resistors and ceramic capacitors.</li>
+						<li>Small semiconductor components, mainly diodes.</li>
+						<li>Large semiconductor components, including ICs.</li>
+						<li>Large passive components, including electrolytic capacitors and inductors.</li>
+						<li>The <code>BMA400</code> IC, placed near the end because of its small size and LGA package.</li>
+						<li>The <code>ESP32-S3-WROOM-1</code> module, one of the largest parts and therefore placed last.</li>
+					</ol>
+				</li>
+				<li>Create a spreadsheet in which each row records:
+					<ol>
+						<li>The DigiKey part number, used for verification, spreadsheet organization, and formulas.</li>
+						<li>The bag number, which provides an easily readable identifier for each bag.</li>
+						<li>An “Is bag labelled” checkbox, used while locating and labelling each bag.</li>
+						<li>PCB-population fields for each board, including a “Populated by” initials dropdown and an “Is populated” checkbox.</li>
+						<li>The list of reference designators to populate with each component.</li>
+					</ol>
+				</li>
+				<li>Build a stencil jig from spare boards and tape so that each new board can be aligned easily for solder-paste application. I cut the stencil by first scoring it with a utility knife and then completing the cut with a sheet-metal press. Skipping the scoring step produces a poor-quality cut in the stencil's thin aluminium sheet.</li>
+				<li>Cut one approximately 30 cm by 12 cm cardboard base for each unit. These labelled bases improve stability and make the PCBs easier to pass between workstations.</li>
+				<li>Begin population after completing the preparations:
+					<ol>
+						<li>Apply solder paste to each board.</li>
+						<li>Tape each board to its cardboard base. The pin-header areas along the sides provide suitable attachment points because they will not receive SMD components.</li>
+						<li>Each person selects a bag from the current priority group and records their initials beside the corresponding board unit and bag number.</li>
+						<li>The person places every listed component on that PCB and then checks the “Is populated” box.</li>
+						<li>The PCB and its cardboard base are passed to the next person. The person passing the board gives an audible warning to prevent sudden movements from toppling components.</li>
+						<li>When one priority group is exhausted, continue with the next group.</li>
+					</ol>
+				</li>
+			</ol>
+			<p>This system allowed Nick and me to populate three complete units in approximately three hours. The completed population checklist, including the recorded process timestamps, is available as a project document.<sup><a href="#source-1" aria-label="Source 1">[1]</a></sup></p>
+
+			<figure class="logbook-figure">
+				<img src="../../media/images/LiF_PCB_Stencil_Jig_1.png" alt="PCB stencil jig in the closed position" class="logbook-image centered-image" style="max-width: 100%; height: auto;">
+				<figcaption>Stencil jig in the closed position</figcaption>
+			</figure>
+			<figure class="logbook-figure">
+				<img src="../../media/images/LiF_PCB_Stencil_Jig_2.png" alt="PCB stencil jig in the open position beside the cardboard bases" class="logbook-image centered-image" style="max-width: 100%; height: auto;">
+				<figcaption>Stencil jig in the open position, with the cardboard bases</figcaption>
+			</figure>
+
+			<h3 id="population-and-reflow">Population and Reflow</h3>
+			<p>Following Professor So-Ra Chung's recommendation, we ran the reflow machine once without a board to preheat it and stabilize its temperatures.</p>
+			<figure class="logbook-figure">
+				<img src="../../media/images/LiF_PCB_Solder_Paste_on_PCB1.png" alt="Inspection of the solder-paste application on PCB 1" class="logbook-image centered-image" style="max-width: 100%; height: auto;">
+				<figcaption>PCB 1 solder-paste application quality inspection</figcaption>
+			</figure>
+			<figure class="logbook-figure">
+				<img src="../../media/images/LiF_PCB_Solder_Paste_on_PCB2.png" alt="Inspection of the solder-paste application on PCB 2" class="logbook-image centered-image" style="max-width: 100%; height: auto;">
+				<figcaption>PCB 2 solder-paste application quality inspection</figcaption>
+			</figure>
+			<figure class="logbook-figure">
+				<img src="../../media/images/LiF_PCB_Solder_Paste_on_PCB3.png" alt="Inspection of the solder-paste application on PCB 3" class="logbook-image centered-image" style="max-width: 100%; height: auto;">
+				<figcaption>PCB 3 solder-paste application quality inspection</figcaption>
+			</figure>
+			<figure class="logbook-figure">
+				<img src="../../media/images/LiF_PCB1_Partially_Populated.png" alt="PCB 1 partially populated" class="logbook-image centered-image" style="max-width: 100%; height: auto;">
+				<figcaption>PCB 1 partially populated</figcaption>
+			</figure>
+			<figure class="logbook-figure">
+				<img src="../../media/images/LiF_PCB1_Fully_Populated.png" alt="PCB 1 fully populated" class="logbook-image centered-image" style="max-width: 100%; height: auto;">
+				<figcaption>PCB 1 fully populated</figcaption>
+			</figure>
+			<figure class="logbook-figure">
+				<img src="../../media/images/LiF_PCBs_123_Prebake.png" alt="PCBs 1, 2, and 3 before reflow" class="logbook-image centered-image" style="max-width: 100%; height: auto;">
+				<figcaption>PCBs 1, 2, and 3 before reflow</figcaption>
+			</figure>
+			<figure class="logbook-figure">
+				<video controls class="logbook-image centered-image" style="max-width: 100%; height: auto;">
+					<source src="../../media/video/LiF_PCB_123_reflow_process.mp4" type="video/mp4">
+				</video>
+				<figcaption>PCBs 1, 2, and 3 during the reflow process</figcaption>
+			</figure>
+			<figure class="logbook-figure">
+				<img src="../../media/images/LiF_PCBs_123_Cooldown.png" alt="PCBs 1, 2, and 3 cooling after reflow" class="logbook-image centered-image" style="max-width: 100%; height: auto;">
+				<figcaption>PCBs 1, 2, and 3 cooling after reflow</figcaption>
+			</figure>
+			<figure class="logbook-figure">
+				<img src="../../media/images/LiF_PCBs_123_Pastback.png" alt="PCBs 1, 2, and 3 after reflow" class="logbook-image centered-image" style="max-width: 100%; height: auto;">
+				<figcaption>PCBs 1, 2, and 3 after reflow</figcaption>
+			</figure>
+
+			<h3 id="issues-discovered">Issues Discovered During Population</h3>
+			<ul>
+				<li>The configured quantity for the load-cell module was entered incorrectly as two instead of three, so PCB 3 is currently missing that block.</li>
+				<li>DigiKey shipped only one <code>LMR14050</code>, although three units were ordered.</li>
+				<li>I forgot to update the 0805 fuse footprints after discovering that suitable fuses were unavailable in that package. The selected components use 1812 packages.</li>
+				<li>The silkscreen labels for the upstream and downstream CAN USB-C connectors are missing.</li>
+			</ul>
+			<figure class="logbook-figure">
+				<img src="../../media/images/LiF_DigiKey_Missing_Components.png" alt="DigiKey shipment with missing LMR14050 components" class="logbook-image centered-image" style="max-width: 100%; height: auto;">
+				<figcaption>DigiKey shipment with missing <code>LMR14050</code> components</figcaption>
+			</figure>
+
+			<p>Despite several shorted pins, the overall reflow process was successful.</p>
+			<figure class="logbook-figure">
+				<img src="../../media/images/LiF_PCB_1%2C_2%2C_3_Reflow_Profile_Temperature_Plot.png" alt="Temperature plot for the PCB 1, 2, and 3 reflow profile" class="logbook-image centered-image" style="max-width: 100%; height: auto;">
+				<figcaption>Temperature plot for the PCB 1, 2, and 3 reflow profile</figcaption>
+			</figure>
+
+			<h3 id="lessons-learned">Lessons for Future PCB Projects</h3>
+			<ul>
+				<li>A 3D-printed jig that uses the mounting holes would be preferable to cardboard bases. The tape was difficult to remove without disturbing components.</li>
+				<li>Footprint corrections should not be deferred when a component is replaced during PCB design. If necessary, the footprint field should be cleared immediately; ideally, the symbol should be updated properly.</li>
+				<li>The checklist template should support component removal without disrupting the bag numbers. In the current checklist, erroneous components had to be retained with a reduced font size.</li>
+				<li>When population is nearly complete, one person should start the reflow machine for a dry run to reduce waiting time.</li>
+			</ul>
+		</section>
+
+		<section class="logbook-entry-content sources-section" id="sources">
+			<h2>Sources</h2>
+			<ol class="source-list">
+				<li id="source-1"><span class="citation-label">[1]</span> Lithium Firefly project, <a href="../../documentation/LiF_PCB_123_Population_Checklist.pdf"><em>LiF PCB 123 Population Checklist</em></a>.</li>
+			</ol>
+		</section>
+
+		<nav class="entry-date-nav" aria-label="Logbook date navigation">
+			<a href="MR_entry_2026-07-29.html" class="button secondary-button">Previous Entry</a>
+			<a href="MR_entry_2026-08-02.html" class="button secondary-button">Next Entry</a>
+		</nav>
+		<p class="top-link"><a href="#page_top">Go to the top of this page</a></p>
+	</main>
+
+	<footer class="site-footer"><p>Copyright &copy; Matvey Regentov</p></footer>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+</body>
+
+</html>
