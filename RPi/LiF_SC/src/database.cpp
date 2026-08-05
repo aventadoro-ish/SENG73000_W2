@@ -229,7 +229,6 @@ bool DB::complete_elevator_request(int completedFloor)
             "SET request_status = 'completed', "
             "completed_at = CURRENT_TIMESTAMP "
             "WHERE requested_floor = ? "
-            "AND request_type = 'remote' "
             "AND elevator_request_id > ? "
             "AND request_status IN ('pending', 'accepted')");
 
@@ -403,13 +402,13 @@ int DB::log_elevator_request(int requestedFloor, int sourceID) {
     if (sourceID == 0x200) {
         sourceController = "CC";
     }
-    else if (sourceID == 0x201) {
+    else if (sourceID == 0x301) {
         sourceController = "F1";
     }
-    else if (sourceID == 0x202) {
+    else if (sourceID == 0x302) {
         sourceController = "F2";
     }
-    else if (sourceID == 0x203) {
+    else if (sourceID == 0x303) {
         sourceController = "F3";
     }
     else {

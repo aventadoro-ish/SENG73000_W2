@@ -222,7 +222,7 @@ void FSM_normal_mode() {
 
 		if (current_floor == db_request) {
 			std::cout << "\t->already on requested floor. Mark Completed" << std::endl;
-			database.complete_elevator_request(db_request)
+			database.complete_elevator_request(db_request);
 		
 		} else {
 			std::cout << "\t->Adding DB Web request to scheduler" << std::endl;
@@ -365,8 +365,7 @@ void FSM_sabbath_mode() {
 
 }
 
-void FSM_maintenance_mode()
-{
+void FSM_maintenance_mode() {
     /*
      * Handle completion of a maintenance movement.
      *
@@ -494,7 +493,8 @@ void FSM_maintenance_mode()
 
     case DB::OperationMode::MAINTENANCE:
         break;
-
+	
+	case DB::OperationMode::UNKNOWN: [[fallthrough]];
     case DB::OperationMode::FAULT:
         std::cout
             << "Mode transition: Maintenance -> Fault"
@@ -642,10 +642,10 @@ void process_CAN_CC_msg(CAN::RxFrame rxMsg) {
             scheduler.add_request(rq);
 
 			// Log request to database
-			database.log_elevator_request(floor_num, rxMsg.id);
+			database.log_elevator_request(rq.floor, (int)rxMsg.id);
         }
     } else {
-		std::cout << "Ignored Car Request from floor " << floor_num << " in non-NORMAL mode of operation" << std::endl;
+		std::cout << "Ignored Car Request from floor " << rxMsg.data.cc_request.floor_request << " in non-NORMAL mode of operation" << std::endl;
 	}
 }
 
@@ -675,7 +675,7 @@ void process_CAN_Fx_msg(CAN::RxFrame rxMsg) {
 			scheduler.add_request(rq);
 
 			// Log request to database
-			database.log_elevator_request(floor_num, rxMsg.id);
+			database.log_elevator_request(floor_num, (int)rxMsg.id);
 		} else {
 			std::cout << "Ignored Floor Request from floor " << floor_num << " in non-NORMAL mode of operation" << std::endl;
 		}
