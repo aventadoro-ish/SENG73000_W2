@@ -9,41 +9,19 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
     exit;
 }
 
-// re turn the latest physical elevator state to JS by polling the CAN DB - WIP; pushed to phase 3
-/*
-if ($_SERVER['REQUEST_METHOD'] === 'GET' && ($_GET['request_action'] ?? '') === 'status') {
+// return the latest EC-confirmed floor when the webpage loads
+if($_SERVER['REQUEST_METHOD'] === 'GET' && ($_GET['request_action'] ?? '') === 'status') {
     header('Content-Type: application/json');
     header('Cache-Control: no-store');
-
-
-    // retire the door and operating mode states
     try {
+        // find the newest valid position report received from the EC
         $query = "
-            SELECT doors_open, operation_mode
-            FROM elevator_state
-            WHERE state_id = 1
-            LIMIT 1
-        ";
-
-        $statement = $pdo->query($query);
-        $elevatorState = $statement->fetch();
-
-        if(!$elevatorState) {
-            echo json_encode([
-                'success' => false,
-                'message' => 'elevator state is unavailable'
-            ]);
-
-            exit;
-        }
-
-        $query = "
-            SELECT raw_byte
+            SELECT log_id, raw_byte
             FROM can_message_log
             WHERE can_id = '0x101'
                 AND direction = 'rx'
-                AND (raw_byte & 4) = 4
-                AND (raw_byte & 3) BETWEEN 1 and 3
+                AND source_controller = 'EC'
+                AND raw_byte IN (5, 6, 7)
             ORDER BY log_id DESC
             LIMIT 1
         ";
@@ -51,39 +29,50 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && ($_GET['request_action'] ?? '') === 
         $statement = $pdo->query($query);
         $latestPosition = $statement->fetch();
 
-        // no position exists until the EC logs its first message
-        $positionAvailable = false;
-        $currentFloor = null;
+        // return a successful response even if no position has been logged yet
+        if(!$latestPosition) {
+            echo json_encode([
+                'success' => true,
+                'position_available' => false,
+                'current_floor' => null,
+                'log_id' => null
+            ]);
 
-        if($latestPosition) {
-
-            // bits 1-0 contain the current floor
-            $currentFloor =
-                ((int) $latestPosition['raw_byte']) & 0x03;
-
-            $positionAvailable = true;
+            exit;
         }
 
-        // return the current physical state
+        // convert each EC position byte into its corresponding floor
+        $floorByRawByte = [
+            5 => 1,
+            6 => 2,
+            7 => 3
+        ];
+
+        // type-cast it into an int
+        $rawByte = (int) $latestPosition['raw_byte'];
+        $currentFloor = $floorByRawByte[$rawByte];
+
         echo json_encode([
-            'sucess' => true,
-            'position_available' => $positionAvailable,
+            'success' => true,
+            'position_available' => true,
             'current_floor' => $currentFloor,
-            'doors_open' => (int) $elevatorState['doors_open'] === 1,
-            'operation_mode' => $elevatorState['operation_mode']    
+            'log_id' => (int) $latestPosition['log_id']
         ]);
 
-    } catch (PDOException $e) {
-        error_log($e->getMessage());
+        exit;
+        
+    } catch(PDOException $error) {
+        error_log($error->getMessage());
 
         echo json_encode([
-            'sucess' => false,
-            'message' =>  'elevator status could not be loaded at this time.'
+            'success' => false,
+            'message' => 'elevator status could not be loaded'
         ]);
+
+        exit;
     }
 }
 
-*/
 // elevator_control JS sends a POST request when an elevator button is pressed
 // read it here
 if($_SERVER['REQUEST_METHOD'] === 'POST') {
