@@ -41,19 +41,20 @@
 #define F3_BOARD	3					// Floor 3 STM32
 
 // ********************************* CHANGE PER BOARD *********************************
-#define SELECTED_BOARD	F1_BOARD		// currently selected board; change when flashing
+#define SELECTED_BOARD	CC_BOARD		// currently selected board; change when flashing
 // ************************************************************************************
 
 // CAN IDs:
-#define SC_ID				0x100		// Supervisor Controller; R-Pi
-#define EC_ID				0x101		// Elevator Controller; arduino
-#define CC_ID				0x200		// Cab Controller; STM32
-#define F1_ID				0x301		// Floor 1 controller; STM32
-#define F2_ID				0x302		// Floor 2 controller; STM32
-#define F3_ID				0x303		// Floor 3 controller; STM32
+#define SC_ID				          0x100		// Supervisor Controller; R-Pi
+#define EC_ID				          0x101		// Elevator Controller; arduino
+#define CC_ID				          0x200		// Cab Controller; STM32
+#define SC_TO_CC_DOOR_UPD_ID  0x201		// SC requesting door state and 
+#define F1_ID				          0x301		// Floor 1 controller; STM32
+#define F2_ID				          0x302		// Floor 2 controller; STM32
+#define F3_ID				          0x303		// Floor 3 controller; STM32
 
 // variable names for each floor
-#define CAB_MOVING			0			// no floor; used for Cab
+#define CAB_MOVING		0			// no floor; used for Cab
 #define FLOOR_1				1
 #define FLOOR_2				2
 #define FLOOR_3				3
@@ -120,20 +121,24 @@ volatile uint8_t rx_Byte0 		= 0;		// used to store numbers from first byte
 uint8_t	 elevator_en 	= 0;				// elevator enabled flag (part of the message that EC sends)
 uint8_t	 current_floor 	= 0;				// current floor value (part of the message that EC sends)
 											// note: these are used in RxCallback function
+bool is_virt_door_used = false;   // CC-only variable - is virtual door state being used
+bool is_virt_door_open = false;   // CC-only variable - is virtual door open
 
 // define a struct for non-blocking LED logic
 typedef struct {
 	GPIO_TypeDef* port;
 	uint16_t pin;
 	uint8_t active;
-	uint32_t off_time;
+	uint32_t off_time;  // reused as last_transition_time in do_repeat=true mode
+  bool do_repeat;     // added to allow continuous flashing
+  uint32_t period;    // added to allow continuous flashing
 } LED_Timer;
 
 // enable the four LEDs (three floors and green blink for CANTx)
-LED_Timer greenLedTimer = {GPIOA, Green_LED_Pin, 0, 0};
-LED_Timer F1_Req_LED = {PB1_LED_GPIO_Port, PB1_LED_Pin, 0, 0};
-LED_Timer F2_Req_LED = {PB2_LED_GPIO_Port, PB2_LED_Pin, 0, 0};
-LED_Timer F3_Req_LED = {PB3_LED_GPIO_Port, PB3_LED_Pin, 0, 0};
+LED_Timer greenLedTimer = {GPIOA, Green_LED_Pin, 0, 0, false, 0};
+LED_Timer F1_Req_LED = {PB1_LED_GPIO_Port, PB1_LED_Pin, 0, 0, false, 0};
+LED_Timer F2_Req_LED = {PB2_LED_GPIO_Port, PB2_LED_Pin, 0, 0, false, 0};
+LED_Timer F3_Req_LED = {PB3_LED_GPIO_Port, PB3_LED_Pin, 0, 0, false, 0};
 
 uint8_t tx_buff[254];
 
@@ -152,6 +157,9 @@ void CAN_ProcessReceive(void);
 uint8_t PB_Process(uint8_t button);
 void showFloor(void);
 void doorSwitch(void);
+
+void LED_FlashingStart(LED_Timer* led, uint32_t period);
+void LED_FlashingStop(LED_Timer* led);
 
 /* USER CODE END PFP */
 
@@ -191,10 +199,28 @@ void LED_BlinkStart(LED_Timer* led, uint32_t duration_ms)
 	HAL_GPIO_WritePin(led->port, led->pin, GPIO_PIN_SET);
 	// pointer to the LED_Timer struct to enable the 'active' bit in the struct
 	led->active = 1;
+  led->do_repeat = 0;
 	// pointer to the LED_Timer struct to set the desired delay time
 	// if tick is 100 and delay is 200, off_time is 300; Then when tick is 300, LED will be turned off via blinkUpdate below
 	led->off_time = HAL_GetTick() + duration_ms;
 }
+
+void LED_FlashingStart(LED_Timer* led, uint32_t period) {
+  // enable the LED via the defined port and pin (LED_Timer struct) and set it
+	HAL_GPIO_WritePin(led->port, led->pin, GPIO_PIN_SET);
+  // configure LED_Timer struct parameters
+  led->active = 1;
+  led->do_repeat = 1;
+  led->period = period;
+  led->off_time = HAL_GetTick(); // used as last transition timestamp in do_repeat mode
+}
+
+void LED_FlashingStop(LED_Timer* led) {
+  led->do_repeat = 0;
+  led->period = 0;
+  HAL_GPIO_WritePin(led->port, led->pin, GPIO_PIN_RESET);
+}
+
 
 // function to update the state of the LED without blocking (HAL_delay is my nemesis)
 void LED_BlinkUpdate(LED_Timer* led)
@@ -202,13 +228,22 @@ void LED_BlinkUpdate(LED_Timer* led)
 	// check if the LED is active
 	if(led->active)
 	{
-		if((int32_t)(HAL_GetTick() - led->off_time) >= 0)
-		{
-			// turn the led off
-			HAL_GPIO_WritePin(led->port, led->pin, GPIO_PIN_RESET);
-			// disable the a'ctive' bit in the struct
-			led->active = 0;
-		}
+    if (led->do_repeat) {
+      // added continuous flashing
+      if ((int32_t)HAL_GetTick() - led->off_time >= led->period) {
+        led->off_time = (int32_t)HAL_GetTick();
+        HAL_GPIO_TogglePin(led->port, led->pin);
+      }
+    } else {
+      // keeping Nick's original code for single-time flash
+      if((int32_t)(HAL_GetTick() - led->off_time) >= 0)
+      {
+        // turn the led off
+        HAL_GPIO_WritePin(led->port, led->pin, GPIO_PIN_RESET);
+        // disable the a'ctive' bit in the struct
+        led->active = 0;
+      }
+    }
 	}
 }
 
@@ -253,6 +288,46 @@ void CAN_ProcessReceive(void){
     strcpy(tx_buff, " - Rejected\n");
     HAL_UART_Transmit(&huart2, tx_buff, strlen(tx_buff), 1000);
 
+  } else if (rx_ID == SC_TO_CC_DOOR_UPD_ID) {
+#if SELECTED_BOARD == CC_BOARD
+    // CC may send a door status update if SC requests it in SC_TO_CC_DOOR_UPD_ID message
+    bool do_send_reply = (rx_Byte0 & 0b00000100) > 0;
+    bool do_use_virtual_door = (rx_Byte0 & 0b00000010) > 0;
+    bool is_virtual_door_open_rx = (rx_Byte0 & 0b00000001) > 0;
+    
+    if (do_use_virtual_door) {
+      is_virt_door_used = true;
+      is_virt_door_open = is_virtual_door_open_rx;
+      if (is_virt_door_open) {
+        // if virtual door is open, update LEDs to flash together slowly
+
+        LED_FlashingStart(&F1_Req_LED, 500);
+        LED_FlashingStart(&F2_Req_LED, 500);
+        LED_FlashingStart(&F3_Req_LED, 500);
+      } else {
+        LED_FlashingStop(&F1_Req_LED);
+        LED_FlashingStop(&F2_Req_LED);
+        LED_FlashingStop(&F3_Req_LED);
+      }
+
+    } else {
+      is_virt_door_used = false;
+    }
+
+    if (do_send_reply) {
+    	GPIO_PinState currentSwitchState = HAL_GPIO_ReadPin(CC_Switch_GPIO_Port, CC_Switch_Pin);
+      bool is_phy_door_open = currentSwitchState == GPIO_PIN_SET;
+      
+      // reply open if either physical or virtual door is open
+      bool reply_door_state = is_phy_door_open | is_virt_door_open;
+
+      // CC_EN is bit 2
+			CAN_ByteTransmit(MY_ID, ((int)reply_door_state) << 2);
+    
+    }
+
+    
+#endif
   }
 }
 
