@@ -15,6 +15,7 @@
 #include "scheduler.h"
 #include "can.h"
 #include "database.h"
+#include "door.h"
 
 using namespace std;
 
@@ -46,6 +47,7 @@ SC_State state = SC_State::INITIALIZE;
 Scheduler scheduler;
 CAN can_link;
 DB database;
+Door door;
 
 int current_floor = INITIAL_FLOOR;
 int current_target = INITIAL_FLOOR;
@@ -57,22 +59,6 @@ uint64_t time_move_start;
 uint64_t time_move_finish;		// used to wait on a floor for a bit before 
 								// moving to the next target
 								// TODO: change when servo doors are added
-
-// keep track of floors that have been requested through DB
-bool floor_requests_from_DB[NUM_FLOORS];
-
-
-bool is_CC_door_open = false;  // Effective door state used by the FSM
-
-bool db_door_override_active = false;
-
-bool door_db_monitor_initialized = false;
-bool last_DB_door_open = false;
-
-bool can_door_state_initialized = false;
-bool last_CAN_door_open = false;
-
-
 
 
 // -----------------------------------------------------------------------------
@@ -103,7 +89,6 @@ void FSM_fault_mode(std::string fault_reason = "");
  */
 void process_CAN_msg();
 
-
 void process_CAN_CC_msg(CAN::RxFrame rxMsg);
 
 void process_CAN_Fx_msg(CAN::RxFrame rxMsg);
@@ -132,12 +117,6 @@ void announceFloor(int floor);
 int main() {
 	scheduler = Scheduler();
 
-
-	for (int i = 0; i < (int) NUM_FLOORS; i++) {
-		floor_requests_from_DB[i] = 0;
-	}
-
-
 	if (!database.db_connect()) {
 		return -1;
 	}
@@ -156,6 +135,8 @@ int main() {
 	printf(" - queued floor wait time (ms): %lu\n", FLOOR_WAIT_DELAY_MS);
 	printf(" - sabbath mode wait time (ms): %lu\n", SABBATH_MOVE_DELAY_MS);
 	printf(" - initial floor: %u\n", INITIAL_FLOOR);
+
+	can_link.cc_send_door_update(true, false, false);
 
 	while(is_running) { // FSM infinite loop start
 		process_DB_door_command();
@@ -247,7 +228,7 @@ void FSM_normal_mode() {
 
 		// only move after spending some time on the floor
 		if ((current_time() - time_move_finish > FLOOR_WAIT_DELAY_MS) && state == SC_State::IDLE) {
-			if (!is_CC_door_open) {
+			if (!door.is_door_open()) {
 				can_link.ec_go_to_floor(new_target);
 
 				current_target = new_target;
@@ -331,7 +312,7 @@ void FSM_sabbath_mode() {
 			}
 		}
 
-		if (!is_CC_door_open) {
+		if (!door.is_door_open()) {
 			is_car_moving = true;
 			can_link.ec_go_to_floor(current_target);
 			std::cout << "Sabbath mode move to floor " << current_target << std::endl;
@@ -396,20 +377,6 @@ void FSM_maintenance_mode() {
             state = SC_State::MAINTENANCE;
 
             announceFloor(current_floor);
-
-            /*
-             * Complete the request only if this floor was actually
-             * requested through the database.
-             */
-            if (floor_requests_from_DB[current_floor - 1]) {
-                if (database.complete_elevator_request(
-                        current_floor)) {
-
-                    floor_requests_from_DB[
-                        current_floor - 1
-                    ] = false;
-                }
-            }
         }
     }
 
@@ -421,7 +388,7 @@ void FSM_maintenance_mode() {
      */
     if (state == SC_State::MAINTENANCE &&
         !is_car_moving &&
-        !is_CC_door_open) {
+        !door.is_door_open()) {
 
         int db_request = database.read_floor_request();
 
@@ -436,22 +403,11 @@ void FSM_maintenance_mode() {
                 std::cout
                     << "already completed"
                     << std::endl;
-
-                if (database.complete_elevator_request(
-                        db_request)) {
-
-                    floor_requests_from_DB[
-                        db_request - 1
-                    ] = false;
-                }
+				database.complete_elevator_request(current_floor);
             } else {
                 std::cout
                     << "starting movement"
                     << std::endl;
-
-                floor_requests_from_DB[
-                    db_request - 1
-                ] = true;
 
                 current_target = db_request;
                 is_car_moving = true;
@@ -511,6 +467,13 @@ void FSM_initialize() {
 		if (current_time() - time_last_print > 1000) {
 			time_last_print = current_time();
 			std::cout << "Initializing. Waiting on DB connection..." << std::endl;
+		}
+		return;
+	}
+	if (!door.is_initialized()) {
+		if (current_time() - time_last_print > 1000) {
+			time_last_print = current_time();
+			std::cout << "Initializing. Waiting on CC door state update" << std::endl;
 		}
 		return;
 	}
@@ -626,11 +589,9 @@ void process_CAN_msg() {
 
 void process_CAN_CC_msg(CAN::RxFrame rxMsg) {
 	std::cout << "\t->Car Request Message" << std::endl;
-    update_door_state_from_CAN(
-        rxMsg.data.cc_request.is_door_open
-    );
 
 	std::cout << "\t\t->Door is " << (rxMsg.data.cc_request.is_door_open ? "open" : "closed") << std::endl;
+	door.update_door_CAN(rxMsg.data.cc_request.is_door_open);
 
 	// Filter state to only be normal operations mode
 	//	Ignore floor requests in maintenance and sabbath mode
@@ -745,22 +706,6 @@ uint64_t current_time() {
     );
 }
 
-
-
-void initialize_door_monitor()
-{
-    int db_door_state = database.get_doors_open();
-
-    if (db_door_state < 0) {
-        std::cerr << "Failed to initialize DB door-state monitor"
-                  << std::endl;
-        return;
-    }
-
-    last_DB_door_open = (db_door_state != 0);
-    door_db_monitor_initialized = true;
-}
-
 void process_DB_door_command() {
     int db_door_state = database.get_doors_open();
 
@@ -770,76 +715,7 @@ void process_DB_door_command() {
         return;
     }
 
-    bool new_DB_door_open = (db_door_state != 0);
-
-    if (!door_db_monitor_initialized) {
-        last_DB_door_open = new_DB_door_open;
-        door_db_monitor_initialized = true;
-        return;
-    }
-
-    // A changed DB value is interpreted as a new remote command.
-    if (new_DB_door_open != last_DB_door_open) {
-        last_DB_door_open = new_DB_door_open;
-
-        is_CC_door_open = new_DB_door_open;
-        db_door_override_active = true;
-
-        std::cout << "Door state commanded by DB: "
-                  << (is_CC_door_open ? "OPEN" : "CLOSED")
-                  << std::endl;
-    }
-}
-
-void update_door_state_from_CAN(bool can_door_open) {
-    if (!can_door_state_initialized) {
-        last_CAN_door_open = can_door_open;
-        can_door_state_initialized = true;
-
-        /*
-         * Do not allow the first CAN status message to cancel a DB
-         * command that may have arrived before the first CAN message.
-         */
-        if (db_door_override_active) {
-            return;
-        }
-
-        is_CC_door_open = can_door_open;
-
-        if (!door_db_monitor_initialized ||
-            last_DB_door_open != can_door_open) {
-            database.set_doors_open(can_door_open);
-            last_DB_door_open = can_door_open;
-            door_db_monitor_initialized = true;
-        }
-
-        return;
-    }
-
-    /*
-     * Only an actual transition in the CAN-reported door state
-     * releases the database override. Repeated CAN heartbeat/status
-     * messages containing the same state are ignored.
-     */
-    if (can_door_open != last_CAN_door_open) {
-        last_CAN_door_open = can_door_open;
-        db_door_override_active = false;
-        is_CC_door_open = can_door_open;
-
-        if (!door_db_monitor_initialized ||
-            last_DB_door_open != can_door_open) {
-            database.set_doors_open(can_door_open);
-            last_DB_door_open = can_door_open;
-            door_db_monitor_initialized = true;
-        }
-
-        std::cout << "Door state toggled by CAN: "
-                  << (is_CC_door_open ? "OPEN" : "CLOSED")
-                  << std::endl;
-    } else if (!db_door_override_active) {
-        // Normal operation when no DB override is active.
-        is_CC_door_open = can_door_open;
-    }
+	door.update_door_DB(db_door_state != 0);
 }
 
 
