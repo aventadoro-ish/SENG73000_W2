@@ -1,14 +1,18 @@
 <?php
 
-require_once __DIR__ . '/Node.php';
-
+require_once __DIR__ . '/node.php';
+require_once __DIR__ . '/exceptions/nodeInputException.php';
 class DistanceSensor extends Node {
     private $distanceMm;
 
     public function __construct(string $nodeName, float $distanceMm = 0.0)
     {
+        if ($distanceMm < 0) {
+            throw new NodeInputException("distance cannot be negative");
+        }
+        
         parent::__construct($nodeName);
-        $this->distanceMm = $distanceMm;
+        $this->setDistanceMm($distanceMm);
     }
 
     public function getNodeType(): string
@@ -24,7 +28,7 @@ class DistanceSensor extends Node {
     public function setDistanceMm(float $distanceMm)
     {
         if($distanceMm < 0) {
-            throw new Exception("distance cannot be negative");
+            throw new NodeInputException("distance cannot be negative");
         }
 
         $this->distanceMm = $distanceMm;

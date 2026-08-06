@@ -3,6 +3,7 @@
 require_once __DIR__ . '/node.php';
 require_once __DIR__ . '/CANDevice.php';
 require_once __DIR__ . '/CANIdentifierTrait.php';
+require_once __DIR__ . '/exceptions/nodeInputException.php';
 
 class ElevatorCar extends Node implements CANDevice {
     
@@ -12,6 +13,10 @@ class ElevatorCar extends Node implements CANDevice {
     private $doorsOpen;
 
     public function __construct(string $nodeName, string $canID, int $currentFloor = 1) {
+        if($currentFloor < 1 || $currentFloor > 3) {
+            throw new NodeInputException("floor must be between 1 and 3");
+        }    
+        
         parent::__construct($nodeName);
 
         $this->canID = $canID;
@@ -30,7 +35,7 @@ class ElevatorCar extends Node implements CANDevice {
 
     public function confirmCurrentFloor(int $floor) {
         if($floor < 1 || $floor > 3) {
-            throw new Exception("floor must be between 1 and 3");
+            throw new NodeInputException("floor must be between 1 and 3");
         }
         $this->currentFloor = $floor;
     }
