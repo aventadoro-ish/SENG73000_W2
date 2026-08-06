@@ -1,15 +1,20 @@
 <?php
 
 require_once __DIR__ . '/Node.php';
+require_once __DIR__ . '/CANDevice.php';
+require_once __DIR__ . '/CANIdentifierTrait.php';
 
-class FloorNode extends Node
-{
-    private $canID;
+class FloorNode extends Node implements CANDevice {
+    use CANIdentifierTrait;
     private $floorNumber;
     private $requestActive;
 
     public function __construct(string $nodeName, string $canID, int $floorNumber)
     {
+        if($floorNumber < 1 || $floorNumber > 3) {
+            throw new Exception("floor must be between 1 & 3");
+        }
+
         parent::__construct($nodeName);
 
         $this->canID = $canID;
@@ -19,12 +24,7 @@ class FloorNode extends Node
 
     public function getNodeType(): string
     {
-        return "Floor Node";
-    }
-
-    public function getCANID(): string
-    {
-        return $this->canID;
+        return "Floor node";
     }
 
     public function getFloorNumber(): int

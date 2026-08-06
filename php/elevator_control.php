@@ -4,10 +4,50 @@ session_start();
 // DB connection
 require_once __DIR__ . '/db.php';
 
+// OOP class files as per A2
+require_once __DIR__ . '/classes/elevatorCar.php';
+require_once __DIR__ . '/classes/floorNode.php';
+require_once __DIR__ . '/classes/distanceSensor.php';
+
+// create objects that represent the hardware used by the control page
+$elevatorCar = new ElevatorCar("CC", "0x200", 1);
+
+$floorNodes = [
+    1 => new FloorNode("F1", "0x201", 1),
+    2 => new FLoorNode("F2", "0x202", 2),
+    3 => new FloorNode("F3", "0x203", 3)
+];
+
+// distance sensor (UNUSED)
+$distanceSensor = new DistanceSensor("DS");
+
+// test the CANDevice interface and shared CAN ID trait between nodes
+$canDevices = [
+    $elevatorCar,
+    $floorNodes[1],
+    $floorNodes[2],
+    $floorNodes[3]
+];
+
+// check if all implement CAN ID traits
+$canDeviceTestPassed = true;
+$canDeviceDetails = [];
+
+foreach($canDevices as $canDevice) {
+    if(!$canDevice instanceof CANDevice) {
+        $canDeviceTestPassed = false;
+        continue;
+    }
+
+    $canDeviceDetails[] = $canDevice->getNodeName() . " (" . $canDevice->getCANID() . ")";
+}
+
 if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
     header("Location: ../html/login.html");
     exit;
 }
+
+
 
 // return the latest EC-confirmed floor when the webpage loads
 if($_SERVER['REQUEST_METHOD'] === 'GET' && ($_GET['request_action'] ?? '') === 'status') {
@@ -100,15 +140,18 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit;
         } 
 
-        // read the values - default in DB is false (boolean; 0)
-        $doorsOpen = 0;
-
+        // OOP change - open/closeDoors function
         if($submittedDoorState === 'open') {
-            $doorsOpen = 1;
+            $elevatorCar->openDoors();
+        } else {
+            $elevatorCar->closeDoors();
         }
 
-        // query DB
+        // convert the object state into the DB boolean
+        $doorsOpen = $elevatorCar->areDoorsOpen() ? 1 : 0;
 
+
+        // query DB
         try {
             // update the row that represents door state
             $query = "
@@ -292,7 +335,12 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
         ]);
         exit; 
     }
-    
+
+    // OOP change
+    // select the requested physical elevator floor node and mark its active request
+    $selectedFloorNode = $floorNodes[$requestedFloor];
+    $selectedFloorNode->requestElevator();
+
     // once again, only use valid sources
     $allowedSources = ['web_floor_station', 'web_car_controller'];
 
@@ -325,6 +373,8 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         // movement is unsafe if state cannot be found
         $doorsOpen = true;
+        // OOP change - set doors to open
+        $elevatorCar->openDoors();
 
         // command
         $query = "
@@ -343,11 +393,20 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if($result && $elevatorState) {
             // convert DB bool into PHP bool
-            $doorsOpen = (int) $elevatorState['doors_open'] === 1;
-        }
+            // $doorsOpen = (int) $elevatorState['doors_open'] === 1;
+            // OOP change
+            // load the DB door state into the elevatorCar object
+            if ((int) $elevatorState['doors_open'] === 1) {
+                $elevatorCar->openDoors();
+            } else {
+                $elevatorCar->closeDoors();
+            }
+        } 
 
-        // continue with the movement control code below only when doors are closed
-        $movementAllowed = !$doorsOpen;
+        // OOP change - check door state and determine movement
+        $doorsOpen = $elevatorCar->areDoorsOpen();
+        $movementAllowed = $elevatorCar->canMove();
+
 
         // code below will still run and log buttons into DB - queuing will handle it
         // movement will be prevented in the JS
@@ -372,9 +431,10 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $statement = $pdo->prepare($query);
 
+        // OOP change - getFloorNumber
         $params = [
             'request_type' => 'remote',
-            'requested_floor' => $requestedFloor,
+            'requested_floor' => $selectedFloorNode->getFloorNumber(),
             'requested_by_user_id' => $requestedByUserID,
             'source_controller' => $sourceController
         ];
@@ -391,7 +451,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'success' => true,
                 'message' => 'elevator request logged successfully!',
                 'elevator_request_id' => $elevatorRequestID,
-                'requested_floor' => $requestedFloor,
+                'requested_floor' => $selectedFloorNode->getFloorNumber(),
                 'source_controller' => $sourceController,
 
                 // if logged successfully, tell JS what PHP found in elevator_state DB (for doors)
@@ -542,6 +602,16 @@ $safeUsername = htmlspecialchars($_SESSION['username'] ?? 'Member', ENT_QUOTES, 
                 <p><strong>Mode:</strong> Elevator control</p>
                 <p><strong>Floors:</strong> 3</p>
                 <p><strong>System:</strong> Floor calls + car controller</p>
+                <p><strong>PHP Model:</strong> <?php echo Node::getNodeCount(); ?> node objects</p>
+                <p>
+                    <strong>CAN Interface Test:</strong>
+                    <?php echo $canDeviceTestPassed ? "PASS" : "FAIL"; ?>
+                </p>
+
+                <p>
+                    <strong>CAN Devices:</strong>
+                    <?php echo htmlspecialchars(implode(", ", $canDeviceDetails), ENT_QUOTES, "UTF-8"); ?>
+                </p>
             </aside>
         </section>
 

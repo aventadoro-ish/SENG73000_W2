@@ -13,6 +13,10 @@ abstract class Node {
         self::$nodeCount++;
     }
 
+    public static function getNodeCount(): int {
+        return self::$nodeCount;
+    }
+
     public  function getNodeName(): string {
         return $this->nodeName;
     }
@@ -23,10 +27,6 @@ abstract class Node {
 
     public function setOnline(bool $online) {
         $this->online = $online;
-    }
-
-    public static function getNodeCount(): int {
-        return self::$nodeCount;
     }
 
     abstract public function getNodeType(): string;

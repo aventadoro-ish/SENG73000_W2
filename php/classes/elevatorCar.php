@@ -1,9 +1,13 @@
 <?php 
 
 require_once __DIR__ . '/node.php';
+require_once __DIR__ . '/CANDevice.php';
+require_once __DIR__ . '/CANIdentifierTrait.php';
 
-class ElevatorCar extends Node {
-    private $canID;
+class ElevatorCar extends Node implements CANDevice {
+    
+    use CANIdentifierTrait;
+
     private $currentFloor;
     private $doorsOpen;
 
@@ -11,8 +15,8 @@ class ElevatorCar extends Node {
         parent::__construct($nodeName);
 
         $this->canID = $canID;
-        $this->currentFloor = $currentFloor;
         $this->doorsOpen = false;
+        $this->confirmCurrentFloor($currentFloor);
     }
 
 
@@ -20,15 +24,11 @@ class ElevatorCar extends Node {
         return "elevator car";
     }
 
-    public function getCANID():string {
-        return $this->canID;
-    }
-
     public function getCurrentFloor():int {
         return $this->currentFloor;
     }
 
-    public function moveToFloor(int $floor) {
+    public function confirmCurrentFloor(int $floor) {
         if($floor < 1 || $floor > 3) {
             throw new Exception("floor must be between 1 and 3");
         }
@@ -47,32 +47,9 @@ class ElevatorCar extends Node {
         return $this->doorsOpen;
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    public function canMove(): bool
+    {
+        return $this->isOnline() && !$this->doorsOpen;
+    }
 
 }

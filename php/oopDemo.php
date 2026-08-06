@@ -17,7 +17,7 @@ $distanceSensor = new DistanceSensor("DS", 0.0);
 
 // simulate a floor 2 request and elevator response
 $floor2->requestElevator();
-$elevatorCar->moveToFloor($floor2->getFloorNumber());
+$elevatorCar->canMove();
 $elevatorCar->openDoors();
 $distanceSensor->setDistanceMm(840.0);
 

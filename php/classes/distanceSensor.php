@@ -2,8 +2,7 @@
 
 require_once __DIR__ . '/Node.php';
 
-class DistanceSensor extends Node
-{
+class DistanceSensor extends Node {
     private $distanceMm;
 
     public function __construct(string $nodeName, float $distanceMm = 0.0)
