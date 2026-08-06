@@ -591,6 +591,13 @@ void process_CAN_CC_msg(CAN::RxFrame rxMsg) {
 	std::cout << "\t->Car Request Message" << std::endl;
 
 	std::cout << "\t\t->Door is " << (rxMsg.data.cc_request.is_door_open ? "open" : "closed") << std::endl;
+	if (!door.is_initialized()) {
+		int db_door_state = database.get_doors_open();
+		if (db_door_state >= 0) {
+			door.initialize(db_door_state == 1, rxMsg.data.cc_request.is_door_open);
+		}
+	}
+	
 	door.update_door_CAN(rxMsg.data.cc_request.is_door_open);
 
 	// Filter state to only be normal operations mode
