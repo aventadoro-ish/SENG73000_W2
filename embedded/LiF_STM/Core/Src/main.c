@@ -22,7 +22,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include <stdbool.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -284,11 +284,7 @@ void CAN_ProcessReceive(void){
 
 		// only read the first two bits
 		current_floor = rx_Byte0 & 0x03;
-	} else {
-    strcpy(tx_buff, " - Rejected\n");
-    HAL_UART_Transmit(&huart2, tx_buff, strlen(tx_buff), 1000);
-
-  } else if (rx_ID == SC_TO_CC_DOOR_UPD_ID) {
+	} else if (rx_ID == SC_TO_CC_DOOR_UPD_ID) {
 #if SELECTED_BOARD == CC_BOARD
     // CC may send a door status update if SC requests it in SC_TO_CC_DOOR_UPD_ID message
     bool do_send_reply = (rx_Byte0 & 0b00000100) > 0;
@@ -325,9 +321,11 @@ void CAN_ProcessReceive(void){
 			CAN_ByteTransmit(MY_ID, ((int)reply_door_state) << 2);
     
     }
-
-    
 #endif
+  } else {
+    strcpy(tx_buff, " - Rejected\n");
+    HAL_UART_Transmit(&huart2, tx_buff, strlen(tx_buff), 1000);
+
   }
 }
 
