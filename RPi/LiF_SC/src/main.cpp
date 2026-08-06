@@ -592,11 +592,12 @@ void process_CAN_msg() {
 	}
 	database.log_can_message(rawRxMsg.ID, data_arr, rawRxMsg.LEN);
 	
-	std::cout << "Rec CAN frame " << std::hex << rawRxMsg.ID << " data: " << static_cast<int>(rawRxMsg.DATA[0]) << std::dec << std::endl;
+	std::cout << "Received CAN Message with ID 0x" << std::hex << rawRxMsg.ID << " and data: 0x" << static_cast<int>(rawRxMsg.DATA[0]) << std::dec << std::endl;
 	
 	if (rxMsg.id == CAN::ID::UNKNOWN) {
 		state = SC_State::FAULT;
 		char c_str_reason[1000];
+		std::cout << "\t->CAN Unknown ID " << std::hex << (int)rxMsg.id << std::dec << "-> Entering Fault mode" << std::endl;
 		sprintf(c_str_reason, 
 			"CAN received a message with unknown ID=0x%x, data=0x%d %d %d %d %d %d %d %d, dlc=%d",
 			rxMsg.data.unknown.id,
@@ -618,15 +619,18 @@ void process_CAN_msg() {
 	case CAN::ID::F2_RQ:			[[fallthrough]];
 	case CAN::ID::F3_RQ:			process_CAN_Fx_msg(rxMsg);		break;
 	default:
-		std::cerr << "Impossible message ID check on line " << __LINE__ << " in file " << __FILE__ << std::endl;
+		std::cerr << "\t->Impossible message ID check on line " << __LINE__ << " in file " << __FILE__ << std::endl;
 		break;
 	}
 }
 
 void process_CAN_CC_msg(CAN::RxFrame rxMsg) {
+	std::cout << "\t->Car Request Message" << std::endl;
     update_door_state_from_CAN(
         rxMsg.data.cc_request.is_door_open
     );
+
+	std::cout << "\t\t->Door is " << (rxMsg.data.cc_request.is_door_open ? "open" : "closed") << std::endl;
 
 	// Filter state to only be normal operations mode
 	//	Ignore floor requests in maintenance and sabbath mode
@@ -634,6 +638,7 @@ void process_CAN_CC_msg(CAN::RxFrame rxMsg) {
         (state == SC_State::MOVING)) {
 
         if (rxMsg.data.cc_request.floor_request != 0) {
+			std::cout << "\t\t->Request for floor " << rxMsg.data.cc_request.floor_request << std::endl;
 			// Add request to scheduler
             Request rq;
             rq.dir = RequestDir::NA;
@@ -656,11 +661,13 @@ void process_CAN_Fx_msg(CAN::RxFrame rxMsg) {
 	case CAN::ID::F2_RQ:	floor_num = 2; 	break;
 	case CAN::ID::F3_RQ:	floor_num = 3; 	break;
 	default:
-		std::cerr << "Impossible message ID check on line " << __LINE__ << " in file " << __FILE__ << std::endl;
+		std::cerr << "\t->Impossible message ID check on line " << __LINE__ << " in file " << __FILE__ << std::endl;
 		break;
 	}
 
+	std::cout << "\t->Floor Request Message" << std::endl;
 	if (rxMsg.data.fx_request.is_requested) {
+		std::cout << "\t\t->Requested floor " << floor_num << std::endl;
 		// Filter state to only be normal operations mode
 		//	Ignore floor requests in maintenance and sabbath mode
 		if ((state == SC_State::IDLE) ||
@@ -677,19 +684,20 @@ void process_CAN_Fx_msg(CAN::RxFrame rxMsg) {
 			// Log request to database
 			database.log_elevator_request(floor_num, (int)rxMsg.id);
 		} else {
-			std::cout << "Ignored Floor Request from floor " << floor_num << " in non-NORMAL mode of operation" << std::endl;
+			std::cout << "\t\t->Ignored Floor Request from floor " << floor_num << " in non-NORMAL mode of operation" << std::endl;
 		}
 	}
 
 }
 
 void process_CAN_EC_msg(CAN::RxFrame rxMsg) {
+	std::cout << "\t->Elevator Controller Message" << std::endl;
 	CAN::EC_Status stat = rxMsg.data.ec_status;
 
 	is_EC_enabled = stat.is_enabled;
 
 	if (stat.position != current_floor) {
-		std::cout << "EC message updating floor to " << (int) stat.position << std::endl; 
+		std::cout << "\t\t->EC message updating floor to " << (int) stat.position << std::endl; 
 	}
 	// current position is always updated
 	current_floor = stat.position;
@@ -700,6 +708,7 @@ void process_CAN_EC_msg(CAN::RxFrame rxMsg) {
 
 	// check for unexpected move command
 	if (!is_car_moving && stat.is_moving) {
+		std::cerr << "\t\t->Unexpected EC Move -> entering Fault mode " << std::endl; 
 		state = SC_State::FAULT;
 		char c_str_reason[1000];
 		sprintf(c_str_reason, "Unauthorized cabin move reported by EC, current floor=%d", current_floor);	
@@ -709,14 +718,16 @@ void process_CAN_EC_msg(CAN::RxFrame rxMsg) {
 
 	// check if EC finished moving the car
 	if (is_car_moving && !stat.is_moving) {
+		std::cout << "\t\t->Move to floor " << current_floor << "finished"<< std::endl;
 		is_car_moving = false;
 
 		// clear database requests if necessary
 		if (database.complete_elevator_request(current_floor)) {
-			std::cout << "Completed DB request to floor " << current_floor << std::endl;
+			std::cout << "\t\t->Completed DB request to floor " << current_floor << std::endl;
 		}
 
 		if (state == SC_State::MOVING) {
+			std::cout << "\t\t->Registering a stop at this floor" << std::endl;
 			scheduler.register_car_stop();
 		}
 

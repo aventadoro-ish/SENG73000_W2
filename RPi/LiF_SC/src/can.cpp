@@ -124,7 +124,7 @@ int CAN::pcanTx(int id, int data) {
 	Txmsg.LEN = 1; 
 	Txmsg.DATA[0] = data; 
 
-    std::cout << "Tx CAN ID 0x" << std::hex << id << " data 0x" << data << std::dec << std::endl;
+    std::cout << "Transmitting CAN message with ID 0x" << std::hex << id << " data 0x" << data << std::dec << std::endl;
 
     // not sure why the delay was here. trying to remove it
 	// sleep(1);  
