@@ -184,79 +184,7 @@ require_once __DIR__ . '/db.php';
             
             // if it exists and IS pending (since it's not any other form), it is ready
             // if it is ready, insert it into the DB
-            } else {
-                // convert the password that the admin entered into a hash
-                // use PHP's hash function to hash the new password using the default hasher
-                $passwordHash = password_hash($newPassword, PASSWORD_DEFAULT);
-
-                try 
-                {
-                    // for Q8 of A2, use transactions:
-                    $pdo->beginTransaction();
-
-                    // define the account that should be inserted into DB
-                    $query = "
-                        INSERT INTO users (
-                            access_request_id,
-                            username,
-                            password_hash,
-                            email,
-                            user_role,
-                            account_status
-                        )
-
-                        VALUES (
-                            :access_request_id,
-                            :username,
-                            :password_hash,
-                            :email,
-                            :user_role,
-                            :account_status
-                        )
-                    ";
-
-                    // prepare the insertion
-                    $statement = $pdo->prepare($query);
-
-                    // map each SQL placeholder to its real PHP value
-                    // $selectedRequest is the data that was fetched from the DB
-                    $params = [
-                        'access_request_id' => $selectedRequest['request_id'],
-                        'username' => $newUsername,
-                        'password_hash' => $passwordHash,
-                        'email' => $selectedRequest['email'],
-                        'user_role' => 'user',
-                        'account_status' => 'approved'
-                    ];
-
-                    // create the website account by executing
-                    if(!$statement->execute($params)){
-                        throw new RuntimeException("The user account could not be created");
-                    }
-
-                    // can replace the old query with a function-call instead
-                    updateAccessRequests($pdo, $selectedRequest['request_id'], 'request_status', 'approved');
-                    updateAccessRequests($pdo, $selectedRequest['request_id'], 'reviewed_at', date('Y-m-d H:i:s'));
-                    
-                    $pdo->commit();
-
-                    header("Location: manage_requests.php?approved=1");
-
-                    exit;
-                        
-                    
-                }
-                catch (Exception $e)
-                {
-                    if($pdo->inTransaction()) {
-                        $pdo->rollBack();
-                    }
-                    
-                    $errors[] = "Approval Failed: " . $e->getMessage();
-                    error_log($e->getMessage());
-                }
-
-            }
+            } 
         }
     }
 ?>
@@ -409,7 +337,8 @@ require_once __DIR__ . '/db.php';
                                         <input type="text" name="password" minlength="7" required>
                                     </label>
                                     <br>
-                                    <button type="submit">Approve</button>
+                                    <button type="submit" name="approve">Approve</button>
+                                    <button type="submit" name="decline">Decline</button>
                                 </form>
                             </td>
                         </tr>
