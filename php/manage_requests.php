@@ -19,7 +19,67 @@ require_once __DIR__ . '/db.php';
         http_response_code(403);
         exit("Access denied; Admin perms required for entry to this page. Please return and login.");
     }
-    
+
+    // create a function to update the access requests table based on input (as per Q7 of A2)
+    function updateAccessRequests (PDO $pdo, int $requestID, string $field, $newValue): bool {
+        // all fields can be updated except primary key (requestID)
+        // create an array to store allowed fields based on table definition in SQL
+        $allowedFields = [
+            'first_name',
+            'last_name',
+            'email',
+            'birthday',
+            'person_type',
+            'involvement',
+            'drives_car',
+            'details',
+            'request_status',
+            'submitted_at',
+            'reviewed_at'
+        ];
+
+        if ($requestID < 1) {
+            throw new InvalidArgumentException("The request ID must be a positive integer");
+        }
+
+        // ensure input received is one that's allowed
+        if(!in_array($field, $allowedFields, true)){
+            throw new InvalidArgumentException("The field $field cannot be updated");
+        }
+
+        // make a DB query
+        $query = "
+            UPDATE access_requests
+            SET `$field` = :new_value
+            WHERE request_id = :request_id
+        ";
+
+        // prepare
+        $statement = $pdo->prepare($query);
+
+        if($newValue === null) {
+            $statement->bindValue(':new_value', null, PDO::PARAM_NULL);
+        } else {
+            // bind the value to the 'new_value' field in the query
+            $statement->bindValue(':new_value', $newValue, PDO::PARAM_STR);
+        }
+
+        // bind the passed in requestID to the query
+        $statement->bindValue(':request_id', $requestID, PDO::PARAM_INT);
+
+        // execute query
+        if(!$statement->execute()) {
+            throw new RuntimeException("The access request update failed");
+        }
+
+        // return
+        if($statement->rowCount() !== 1) {
+            throw new RuntimeException("No access request was updated");
+        }
+
+        return true;
+    }
+
     // next, we want to query the DB and grab all requests that are "pending"
     // query the DB to grab important information to use using a string
     $query = "
@@ -35,6 +95,7 @@ require_once __DIR__ . '/db.php';
         WHERE request_status = 'pending'
         ORDER BY submitted_at ASC
     ";
+    
     // this block will query the SQL to grab these items FROM access_request DB, specifically entries where request_status is pending
     // and it will be ordered by submission time
 
@@ -130,6 +191,9 @@ require_once __DIR__ . '/db.php';
 
                 try 
                 {
+                    // for Q8 of A2, use transactions:
+                    $pdo->beginTransaction();
+
                     // define the account that should be inserted into DB
                     $query = "
                         INSERT INTO users (
@@ -166,44 +230,29 @@ require_once __DIR__ . '/db.php';
                     ];
 
                     // create the website account by executing
-                    $result = $statement->execute($params);
-
-                    // check if it worked
-                    if ($result) {
-                        // make a query string for access_requests. Only basic stuff has to be changed.
-                        $query = "
-                            UPDATE access_requests 
-                            SET request_status = 'approved', 
-                            reviewed_at = CURRENT_TIMESTAMP WHERE request_id = :request_id;
-                        ";
-
-                        // prepare the insertion
-                        $statement = $pdo->prepare($query);
-
-                        // map each SQL placeholder to its real PHP value
-                        $params = [
-                            'request_id' =>  $selectedRequest['request_id']
-                        ];
-
-                        // execute the command
-                        $result = $statement->execute($params);
-
-                        // check if it worked
-                        if ($result && $statement->rowCount() === 1) {
-                            // return to the page using a GET request instead of POST
-                            // prevents a refresh from sending another INSERT INTO request
-                            header("Location: manage_requests.php?approved=1");
-                            exit;
-                        } else {
-                            $errors[] = "access requests could not be updated";
-                        }
-                    } else {
-                        $errors[] = "the user account was created, but access requests could not be updated";
+                    if(!$statement->execute($params)){
+                        throw new RuntimeException("The user account could not be created");
                     }
+
+                    // can replace the old query with a function-call instead
+                    updateAccessRequests($pdo, $selectedRequest['request_id'], 'request_status', 'approved');
+                    updateAccessRequests($pdo, $selectedRequest['request_id'], 'reviewed_at', date('Y-m-d H:i:s'));
+                    
+                    $pdo->commit();
+
+                    header("Location: manage_requests.php?approved=1");
+
+                    exit;
+                        
+                    
                 }
-                catch (PDOException $e)
+                catch (Exception $e)
                 {
-                    $errors[] = "Database error: " . $e->getMessage();
+                    if($pdo->inTransaction()) {
+                        $pdo->rollBack();
+                    }
+                    
+                    $errors[] = "Approval Failed: " . $e->getMessage();
                     error_log($e->getMessage());
                 }
 
