@@ -112,6 +112,8 @@ require_once __DIR__ . '/db.php';
     // part of the page refresh logic
     if (isset($_GET['approved']) && $_GET['approved'] === '1') {
         $formMessage = "The user account has been created and the request was approved!";
+    } elseif (isset($_GET['declined']) && $_GET['declined'] === '1') {
+        $formMessage = "Request access was declined and row was deleted from access_requests!";
     }
     
     $requestID = null;
@@ -124,6 +126,12 @@ require_once __DIR__ . '/db.php';
         $submittedRequestID = $_POST['request_id'] ?? '';
         $newUsername = $_POST['username'] ?? '';
         $newPassword = $_POST['password'] ?? '';
+        $is_approved = true; // approve by default
+        if (isset($_POST['approve'])) {
+            $is_approved = true;
+        } else if (isset($_POST['decline'])) {
+            $is_approved = false;
+        }
 
         // convert submitted requestr ID into an integer
         $requestID = filter_var($submittedRequestID, FILTER_VALIDATE_INT);
@@ -185,77 +193,141 @@ require_once __DIR__ . '/db.php';
             // if it exists and IS pending (since it's not any other form), it is ready
             // if it is ready, insert it into the DB
             } else {
-                // convert the password that the admin entered into a hash
-                // use PHP's hash function to hash the new password using the default hasher
-                $passwordHash = password_hash($newPassword, PASSWORD_DEFAULT);
+                if ($is_approved)
+                { 
+                    // convert the password that the admin entered into a hash
+                    // use PHP's hash function to hash the new password using the default hasher
+                    $passwordHash = password_hash($newPassword, PASSWORD_DEFAULT);
 
-                try 
-                {
-                    // for Q8 of A2, use transactions:
-                    $pdo->beginTransaction();
+                    try 
+                    {
+                        // for Q8 of A2, use transactions:
+                        $pdo->beginTransaction();
 
-                    // define the account that should be inserted into DB
-                    $query = "
-                        INSERT INTO users (
-                            access_request_id,
-                            username,
-                            password_hash,
-                            email,
-                            user_role,
-                            account_status
-                        )
+                        // define the account that should be inserted into DB
+                        $query = "
+                            INSERT INTO users (
+                                access_request_id,
+                                username,
+                                password_hash,
+                                email,
+                                user_role,
+                                account_status
+                            )
 
-                        VALUES (
-                            :access_request_id,
-                            :username,
-                            :password_hash,
-                            :email,
-                            :user_role,
-                            :account_status
-                        )
-                    ";
+                            VALUES (
+                                :access_request_id,
+                                :username,
+                                :password_hash,
+                                :email,
+                                :user_role,
+                                :account_status
+                            )
+                        ";
 
-                    // prepare the insertion
-                    $statement = $pdo->prepare($query);
+                        // prepare the insertion
+                        $statement = $pdo->prepare($query);
 
-                    // map each SQL placeholder to its real PHP value
-                    // $selectedRequest is the data that was fetched from the DB
-                    $params = [
-                        'access_request_id' => $selectedRequest['request_id'],
-                        'username' => $newUsername,
-                        'password_hash' => $passwordHash,
-                        'email' => $selectedRequest['email'],
-                        'user_role' => 'user',
-                        'account_status' => 'approved'
-                    ];
+                        // map each SQL placeholder to its real PHP value
+                        // $selectedRequest is the data that was fetched from the DB
+                        $params = [
+                            'access_request_id' => $selectedRequest['request_id'],
+                            'username' => $newUsername,
+                            'password_hash' => $passwordHash,
+                            'email' => $selectedRequest['email'],
+                            'user_role' => 'user',
+                            'account_status' => 'approved'
+                        ];
 
-                    // create the website account by executing
-                    if(!$statement->execute($params)){
-                        throw new RuntimeException("The user account could not be created");
+                        // create the website account by executing
+                        if(!$statement->execute($params)){
+                            throw new RuntimeException("The user account could not be created");
+                        }
+
+                        // can replace the old query with a function-call instead
+                        updateAccessRequests($pdo, $selectedRequest['request_id'], 'request_status', 'approved');
+                        updateAccessRequests($pdo, $selectedRequest['request_id'], 'reviewed_at', date('Y-m-d H:i:s'));
+                    
+                        $pdo->commit();
+
+                        header("Location: manage_requests.php?approved=1");
+                        exit;    
+                    
+                    }
+                    catch (Exception $e)
+                    {
+                        if($pdo->inTransaction()) {
+                            $pdo->rollBack();
+                        }
+                    
+                        $errors[] = "Approval Failed: " . $e->getMessage();
+                        error_log($e->getMessage());
                     }
 
-                    // can replace the old query with a function-call instead
-                    updateAccessRequests($pdo, $selectedRequest['request_id'], 'request_status', 'approved');
-                    updateAccessRequests($pdo, $selectedRequest['request_id'], 'reviewed_at', date('Y-m-d H:i:s'));
-                    
-                    $pdo->commit();
+                } else { // decline -> delete row
+    
+                    // convert the password that the admin entered into a hash
+                    // use PHP's hash function to hash the new password using the default hasher
+                    $passwordHash = password_hash($newPassword, PASSWORD_DEFAULT);
 
-                    header("Location: manage_requests.php?approved=1");
+                    try 
+                    {
+                        // define the account that should be inserted into DB
+                        $query = "
+                            DELETE FROM access_requests 
+                            WHERE request_id = :rq_id;
+                        ";
 
-                    exit;
-                        
-                    
-                }
-                catch (Exception $e)
-                {
-                    if($pdo->inTransaction()) {
-                        $pdo->rollBack();
+                        // prepare the insertion
+                        $statement = $pdo->prepare($query);
+
+                        // map each SQL placeholder to its real PHP value
+                        // $selectedRequest is the data that was fetched from the DB
+                        $params = [
+                            'rq_id' => $selectedRequest['request_id']
+                        ];
+
+                        // create the website account by executing
+                        $result = $statement->execute($params);
+
+                        // check if it worked
+                        if ($result) {
+                            // make a query string for access_requests. Only basic stuff has to be changed.
+                            $query = "
+                                SELECT * FROM access_requests 
+                                WHERE request_id = :rq_id;
+                            ";
+
+                            // prepare the insertion
+                            $statement = $pdo->prepare($query);
+
+                            // map each SQL placeholder to its real PHP value
+                            $params = [
+                                'rq_id' =>  $selectedRequest['request_id']
+                            ];
+
+                            // execute the command
+                            $result = $statement->execute($params);
+
+                            // check if it worked
+                            if ($result && $statement->rowCount() === 0) {
+                                // return to the page using a GET request instead of POST
+                                // prevents a refresh from sending another INSERT INTO request
+                                header("Location: manage_requests.php?declined=1");
+                                exit;
+                            } else {
+                                $errors[] = "access requests could not be updated";
+                            }
+                        } else {
+                            $errors[] = "access requests could not be updated -> delete row failed";
+                        }
                     }
-                    
-                    $errors[] = "Approval Failed: " . $e->getMessage();
-                    error_log($e->getMessage());
+                    catch (PDOException $e)
+                    {
+                        $errors[] = "Database error: " . $e->getMessage();
+                        error_log($e->getMessage());
+                    }
                 }
-
             }
         }
     }
@@ -405,7 +477,7 @@ require_once __DIR__ . '/db.php';
                                         <input type="text" name="username" minlength="7" required>
                                     </label>
                                     <br>
-                                    <label>Temporary Password:
+                                    <label>Temporary Pass:
                                         <input type="text" name="password" minlength="7" required>
                                     </label>
                                     <br>
