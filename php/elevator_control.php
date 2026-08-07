@@ -597,6 +597,8 @@ $safeUsername = htmlspecialchars($_SESSION['username'] ?? 'Member', ENT_QUOTES, 
                 </div>
             </div>
 
+
+
             <aside class="summary-card">
                 <h2>Control Status</h2>
                 <p><strong>Mode:</strong> Elevator control</p>

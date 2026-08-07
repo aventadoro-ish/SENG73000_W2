@@ -15,8 +15,8 @@ abstract class Node {
     }
 
     public function verifyConnection(): void {
-        if($this->online) {
-            throw new CommunicationException($this->nodeName . "has no connection");
+        if(!$this->online) {
+            throw new CommunicationException($this->nodeName . " has no connection");
         }
     }
 
