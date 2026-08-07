@@ -315,61 +315,56 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    // receive JS values to move the elevator
-    $submittedFloor = $_POST['requested_floor'] ?? '';
-    $sourceController = $_POST['source_controller'] ?? '';
-
-    // convert submitted floor into a valid integer
-    $requestedFloor = filter_var($submittedFloor, FILTER_VALIDATE_INT);
-
-    // create a 3-element array (since we have 3 floors... for now)
-    $allowedFloors = [1, 2, 3];
-
-    // reject any other values
-    if($requestedFloor === false || !in_array($requestedFloor, $allowedFloors, true)) {
-
-        // print the error message
-        echo json_encode([
-            'success' => false,
-            'message' => 'invalid elevator floor, its joever'
-        ]);
-        exit; 
-    }
-
-    // OOP change
-    // select the requested physical elevator floor node and mark its active request
-    $selectedFloorNode = $floorNodes[$requestedFloor];
-    $selectedFloorNode->requestElevator();
-
-    // once again, only use valid sources
-    $allowedSources = ['web_floor_station', 'web_car_controller'];
-
-    // and once again, handle valid source controllers (from the web)
-    // reject unknown controller names
-    if(!in_array($sourceController, $allowedSources, true)) {
-        // print message
-        echo json_encode([
-            'success' => false,
-            'message' => 'invalid source controller, its joever'
-        ]);
-        exit;
-    }
-
-    // grab the user ID
-    // login.php stored it in this session
-    $requestedByUserID = $_SESSION['user_id'] ?? null;
-
-    // if empty, get yo ahh outta here
-    if($requestedByUserID === null){
-        echo json_encode([
-            'success' => false,
-            'message' => 'the logged-in user could not be identified, its joever'
-        ]);
-        header('Location: ../login.html');
-        exit;
-    }
-
     try {
+        // receive JS values to move the elevator
+        $submittedFloor = $_POST['requested_floor'] ?? '';
+        $sourceController = $_POST['source_controller'] ?? '';
+
+        // convert submitted floor into a valid integer
+        $requestedFloor = filter_var($submittedFloor, FILTER_VALIDATE_INT);
+
+        // create a 3-element array (since we have 3 floors... for now)
+        $allowedFloors = [1, 2, 3];
+
+        // reject any other values
+        if($requestedFloor === false || !in_array($requestedFloor, $allowedFloors, true)) {
+            throw new NodeInputException("Requested floor must be between 1 and 3");
+        }
+
+ 
+
+        // once again, only use valid sources
+        $allowedSources = ['web_floor_station', 'web_car_controller'];
+
+        // and once again, handle valid source controllers (from the web)
+        // reject unknown controller names
+        if(!in_array($sourceController, $allowedSources, true)) {
+            throw new NodeInputException("Source controller is invalid");
+        }
+
+        // grab the user ID
+        // login.php stored it in this session
+        $requestedByUserID = $_SESSION['user_id'] ?? null;
+
+        // if empty, get yo ahh outta here
+        if($requestedByUserID === null){
+            throw new NodeInputException("The logged in user could not be identified");
+        }
+
+        // OOP change
+        // select the requested physical elevator floor node and mark its active request
+        $selectedFloorNode = $floorNodes[$requestedFloor];
+        
+
+        // methods throw CommunicationException if a node is offline
+        // Q5 test line:
+        $elevatorCar->setOnline(false);
+        $elevatorCar->verifyConnection();
+        // Q5 test line 2:
+         $canDevices[2]->setOnline(false);
+        $selectedFloorNode->verifyConnection();
+
+        $selectedFloorNode->requestElevator();
 
         // movement is unsafe if state cannot be found
         $doorsOpen = true;
@@ -391,9 +386,12 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
         // fetch from DB
         $elevatorState = $statement->fetch();
 
+        // handle invalid state
+        if(!$result || !$elevatorState){
+            throw new CommunicationException("Elevator state could not be received");
+        }
+
         if($result && $elevatorState) {
-            // convert DB bool into PHP bool
-            // $doorsOpen = (int) $elevatorState['doors_open'] === 1;
             // OOP change
             // load the DB door state into the elevatorCar object
             if ((int) $elevatorState['doors_open'] === 1) {
@@ -460,12 +458,30 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
             ]);
         // query failed/request not logged
         } else {
-            echo json_encode([
-                'success' => false,
-                'message' => 'elevator request was not logged, its joever'
-            ]);
+            throw new CommunicationException("the elevator request could not be sent");
         }
-    } 
+    }
+    catch (NodeInputException $e) {
+        error_log($e->getMessage());
+
+        // print the error message
+        echo json_encode([
+            'success' => false,
+            'exception_type' => get_class($e),
+            'message' => $e->getMessage()
+        ]);
+    }
+    catch (CommunicationException $e) {
+        error_log($e->getMessage());
+
+        // print the error message
+        echo json_encode([
+            'success' => false,
+            'exception_type' => get_class($e),
+            'message' => $e->getMessage()
+        ]);
+    }
+
     catch (PDOException $e) 
     {
         error_log($e->getMessage());
@@ -473,7 +489,8 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
         // report message back to JS too
         echo json_encode([
             'success' => false,
-            'message' => 'a database error occured that prevented the elevator request, its joever'
+            'exception_type' => get_class($e),
+            'message' => 'database communication failure (PDO catch)'
         ]);
     }
     exit;
@@ -508,7 +525,7 @@ try {
     if($latestRequest) {
         $initialFloor = (int) $latestRequest['requested_floor'];
         $initialRequestID = (int) $latestRequest['elevator_request_id'];
-        $initialStatus = (int) $latestRequest['request_status'];
+        $initialStatus = $latestRequest['request_status'];
 
         if($latestRequest['source_controller'] === 'web_car_controller') {
             $initialSource = 'car';

@@ -645,3 +645,4 @@ elevatorSocket.addEventListener("error", function(error) {
 loadInitialElevatorStatus();
 });
 
+
