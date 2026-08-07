@@ -59,11 +59,6 @@
   white-space: nowrap;
 }
 
-/* give alternating rows slightly different colours for legibility */
-.requests-table tbody tr:nth-child(even) td {
-  background-color: rgba(161, 204, 166, 0.18);
-}
-
 /* highlight current row */
 .requests-table tbody tr:hover td {
   background-color: rgba(249, 219, 121, 0.32);
@@ -81,4 +76,69 @@
 /* wrap long emails around */
 .requests-table td:nth-child(3) {
   overflow-wrap: anywhere;
+}
+
+/* expandable modification row */
+.requests-table tbody tr.request-modify-row td {
+  width: auto;
+  font-weight: normal;
+  color: inherit;
+  text-align: left;
+  background-color: rgba(9, 124, 135, 0.08);
+}
+
+.request-modify-row summary {
+  cursor: pointer;
+  font-weight: bold;
+  color: var(--deep-blue);
+}
+
+.requests-table .request-modify-row form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(250px, 1fr));
+  gap: 16px;
+  margin-top: 18px;
+  align-items: end;
+}
+
+.request-modify-row label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-weight: bold;
+  color: var(--deep-blue);
+}
+
+.request-modify-row input,
+.request-modify-row select,
+.request-modify-row textarea {
+  width: 100%;
+  padding: 10px;
+  box-sizing: border-box;
+  font: inherit;
+  border: 1px solid rgba(9, 124, 135, 0.35);
+  border-radius: 6px;
+}
+
+.request-modify-row textarea {
+  min-height: 90px;
+  resize: vertical;
+}
+
+.request-modify-row label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.request-modify-row label:last-of-type {
+  grid-column: 1 / -1;
+}
+
+.request-modify-row button {
+  width: fit-content;
+}
+
+.request-modify-row summary {
+  text-align: left;
 }

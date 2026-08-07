@@ -112,9 +112,13 @@ require_once __DIR__ . '/db.php';
     // part of the page refresh logic
     if (isset($_GET['approved']) && $_GET['approved'] === '1') {
         $formMessage = "The user account has been created and the request was approved!";
-    } elseif (isset($_GET['declined']) && $_GET['declined'] === '1') {
-        $formMessage = "Request access was declined and row was deleted from access_requests!";
-    }
+
+    } elseif(isset($_GET['deleted']) && $_GET['deleted'] === '1') {
+        $formMessage = "The access request was deleted successfully!";
+        
+    } else if(isset($_GET['modified']) && $_GET['modified'] === '1') {
+        $formMessage = "The access request was modified successfully!";
+        }
     
     $requestID = null;
     $newUsername = '';
@@ -122,211 +126,296 @@ require_once __DIR__ . '/db.php';
 
     // process approval after it has been submitted
     if($_SERVER['REQUEST_METHOD'] === 'POST') {
-        // grab variables from the submitted form
+        // determine which button was submitted
+        $action = $_POST['action'] ?? '';
+
+        // validate the selected request ID
         $submittedRequestID = $_POST['request_id'] ?? '';
-        $newUsername = $_POST['username'] ?? '';
-        $newPassword = $_POST['password'] ?? '';
-        $is_approved = true; // approve by default
-        if (isset($_POST['approve'])) {
-            $is_approved = true;
-        } else if (isset($_POST['decline'])) {
-            $is_approved = false;
-        }
 
         // convert submitted requestr ID into an integer
         $requestID = filter_var($submittedRequestID, FILTER_VALIDATE_INT);
-
-        // request ID must be positive
-        if ($requestID === false || $requestID < 1) {
-            $errors[] = "Invalid access request ID";
+        
+        // ensure its not a junk value
+        if($requestID === false || $requestID < 1) {
+            $errors[] = "Invalid access request  ID";
         }
 
-        // match username limits of the actual DB entry
-        if(empty($newUsername)) {
-            $errors[] = "a username is required";
-        } else if (strlen($newUsername) < 4) {
-            $errors[] = "username must be more than four characters";
-        } else if (strlen($newUsername) > 50) {
-            $errors[] = "username must be under 50 characters";
+        if(!in_array($action, ['approve', 'delete', 'modify'], true)) {
+            $errors[] = "Invalid action request";
         }
 
-        // match password limits of the actual DB entry
-        if(empty($newPassword)) {
-            $errors[] = "a password is required";
-        } else if (strlen($newPassword) < 6) {
-            $errors[] = "password must be more than six characters";
-        }
+        // ** DELETE **
+        // handle deletion
+        if ($action === 'delete' && empty($errors)) {
+            try {
+                // define the account that should be inserted into DB
+                $query = "
+                    DELETE FROM access_requests 
+                    WHERE request_id = :request_id;
+                ";
 
-        if(empty($errors)) {
-            // if there are no errors, approve the request by checking the DB that everything matches up
-            $query = "
-                SELECT
-                    request_id,
-                    email,
-                    request_status
-                FROM access_requests
-                WHERE request_id = :request_id
-                LIMIT 1
-            ";
+                // prepare the insertion
+                $statement = $pdo->prepare($query);
+
+                // bind SQL placeholder to its real PHP value
+                $statement->bindValue(':request_id', $requestID, PDO::PARAM_INT);
+
+                // execute
+                $statement->execute();
+
+                if($statement->rowCount() !== 1) {
+                    throw new RuntimeException("The selected request could not be deleted");
+                }
+                
+                header("Location: manage_requests.php?deleted=1");
+                exit;
+            }
+            catch (Exception $e) 
+            {
+                $errors[] = "Deletion failed: " . $e->getMessage();
+                error_log($e->getMessage());
+            }
+        } 
+
+        // ** APPROVE **
+        // handle account approval
+        if ($action === 'approve' && empty($errors)) {
+            $newUsername = trim($_POST['username'] ?? '');
+            $newPassword = trim($_POST['password'] ?? '');
             
+            // match username limits of the actual users table
+            if(empty($newUsername)) {
+                $errors[] = "a username is required";
 
-            // create a prepare statement for the query
-            $statement = $pdo->prepare($query);
+            } else if (strlen($newUsername) < 4) {
+                $errors[] = "username must be more than four characters";
+                
+            } else if (strlen($newUsername) > 50) {
+                $errors[] = "username must be under 50 characters";
+            }
 
-            // replace :request_id in the query with the submitted integer
-            $statement->bindValue('request_id', $requestID, PDO::PARAM_INT);
+            // match password limits of the actual DB entry
+            if(empty($newPassword)) {
+                $errors[] = "a password is required";
 
-            // execute the query
-            $result = $statement->execute();
+            } else if (strlen($newPassword) < 6) {
+                $errors[] = "password must be more than six characters";
+            }
 
-            // retrieve the matching request
-            $selectedRequest = $statement->fetch();
+            // rechecking for errors since the conditionals above can introduce them ^
+            if(empty($errors)) {
+                // query the DB
+                try 
+                {
+                    // for Q8 of A2, use transactions:
+                    $pdo->beginTransaction();
+                    
+                    // retrieve the pending request
+                    $query = "
+                        SELECT
+                            request_id,
+                            email,
+                            request_status
+                        FROM access_requests
+                        WHERE request_id = :request_id
+                        LIMIT 1
+                    ";
+                    
+                    // prepare
+                    $statement = $pdo->prepare($query);
+                    
+                    // add the actual request ID to the query
+                    $statement->bindValue(':request_id', $requestID, PDO::PARAM_INT);
 
-            // if nothing returned 
-            if(!$selectedRequest) {
-                $errors[] = "the selected request does not exist";
+                    // execute
+                    $statement->execute();
+                    
+                    // fetch the request
+                    $selectedRequest = $statement->fetch();
 
-            // if the request is NOT pending (denied, approved)
-            } else if ($selectedRequest['request_status'] !== 'pending') {
-                $errors[] = "the selected request has already been reviewed";
-            
-            // if it exists and IS pending (since it's not any other form), it is ready
-            // if it is ready, insert it into the DB
-            } else {
-                if ($is_approved)
-                { 
-                    // convert the password that the admin entered into a hash
-                    // use PHP's hash function to hash the new password using the default hasher
+                    if(!$selectedRequest) {
+                        throw new RuntimeException("The selected request has already been reviewed");
+                    }
+
+                    // hash the password
                     $passwordHash = password_hash($newPassword, PASSWORD_DEFAULT);
 
-                    try 
-                    {
-                        // for Q8 of A2, use transactions:
-                        $pdo->beginTransaction();
+                    // define the account that should be inserted into DB
+                    $query = "
+                        INSERT INTO users (
+                            access_request_id,
+                            username,
+                            password_hash,
+                            email,
+                            user_role,
+                            account_status
+                        )
 
-                        // define the account that should be inserted into DB
-                        $query = "
-                            INSERT INTO users (
-                                access_request_id,
-                                username,
-                                password_hash,
-                                email,
-                                user_role,
-                                account_status
-                            )
+                        VALUES (
+                            :access_request_id,
+                            :username,
+                            :password_hash,
+                            :email,
+                            :user_role,
+                            :account_status
+                        )
+                    ";
 
-                            VALUES (
-                                :access_request_id,
-                                :username,
-                                :password_hash,
-                                :email,
-                                :user_role,
-                                :account_status
-                            )
-                        ";
+                    // prepare the insertion
+                    $statement = $pdo->prepare($query);
 
-                        // prepare the insertion
-                        $statement = $pdo->prepare($query);
+                    // map each SQL placeholder to its real PHP value
+                    // $selectedRequest is the data that was fetched from the DB
+                    $params = [
+                        'access_request_id' => $selectedRequest['request_id'],
+                        'username' => $newUsername,
+                        'password_hash' => $passwordHash,
+                        'email' => $selectedRequest['email'],
+                        'user_role' => 'user',
+                        'account_status' => 'approved'
+                    ];
 
-                        // map each SQL placeholder to its real PHP value
-                        // $selectedRequest is the data that was fetched from the DB
-                        $params = [
-                            'access_request_id' => $selectedRequest['request_id'],
-                            'username' => $newUsername,
-                            'password_hash' => $passwordHash,
-                            'email' => $selectedRequest['email'],
-                            'user_role' => 'user',
-                            'account_status' => 'approved'
-                        ];
-
-                        // create the website account by executing
-                        if(!$statement->execute($params)){
-                            throw new RuntimeException("The user account could not be created");
-                        }
-
-                        // can replace the old query with a function-call instead
-                        updateAccessRequests($pdo, $selectedRequest['request_id'], 'request_status', 'approved');
-                        updateAccessRequests($pdo, $selectedRequest['request_id'], 'reviewed_at', date('Y-m-d H:i:s'));
-                    
-                        $pdo->commit();
-
-                        header("Location: manage_requests.php?approved=1");
-                        exit;    
-                    
+                    // create the website account by executing
+                    if(!$statement->execute($params)){
+                        throw new RuntimeException("The user account could not be created");
                     }
-                    catch (Exception $e)
-                    {
+
+                    // can replace the old query with a function-call instead
+                    updateAccessRequests($pdo, $selectedRequest['request_id'], 'request_status', 'approved');
+                    updateAccessRequests($pdo, $selectedRequest['request_id'], 'reviewed_at', date('Y-m-d H:i:s'));
+                    
+                    $pdo->commit();
+
+                    header("Location: manage_requests.php?approved=1");
+                    exit;
+                    
+                }
+                catch (Exception $e)
+                {
                         if($pdo->inTransaction()) {
                             $pdo->rollBack();
                         }
                     
                         $errors[] = "Approval Failed: " . $e->getMessage();
                         error_log($e->getMessage());
+                }
+            }
+        }
+        // ** MODIFY **
+        // modify the loaded table
+        else if($action === 'modify' && empty($errors))
+        {
+            // collect all the editable fields from the Modify form into an array
+            $modifiedValues = [
+                'first_name' => trim($_POST['first_name'] ?? ''),
+                'last_name' => trim($_POST['last_name'] ?? ''),
+                'email' => trim($_POST['email'] ?? ''),
+                'person_type' => $_POST['person_type'] ?? '',
+                'involvement' => trim($_POST['involvement'] ?? '')
+            ];
+
+            // validate first name
+            if($modifiedValues['first_name'] === '') {
+                $errors[] = "First name is required.";
+            }
+            else if(strlen($modifiedValues['first_name']) > 50) {
+                $errors[] = "First name cannot exceed 50 characters.";
+            }
+
+            // validate last name
+            if($modifiedValues['last_name'] === '') {
+                $errors[] = "Last name is required.";
+            }
+            else if(strlen($modifiedValues['last_name']) > 50) {
+                $errors[] = "Last name cannot exceed 50 characters.";
+            }
+
+            // validate email
+            if(!filter_var($modifiedValues['email'], FILTER_VALIDATE_EMAIL)) {
+                $errors[] = "Please enter a valid email";
+
+            } else if(strlen($modifiedValues['email']) > 254) {
+                $errors[] = "Email cannot exceed 254 characters";
+            }
+            
+            // validate occupation
+            if(in_array($modifiedValues['person_type'], ['Student', 'Faculty'], true)) {
+                $errors[] = "Please select Student or Faculty";
+            }
+
+            // validate involvement
+            if($modifiedValues['involvement'] === '') {
+                $errors[] = "Involvement is required";
+            }
+
+            // begin querying to update the DB if no errors occured]
+            if(empty($errors)) {
+                try {
+                    // use transactions as Q8 asks for them (might as well reuse it)
+                    $pdo->beginTransaction();
+
+                    // retrieve the existing values first
+                    $query = "
+                        SELECT
+                            first_name,
+                            last_name,
+                            email,
+                            person_type,
+                            involvement
+                        FROM access_requests
+                        WHERE request_id = :request_id
+                        AND request_status = 'pending'
+                        LIMIT 1
+                    ";
+                    
+                    // prepare
+                    $statement = $pdo->prepare($query);
+
+                    // bind current requestID before querying
+                    $statement->bindValue(':request_id', $requestID, PDO::PARAM_INT);
+
+                    // execute
+                    $statement->execute();
+                    
+                    // get the existing values
+                    $currentRequest = $statement->fetch();
+
+                    if(!$currentRequest) {
+                        throw new RuntimeException("The selected pending request does not exist");
                     }
 
-                } else { // decline -> delete row
-    
-                    // convert the password that the admin entered into a hash
-                    // use PHP's hash function to hash the new password using the default hasher
-                    $passwordHash = password_hash($newPassword, PASSWORD_DEFAULT);
+                    $changedFields = 0;
 
-                    try 
-                    {
-                        // define the account that should be inserted into DB
-                        $query = "
-                            DELETE FROM access_requests 
-                            WHERE request_id = :rq_id;
-                        ";
-
-                        // prepare the insertion
-                        $statement = $pdo->prepare($query);
-
-                        // map each SQL placeholder to its real PHP value
-                        // $selectedRequest is the data that was fetched from the DB
-                        $params = [
-                            'rq_id' => $selectedRequest['request_id']
-                        ];
-
-                        // create the website account by executing
-                        $result = $statement->execute($params);
-
-                        // check if it worked
-                        if ($result) {
-                            // make a query string for access_requests. Only basic stuff has to be changed.
-                            $query = "
-                                SELECT * FROM access_requests 
-                                WHERE request_id = :rq_id;
-                            ";
-
-                            // prepare the insertion
-                            $statement = $pdo->prepare($query);
-
-                            // map each SQL placeholder to its real PHP value
-                            $params = [
-                                'rq_id' =>  $selectedRequest['request_id']
-                            ];
-
-                            // execute the command
-                            $result = $statement->execute($params);
-
-                            // check if it worked
-                            if ($result && $statement->rowCount() === 0) {
-                                // return to the page using a GET request instead of POST
-                                // prevents a refresh from sending another INSERT INTO request
-                                header("Location: manage_requests.php?declined=1");
-                                exit;
-                            } else {
-                                $errors[] = "access requests could not be updated";
-                            }
-                        } else {
-                            $errors[] = "access requests could not be updated -> delete row failed";
+                    // update the values that were changed (by calling the field-updating function from Q7) 
+                    // loop through the modifiedValues array
+                    foreach($modifiedValues as $field => $newValue) {
+                        if($newValue !== $currentRequest[$field]) {
+                            updateAccessRequests($pdo, $requestID, $field, $newValue);
+                            
+                            // increase counter to ensure values were changed
+                            $changedFields++;
                         }
+                        
+                        
                     }
-                    catch (PDOException $e)
-                    {
-                        $errors[] = "Database error: " . $e->getMessage();
-                        error_log($e->getMessage());
+
+                    // ensured changedFields was actually changed (non zero)
+                    if($changedFields === 0) {
+                        throw new InvalidArgumentException("No values were changed");
+                    }  
+
+                    $pdo->commit();
+                    
+                    header("Location: manage_requests.php?modified=1");
+                    exit;
+                } catch (Exception $e) {
+                    // undo changes if transaction failed to prevent writing to DB if an Exception was caught
+                    if($pdo->inTransaction()) {
+                        $pdo->rollBack();
                     }
+
+                    $errors[] = "Modification failed: " . $e->getMessage();
+                    error_log($e->getMessage());
                 }
             }
         }
@@ -383,7 +472,7 @@ require_once __DIR__ . '/db.php';
                 <p><strong>Area:</strong> Protected content</p>
                 <p><strong>Account Type:</strong>
                     <?php echo htmlspecialchars($_SESSION['user_role'], ENT_QUOTES, 'UTF-8');?>
-                <p>
+                </p>
             </aside>
         </section>
 
@@ -436,6 +525,7 @@ require_once __DIR__ . '/db.php';
                             <th>Involvement</th>
                             <th>Submitted at</th>
                             <th>Create Account</th>
+                            <th>Additional CMD</th>
                         </tr>
                     </thead>
 
@@ -473,6 +563,8 @@ require_once __DIR__ . '/db.php';
                                     <input type="hidden" name="request_id"
                                         value="<?php echo $request['request_id']; ?>">
 
+                                    <input type="hidden" name="action" value="approve">
+
                                     <label>Username:
                                         <input type="text" name="username" minlength="7" required>
                                     </label>
@@ -482,23 +574,98 @@ require_once __DIR__ . '/db.php';
                                     </label>
                                     <br>
                                     <button type="submit" name="approve">Approve</button>
-                                    <button type="submit" name="decline">Decline</button>
                                 </form>
+                            </td>
+                            <td>
+                                <form action="manage_requests.php" method="POST"
+                                    onsubmit="return confirm('Permanently delete this request?');">
+                                    <input type="hidden" name="request_id"
+                                        value="<?php echo $request['request_id']; ?>">
+
+                                    <input type="hidden" name="action" value="delete">
+
+                                    <button class="button secondary-button" type="submit">Delete</button>
+                                </form>
+
+                            </td>
+                        </tr>
+
+                        <tr class="request-modify-row">
+                            <td colspan="8">
+                                <details>
+                                    <summary>
+                                        Modify Request #<?php echo $request['request_id'];?>
+                                    </summary>
+
+                                    <form action="manage_requests.php" method="POST">
+                                        <input type="hidden" name="action" value="modify">
+                                        <input type="hidden" name="request_id"
+                                            value="<?php echo $request['request_id'];?>">
+
+                                        <label>
+                                            First name:
+                                            <input type="text" name="first_name" maxlength="50"
+                                                value="<?php echo htmlspecialchars($request['first_name'], ENT_QUOTES, 'UTF-8');?>"
+                                                required>
+                                        </label>
+
+                                        <label>
+                                            Last name:
+                                            <input type="text" name="last_name" maxlength="50"
+                                                value="<?php echo htmlspecialchars($request['last_name'], ENT_QUOTES, 'UTF-8');?>"
+                                                required>
+                                        </label>
+
+                                        <label>
+                                            Email:
+                                            <input type="email" name="email" maxlength="254"
+                                                value="<?php echo htmlspecialchars($request['email'], ENT_QUOTES, 'UTF-8');?>"
+                                                required>
+                                        </label>
+
+                                        <label>
+                                            Occupation:
+                                            <select name="person_type" required>
+                                                <option value="student" <?php if($request['person_type'] === 'Student') 
+                                                    {
+                                                        echo 'selected';
+                                                    }?>>
+                                                    Student
+                                                </option>
+
+                                                <option value="faculty" <?php if($request['person_type'] === 'Faculty')
+                                                    {
+                                                        echo 'selected';
+                                                    }?>>
+                                                    Faculty
+                                                </option>
+                                            </select>
+                                        </label>
+
+                                        <label>
+                                            Involvement:
+                                            <textarea name="involvement"
+                                                required><?php echo htmlspecialchars($request['involvement'], ENT_QUOTES, 'UTF-8');?></textarea>
+                                        </label>
+
+                                        <button type="submit" class="button secondary-button">
+                                            Confirm changes
+                                        </button>
+                                    </form>
+                                </details>
                             </td>
                         </tr>
                         <?php endforeach; ?>
                     </tbody>
                 </table>
-
-
-
+            </div>
         </section>
         <?php endif; ?>
     </main>
-    </div>
-    <p>
-        <a href="members.php">Return to member area</a>
-    </p>
+    <div>
+        <p>
+            <a href="members.php">Return to member area</a>
+        </p>
     </div>
 </body>
 
