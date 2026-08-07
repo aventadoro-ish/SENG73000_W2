@@ -51,6 +51,8 @@ require_once __DIR__ . '/db.php';
     // part of the page refresh logic
     if (isset($_GET['approved']) && $_GET['approved'] === '1') {
         $formMessage = "The user account has been created and the request was approved!";
+    } elseif (isset($_GET['declined']) && $_GET['declined'] === '1') {
+        $formMessage = "Request access was declined and row was deleted from access_requests!";
     }
     
     $requestID = null;
@@ -63,6 +65,12 @@ require_once __DIR__ . '/db.php';
         $submittedRequestID = $_POST['request_id'] ?? '';
         $newUsername = $_POST['username'] ?? '';
         $newPassword = $_POST['password'] ?? '';
+        $is_approved = true; // approve by default
+        if (isset($_POST['approve'])) {
+            $is_approved = true;
+        } elseif (isset($_POST['decline'])) {
+            $is_approved = false;
+        }
 
         // convert submitted requestr ID into an integer
         $requestID = filter_var($submittedRequestID, FILTER_VALIDATE_INT);
@@ -124,89 +132,154 @@ require_once __DIR__ . '/db.php';
             // if it exists and IS pending (since it's not any other form), it is ready
             // if it is ready, insert it into the DB
             } else {
-                // convert the password that the admin entered into a hash
-                // use PHP's hash function to hash the new password using the default hasher
-                $passwordHash = password_hash($newPassword, PASSWORD_DEFAULT);
+                if ($is_approved) { 
+                    // convert the password that the admin entered into a hash
+                    // use PHP's hash function to hash the new password using the default hasher
+                    $passwordHash = password_hash($newPassword, PASSWORD_DEFAULT);
 
-                try 
-                {
-                    // define the account that should be inserted into DB
-                    $query = "
-                        INSERT INTO users (
-                            access_request_id,
-                            username,
-                            password_hash,
-                            email,
-                            user_role,
-                            account_status
-                        )
-
-                        VALUES (
-                            :access_request_id,
-                            :username,
-                            :password_hash,
-                            :email,
-                            :user_role,
-                            :account_status
-                        )
-                    ";
-
-                    // prepare the insertion
-                    $statement = $pdo->prepare($query);
-
-                    // map each SQL placeholder to its real PHP value
-                    // $selectedRequest is the data that was fetched from the DB
-                    $params = [
-                        'access_request_id' => $selectedRequest['request_id'],
-                        'username' => $newUsername,
-                        'password_hash' => $passwordHash,
-                        'email' => $selectedRequest['email'],
-                        'user_role' => 'user',
-                        'account_status' => 'approved'
-                    ];
-
-                    // create the website account by executing
-                    $result = $statement->execute($params);
-
-                    // check if it worked
-                    if ($result) {
-                        // make a query string for access_requests. Only basic stuff has to be changed.
+                    try 
+                    {
+                        // define the account that should be inserted into DB
                         $query = "
-                            UPDATE access_requests 
-                            SET request_status = 'approved', 
-                            reviewed_at = CURRENT_TIMESTAMP WHERE request_id = :request_id;
+                            INSERT INTO users (
+                                access_request_id,
+                                username,
+                                password_hash,
+                                email,
+                                user_role,
+                                account_status
+                            )
+
+                            VALUES (
+                                :access_request_id,
+                                :username,
+                                :password_hash,
+                                :email,
+                                :user_role,
+                                :account_status
+                            )
                         ";
 
                         // prepare the insertion
                         $statement = $pdo->prepare($query);
 
                         // map each SQL placeholder to its real PHP value
+                        // $selectedRequest is the data that was fetched from the DB
                         $params = [
-                            'request_id' =>  $selectedRequest['request_id']
+                            'access_request_id' => $selectedRequest['request_id'],
+                            'username' => $newUsername,
+                            'password_hash' => $passwordHash,
+                            'email' => $selectedRequest['email'],
+                            'user_role' => 'user',
+                            'account_status' => 'approved'
                         ];
 
-                        // execute the command
+                        // create the website account by executing
                         $result = $statement->execute($params);
 
                         // check if it worked
-                        if ($result && $statement->rowCount() === 1) {
-                            // return to the page using a GET request instead of POST
-                            // prevents a refresh from sending another INSERT INTO request
-                            header("Location: manage_requests.php?approved=1");
-                            exit;
+                        if ($result) {
+                            // make a query string for access_requests. Only basic stuff has to be changed.
+                            $query = "
+                                UPDATE access_requests 
+                                SET request_status = 'approved', 
+                                reviewed_at = CURRENT_TIMESTAMP WHERE request_id = :request_id;
+                            ";
+
+                            // prepare the insertion
+                            $statement = $pdo->prepare($query);
+
+                            // map each SQL placeholder to its real PHP value
+                            $params = [
+                                'request_id' =>  $selectedRequest['request_id']
+                            ];
+
+                            // execute the command
+                            $result = $statement->execute($params);
+
+                            // check if it worked
+                            if ($result && $statement->rowCount() === 1) {
+                                // return to the page using a GET request instead of POST
+                                // prevents a refresh from sending another INSERT INTO request
+                                header("Location: manage_requests.php?approved=1");
+                                exit;
+                            } else {
+                                $errors[] = "access requests could not be updated";
+                            }
                         } else {
-                            $errors[] = "access requests could not be updated";
+                            $errors[] = "the user account was created, but access requests could not be updated";
                         }
-                    } else {
-                        $errors[] = "the user account was created, but access requests could not be updated";
+                    }
+                    catch (PDOException $e)
+                    {
+                        $errors[] = "Database error: " . $e->getMessage();
+                        error_log($e->getMessage());
+                    }
+
+                } else { // decline -> delete row
+    
+                    // convert the password that the admin entered into a hash
+                    // use PHP's hash function to hash the new password using the default hasher
+                    $passwordHash = password_hash($newPassword, PASSWORD_DEFAULT);
+
+                    try 
+                    {
+                        // define the account that should be inserted into DB
+                        $query = "
+                            DELETE FROM access_requests 
+                            WHERE request_id = :rq_id;
+                        ";
+
+                        // prepare the insertion
+                        $statement = $pdo->prepare($query);
+
+                        // map each SQL placeholder to its real PHP value
+                        // $selectedRequest is the data that was fetched from the DB
+                        $params = [
+                            'rq_id' => $selectedRequest['request_id']
+                        ];
+
+                        // create the website account by executing
+                        $result = $statement->execute($params);
+
+                        // check if it worked
+                        if ($result) {
+                            // make a query string for access_requests. Only basic stuff has to be changed.
+                            $query = "
+                                SELECT * FROM access_requests 
+                                WHERE request_id = :rq_id;
+                            ";
+
+                            // prepare the insertion
+                            $statement = $pdo->prepare($query);
+
+                            // map each SQL placeholder to its real PHP value
+                            $params = [
+                                'rq_id' =>  $selectedRequest['request_id']
+                            ];
+
+                            // execute the command
+                            $result = $statement->execute($params);
+
+                            // check if it worked
+                            if ($result && $statement->rowCount() === 0) {
+                                // return to the page using a GET request instead of POST
+                                // prevents a refresh from sending another INSERT INTO request
+                                header("Location: manage_requests.php?declined=1");
+                                exit;
+                            } else {
+                                $errors[] = "access requests could not be updated";
+                            }
+                        } else {
+                            $errors[] = "access requests could not be updated -> delete row failed";
+                        }
+                    }
+                    catch (PDOException $e)
+                    {
+                        $errors[] = "Database error: " . $e->getMessage();
+                        error_log($e->getMessage());
                     }
                 }
-                catch (PDOException $e)
-                {
-                    $errors[] = "Database error: " . $e->getMessage();
-                    error_log($e->getMessage());
-                }
-
             }
         }
     }
@@ -360,7 +433,8 @@ require_once __DIR__ . '/db.php';
                                         <input type="text" name="password" minlength="7" required>
                                     </label>
                                     <br>
-                                    <button type="submit">Approve</button>
+                                    <button type="submit" name="approve">Approve</button>
+                                    <button type="submit" name="decline">Decline</button>
                                 </form>
                             </td>
                         </tr>
