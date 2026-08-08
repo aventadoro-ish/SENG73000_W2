@@ -177,18 +177,24 @@ function handleResponse(responseData) {
 
     // handle PHP response to door state
     function handleDoorResponse(responseData) {
-        if(responseData.success === true) {
-            // convert PHP's open/close to boolean
-            if(responseData.door_state === "open") {
-                // update page text
-                updateDoorDisplay(true);
-            } else {
-                // update page text
-                updateDoorDisplay(false);
+        if(responseData.success === true)
+        {
+            const confirmedDoorsOpen = responseData.door_state === "open";
+            
+
+            // update the webpage when door state was changed
+            updateDoorDisplay(confirmedDoorsOpen);
+
+            // update the last command text
+            lastCommandDisplay.textContent = "Doors changed to " + responseData.door_state;
+
+            // tell Node PHP changed the door state
+            if(elevatorSocket.readyState === WebSocket.OPEN) {
+                elevatorSocket.send(JSON.stringify({
+                    type: "door_state_changed"
+                }));
             }
 
-        // update the last command text
-        lastCommandDisplay.textContent = "Doors changed to " + responseData.door_state;
         } else {
             // PHP responded but SQL failed
             // update the last command text
@@ -589,6 +595,17 @@ elevatorSocket.addEventListener("message", function (event) {
         return;
     }
 
+    if(message.type === "elevator_state") {
+        updateDoorDisplay(message.doors_open === true);
+        return;
+    }
+
+    if(message.type === "elevator_state") {
+        updateDoorDisplay(message.doors_open === true);
+        return;
+    }
+
+
     // ignore any web socket messages that aren't of "can_message"
     if(message.type !== "can_message") {
         return;
@@ -613,6 +630,14 @@ elevatorSocket.addEventListener("message", function (event) {
         console.log("ignored non-position providing EC byte: ", rawByte);
         return;
      }
+
+     if(doorsOpen === true) {
+        lastCommandDisplay.textContent = "Ignored EC floor " + floor + " from CAN log #" + message.log_id + " - cannot move with doors open";
+
+        console.warn("ignored EC floor confirmation because the doors are open");
+
+        return;
+     } 
 
      liveEcPositionReceived = true;
 

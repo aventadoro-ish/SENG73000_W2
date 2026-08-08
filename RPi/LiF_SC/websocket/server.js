@@ -43,8 +43,52 @@ server.on("connection", function(socket) {
   }));
 
   // print any message received from the webpage
-  socket.on("message", function (message) {
-    console.log("Received:", message.toString());
+  socket.on("message", async function (message) {
+    let receivedMessage;
+    
+    try {
+      receivedMessage = JSON.parse(message.toString());
+
+    } catch (error) {
+      console.error("invalid webpage message");
+      return;
+    }
+
+    // ignore messages that are not a door-change
+    if(receivedMessage.type !== "door_state_changed"){
+      return;
+    }
+
+    try {
+      const query = `
+        SELECT doors_open
+        FROM elevator_state
+        WHERE state_id = 1
+        LIMIT 1
+      `;
+
+      // read confirmed door state from MariaDB
+      const [rows] = await database.execute(query);
+
+      // if query found nothing new, end the check
+      if(rows.length === 0) {
+        console.warn("elevator_state row #1 does not exist");
+        return;
+      }
+
+      const doorsOpen = Number(rows[0].doors_open) === 1;
+
+      // send confirmed state to every webpage
+      const recipients = broadcast({
+        type: "elevator_state",
+        doors_open: doorsOpen
+      });
+
+      console.log("Broadcast confirmed door state to " + recipients + " webage(s)");
+
+    } catch (error) {
+        console.error("Door-state check failed: ", error.message);
+    }
   });
 
   // print web page disconnected
@@ -60,6 +104,7 @@ console.log("websocket server running on  port 8080");
 let database;
 // remember latest CAN entry
 let lastLoggedID = 0;
+
 
 // this function connects Node to MariaDB
 async function connectToDB () {
@@ -174,5 +219,7 @@ async function checkNewCAN () {
       console.error("CAN-log failed: ", error.message);
   }
 }
+
+
 
 connectToDB();
