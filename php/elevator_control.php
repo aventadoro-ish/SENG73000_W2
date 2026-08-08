@@ -148,7 +148,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         // convert the object state into the DB boolean
-        $doorsOpen = $elevatorCar->areDoorsOpen() ? 1 : 0;
+        $doorsOpen = ($elevatorCar->areDoorsOpen()) ? 1 : 0;
 
 
         // query DB
@@ -389,8 +389,12 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if($result && $elevatorState) {
             // OOP change
+            // store current door state
+            $doorsState = (int) $elevatorState['doors_open'];
+            $doorsOpen = ($doorsState & 1) === 1;
+
             // load the DB door state into the elevatorCar object
-            if ((int) $elevatorState['doors_open'] === 1) {
+            if ($doorsOpen) {
                 $elevatorCar->openDoors();
             } else {
                 $elevatorCar->closeDoors();
@@ -555,7 +559,8 @@ try {
     // maria DB returns 0 or 1 for door state, convert it into a PHP bool
     // set the operation mode too
     if($elevatorState) {
-        $initialDoorsOpen = (int) $elevatorState['doors_open'] === 1;
+        $doorsState = (int) $elevatorState['doors_open'];
+        $initialDoorsOpen = ($doorsState & 1) === 1;
         $initialOperationMode = $elevatorState['operation_mode'];
     }
 } catch (PDOException $e) {
@@ -627,6 +632,7 @@ $safeUsername = htmlspecialchars($_SESSION['username'] ?? 'Member', ENT_QUOTES, 
                     <strong>CAN Devices:</strong>
                     <?php echo htmlspecialchars(implode(", ", $canDeviceDetails), ENT_QUOTES, "UTF-8"); ?>
                 </p>
+                <p>Doors State: <?php echo $doorsState; ?></p>
             </aside>
         </section>
 

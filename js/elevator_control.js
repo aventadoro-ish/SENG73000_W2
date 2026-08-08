@@ -170,9 +170,9 @@ function handleResponse(responseData) {
         // the request is queued, but the EC has not confirmed movement
         lastCommandDisplay.textContent = "Request #" + responseData.elevator_request_id + " logged for floor " + floor + " - waiting for elevator";
 
-        } else {
+    } else {
         lastCommandDisplay.textContent = "Request rejected: " + responseData.message;
-        }
+    }
     }
 
     // handle PHP response to door state
@@ -450,7 +450,7 @@ if (initialRequestID !== "") {
 
         if(sabbathEnabled === true) {
             requestedState = "disabled";
-        } 
+        }
 
         lastCommandDisplay.textContent = "Requesting Sabbath mode " + requestedState + "...";
 

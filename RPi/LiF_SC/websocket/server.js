@@ -76,7 +76,10 @@ server.on("connection", function(socket) {
         return;
       }
 
-      const doorsOpen = Number(rows[0].doors_open) === 1;
+      const doorsState = Number(rows[0].doors_open) === 1;
+
+      const doorsOpen = (doorsState & 1) === 1;
+      console.log(doorsOpen);
 
       // send confirmed state to every webpage
       const recipients = broadcast({
