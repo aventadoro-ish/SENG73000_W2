@@ -133,8 +133,11 @@ async function connectToDB () {
 
     console.log(`watching for entries after log#${lastLoggedID}`);
 
+    await checkDoorState();
+
     // check every 500 ms
     setInterval(checkNewCAN, 500);
+    setInterval(checkDoorState, 500);
 
   } catch (error) {
       // if the login or query fails, print the caught error:
