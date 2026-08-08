@@ -33,8 +33,17 @@ function broadcast (messageObject) {
 }
 
 // when a webpage connects, run this event
+// ----------------------- CHANGED CODE HERE; MUST ADD COMMENTS -----------------------------
 server.on("connection", function(socket) {
   console.log("webpage connected");
+
+  // send the latest door state to a newly connected webpage
+  if(lastDoorState !== null) {
+    socket.send(JSON.stringify({
+      type: "elevator_state",
+      doors_open: (lastDoorState & 1) === 1
+    }));
+  }
 
   // send a test message back to the newly connected webpage
   socket.send(JSON.stringify({
@@ -42,63 +51,30 @@ server.on("connection", function(socket) {
     message: "connected to the LiF websocket server"
   }));
 
-  // print any message received from the webpage
-  socket.on("message", async function (message) {
+  socket.on("message", async function(message) {
     let receivedMessage;
-    
+
     try {
       receivedMessage = JSON.parse(message.toString());
 
-    } catch (error) {
-      console.error("invalid webpage message");
+    } catch(error) {
+      console.error("Invalid webpage message");
       return;
     }
 
-    // ignore messages that are not a door-change
-    if(receivedMessage.type !== "door_state_changed"){
+    if(receivedMessage.type !== "door_state_changed") {
       return;
     }
 
-    try {
-      const query = `
-        SELECT doors_open
-        FROM elevator_state
-        WHERE state_id = 1
-        LIMIT 1
-      `;
-
-      // read confirmed door state from MariaDB
-      const [rows] = await database.execute(query);
-
-      // if query found nothing new, end the check
-      if(rows.length === 0) {
-        console.warn("elevator_state row #1 does not exist");
-        return;
-      }
-
-      const doorsState = Number(rows[0].doors_open) === 1;
-
-      const doorsOpen = (doorsState & 1) === 1;
-      console.log(doorsOpen);
-
-      // send confirmed state to every webpage
-      const recipients = broadcast({
-        type: "elevator_state",
-        doors_open: doorsOpen
-      });
-
-      console.log("Broadcast confirmed door state to " + recipients + " webage(s)");
-
-    } catch (error) {
-        console.error("Door-state check failed: ", error.message);
-    }
+    // PHP has changed the database, so check immediately
+    await checkDoorState();
   });
 
-  // print web page disconnected
-  socket.on("close", function() {
-    console.log("webpage disconnected");
+    // print web page disconnected
+    socket.on("close", function() {
+      console.log("webpage disconnected");
+    });
   });
-});
 
 // debug/status print:
 console.log("websocket server running on  port 8080");
@@ -107,6 +83,7 @@ console.log("websocket server running on  port 8080");
 let database;
 // remember latest CAN entry
 let lastLoggedID = 0;
+let lastDoorState = null;
 
 
 // this function connects Node to MariaDB
@@ -223,6 +200,56 @@ async function checkNewCAN () {
   }
 }
 
+// ----------------------- CHANGED CODE HERE; MUST ADD COMMENTS -----------------------------
+async function checkDoorState() {
+  try {
+    const query = `
+      SELECT doors_open
+      FROM elevator_state
+      WHERE state_id = 1
+      LIMIT 1
+    `;
 
+    const [rows] = await database.execute(query);
+
+    if(rows.length === 0) {
+      console.warn("elevator_state row #1 does not exist");
+      return;
+    }
+
+    const doorState = Number(rows[0].doors_open);
+
+    // First check initializes the cache without broadcasting.
+    if(lastDoorState === null) {
+      lastDoorState = doorState;
+      return;
+    }
+
+    // Nothing changed, so do not broadcast or print anything.
+    if(doorState === lastDoorState) {
+      return;
+    }
+
+    const previousDoorState = lastDoorState;
+    lastDoorState = doorState;
+
+    // 0 and 2 are closed; 1 and 3 are open.
+    const doorsOpen = (doorState & 1) === 1;
+
+    const recipients = broadcast({
+      type: "elevator_state",
+      doors_open: doorsOpen
+    });
+
+    console.log(
+      `Door state ${previousDoorState} -> ${doorState}; ` +
+      `broadcast ${doorsOpen ? "open" : "closed"} to ` +
+      `${recipients} webpage(s)`
+    );
+
+  } catch(error) {
+    console.error("Door-state check failed:", error.message);
+  }
+}
 
 connectToDB();
