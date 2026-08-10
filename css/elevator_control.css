@@ -1,4 +1,4 @@
-/* ---------- Elevator control page: modest visual revamp ---------- */
+/* ---------- visual revamp of elevator_control ---------- */
 
 :root {
   --control-page-bg: #dce8e5;
@@ -15,7 +15,12 @@
 }
 
 body {
-  background: linear-gradient(135deg, var(--control-page-bg), #edf2ef 60%, #f3ead8);
+  background: linear-gradient(
+    135deg,
+    var(--control-page-bg),
+    #edf2ef 60%,
+    #f3ead8
+  );
 }
 
 .elevator-control-intro {
@@ -108,14 +113,20 @@ body {
 
 .floor-row {
   display: grid;
-  grid-template-columns: minmax(84px, 0.72fr) minmax(145px, 200px) minmax(98px, 0.78fr);
+  grid-template-columns: minmax(84px, 0.72fr) minmax(145px, 200px) minmax(
+      98px,
+      0.78fr
+    );
   gap: 12px;
   align-items: center;
   padding: 11px 13px;
   background-color: var(--control-row);
   border: 1px solid #ccd7d3;
   border-radius: 8px;
-  transition: border-color 0.25s ease, background-color 0.25s ease, opacity 0.25s ease;
+  transition:
+    border-color 0.25s ease,
+    background-color 0.25s ease,
+    opacity 0.25s ease;
 }
 
 .floor-row.active-floor {
@@ -252,7 +263,10 @@ body {
   font-family: Georgia, serif;
   font-weight: bold;
   cursor: pointer;
-  transition: background-color 0.25s ease, color 0.25s ease, transform 0.2s ease;
+  transition:
+    background-color 0.25s ease,
+    color 0.25s ease,
+    transform 0.2s ease;
 }
 
 .floor-request-button {
@@ -286,7 +300,7 @@ body {
   color: var(--control-dark);
 }
 
-.car-controller>p:not(.section-label) {
+.car-controller > p:not(.section-label) {
   color: #596966;
   font-size: 0.9rem;
   line-height: 1.45;
@@ -312,12 +326,17 @@ body {
   background-color: #252e31;
   border: 5px solid #929d9f;
   border-radius: 50%;
-  box-shadow: inset 0 0 0 2px #d5dddd, inset 0 -6px 8px #111718;
+  box-shadow:
+    inset 0 0 0 2px #d5dddd,
+    inset 0 -6px 8px #111718;
   font-family: Georgia, serif;
   font-size: 1.12rem;
   font-weight: bold;
   cursor: pointer;
-  transition: border-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
 }
 
 .car-floor-button:hover {
@@ -328,7 +347,9 @@ body {
 .car-floor-button.active-car-button {
   color: #fff4dd;
   border-color: var(--control-amber);
-  box-shadow: inset 0 0 0 2px #f0d5a7, 0 0 8px #c98b38;
+  box-shadow:
+    inset 0 0 0 2px #f0d5a7,
+    0 0 8px #c98b38;
 }
 
 .car-floor-button.interface-preview {
@@ -519,7 +540,6 @@ body {
 }
 
 @media screen and (max-width: 1000px) {
-
   .control-hud,
   .elevator-layout,
   .elevator-control-intro {
@@ -590,7 +610,6 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
-
   .elevator-car,
   .car-door::before,
   .car-door::after {

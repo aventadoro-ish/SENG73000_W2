@@ -358,6 +358,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         // methods throw CommunicationException if a node is offline
         $elevatorCar->verifyConnection();
+        $elevatorCar->setOnline(false);
         $selectedFloorNode->verifyConnection();
 
         $selectedFloorNode->requestElevator();
@@ -667,34 +668,34 @@ $safeUsername = htmlspecialchars($_SESSION['username'] ?? 'Member', ENT_QUOTES, 
             <div class="elevator-layout">
                 <section class="building-tower">
                     <?php for($floorNumber = 6; $floorNumber >= 1; $floorNumber--): ?>
-                        <div class="floor-row <?php echo $floorNumber === $initialFloor ? 'active-floor' : ''; ?>"
-                            data-floor="<?php echo $floorNumber; ?>">
-                            <div class="floor-label">
-                                <span>Floor <?php echo $floorNumber; ?></span>
-                                <small>
-                                    <?php echo $floorNumber <= 3 ? 'Station F' . $floorNumber : 'Future station'; ?>
-                                </small>
-                            </div>
-
-                            <div class="shaft" aria-hidden="true">
-                                <div class="floor-line"></div>
-
-                                <?php if($floorNumber === 6): ?>
-                                    <div class="elevator-car" id="elevatorCar">
-                                        <span class="car-screen"><?php echo $initialFloor; ?></span>
-                                        <span class="car-door"></span>
-                                    </div>
-                                <?php endif; ?>
-                            </div>
-
-                            <button type="button"
-                                class="floor-request-button <?php echo $floorNumber > 3 ? 'interface-preview' : ''; ?>"
-                                data-floor="<?php echo $floorNumber; ?>"
-                                data-interface-only="<?php echo $floorNumber > 3 ? 'true' : 'false'; ?>"
-                                title="<?php echo $floorNumber > 3 ? 'Interface preview - floor node not configured yet' : 'Request the elevator'; ?>">
-                                Request Car
-                            </button>
+                    <div class="floor-row <?php echo $floorNumber === $initialFloor ? 'active-floor' : ''; ?>"
+                        data-floor="<?php echo $floorNumber; ?>">
+                        <div class="floor-label">
+                            <span>Floor <?php echo $floorNumber; ?></span>
+                            <small>
+                                <?php echo $floorNumber <= 3 ? 'Station F' . $floorNumber : 'Future station'; ?>
+                            </small>
                         </div>
+
+                        <div class="shaft" aria-hidden="true">
+                            <div class="floor-line"></div>
+
+                            <?php if($floorNumber === 6): ?>
+                            <div class="elevator-car" id="elevatorCar">
+                                <span class="car-screen"><?php echo $initialFloor; ?></span>
+                                <span class="car-door"></span>
+                            </div>
+                            <?php endif; ?>
+                        </div>
+
+                        <button type="button"
+                            class="floor-request-button <?php echo $floorNumber > 3 ? 'interface-preview' : ''; ?>"
+                            data-floor="<?php echo $floorNumber; ?>"
+                            data-interface-only="<?php echo $floorNumber > 3 ? 'true' : 'false'; ?>"
+                            title="<?php echo $floorNumber > 3 ? 'Interface preview - floor node not configured yet' : 'Request the elevator'; ?>">
+                            Request Car
+                        </button>
+                    </div>
                     <?php endfor; ?>
                 </section>
 
@@ -709,13 +710,13 @@ $safeUsername = htmlspecialchars($_SESSION['username'] ?? 'Member', ENT_QUOTES, 
 
                     <div class="car-button-stack" aria-label="Cab floor buttons">
                         <?php for($floorNumber = 6; $floorNumber >= 1; $floorNumber--): ?>
-                            <button type="button"
-                                class="car-floor-button <?php echo $floorNumber === $initialFloor ? 'active-car-button' : ''; ?> <?php echo $floorNumber > 3 ? 'interface-preview' : ''; ?>"
-                                data-floor="<?php echo $floorNumber; ?>"
-                                data-interface-only="<?php echo $floorNumber > 3 ? 'true' : 'false'; ?>"
-                                title="<?php echo $floorNumber > 3 ? 'Interface preview - floor node not configured yet' : 'Go to Floor ' . $floorNumber; ?>">
-                                <?php echo $floorNumber; ?>
-                            </button>
+                        <button type="button"
+                            class="car-floor-button <?php echo $floorNumber === $initialFloor ? 'active-car-button' : ''; ?> <?php echo $floorNumber > 3 ? 'interface-preview' : ''; ?>"
+                            data-floor="<?php echo $floorNumber; ?>"
+                            data-interface-only="<?php echo $floorNumber > 3 ? 'true' : 'false'; ?>"
+                            title="<?php echo $floorNumber > 3 ? 'Interface preview - floor node not configured yet' : 'Go to Floor ' . $floorNumber; ?>">
+                            <?php echo $floorNumber; ?>
+                        </button>
                         <?php endfor; ?>
                     </div>
 
@@ -739,50 +740,49 @@ $safeUsername = htmlspecialchars($_SESSION['username'] ?? 'Member', ENT_QUOTES, 
                         </div>
 
                         <?php if(($_SESSION['user_role'] ?? '') === 'admin'): ?>
-                            <div class="sabbath-toggle maintenance-toggle">
-                                <p class="section-label"><b>Maintenance Toggle</b></p>
+                        <div class="sabbath-toggle maintenance-toggle">
+                            <p class="section-label"><b>Maintenance Toggle</b></p>
 
-                                <button type="button" id="maintenanceToggle"
-                                    class="sabbath-toggle-button maintenance-toggle-button">
-                                    Maintenance Mode
-                                </button>
-                            </div>
+                            <button type="button" id="maintenanceToggle"
+                                class="sabbath-toggle-button maintenance-toggle-button">
+                                Maintenance Mode
+                            </button>
+                        </div>
                         <?php endif; ?>
                     </div>
                 </aside>
             </div>
 
             <?php if(($_SESSION['user_role'] ?? '') === 'admin'): ?>
-                <section class="floor-lockout-panel" id="floorLockoutPanel"
-                    <?php echo $initialOperationMode === 'maintenance' ? '' : 'hidden'; ?>>
-                    <div class="lockout-heading">
-                        <div>
-                            <p class="section-label">Maintenance Mode</p>
-                            <h2>Single-Floor Lockout</h2>
-                        </div>
-                        <span class="preview-flag">Visual Preview</span>
+            <section class="floor-lockout-panel" id="floorLockoutPanel"
+                <?php echo $initialOperationMode === 'maintenance' ? '' : 'hidden'; ?>>
+                <div class="lockout-heading">
+                    <div>
+                        <p class="section-label">Maintenance Mode</p>
+                        <h2>Single-Floor Lockout</h2>
                     </div>
+                    <span class="preview-flag">Visual Preview</span>
+                </div>
 
-                    <p class="lockout-help">
-                        Select individual floors to mark them out of service. Database handling will be added later.
-                    </p>
+                <p class="lockout-help">
+                    Select individual floors to mark them out of service. Database handling will be added later.
+                </p>
 
-                    <div class="floor-lockout-grid">
-                        <?php for($floorNumber = 1; $floorNumber <= 6; $floorNumber++): ?>
-                            <div class="lockout-floor" data-floor="<?php echo $floorNumber; ?>">
-                                <span class="lockout-number"><?php echo $floorNumber; ?></span>
-                                <span class="lockout-copy">
-                                    <strong>Floor <?php echo $floorNumber; ?></strong>
-                                    <small>Available</small>
-                                </span>
-                                <button type="button" class="floor-lockout-button"
-                                    data-floor="<?php echo $floorNumber; ?>">
-                                    Lock Floor
-                                </button>
-                            </div>
-                        <?php endfor; ?>
+                <div class="floor-lockout-grid">
+                    <?php for($floorNumber = 1; $floorNumber <= 6; $floorNumber++): ?>
+                    <div class="lockout-floor" data-floor="<?php echo $floorNumber; ?>">
+                        <span class="lockout-number"><?php echo $floorNumber; ?></span>
+                        <span class="lockout-copy">
+                            <strong>Floor <?php echo $floorNumber; ?></strong>
+                            <small>Available</small>
+                        </span>
+                        <button type="button" class="floor-lockout-button" data-floor="<?php echo $floorNumber; ?>">
+                            Lock Floor
+                        </button>
                     </div>
-                </section>
+                    <?php endfor; ?>
+                </div>
+            </section>
             <?php endif; ?>
         </section>
 
