@@ -618,7 +618,7 @@ bool DB::set_doors_open(bool doorsOpen) {
 
         // replace ? with a valid value
         // true = 1, false = 0
-        statement->setInt(1, doorsOpen ? 1 : 0);
+        statement->setInt(1, doorsOpen ? 0b11 : 0b10);
 
         statement->executeUpdate();
 
@@ -676,6 +676,10 @@ int DB::get_doors_open() {
 
         delete result;
         delete statement;
+
+        if ((doorState & 0b10) > 0) {
+            return 2;
+        }
 
         return doorState;
     }

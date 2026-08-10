@@ -13,7 +13,7 @@ bool Door::is_door_open() {
     }
 }
 
-void Door::update_door_DB(bool new_DB_door_state) {
+bool Door::update_door_DB(bool new_DB_door_state) {
     if (!was_last_update_with_CAN) {
         // last update used DB and this one is DB too
         // keep using DB door state
@@ -22,9 +22,12 @@ void Door::update_door_DB(bool new_DB_door_state) {
             std::cout << "Door state commanded by DB: "
                 << (new_DB_door_state ? "OPEN" : "CLOSED")
                 << std::endl;
+            last_DB_door_open_state = new_DB_door_state;
+            return true;
         }
 
         last_DB_door_open_state = new_DB_door_state;
+        return false;
     } else {
         // last update used CAN door state
         if (last_DB_door_open_state != new_DB_door_state) {
@@ -33,12 +36,14 @@ void Door::update_door_DB(bool new_DB_door_state) {
             std::cout << "Door state toggled by DB -> switching to Virtual Door State: "
                 << (new_DB_door_state ? "OPEN" : "CLOSED")
                 << std::endl;
+            return true;
         } else {
             // was not toggled -> stayed the same
             // ignore
         }
     }
 
+    return false;
 }
 
 void Door::update_door_CAN(bool new_CAN_door_state) {
@@ -77,4 +82,8 @@ void Door::initialize(bool DB_state, bool CAN_state) {
 
 bool Door::is_initialized() {
     return is_initialized_bool;
+}
+
+bool Door::is_using_DB_door() {
+    return !was_last_update_with_CAN;
 }

@@ -124,12 +124,7 @@ int main() {
 	// Initializes the request reader and ignores existing requests.
 	database.read_floor_request();
 
-	// Remember the initial database door state without treating it as
-	// a new command.
-	initialize_door_monitor();
 
-
-	
 	printf("\nLithium Firefly Project. Initializing SC FSM\nProgram settings\n");
 	printf(" - number of floors: %u\n", NUM_FLOORS);
 	printf(" - queued floor wait time (ms): %lu\n", FLOOR_WAIT_DELAY_MS);
@@ -599,6 +594,7 @@ void process_CAN_CC_msg(CAN::RxFrame rxMsg) {
 	}
 	
 	door.update_door_CAN(rxMsg.data.cc_request.is_door_open);
+	database.set_doors_open(rxMsg.data.cc_request.is_door_open);
 
 	// Filter state to only be normal operations mode
 	//	Ignore floor requests in maintenance and sabbath mode
@@ -720,9 +716,21 @@ void process_DB_door_command() {
         // Preserve the existing effective state if the database
         // cannot be read.
         return;
-    }
+    } else if (db_door_state == 2) {
+		// last door update was based on the physical button
+		//	therfore ignore that
+		return;
+	}
+	bool did_state_changed = door.update_door_DB(db_door_state != 0); 
+	if (did_state_changed && door.is_initialized()) {
+		if (door.is_using_DB_door()) {
+			can_link.cc_send_door_update(false, true, db_door_state != 0);
+		} else {
+			can_link.cc_send_door_update(false, false, false);
+		}
+	}
 
-	door.update_door_DB(db_door_state != 0);
+	
 }
 
 
