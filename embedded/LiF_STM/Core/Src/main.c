@@ -650,7 +650,7 @@ static void MX_CAN_Init(void)
 
   // configure filter 0 to direct everything to FIFO 0
   filter.FilterBank = 0;				// this will filter number 0
-  filter.FilterIdHigh = 0x0100 << 5;	// Set FilterIdHigh bits by choosing an ID and aligning the bits in the filter register with the receive register by shifting << 5
+  filter.FilterIdHigh = 0x0201 << 5;	// Set FilterIdHigh bits by choosing an ID and aligning the bits in the filter register with the receive register by shifting << 5
   filter.FilterIdLow = 0x0000;			// not using FilterIdLow bits (sets as dc/low)
   filter.FilterMaskIdHigh = 0xFFC << 5;	// Same as example in lecture (this gives a range of ID's that will be accept between 0x100 and 0x103). Must also align bits?
   filter.FilterMaskIdLow = 0x0000;		// not using FilterMaskIdLow bits (set as dc/low)
