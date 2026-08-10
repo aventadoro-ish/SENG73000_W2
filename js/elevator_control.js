@@ -147,14 +147,16 @@ document.addEventListener("DOMContentLoaded", function () {
         }); 
     }
 
-
+// handle PHP's response after an elevator request is submitted
 function handleResponse(responseData) {
 
+    // PHP successfuly validated and stored the request
     if(responseData.success === true) {
 
         // PHP returns the requested floor as a number
         const floor = String(responseData.requested_floor);
 
+        // doors prevent movement
         if(responseData.movement_allowed === false) {
 
             // synchronize the webpage with the DB door state
@@ -168,25 +170,31 @@ function handleResponse(responseData) {
         // the request is queued, but the EC has not confirmed movement
         lastCommandDisplay.textContent = "Request #" + responseData.elevator_request_id + " logged for floor " + floor + " - waiting for elevator";
 
-        } else {
+    } else {
         lastCommandDisplay.textContent = "Request rejected: " + responseData.message;
-        }
+    }
     }
 
     // handle PHP response to door state
     function handleDoorResponse(responseData) {
-        if(responseData.success === true) {
-            // convert PHP's open/close to boolean
-            if(responseData.door_state === "open") {
-                // update page text
-                updateDoorDisplay(true);
-            } else {
-                // update page text
-                updateDoorDisplay(false);
+        if(responseData.success === true)
+        {
+            const confirmedDoorsOpen = responseData.door_state === "open";
+            
+
+            // update the webpage when door state was changed
+            updateDoorDisplay(confirmedDoorsOpen);
+
+            // update the last command text
+            lastCommandDisplay.textContent = "Doors changed to " + responseData.door_state;
+
+            // tell Node PHP changed the door state
+            if(elevatorSocket.readyState === WebSocket.OPEN) {
+                elevatorSocket.send(JSON.stringify({
+                    type: "door_state_changed"
+                }));
             }
 
-        // update the last command text
-        lastCommandDisplay.textContent = "Doors changed to " + responseData.door_state;
         } else {
             // PHP responded but SQL failed
             // update the last command text
@@ -280,6 +288,7 @@ function handleResponse(responseData) {
         });
     }
 
+// display newest request when the page loads
 if (initialRequestID !== "") {
     lastCommandDisplay.textContent = "request #" + initialRequestID + " for floor " + initialFloor;
 }
@@ -341,6 +350,10 @@ if (initialRequestID !== "") {
 
     // update the appearance of the maintenance button
     function updateMaintenanceDisplay(newMaintenanceState) {
+
+        if(!maintenanceToggle) {
+            return;
+        }
 
         // save the current maintenance state
         maintenanceEnabled = newMaintenanceState;
@@ -437,7 +450,7 @@ if (initialRequestID !== "") {
 
         if(sabbathEnabled === true) {
             requestedState = "disabled";
-        } 
+        }
 
         lastCommandDisplay.textContent = "Requesting Sabbath mode " + requestedState + "...";
 
@@ -473,17 +486,22 @@ if (initialRequestID !== "") {
             .catch(handleMaintenanceFailure);
     }
 
-    // run toggleMaintenanceMode whenever the button is clicked
-    maintenanceToggle.addEventListener("click", toggleMaintenanceMode);
+    if(maintenanceToggle) {
+        // run toggleMaintenanceMode whenever the button is clicked
+        maintenanceToggle.addEventListener("click", toggleMaintenanceMode);
+    }
 
-    // remember the last floor reported by the physical elevator
+
+// remember the last floor reported by EC
+// starts empty because a refreshed page has not restored its state yet
 let lastConfirmedFloor = "";
 
+// switches to true if a new EC position arrives through the websocket while the page-load database request is still running
+let liveEcPositionReceived = false;
 
-// ask PHP for the latest physical elevator state - used for polling. Attempted to implement here last minute but was pushed to phase 3 (will be replaced with node.js and websockets)
-/*
-function pollElevatorStatus() {
-
+// Restore the latest EC-confirmed floor when the page first loads
+// The websocket will only deliver messages created while this page is connected, but the page should load correctly once
+function loadInitialElevatorStatus() {
     fetch(
         "elevator_control.php?request_action=status",
         {
@@ -492,80 +510,164 @@ function pollElevatorStatus() {
         }
     )
 
-    // decode PHP's response
+    // reject HTTP errors before attempting to decode the response as JSON
     .then(function (response) {
-
+        // error
         if(!response.ok) {
-            throw new Error(
-                "HTTP status " + response.status
-            );
+            throw new Error("HTTP status " + response.status);
         }
-
+        // success
         return response.json();
     })
 
-    // update the webpage
     .then(function (responseData) {
-
-        // ignore a failed database query
+        // PHP reports success=false if its database query failed
         if(responseData.success !== true) {
+            console.warn(
+                "Initial elevator status was unavailable:",
+                responseData.message
+            );
+
             return;
         }
 
+        // a live EC report is newer than the startup request, so keep it
+        if(liveEcPositionReceived === true) {
+            return;
+        }
 
-        // synchronize the door display with the database
-        updateDoorDisplay(
-            responseData.doors_open === true
-        );
-
-
-        // synchronize Sabbath and maintenance buttons
-        updateOperationModeDisplay(
-            responseData.operation_mode || "normal"
-        );
-
-
-        // the EC may not have logged a position yet
+        // there may be no EC position row yet in a new/empty database
         if(responseData.position_available !== true) {
+            console.log("No saved EC position is available yet");
             return;
         }
 
+        // floor keys in this file are strings: "1", "2", or "3"
+        const floor = String(responseData.current_floor);
 
-        // HTML floor values are strings
-        const floor =
-            String(responseData.current_floor);
-
-
-        // reject unsupported floor numbers
+        // ignore missing or unsupported floor values from the server
         if(!carPositions[floor]) {
+            console.warn("Ignored invalid saved elevator floor:", responseData.current_floor);
+
             return;
         }
 
+        // position the new page at the latest EC-confirmed physical floor
+        moveCarToFloor(floor, "EC");
+        lastConfirmedFloor = floor;
 
-        // move only when the EC-confirmed floor changes
-        if(floor !== lastConfirmedFloor) {
-
-            moveCarToFloor(floor, "EC");
-
-            lastConfirmedFloor = floor;
-        }
+        console.log("Restored EC-confirmed Floor " + floor + " when the page loaded");
     })
 
-    // don't overwrite the webpage during a brief polling failure
+    // a temporary failure should not stop the live WebSocket connection
     .catch(function (error) {
-
-        console.error(
-            "Elevator status polling failed",
-            error
-        );
+        console.error("Initial elevator status request failed:", error);
     });
 }
 
 
-// check immediately when the page loads
-pollElevatorStatus();
+// map each complete EC position byte to its corresponding floor
+const floorByByte = {
+    5: "1",
+    6: "2",
+    7: "3"
+};
 
-// check again every 1.5 seconds
-setInterval(pollElevatorStatus, 1500);
-*/
+// open a connection to the Websocket server
+const elevatorSocket = new WebSocket("ws://" + window.location.hostname + ":8080");
+
+// run this event after browser connected to node
+elevatorSocket.addEventListener("open", function () {
+     console.log("Connected to LiF elevator websocket");
 });
+
+// this event runs whenever Node sends data to the webpage
+elevatorSocket.addEventListener("message", function (event) {
+    let message;
+
+    try {
+        // Node sends JSON text through the websocket
+        // convert text into JS object
+        message = JSON.parse(event.data);
+    } catch (error) {
+        // ignore bad data
+        console.error("invalid websocket message received: ", event.data);
+        return;
+    }
+
+    if(message.type === "elevator_state") {
+        updateDoorDisplay(message.doors_open === true);
+        return;
+    }
+
+    if(message.type === "elevator_state") {
+        updateDoorDisplay(message.doors_open === true);
+        return;
+    }
+
+
+    // ignore any web socket messages that aren't of "can_message"
+    if(message.type !== "can_message") {
+        return;
+    }
+
+    // websocket broadcasts every new CAN-log row
+    // only incoming EC messages are allowed to update elevator
+     const isEC = message.can_id === "0x101" && message.direction === "rx" && message.source_controller === "EC";
+
+     if(!isEC) {
+        return;
+     }
+
+     // convert raw_byte to a number in case it arrives as JSON text
+     const rawByte = Number(message.raw_byte);
+
+    // Look up the floor associated with this complete EC byte.
+    const floor = floorByByte[rawByte];
+
+     // an undefinedfloor means this EC byte is not a position report
+     if(!floor) {
+        console.log("ignored non-position providing EC byte: ", rawByte);
+        return;
+     }
+
+     if(doorsOpen === true) {
+        lastCommandDisplay.textContent = "Ignored EC floor " + floor + " from CAN log #" + message.log_id + " - cannot move with doors open";
+
+        console.warn("ignored EC floor confirmation because the doors are open");
+
+        return;
+     } 
+
+     liveEcPositionReceived = true;
+
+     // do not move the elevator car if the EC reports the same floor
+     if(floor === lastConfirmedFloor) {
+        return;
+     }
+
+     // move the existing webpage elevator the EC-confirmed floor
+     moveCarToFloor(floor, "EC");
+
+     // remember the last confirmed position
+     lastConfirmedFloor = floor;
+
+     // show which DB entry caused the webpage update:
+     lastCommandDisplay.textContent = "EC confirmed floor " + floor + " from CAN log #" + message.log_id;
+
+});
+
+// this code occurs if Node stops or network connection is lost
+elevatorSocket.addEventListener("close", function(){
+    console.warn("LiF elevator Websocket disconnected");
+});
+
+// report connection-level websocket errors to browser
+elevatorSocket.addEventListener("error", function(error) {
+     console.error("Lif Elevator websocket error: ", error);
+});
+
+loadInitialElevatorStatus();
+});
+
+

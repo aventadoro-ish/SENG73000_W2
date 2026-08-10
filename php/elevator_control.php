@@ -4,46 +4,64 @@ session_start();
 // DB connection
 require_once __DIR__ . '/db.php';
 
+// OOP class files as per A2
+require_once __DIR__ . '/classes/elevatorCar.php';
+require_once __DIR__ . '/classes/floorNode.php';
+require_once __DIR__ . '/classes/distanceSensor.php';
+
+// create objects that represent the hardware used by the control page
+$elevatorCar = new ElevatorCar("CC", "0x200", 1);
+
+$floorNodes = [
+    1 => new FloorNode("F1", "0x201", 1),
+    2 => new FLoorNode("F2", "0x202", 2),
+    3 => new FloorNode("F3", "0x203", 3)
+];
+
+// distance sensor (UNUSED)
+$distanceSensor = new DistanceSensor("DS");
+
+// test the CANDevice interface and shared CAN ID trait between nodes
+$canDevices = [
+    $elevatorCar,
+    $floorNodes[1],
+    $floorNodes[2],
+    $floorNodes[3]
+];
+
+// check if all implement CAN ID traits
+$canDeviceTestPassed = true;
+$canDeviceDetails = [];
+
+foreach($canDevices as $canDevice) {
+    if(!$canDevice instanceof CANDevice) {
+        $canDeviceTestPassed = false;
+        continue;
+    }
+
+    $canDeviceDetails[] = $canDevice->getNodeName() . " (" . $canDevice->getCANID() . ")";
+}
+
 if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
     header("Location: ../html/login.html");
     exit;
 }
 
-// re turn the latest physical elevator state to JS by polling the CAN DB - WIP; pushed to phase 3
-/*
-if ($_SERVER['REQUEST_METHOD'] === 'GET' && ($_GET['request_action'] ?? '') === 'status') {
+
+
+// return the latest EC-confirmed floor when the webpage loads
+if($_SERVER['REQUEST_METHOD'] === 'GET' && ($_GET['request_action'] ?? '') === 'status') {
     header('Content-Type: application/json');
     header('Cache-Control: no-store');
-
-
-    // retire the door and operating mode states
     try {
+        // find the newest valid position report received from the EC
         $query = "
-            SELECT doors_open, operation_mode
-            FROM elevator_state
-            WHERE state_id = 1
-            LIMIT 1
-        ";
-
-        $statement = $pdo->query($query);
-        $elevatorState = $statement->fetch();
-
-        if(!$elevatorState) {
-            echo json_encode([
-                'success' => false,
-                'message' => 'elevator state is unavailable'
-            ]);
-
-            exit;
-        }
-
-        $query = "
-            SELECT raw_byte
+            SELECT log_id, raw_byte
             FROM can_message_log
             WHERE can_id = '0x101'
                 AND direction = 'rx'
-                AND (raw_byte & 4) = 4
-                AND (raw_byte & 3) BETWEEN 1 and 3
+                AND source_controller = 'EC'
+                AND raw_byte IN (5, 6, 7)
             ORDER BY log_id DESC
             LIMIT 1
         ";
@@ -51,39 +69,50 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && ($_GET['request_action'] ?? '') === 
         $statement = $pdo->query($query);
         $latestPosition = $statement->fetch();
 
-        // no position exists until the EC logs its first message
-        $positionAvailable = false;
-        $currentFloor = null;
+        // return a successful response even if no position has been logged yet
+        if(!$latestPosition) {
+            echo json_encode([
+                'success' => true,
+                'position_available' => false,
+                'current_floor' => null,
+                'log_id' => null
+            ]);
 
-        if($latestPosition) {
-
-            // bits 1-0 contain the current floor
-            $currentFloor =
-                ((int) $latestPosition['raw_byte']) & 0x03;
-
-            $positionAvailable = true;
+            exit;
         }
 
-        // return the current physical state
+        // convert each EC position byte into its corresponding floor
+        $floorByRawByte = [
+            5 => 1,
+            6 => 2,
+            7 => 3
+        ];
+
+        // type-cast it into an int
+        $rawByte = (int) $latestPosition['raw_byte'];
+        $currentFloor = $floorByRawByte[$rawByte];
+
         echo json_encode([
-            'sucess' => true,
-            'position_available' => $positionAvailable,
+            'success' => true,
+            'position_available' => true,
             'current_floor' => $currentFloor,
-            'doors_open' => (int) $elevatorState['doors_open'] === 1,
-            'operation_mode' => $elevatorState['operation_mode']    
+            'log_id' => (int) $latestPosition['log_id']
         ]);
 
-    } catch (PDOException $e) {
-        error_log($e->getMessage());
+        exit;
+        
+    } catch(PDOException $error) {
+        error_log($error->getMessage());
 
         echo json_encode([
-            'sucess' => false,
-            'message' =>  'elevator status could not be loaded at this time.'
+            'success' => false,
+            'message' => 'elevator status could not be loaded'
         ]);
+
+        exit;
     }
 }
 
-*/
 // elevator_control JS sends a POST request when an elevator button is pressed
 // read it here
 if($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -111,15 +140,18 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit;
         } 
 
-        // read the values - default in DB is false (boolean; 0)
-        $doorsOpen = 0;
-
+        // OOP change - open/closeDoors function
         if($submittedDoorState === 'open') {
-            $doorsOpen = 1;
+            $elevatorCar->openDoors();
+        } else {
+            $elevatorCar->closeDoors();
         }
 
-        // query DB
+        // convert the object state into the DB boolean
+        $doorsOpen = ($elevatorCar->areDoorsOpen()) ? 1 : 0;
 
+
+        // query DB
         try {
             // update the row that represents door state
             $query = "
@@ -283,59 +315,57 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    // receive JS values to move the elevator
-    $submittedFloor = $_POST['requested_floor'] ?? '';
-    $sourceController = $_POST['source_controller'] ?? '';
-
-    // convert submitted floor into a valid integer
-    $requestedFloor = filter_var($submittedFloor, FILTER_VALIDATE_INT);
-
-    // create a 3-element array (since we have 3 floors... for now)
-    $allowedFloors = [1, 2, 3];
-
-    // reject any other values
-    if($requestedFloor === false || !in_array($requestedFloor, $allowedFloors, true)) {
-
-        // print the error message
-        echo json_encode([
-            'success' => false,
-            'message' => 'invalid elevator floor, its joever'
-        ]);
-        exit; 
-    }
-    
-    // once again, only use valid sources
-    $allowedSources = ['web_floor_station', 'web_car_controller'];
-
-    // and once again, handle valid source controllers (from the web)
-    // reject unknown controller names
-    if(!in_array($sourceController, $allowedSources, true)) {
-        // print message
-        echo json_encode([
-            'success' => false,
-            'message' => 'invalid source controller, its joever'
-        ]);
-        exit;
-    }
-
-    // grab the user ID
-    // login.php stored it in this session
-    $requestedByUserID = $_SESSION['user_id'] ?? null;
-
-    // if empty, get yo ahh outta here
-    if($requestedByUserID === null){
-        echo json_encode([
-            'success' => false,
-            'message' => 'the logged-in user could not be identified, its joever'
-        ]);
-        header('Location: ../login.html');
-        exit;
-    }
-
     try {
+        // receive JS values to move the elevator
+        $submittedFloor = $_POST['requested_floor'] ?? '';
+        $sourceController = $_POST['source_controller'] ?? '';
+
+        // convert submitted floor into a valid integer
+        $requestedFloor = filter_var($submittedFloor, FILTER_VALIDATE_INT);
+
+        // create a 3-element array (since we have 3 floors... for now)
+        $allowedFloors = [1, 2, 3];
+
+        // reject any other values
+        if($requestedFloor === false || !in_array($requestedFloor, $allowedFloors, true)) {
+            throw new NodeInputException("Requested floor must be between 1 and 3");
+        }
+
+ 
+
+        // once again, only use valid sources
+        $allowedSources = ['web_floor_station', 'web_car_controller'];
+
+        // and once again, handle valid source controllers (from the web)
+        // reject unknown controller names
+        if(!in_array($sourceController, $allowedSources, true)) {
+            throw new NodeInputException("Source controller is invalid");
+        }
+
+        // grab the user ID
+        // login.php stored it in this session
+        $requestedByUserID = $_SESSION['user_id'] ?? null;
+
+        // if empty, get yo ahh outta here
+        if($requestedByUserID === null){
+            throw new NodeInputException("The logged in user could not be identified");
+        }
+
+        // OOP change
+        // select the requested physical elevator floor node and mark its active request
+        $selectedFloorNode = $floorNodes[$requestedFloor];
+        
+
+        // methods throw CommunicationException if a node is offline
+        $elevatorCar->verifyConnection();
+        $selectedFloorNode->verifyConnection();
+
+        $selectedFloorNode->requestElevator();
 
         // movement is unsafe if state cannot be found
         $doorsOpen = true;
+        // OOP change - set doors to open
+        $elevatorCar->openDoors();
 
         // command
         $query = "
@@ -352,13 +382,29 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
         // fetch from DB
         $elevatorState = $statement->fetch();
 
-        if($result && $elevatorState) {
-            // convert DB bool into PHP bool
-            $doorsOpen = (int) $elevatorState['doors_open'] === 1;
+        // handle invalid state
+        if(!$result || !$elevatorState){
+            throw new CommunicationException("Elevator state could not be received");
         }
 
-        // continue with the movement control code below only when doors are closed
-        $movementAllowed = !$doorsOpen;
+        if($result && $elevatorState) {
+            // OOP change
+            // store current door state
+            $doorsState = (int) $elevatorState['doors_open'];
+            $doorsOpen = ($doorsState & 1) === 1;
+
+            // load the DB door state into the elevatorCar object
+            if ($doorsOpen) {
+                $elevatorCar->openDoors();
+            } else {
+                $elevatorCar->closeDoors();
+            }
+        } 
+
+        // OOP change - check door state and determine movement
+        $doorsOpen = $elevatorCar->areDoorsOpen();
+        $movementAllowed = $elevatorCar->canMove();
+
 
         // code below will still run and log buttons into DB - queuing will handle it
         // movement will be prevented in the JS
@@ -383,9 +429,10 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $statement = $pdo->prepare($query);
 
+        // OOP change - getFloorNumber
         $params = [
             'request_type' => 'remote',
-            'requested_floor' => $requestedFloor,
+            'requested_floor' => $selectedFloorNode->getFloorNumber(),
             'requested_by_user_id' => $requestedByUserID,
             'source_controller' => $sourceController
         ];
@@ -402,7 +449,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'success' => true,
                 'message' => 'elevator request logged successfully!',
                 'elevator_request_id' => $elevatorRequestID,
-                'requested_floor' => $requestedFloor,
+                'requested_floor' => $selectedFloorNode->getFloorNumber(),
                 'source_controller' => $sourceController,
 
                 // if logged successfully, tell JS what PHP found in elevator_state DB (for doors)
@@ -411,12 +458,30 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
             ]);
         // query failed/request not logged
         } else {
-            echo json_encode([
-                'success' => false,
-                'message' => 'elevator request was not logged, its joever'
-            ]);
+            throw new CommunicationException("the elevator request could not be sent");
         }
-    } 
+    }
+    catch (NodeInputException $e) {
+        error_log($e->getMessage());
+
+        // print the error message
+        echo json_encode([
+            'success' => false,
+            'exception_type' => get_class($e),
+            'message' => $e->getMessage()
+        ]);
+    }
+    catch (CommunicationException $e) {
+        error_log($e->getMessage());
+
+        // print the error message
+        echo json_encode([
+            'success' => false,
+            'exception_type' => get_class($e),
+            'message' => $e->getMessage()
+        ]);
+    }
+
     catch (PDOException $e) 
     {
         error_log($e->getMessage());
@@ -424,7 +489,8 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
         // report message back to JS too
         echo json_encode([
             'success' => false,
-            'message' => 'a database error occured that prevented the elevator request, its joever'
+            'exception_type' => get_class($e),
+            'message' => 'database communication failure (PDO catch)'
         ]);
     }
     exit;
@@ -459,7 +525,7 @@ try {
     if($latestRequest) {
         $initialFloor = (int) $latestRequest['requested_floor'];
         $initialRequestID = (int) $latestRequest['elevator_request_id'];
-        $initialStatus = (int) $latestRequest['request_status'];
+        $initialStatus = $latestRequest['request_status'];
 
         if($latestRequest['source_controller'] === 'web_car_controller') {
             $initialSource = 'car';
@@ -493,7 +559,8 @@ try {
     // maria DB returns 0 or 1 for door state, convert it into a PHP bool
     // set the operation mode too
     if($elevatorState) {
-        $initialDoorsOpen = (int) $elevatorState['doors_open'] === 1;
+        $doorsState = (int) $elevatorState['doors_open'];
+        $initialDoorsOpen = ($doorsState & 1) === 1;
         $initialOperationMode = $elevatorState['operation_mode'];
     }
 } catch (PDOException $e) {
@@ -548,11 +615,24 @@ $safeUsername = htmlspecialchars($_SESSION['username'] ?? 'Member', ENT_QUOTES, 
                 </div>
             </div>
 
+
+
             <aside class="summary-card">
                 <h2>Control Status</h2>
                 <p><strong>Mode:</strong> Elevator control</p>
                 <p><strong>Floors:</strong> 3</p>
                 <p><strong>System:</strong> Floor calls + car controller</p>
+                <p><strong>PHP Model:</strong> <?php echo Node::getNodeCount(); ?> node objects</p>
+                <p>
+                    <strong>CAN Interface Test:</strong>
+                    <?php echo $canDeviceTestPassed ? "PASS" : "FAIL"; ?>
+                </p>
+
+                <p>
+                    <strong>CAN Devices:</strong>
+                    <?php echo htmlspecialchars(implode(", ", $canDeviceDetails), ENT_QUOTES, "UTF-8"); ?>
+                </p>
+                <p>Doors State: <?php echo $doorsState; ?></p>
             </aside>
         </section>
 

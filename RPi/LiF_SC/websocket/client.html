@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>WebSocket Test</title>
+  </head>
+
+  <body>
+    <h1>WebSocket Test</h1>
+
+    <p id="status">Connecting...</p>
+    <p id="server-message"></p>
+
+    <button id="send-button">Send Test Message</button>
+
+    <script>
+      const socket = new WebSocket("ws://localhost:8080");
+
+      const statusDisplay = document.getElementById("status");
+      const messageDisplay = document.getElementById("server-message");
+      const sendButton = document.getElementById("send-button");
+
+      socket.addEventListener("open", function () {
+        statusDisplay.textContent = "Connected";
+      });
+
+      // run whenever Node sends a websocket message to this webpage
+      socket.addEventListener("message", function (event) {
+        try {
+          // event.data contains JSON text sent by node
+          const message = JSON.parse(event.data);
+
+          // print the complete objecr for testing and troubleshooting:
+          console.log("Websocket message received: ", message);
+
+          // display the initial connection confirmation
+          if (message.type === "connection") {
+            messageDisplay.textContent = message.message;
+            return;
+          }
+
+          // dispaly information from a newly detected CAN row
+          if (message.type === "can_message") {
+            messageDisplay.textContent =
+              `New CAN log#${message.log_id}: ` +
+              `${message.source_controller} sent raw byte ` +
+              `${message.raw_byte} using CAN ID ${message.can_id}`;
+          }
+        } catch (error) {
+          // this would happen if Node sent something that was not valid JSON
+          console.error("Invalid websocket message:", event.data);
+        }
+      });
+
+      socket.addEventListener("close", function () {
+        statusDisplay.textContent = "Disconnected";
+      });
+
+      sendButton.addEventListener("click", function () {
+        socket.send("Hello from the webpage");
+      });
+    </script>
+  </body>
+</html>
