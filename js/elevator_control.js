@@ -3,7 +3,7 @@
 // it only updates the webpage visuals and updates the DB
 
 document.addEventListener("DOMContentLoaded", function () {
-    // an HTML is talking, listen and learn 🤫
+    // an HTML is talking, listen and learn ðŸ¤«
     const elevatorCar = document.getElementById("elevatorCar");
     const currentFloorDisplay = document.getElementById("currentFloorDisplay");
     const lastCommandDisplay = document.getElementById("lastCommandDisplay");
@@ -32,18 +32,24 @@ document.addEventListener("DOMContentLoaded", function () {
     // retrieve the maintenance button from the HTML
     const maintenanceToggle = document.getElementById("maintenanceToggle");
 
+    // visual-only maintenance lockout controls
+    const floorLockoutPanel = document.getElementById("floorLockoutPanel");
+    const floorLockoutButtons = document.querySelectorAll(".floor-lockout-button");
+
     // remember whether maintenance mode is currently active
     let maintenanceEnabled = false;
-    
 
 
-    // these positions match the current desktop tower layout
-    // floor 1 is lowest, floor 3 is highest
+
+    // these positions match the six-floor version of the original tower layout
+    // each floor row is 108px high with a 10px gap
     const carPositions = {
-        "1": "-315px",
-        "2": "-155px",
-        "3": "12px"
-
+        "1": "-580px",
+        "2": "-462px",
+        "3": "-344px",
+        "4": "-226px",
+        "5": "-108px",
+        "6": "10px"
     };
 
 
@@ -59,20 +65,20 @@ document.addEventListener("DOMContentLoaded", function () {
         // send an HTTP request without reloading the page
         // POST sends the data to the PHP; content-type formats it like an HTML form;
         // body is the actual floor/source values; response.json converts PHPs JSON response into a JS object
-        return fetch("elevator_control.php" , {
+        return fetch("elevator_control.php", {
             method: "POST",
-            headers: {"Content-Type": "application/x-www-form-urlencoded"}, 
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
             body: requestData.toString()
         })
 
-        // a returned Promise which decodes PHP's JSON into a JS Object (stored in 'response')
-        .then(function (response) {
-            return response.json();
-        })
+            // a returned Promise which decodes PHP's JSON into a JS Object (stored in 'response')
+            .then(function (response) {
+                return response.json();
+            })
     }
 
     // function to handle sending an AJAX req to PHP for door state
-    function sendDoorState (doorState) {
+    function sendDoorState(doorState) {
 
         // format the value like a normal submitted HTML form (the humble AJAX)
         const requestData = new URLSearchParams();
@@ -86,14 +92,14 @@ document.addEventListener("DOMContentLoaded", function () {
         // send values to PHP without reloading page
         return fetch("elevator_control.php", {
             method: "POST",
-            headers: {"Content-Type": "application/x-www-form-urlencoded"},
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
             body: requestData.toString()
         })
-        
-        // when PHP responds, decode JSON to JS Object to handle it
-        .then (function (response) {
-            return response.json();
-        });
+
+            // when PHP responds, decode JSON to JS Object to handle it
+            .then(function (response) {
+                return response.json();
+            });
     }
 
     // function to send the Sabbath toggle HTTP request
@@ -107,16 +113,16 @@ document.addEventListener("DOMContentLoaded", function () {
         requestData.append("sabbath_state", sabbathState);
 
         // send the request
-        return fetch ("elevator_control.php", {
+        return fetch("elevator_control.php", {
             method: "POST",
-            headers: {"Content-Type": "application/x-www-form-urlencoded"},
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
             body: requestData.toString()
         })
 
-        // when PHP responds, decode JSON to JS Object to handle it
-        .then (function (response) {
-            return response.json();
-        });
+            // when PHP responds, decode JSON to JS Object to handle it
+            .then(function (response) {
+                return response.json();
+            });
     }
 
     // send the requested maintenance state to PHP
@@ -137,50 +143,49 @@ document.addEventListener("DOMContentLoaded", function () {
         // send the request without reloading the webpage
         return fetch("elevator_control.php", {
             method: "POST",
-            headers: {"Content-Type":"application/x-www-form-urlencoded"},
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
             body: requestData.toString()
         })
 
-        // convert PHP's JSON response into a JavaScript object
-        .then(function (response) {
-            return response.json();
-        }); 
+            // convert PHP's JSON response into a JavaScript object
+            .then(function (response) {
+                return response.json();
+            });
     }
 
-// handle PHP's response after an elevator request is submitted
-function handleResponse(responseData) {
+    // handle PHP's response after an elevator request is submitted
+    function handleResponse(responseData) {
 
-    // PHP successfuly validated and stored the request
-    if(responseData.success === true) {
+        // PHP successfuly validated and stored the request
+        if (responseData.success === true) {
 
-        // PHP returns the requested floor as a number
-        const floor = String(responseData.requested_floor);
+            // PHP returns the requested floor as a number
+            const floor = String(responseData.requested_floor);
 
-        // doors prevent movement
-        if(responseData.movement_allowed === false) {
+            // doors prevent movement
+            if (responseData.movement_allowed === false) {
 
-            // synchronize the webpage with the DB door state
-            updateDoorDisplay(true);
+                // synchronize the webpage with the DB door state
+                updateDoorDisplay(true);
 
-            lastCommandDisplay.textContent = "Request #" + responseData.elevator_request_id + " logged for floor " + floor + " - cannot move with doors open";
+                lastCommandDisplay.textContent = "Request #" + responseData.elevator_request_id + " logged for floor " + floor + " - cannot move with doors open";
 
-            return;
+                return;
+            }
+
+            // the request is queued, but the EC has not confirmed movement
+            lastCommandDisplay.textContent = "Request #" + responseData.elevator_request_id + " logged for floor " + floor + " - waiting for elevator";
+
+        } else {
+            lastCommandDisplay.textContent = "Request rejected: " + responseData.message;
         }
-
-        // the request is queued, but the EC has not confirmed movement
-        lastCommandDisplay.textContent = "Request #" + responseData.elevator_request_id + " logged for floor " + floor + " - waiting for elevator";
-
-    } else {
-        lastCommandDisplay.textContent = "Request rejected: " + responseData.message;
-    }
     }
 
     // handle PHP response to door state
     function handleDoorResponse(responseData) {
-        if(responseData.success === true)
-        {
+        if (responseData.success === true) {
             const confirmedDoorsOpen = responseData.door_state === "open";
-            
+
 
             // update the webpage when door state was changed
             updateDoorDisplay(confirmedDoorsOpen);
@@ -189,7 +194,7 @@ function handleResponse(responseData) {
             lastCommandDisplay.textContent = "Doors changed to " + responseData.door_state;
 
             // tell Node PHP changed the door state
-            if(elevatorSocket.readyState === WebSocket.OPEN) {
+            if (elevatorSocket.readyState === WebSocket.OPEN) {
                 elevatorSocket.send(JSON.stringify({
                     type: "door_state_changed"
                 }));
@@ -200,11 +205,11 @@ function handleResponse(responseData) {
             // update the last command text
             lastCommandDisplay.textContent = "Door update rejected " + responseData.message;
         }
-    } 
+    }
 
     // handle sabbath mode
     function handleSabbathResponse(responseData) {
-        if(responseData.success === true) {
+        if (responseData.success === true) {
             // change operation mode as needed
             const operationMode = responseData.sabbath_state === "enabled" ? "sabbath" : "normal";
 
@@ -222,21 +227,21 @@ function handleResponse(responseData) {
 
     // handle maintenance mode
     function handleMaintenanceResponse(responseData) {
-        if(responseData.success === true) {
+        if (responseData.success === true) {
             // change operation mode as needed
             const operationMode = responseData.maintenance_state === "enabled" ? "maintenance" : "normal";
 
-                // update the webpage display
-                updateOperationModeDisplay(operationMode);
+            // update the webpage display
+            updateOperationModeDisplay(operationMode);
 
-                // print last command
-                lastCommandDisplay.textContent = "Maintenance mode " + responseData.maintenance_state;
+            // print last command
+            lastCommandDisplay.textContent = "Maintenance mode " + responseData.maintenance_state;
 
-            } else {
-                // print last command
-                lastCommandDisplay.textContent = "Maintenance update rejected: " + responseData.message;
-            }
+        } else {
+            // print last command
+            lastCommandDisplay.textContent = "Maintenance update rejected: " + responseData.message;
         }
+    }
 
     function handleSabbathFailure(error) {
         lastCommandDisplay.textContent = "The Sabbath request could not be sent";
@@ -288,10 +293,10 @@ function handleResponse(responseData) {
         });
     }
 
-// display newest request when the page loads
-if (initialRequestID !== "") {
-    lastCommandDisplay.textContent = "request #" + initialRequestID + " for floor " + initialFloor;
-}
+    // display newest request when the page loads
+    if (initialRequestID !== "") {
+        lastCommandDisplay.textContent = "request #" + initialRequestID + " for floor " + initialFloor;
+    }
 
     floorButtons.forEach(function (button) {
         // give this specific button (in the loop) instructions for what to do when clicked
@@ -300,26 +305,56 @@ if (initialRequestID !== "") {
             // we already have the specific button from the forEach loop
             const floor = button.dataset.floor;
 
+            // floors 4-6 are visible previews until their PHP/CAN nodes exist
+            if (button.dataset.interfaceOnly === "true") {
+                lastCommandDisplay.textContent =
+                    "Floor " + floor + " interface ready - controller node not configured yet";
+                return;
+            }
+
+            // visual lockouts apply only in this browser for now
+            if (button.closest(".floor-row").classList.contains("floor-locked")) {
+                lastCommandDisplay.textContent =
+                    "Floor " + floor + " is marked out of service";
+                return;
+            }
+
             lastCommandDisplay.textContent = "Sending request for Floor " + floor + "...";
 
             // send the request and wait for PHP's answer
             sendElevatorRequest(floor, "web_floor_station")
 
-            // PHP responded and its JSON was decoded
-            .then(handleResponse)
+                // PHP responded and its JSON was decoded
+                .then(handleResponse)
 
-            // the network request or JSON decoding failed
-            .catch(handleRequestFail);
+                // the network request or JSON decoding failed
+                .catch(handleRequestFail);
         });
     });
 
     // replace old car call with new one:
     carButtons.forEach(function (button) {
         // give this specific button (in the loop) instructions for what to do when clicked
-        button.addEventListener("click", function() {
+        button.addEventListener("click", function () {
 
             // we already have the specific button from the forEach loop
             const floor = button.dataset.floor;
+
+            // floors 4-6 are visible previews until their PHP/CAN nodes exist
+            if (button.dataset.interfaceOnly === "true") {
+                lastCommandDisplay.textContent =
+                    "Floor " + floor + " interface ready - controller node not configured yet";
+                return;
+            }
+
+            // prevent the visual prototype from requesting a locally locked floor
+            const floorRow = document.querySelector('.floor-row[data-floor="' + floor + '"]');
+
+            if (floorRow && floorRow.classList.contains("floor-locked")) {
+                lastCommandDisplay.textContent =
+                    "Floor " + floor + " is marked out of service";
+                return;
+            }
 
             // update command display
             lastCommandDisplay.textContent = "sending car-controller request  for floor " + floor + " ...";
@@ -328,18 +363,18 @@ if (initialRequestID !== "") {
             sendElevatorRequest(floor, "web_car_controller")
 
                 // once PHP responded and its JSON is decoded
-                .then (handleResponse)
+                .then(handleResponse)
 
                 // network request or decoding failed
-                .catch (handleRequestFail);
+                .catch(handleRequestFail);
         });
     });
 
     // update button after SQL success
-    function updateSabbathDisplay (newSabbathState) {
+    function updateSabbathDisplay(newSabbathState) {
         sabbathEnabled = newSabbathState;
 
-        if(sabbathEnabled === true) {
+        if (sabbathEnabled === true) {
             sabbathToggle.textContent = "Disable Sabbath mode";
             sabbathToggle.classList.add("active");
         } else {
@@ -351,7 +386,7 @@ if (initialRequestID !== "") {
     // update the appearance of the maintenance button
     function updateMaintenanceDisplay(newMaintenanceState) {
 
-        if(!maintenanceToggle) {
+        if (!maintenanceToggle) {
             return;
         }
 
@@ -359,12 +394,17 @@ if (initialRequestID !== "") {
         maintenanceEnabled = newMaintenanceState;
 
         // check whether maintenance mode is active
-        if(maintenanceEnabled === true) {
+        if (maintenanceEnabled === true) {
             // the next click will disable maintenance
             maintenanceToggle.textContent = "Disable Maintenance mode";
 
             // add the same active styling used by Sabbath
             maintenanceToggle.classList.add("active");
+
+            // reveal the lockout preview only while maintenance mode is active
+            if (floorLockoutPanel) {
+                floorLockoutPanel.hidden = false;
+            }
 
         } else {
             // the next click will enable maintenance
@@ -372,6 +412,10 @@ if (initialRequestID !== "") {
 
             // remove the active styling
             maintenanceToggle.classList.remove("active");
+
+            if (floorLockoutPanel) {
+                floorLockoutPanel.hidden = true;
+            }
         }
     }
 
@@ -380,14 +424,14 @@ if (initialRequestID !== "") {
         doorsOpen = newDoorState;
 
         // if the doors are closed, open them
-        if(doorsOpen === true) {
+        if (doorsOpen === true) {
             doorStatusDisplay.textContent = "Open";
             doorToggleButton.textContent = "Close Doors";
-            
+
             // adds the CSS class to the entire moving elevator car.
             elevatorCar.classList.add("doors-open");
 
-        // the doors are open, close them
+            // the doors are open, close them
         } else {
             doorStatusDisplay.textContent = "Closed";
             doorToggleButton.textContent = "Open Doors";
@@ -434,21 +478,21 @@ if (initialRequestID !== "") {
         // ask PHP to update DB
         sendDoorState(requestedDoorState)
 
-        // DB update succeeded or PHP returned a validation failure
-        .then(handleDoorResponse)
+            // DB update succeeded or PHP returned a validation failure
+            .then(handleDoorResponse)
 
-        // network request or JSON decoding failure
-        .catch(handleRequestFail);
-    }   
+            // network request or JSON decoding failure
+            .catch(handleRequestFail);
+    }
 
     // wait for the toggle door switch to be clicked
-    doorToggleButton.addEventListener("click",  toggleDoors);
+    doorToggleButton.addEventListener("click", toggleDoors);
 
     // handle the sabbath mode and call the respective functions based on sucess/failure
-    function toggleSabbathMode () {
+    function toggleSabbathMode() {
         let requestedState = "enabled";
 
-        if(sabbathEnabled === true) {
+        if (sabbathEnabled === true) {
             requestedState = "disabled";
         }
 
@@ -468,8 +512,7 @@ if (initialRequestID !== "") {
         let requestedState = "enabled";
 
         // if it is already enabled, the next click disables it
-        if(maintenanceEnabled === true) 
-        {
+        if (maintenanceEnabled === true) {
             requestedState = "disabled";
         }
 
@@ -486,188 +529,213 @@ if (initialRequestID !== "") {
             .catch(handleMaintenanceFailure);
     }
 
-    if(maintenanceToggle) {
+    if (maintenanceToggle) {
         // run toggleMaintenanceMode whenever the button is clicked
         maintenanceToggle.addEventListener("click", toggleMaintenanceMode);
     }
 
+    // visual prototype only: no PHP, database, or WebSocket request is sent
+    floorLockoutButtons.forEach(function (button) {
+        button.addEventListener("click", function () {
+            if (maintenanceEnabled !== true) {
+                return;
+            }
 
-// remember the last floor reported by EC
-// starts empty because a refreshed page has not restored its state yet
-let lastConfirmedFloor = "";
+            const floor = button.dataset.floor;
+            const lockoutCard = button.closest(".lockout-floor");
+            const floorRow = document.querySelector('.floor-row[data-floor="' + floor + '"]');
+            const carButton = document.querySelector('.car-floor-button[data-floor="' + floor + '"]');
+            const statusText = lockoutCard.querySelector("small");
+            const floorIsLocked = lockoutCard.classList.toggle("is-locked");
 
-// switches to true if a new EC position arrives through the websocket while the page-load database request is still running
-let liveEcPositionReceived = false;
+            if (floorRow) {
+                floorRow.classList.toggle("floor-locked", floorIsLocked);
+            }
 
-// Restore the latest EC-confirmed floor when the page first loads
-// The websocket will only deliver messages created while this page is connected, but the page should load correctly once
-function loadInitialElevatorStatus() {
-    fetch(
-        "elevator_control.php?request_action=status",
-        {
-            method: "GET",
-            cache: "no-store"
+            if (carButton) {
+                carButton.classList.toggle("floor-locked", floorIsLocked);
+            }
+
+            statusText.textContent = floorIsLocked ? "Out of service" : "Available";
+            button.textContent = floorIsLocked ? "Restore Floor" : "Lock Floor";
+
+            lastCommandDisplay.textContent =
+                "Visual preview: Floor " + floor +
+                (floorIsLocked ? " locked" : " restored");
+        });
+    });
+
+
+    // remember the last floor reported by EC
+    // starts empty because a refreshed page has not restored its state yet
+    let lastConfirmedFloor = "";
+
+    // switches to true if a new EC position arrives through the websocket while the page-load database request is still running
+    let liveEcPositionReceived = false;
+
+    // Restore the latest EC-confirmed floor when the page first loads
+    // The websocket will only deliver messages created while this page is connected, but the page should load correctly once
+    function loadInitialElevatorStatus() {
+        fetch(
+            "elevator_control.php?request_action=status",
+            {
+                method: "GET",
+                cache: "no-store"
+            }
+        )
+
+            // reject HTTP errors before attempting to decode the response as JSON
+            .then(function (response) {
+                // error
+                if (!response.ok) {
+                    throw new Error("HTTP status " + response.status);
+                }
+                // success
+                return response.json();
+            })
+
+            .then(function (responseData) {
+                // PHP reports success=false if its database query failed
+                if (responseData.success !== true) {
+                    console.warn(
+                        "Initial elevator status was unavailable:",
+                        responseData.message
+                    );
+
+                    return;
+                }
+
+                // a live EC report is newer than the startup request, so keep it
+                if (liveEcPositionReceived === true) {
+                    return;
+                }
+
+                // there may be no EC position row yet in a new/empty database
+                if (responseData.position_available !== true) {
+                    console.log("No saved EC position is available yet");
+                    return;
+                }
+
+                // floor keys in this file are stored as strings
+                const floor = String(responseData.current_floor);
+
+                // ignore missing or unsupported floor values from the server
+                if (!carPositions[floor]) {
+                    console.warn("Ignored invalid saved elevator floor:", responseData.current_floor);
+
+                    return;
+                }
+
+                // position the new page at the latest EC-confirmed physical floor
+                moveCarToFloor(floor, "EC");
+                lastConfirmedFloor = floor;
+
+                console.log("Restored EC-confirmed Floor " + floor + " when the page loaded");
+            })
+
+            // a temporary failure should not stop the live WebSocket connection
+            .catch(function (error) {
+                console.error("Initial elevator status request failed:", error);
+            });
+    }
+
+
+    // map each complete EC position byte to its corresponding floor
+    const floorByByte = {
+        5: "1",
+        6: "2",
+        7: "3"
+    };
+
+    // open a connection to the Websocket server
+    const elevatorSocket = new WebSocket("ws://" + window.location.hostname + ":8080");
+
+    // run this event after browser connected to node
+    elevatorSocket.addEventListener("open", function () {
+        console.log("Connected to LiF elevator websocket");
+    });
+
+    // this event runs whenever Node sends data to the webpage
+    elevatorSocket.addEventListener("message", function (event) {
+        let message;
+
+        try {
+            // Node sends JSON text through the websocket
+            // convert text into JS object
+            message = JSON.parse(event.data);
+        } catch (error) {
+            // ignore bad data
+            console.error("invalid websocket message received: ", event.data);
+            return;
         }
-    )
 
-    // reject HTTP errors before attempting to decode the response as JSON
-    .then(function (response) {
-        // error
-        if(!response.ok) {
-            throw new Error("HTTP status " + response.status);
+        if (message.type === "elevator_state") {
+            updateDoorDisplay(message.doors_open === true);
+            return;
         }
-        // success
-        return response.json();
-    })
 
-    .then(function (responseData) {
-        // PHP reports success=false if its database query failed
-        if(responseData.success !== true) {
-            console.warn(
-                "Initial elevator status was unavailable:",
-                responseData.message
-            );
+
+        // ignore any web socket messages that aren't of "can_message"
+        if (message.type !== "can_message") {
+            return;
+        }
+
+        // websocket broadcasts every new CAN-log row
+        // only incoming EC messages are allowed to update elevator
+        const isEC = message.can_id === "0x101" && message.direction === "rx" && message.source_controller === "EC";
+
+        if (!isEC) {
+            return;
+        }
+
+        // convert raw_byte to a number in case it arrives as JSON text
+        const rawByte = Number(message.raw_byte);
+
+        // Look up the floor associated with this complete EC byte.
+        const floor = floorByByte[rawByte];
+
+        // an undefinedfloor means this EC byte is not a position report
+        if (!floor) {
+            console.log("ignored non-position providing EC byte: ", rawByte);
+            return;
+        }
+
+        if (doorsOpen === true) {
+            lastCommandDisplay.textContent = "Ignored EC floor " + floor + " from CAN log #" + message.log_id + " - cannot move with doors open";
+
+            console.warn("ignored EC floor confirmation because the doors are open");
 
             return;
         }
 
-        // a live EC report is newer than the startup request, so keep it
-        if(liveEcPositionReceived === true) {
+        liveEcPositionReceived = true;
+
+        // do not move the elevator car if the EC reports the same floor
+        if (floor === lastConfirmedFloor) {
             return;
         }
 
-        // there may be no EC position row yet in a new/empty database
-        if(responseData.position_available !== true) {
-            console.log("No saved EC position is available yet");
-            return;
-        }
-
-        // floor keys in this file are strings: "1", "2", or "3"
-        const floor = String(responseData.current_floor);
-
-        // ignore missing or unsupported floor values from the server
-        if(!carPositions[floor]) {
-            console.warn("Ignored invalid saved elevator floor:", responseData.current_floor);
-
-            return;
-        }
-
-        // position the new page at the latest EC-confirmed physical floor
+        // move the existing webpage elevator the EC-confirmed floor
         moveCarToFloor(floor, "EC");
+
+        // remember the last confirmed position
         lastConfirmedFloor = floor;
 
-        console.log("Restored EC-confirmed Floor " + floor + " when the page loaded");
-    })
+        // show which DB entry caused the webpage update:
+        lastCommandDisplay.textContent = "EC confirmed floor " + floor + " from CAN log #" + message.log_id;
 
-    // a temporary failure should not stop the live WebSocket connection
-    .catch(function (error) {
-        console.error("Initial elevator status request failed:", error);
     });
-}
 
+    // this code occurs if Node stops or network connection is lost
+    elevatorSocket.addEventListener("close", function () {
+        console.warn("LiF elevator Websocket disconnected");
+    });
 
-// map each complete EC position byte to its corresponding floor
-const floorByByte = {
-    5: "1",
-    6: "2",
-    7: "3"
-};
+    // report connection-level websocket errors to browser
+    elevatorSocket.addEventListener("error", function (error) {
+        console.error("Lif Elevator websocket error: ", error);
+    });
 
-// open a connection to the Websocket server
-const elevatorSocket = new WebSocket("ws://" + window.location.hostname + ":8080");
-
-// run this event after browser connected to node
-elevatorSocket.addEventListener("open", function () {
-     console.log("Connected to LiF elevator websocket");
+    loadInitialElevatorStatus();
 });
-
-// this event runs whenever Node sends data to the webpage
-elevatorSocket.addEventListener("message", function (event) {
-    let message;
-
-    try {
-        // Node sends JSON text through the websocket
-        // convert text into JS object
-        message = JSON.parse(event.data);
-    } catch (error) {
-        // ignore bad data
-        console.error("invalid websocket message received: ", event.data);
-        return;
-    }
-
-    if(message.type === "elevator_state") {
-        updateDoorDisplay(message.doors_open === true);
-        return;
-    }
-
-    if(message.type === "elevator_state") {
-        updateDoorDisplay(message.doors_open === true);
-        return;
-    }
-
-
-    // ignore any web socket messages that aren't of "can_message"
-    if(message.type !== "can_message") {
-        return;
-    }
-
-    // websocket broadcasts every new CAN-log row
-    // only incoming EC messages are allowed to update elevator
-     const isEC = message.can_id === "0x101" && message.direction === "rx" && message.source_controller === "EC";
-
-     if(!isEC) {
-        return;
-     }
-
-     // convert raw_byte to a number in case it arrives as JSON text
-     const rawByte = Number(message.raw_byte);
-
-    // Look up the floor associated with this complete EC byte.
-    const floor = floorByByte[rawByte];
-
-     // an undefinedfloor means this EC byte is not a position report
-     if(!floor) {
-        console.log("ignored non-position providing EC byte: ", rawByte);
-        return;
-     }
-
-     if(doorsOpen === true) {
-        lastCommandDisplay.textContent = "Ignored EC floor " + floor + " from CAN log #" + message.log_id + " - cannot move with doors open";
-
-        console.warn("ignored EC floor confirmation because the doors are open");
-
-        return;
-     } 
-
-     liveEcPositionReceived = true;
-
-     // do not move the elevator car if the EC reports the same floor
-     if(floor === lastConfirmedFloor) {
-        return;
-     }
-
-     // move the existing webpage elevator the EC-confirmed floor
-     moveCarToFloor(floor, "EC");
-
-     // remember the last confirmed position
-     lastConfirmedFloor = floor;
-
-     // show which DB entry caused the webpage update:
-     lastCommandDisplay.textContent = "EC confirmed floor " + floor + " from CAN log #" + message.log_id;
-
-});
-
-// this code occurs if Node stops or network connection is lost
-elevatorSocket.addEventListener("close", function(){
-    console.warn("LiF elevator Websocket disconnected");
-});
-
-// report connection-level websocket errors to browser
-elevatorSocket.addEventListener("error", function(error) {
-     console.error("Lif Elevator websocket error: ", error);
-});
-
-loadInitialElevatorStatus();
-});
-
 

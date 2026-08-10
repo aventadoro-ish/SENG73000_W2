@@ -576,6 +576,7 @@ $safeUsername = htmlspecialchars($_SESSION['username'] ?? 'Member', ENT_QUOTES, 
 <head>
     <title>LiF Team - Elevator Control</title>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="../media/icons/LiF_icon.ico" type="image/x-icon">
 
     <meta name="author" content="Nick Kapuka">
@@ -620,7 +621,7 @@ $safeUsername = htmlspecialchars($_SESSION['username'] ?? 'Member', ENT_QUOTES, 
             <aside class="summary-card">
                 <h2>Control Status</h2>
                 <p><strong>Mode:</strong> Elevator control</p>
-                <p><strong>Floors:</strong> 3</p>
+                <p><strong>Floors:</strong> 3 active / 6 displayed</p>
                 <p><strong>System:</strong> Floor calls + car controller</p>
                 <p><strong>PHP Model:</strong> <?php echo Node::getNodeCount(); ?> node objects</p>
                 <p>
@@ -632,7 +633,7 @@ $safeUsername = htmlspecialchars($_SESSION['username'] ?? 'Member', ENT_QUOTES, 
                     <strong>CAN Devices:</strong>
                     <?php echo htmlspecialchars(implode(", ", $canDeviceDetails), ENT_QUOTES, "UTF-8"); ?>
                 </p>
-                <p>Doors State: <?php echo $doorsState; ?></p>
+                <p><strong>Doors:</strong> <?php echo $initialDoorsOpen ? 'Open' : 'Closed'; ?></p>
             </aside>
         </section>
 
@@ -665,54 +666,36 @@ $safeUsername = htmlspecialchars($_SESSION['username'] ?? 'Member', ENT_QUOTES, 
 
             <div class="elevator-layout">
                 <section class="building-tower">
-                    <div class="floor-row" data-floor="3">
-                        <div class="floor-label">
-                            <span>Floor 3</span>
-                            <small>Station F3</small>
-                        </div>
-
-                        <div class="shaft">
-                            <div class="floor-line"></div>
-                            <div class="elevator-car" id="elevatorCar">
-                                <span class="car-screen">1</span>
-                                <span class="car-door"></span>
+                    <?php for($floorNumber = 6; $floorNumber >= 1; $floorNumber--): ?>
+                        <div class="floor-row <?php echo $floorNumber === $initialFloor ? 'active-floor' : ''; ?>"
+                            data-floor="<?php echo $floorNumber; ?>">
+                            <div class="floor-label">
+                                <span>Floor <?php echo $floorNumber; ?></span>
+                                <small>
+                                    <?php echo $floorNumber <= 3 ? 'Station F' . $floorNumber : 'Future station'; ?>
+                                </small>
                             </div>
+
+                            <div class="shaft" aria-hidden="true">
+                                <div class="floor-line"></div>
+
+                                <?php if($floorNumber === 6): ?>
+                                    <div class="elevator-car" id="elevatorCar">
+                                        <span class="car-screen"><?php echo $initialFloor; ?></span>
+                                        <span class="car-door"></span>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+
+                            <button type="button"
+                                class="floor-request-button <?php echo $floorNumber > 3 ? 'interface-preview' : ''; ?>"
+                                data-floor="<?php echo $floorNumber; ?>"
+                                data-interface-only="<?php echo $floorNumber > 3 ? 'true' : 'false'; ?>"
+                                title="<?php echo $floorNumber > 3 ? 'Interface preview - floor node not configured yet' : 'Request the elevator'; ?>">
+                                Request Car
+                            </button>
                         </div>
-
-                        <button class="floor-request-button" data-floor="3">
-                            Request Car
-                        </button>
-                    </div>
-
-                    <div class="floor-row" data-floor="2">
-                        <div class="floor-label">
-                            <span>Floor 2</span>
-                            <small>Station F2</small>
-                        </div>
-
-                        <div class="shaft">
-                            <div class="floor-line"></div>
-                        </div>
-
-                        <button class="floor-request-button" data-floor="2">
-                            Request Car
-                        </button>
-                    </div>
-
-                    <div class="floor-row active-floor" data-floor="1">
-                        <div class="floor-label">
-                            <span>Floor 1</span>
-                            <small>Station F1</small>
-                        </div>
-
-                        <div class="shaft">
-                            <div class="floor-line"></div>
-                        </div>
-
-                        <button class="floor-request-button" data-floor="1">
-                            Request Car
-                        </button>
-                    </div>
+                    <?php endfor; ?>
                 </section>
 
                 <aside class="car-controller">
@@ -724,14 +707,22 @@ $safeUsername = htmlspecialchars($_SESSION['username'] ?? 'Member', ENT_QUOTES, 
                         floor to move the car in the visual demo.
                     </p>
 
-                    <div class="car-button-stack">
-                        <button class="car-floor-button" data-floor="3">Go to Floor 3</button>
-                        <button class="car-floor-button" data-floor="2">Go to Floor 2</button>
-                        <button class="car-floor-button active-car-button" data-floor="1">Go to Floor 1</button>
+                    <div class="car-button-stack" aria-label="Cab floor buttons">
+                        <?php for($floorNumber = 6; $floorNumber >= 1; $floorNumber--): ?>
+                            <button type="button"
+                                class="car-floor-button <?php echo $floorNumber === $initialFloor ? 'active-car-button' : ''; ?> <?php echo $floorNumber > 3 ? 'interface-preview' : ''; ?>"
+                                data-floor="<?php echo $floorNumber; ?>"
+                                data-interface-only="<?php echo $floorNumber > 3 ? 'true' : 'false'; ?>"
+                                title="<?php echo $floorNumber > 3 ? 'Interface preview - floor node not configured yet' : 'Go to Floor ' . $floorNumber; ?>">
+                                <?php echo $floorNumber; ?>
+                            </button>
+                        <?php endfor; ?>
+                    </div>
 
+                    <div class="mode-control-stack">
                         <div class="door-control-panel"
                             data-door-state="<?php echo $initialDoorsOpen ? 'open' : 'closed';?>">
-                            <p class="section-label"><b>Status</b>
+                            <p class="section-label"><b>Door Status</b>
                                 <span id="doorStatusDisplay">Closed</span>
                             </p>
 
@@ -740,7 +731,6 @@ $safeUsername = htmlspecialchars($_SESSION['username'] ?? 'Member', ENT_QUOTES, 
 
                         <div class="sabbath-toggle"
                             data-operation-mode="<?php echo htmlspecialchars($initialOperationMode, ENT_QUOTES, 'UTF-8'); ?>">
-
                             <p class="section-label"><b>Sabbath Toggle</b></p>
 
                             <button type="button" id="sabbathToggle" class="sabbath-toggle-button">
@@ -748,21 +738,52 @@ $safeUsername = htmlspecialchars($_SESSION['username'] ?? 'Member', ENT_QUOTES, 
                             </button>
                         </div>
 
-                        <?php if ($_SESSION['user_role'] === 'admin'): ?>
-                        <div class="sabbath-toggle maintenance-toggle">
+                        <?php if(($_SESSION['user_role'] ?? '') === 'admin'): ?>
+                            <div class="sabbath-toggle maintenance-toggle">
+                                <p class="section-label"><b>Maintenance Toggle</b></p>
 
-                            <p class="section-label"><b>Maintenance Toggle</b></p>
-
-                            <button type="button" id="maintenanceToggle"
-                                class="sabbath-toggle-button maintenance-toggle-button">
-                                Maintenance Mode
-                            </button>
-                        </div>
-                        <?php endif ?>
-
+                                <button type="button" id="maintenanceToggle"
+                                    class="sabbath-toggle-button maintenance-toggle-button">
+                                    Maintenance Mode
+                                </button>
+                            </div>
+                        <?php endif; ?>
                     </div>
                 </aside>
             </div>
+
+            <?php if(($_SESSION['user_role'] ?? '') === 'admin'): ?>
+                <section class="floor-lockout-panel" id="floorLockoutPanel"
+                    <?php echo $initialOperationMode === 'maintenance' ? '' : 'hidden'; ?>>
+                    <div class="lockout-heading">
+                        <div>
+                            <p class="section-label">Maintenance Mode</p>
+                            <h2>Single-Floor Lockout</h2>
+                        </div>
+                        <span class="preview-flag">Visual Preview</span>
+                    </div>
+
+                    <p class="lockout-help">
+                        Select individual floors to mark them out of service. Database handling will be added later.
+                    </p>
+
+                    <div class="floor-lockout-grid">
+                        <?php for($floorNumber = 1; $floorNumber <= 6; $floorNumber++): ?>
+                            <div class="lockout-floor" data-floor="<?php echo $floorNumber; ?>">
+                                <span class="lockout-number"><?php echo $floorNumber; ?></span>
+                                <span class="lockout-copy">
+                                    <strong>Floor <?php echo $floorNumber; ?></strong>
+                                    <small>Available</small>
+                                </span>
+                                <button type="button" class="floor-lockout-button"
+                                    data-floor="<?php echo $floorNumber; ?>">
+                                    Lock Floor
+                                </button>
+                            </div>
+                        <?php endfor; ?>
+                    </div>
+                </section>
+            <?php endif; ?>
         </section>
 
         <p class="top-link">
