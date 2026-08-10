@@ -358,7 +358,6 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         // methods throw CommunicationException if a node is offline
         $elevatorCar->verifyConnection();
-        $elevatorCar->setOnline(false);
         $selectedFloorNode->verifyConnection();
 
         $selectedFloorNode->requestElevator();
