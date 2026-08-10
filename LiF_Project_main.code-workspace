@@ -6,6 +6,10 @@
 		{
 			"name": "LiF_EC",
 			"path": "embedded/LiF_EC"
+		},
+		{
+			"name": "LiF_FCC_PCB",
+			"path": "embedded/LiF_FCC_PCB"
 		}
 	],
 	"settings": {
