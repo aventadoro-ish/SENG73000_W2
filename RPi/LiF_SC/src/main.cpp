@@ -593,8 +593,11 @@ void process_CAN_CC_msg(CAN::RxFrame rxMsg) {
 		}
 	}
 	
-	door.update_door_CAN(rxMsg.data.cc_request.is_door_open);
+	bool did_change = door.update_door_CAN(rxMsg.data.cc_request.is_door_open);
 	database.set_doors_open(rxMsg.data.cc_request.is_door_open);
+	if (did_change && !door.is_using_DB_door()) {
+		can_link.cc_send_door_update(false, false, false);
+	}
 
 	// Filter state to only be normal operations mode
 	//	Ignore floor requests in maintenance and sabbath mode

@@ -40,22 +40,25 @@ bool Door::update_door_DB(bool new_DB_door_state) {
         } else {
             // was not toggled -> stayed the same
             // ignore
+            std::cout << "FAAAAACK" << std::endl;
         }
     }
 
     return false;
 }
 
-void Door::update_door_CAN(bool new_CAN_door_state) {
+bool Door::update_door_CAN(bool new_CAN_door_state) {
     if (was_last_update_with_CAN) {
         // if using CAN door state -> keep using it
         if (last_CAN_door_open_state != new_CAN_door_state) {
             std::cout << "Door state commanded by CAN: "
                 << (new_CAN_door_state ? "OPEN" : "CLOSED")
                 << std::endl;
+            last_CAN_door_open_state = new_CAN_door_state;
+            return true;
         }
-        
         last_CAN_door_open_state = new_CAN_door_state;
+        return false;
         
     } else {
         // if last state update was DB
@@ -67,11 +70,13 @@ void Door::update_door_CAN(bool new_CAN_door_state) {
             std::cout << "Door state toggled by CAN -> switching to Physical Door State: "
                 << (new_CAN_door_state ? "OPEN" : "CLOSED")
                 << std::endl;
+            return true;
         } else {
             // was not toggled -> stayed the same
             // ignore
         }
     }
+    return false;
 }
 
 void Door::initialize(bool DB_state, bool CAN_state) {
