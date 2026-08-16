@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<!--
+Author: Matvey Regentov
+-->
+
+<html lang="en">
+
+<head>
+	<title>MR Logbook Entry - 2026-08-02</title>
+	<meta charset="UTF-8">
+	<meta name="author" content="Matvey Regentov">
+	<meta name="description" content="MR Logbook Entry for 2026-08-02">
+	<meta name="robots" content="index, follow">
+	<meta http-equiv="Pragma" content="no-cache">
+
+	<link rel="icon" href="../../media/icons/LiF_icon.ico" type="image/x-icon">
+	<link rel="stylesheet" href="../../css/base.css">
+	<link rel="stylesheet" href="../../css/logbook_entry.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css">
+	<link rel="stylesheet" href="../../css/code_formatting.css">
+	<script>
+		window.MathJax = {
+			tex: {
+				inlineMath: [['\\(', '\\)'], ['$', '$']],
+				displayMath: [['\\[', '\\]'], ['$$', '$$']]
+			},
+			svg: { fontCache: 'global' }
+		};
+	</script>
+	<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+</head>
+
+<body>
+	<div id="navbar-placeholder" data-root="../../"></div>
+	<script src="../../js/navbar.js"></script>
+
+	<main class="page-wrapper">
+		<section class="intro-section logbook-entry-intro" id="page_top">
+			<div class="intro-text">
+				<p class="section-label">Daily Logbook Entry</p>
+				<h1>Logbook Entry, 2026-08-02 by Matvey Regentov</h1>
+				<p class="intro-description">Phase 3 planning and Supervisory Controller cleanup</p>
+				<div class="button-row">
+					<a href="../logbook_MR.html" class="button secondary-button">My Logbook Cover Page</a>
+					<a href="#log" class="button primary-button">Jump to Entry</a>
+					<a href="MR_entry_2026-07-31.html" class="button secondary-button">Previous Entry</a>
+					<a href="MR_entry_2026-08-04.html" class="button secondary-button">Next Entry</a>
+				</div>
+			</div>
+			<aside class="summary-card">
+				<h2>Entry Snapshot</h2>
+				<p><b>Date:</b> 2026-08-02</p>
+				<p><b>Author:</b> Matvey Regentov</p>
+				<p><b>Focus:</b> Phase 3 planning and Supervisory Controller cleanup</p>
+			</aside>
+		</section>
+
+		<section class="logbook-entry-content" id="log">
+			<h2 id="general-phase-3-preparation">General Phase 3 Preparation</h2>
+			<p>I cleaned up old Git branches left over from Phase 2. I removed the following branches:</p>
+			<ul>
+				<li><code>KiCAD/main</code></li>
+				<li><code>SC/database_dev</code></li>
+				<li><code>SC/FSM_Phase2_dev</code></li>
+			</ul>
+
+			<p>Based on the demonstration video recorded on Friday, July 31, I prepared the following task list:</p>
+			<h3 id="phase-3-task-list">Phase 3 Task List</h3>
+			<ul>
+				<li><b>Supervisory Controller:</b>
+					<ul>
+						<li>Clean up the diagnostic print statements.</li>
+						<li>Correct the database request-completion logging, which is currently hard-coded for the Car Controller only.</li>
+						<li>Ensure that Sabbath mode stops immediately when the operating state is toggled.</li>
+						<li>Flush scheduler requests whenever the operating mode changes.</li>
+						<li>Add support for virtual door-open commands.</li>
+					</ul>
+				</li>
+				<li><b>Web interface:</b>
+					<ul>
+						<li>Correct the web interface because it does not currently update the elevator position.</li>
+					</ul>
+				</li>
+				<li><b>Elevator Controller:</b>
+					<ul>
+						<li>Correct the LCD initialization sequence, which displays “Initialized” too early.</li>
+						<li>Release the motor coils when the Elevator Controller is disabled, allowing the Supervisory Controller to control them indirectly.</li>
+					</ul>
+				</li>
+			</ul>
+
+			<h2 id="supervisory-controller-fixes">Supervisory Controller Fixes for Phase 3</h2>
+			<p>I began correcting the identified Supervisory Controller issues. I moved all CAN-related database interactions into the CAN receive-processing functions.</p>
+			<p>To add virtual door-open support, I started implementing a helper <code>door</code> module. This module will combine incoming door-state updates from the database and CAN bus and produce a clean <code>is_door_open</code> state, avoiding the need to manage the related variables and transitions directly in <code>main</code>.</p>
+
+			<h3 id="can-log-schema-proposal">CAN-Log Database Schema Proposal</h3>
+			<p>I also proposed the following revisions to Nick for the CAN-log database schema:</p>
+			<ul>
+				<li>Remove fields that store duplicated information:
+					<ul>
+						<li>The receive/transmit direction is not well defined across the network and can be inferred from the message ID.</li>
+						<li>The source controller can also be inferred from the message ID.</li>
+					</ul>
+				</li>
+				<li>Change the message-ID field from a string to a numeric type to make sorting easier.</li>
+				<li>Change the data field to <code>BIGINT</code> so that it can store CAN frames up to eight bytes long.</li>
+			</ul>
+
+			<h3 id="progress-status">Progress Status</h3>
+			<p>The database request-completion logging correction was completed on August 3. The remaining print-statement cleanup, Sabbath-mode stopping behaviour, scheduler flushing, and virtual-door support tasks remained in progress.</p>
+		</section>
+
+		<section class="logbook-entry-content sources-section" id="sources">
+			<h2>Sources</h2>
+			<p>No external sources were cited in this entry.</p>
+		</section>
+
+		<nav class="entry-date-nav" aria-label="Logbook date navigation">
+			<a href="MR_entry_2026-07-31.html" class="button secondary-button">Previous Entry</a>
+			<a href="MR_entry_2026-08-04.html" class="button secondary-button">Next Entry</a>
+		</nav>
+		<p class="top-link"><a href="#page_top">Go to the top of this page</a></p>
+	</main>
+
+	<footer class="site-footer"><p>Copyright &copy; Matvey Regentov</p></footer>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+</body>
+
+</html>

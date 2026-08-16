@@ -127,12 +127,17 @@
 
 /* Sticky header row */
 #Gantt thead th {
-  position: sticky;
+  /* position: sticky;
   top: 0;
   z-index: 50;
   color: white;
   background-color: var(--deep-blue);
-  text-align: center;
+  text-align: center; */
+    position: sticky;
+  top: 0;
+  z-index: 50;
+  color: white;
+  background-color: var(--deep-blue);
 }
 
 /* First header cell */
@@ -343,10 +348,11 @@
 
 /* Wrapper around the chart */
 .gantt-table-wrapper {
-  overflow-x: auto;
+  overflow: visible;
+  /* overflow-x: auto;
   border-radius: 12px;
   border: 1px solid rgba(9, 124, 135, 0.22);
-  box-shadow: 0 4px 14px var(--shadow);
+  box-shadow: 0 4px 14px var(--shadow); */
 }
 
 /* Medium/small screens */
