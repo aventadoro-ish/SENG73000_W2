@@ -13,6 +13,7 @@ constexpr int CAN_TX = 14;
 constexpr int CAN_RX = 13;
 
 constexpr uint32_t CAN_CHAR_ID = 0x100;
+constexpr uint32_t CAN_BTN_ID = 0x202;
 
 TCA9555 display(0x21);
 TCA9555 button_leds(0x20);
@@ -29,7 +30,7 @@ void setup() {
     Serial.println("LiF FCC - Setup Started");
 
     ESP32Can.setPins(CAN_TX, CAN_RX);
-    ESP32Can.setSpeed(TWAI_SPEED_500KBPS);
+    ESP32Can.setSpeed(TWAI_SPEED_100KBPS);
 
     if (!ESP32Can.begin()) {
         Serial.println("Failed to start CAN!");
@@ -38,39 +39,6 @@ void setup() {
         }
     }
 
-    Serial.println("CAN started. Type characters to transmit:");
-
-    while (1) {
-        // Serial -> CAN
-        while (Serial.available() > 0) {
-            char character = Serial.read();
-
-            CanFrame txFrame = {};
-            txFrame.identifier = CAN_CHAR_ID;
-            txFrame.extd = 0;                 // Standard 11-bit CAN ID
-            txFrame.rtr = 0;                  // Data frame
-            txFrame.data_length_code = 1;
-            txFrame.data[0] = static_cast<uint8_t>(character);
-
-            if (!ESP32Can.writeFrame(txFrame, 10)) {
-                Serial.println("\nCAN transmission failed!");
-            }
-        }
-
-        // CAN -> Serial
-        CanFrame rxFrame = {};
-
-        while (ESP32Can.readFrame(rxFrame, 0)) { // 0 = non-blocking
-            if (rxFrame.identifier == CAN_CHAR_ID &&
-                !rxFrame.rtr &&
-                rxFrame.data_length_code > 0) {
-
-                for (uint8_t i = 0; i < rxFrame.data_length_code; i++) {
-                    Serial.write(rxFrame.data[i]);
-                }
-            }
-        }
-    }
 
     bool initialized = Wire.begin(I2C_SDA, I2C_SCL, 100000);
     Serial.printf(
@@ -94,6 +62,10 @@ void setup() {
 
     Serial.printf("SDA level: %d\n", digitalRead(I2C_SDA));
     Serial.printf("SCL level: %d\n", digitalRead(I2C_SCL));
+
+    Serial.println("Setup finished.");
+    Serial.println("CAN started. Type characters to transmit:");
+
 }
 
 void loop() {
@@ -105,13 +77,66 @@ void loop() {
 
             is_pressed = true; 
             button_leds.write8(1, 1 << (7 - i));
+
+            CanFrame txFrame = {};
+            txFrame.identifier = CAN_BTN_ID;
+            txFrame.extd = 0;
+            txFrame.rtr = 0;
+            txFrame.data_length_code = 1;
+            txFrame.data[0] = i + 1;
+            if (!ESP32Can.writeFrame(txFrame, 10)) {
+                Serial.println("\nCAN transmission failed!");
+            }
         }
     }
 
-    if (!is_pressed) {
-        display.write16(mapNumber(0));
-        button_leds.write8(1, 0);
+    // if (!is_pressed) {
+    //     display.write16(mapNumber(0));
+    //     button_leds.write8(1, 0);
+    // }
 
+
+
+    // Serial -> CAN
+    while (Serial.available() > 0) {
+        char character = Serial.read();
+
+        CanFrame txFrame = {};
+        txFrame.identifier = CAN_CHAR_ID;
+        txFrame.extd = 0;                 // Standard 11-bit CAN ID
+        txFrame.rtr = 0;                  // Data frame
+        txFrame.data_length_code = 1;
+        txFrame.data[0] = static_cast<uint8_t>(character);
+
+        if (!ESP32Can.writeFrame(txFrame, 10)) {
+            Serial.println("\nCAN transmission failed!");
+        }
+    }
+
+
+    // CAN -> Serial / LEDs
+    CanFrame rxFrame = {};
+
+    while (ESP32Can.readFrame(rxFrame, 0)) { // 0 = non-blocking
+        if (rxFrame.identifier == CAN_CHAR_ID &&
+            !rxFrame.rtr &&
+            rxFrame.data_length_code > 0) {
+
+            for (uint8_t i = 0; i < rxFrame.data_length_code; i++) {
+                Serial.write(rxFrame.data[i]);
+            }
+
+        } else if (rxFrame.identifier > 0x200 &&
+            !rxFrame.rtr &&
+            rxFrame.data_length_code > 0) {
+
+            int id = rxFrame.identifier - 0x200;
+            id = id * 10;
+            
+            display.write16(mapNumber(id + rxFrame.data[0]));
+            is_pressed = true; 
+            button_leds.write8(1, 1 << (8 - rxFrame.data[0]));
+        }
     }
 
 }
