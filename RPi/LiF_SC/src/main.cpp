@@ -593,10 +593,17 @@ void process_CAN_CC_msg(CAN::RxFrame rxMsg) {
 		}
 	}
 	
-	bool did_change = door.update_door_CAN(rxMsg.data.cc_request.is_door_open);
-	database.set_doors_open(rxMsg.data.cc_request.is_door_open);
-	if (did_change && !door.is_using_DB_door()) {
-		can_link.cc_send_door_update(false, false, false);
+	bool did_change =
+		door.update_door_CAN(rxMsg.data.cc_request.is_door_open);
+
+	if (!door.is_using_DB_door()) {
+		// Only mirror CAN into the DB when CAN is actually authoritative.
+		database.set_doors_open(rxMsg.data.cc_request.is_door_open);
+
+		if (did_change) {
+			// Disable the virtual door override.
+			can_link.cc_send_door_update(false, false, false);
+		}
 	}
 
 	// Filter state to only be normal operations mode
@@ -716,24 +723,23 @@ void process_DB_door_command() {
     int db_door_state = database.get_doors_open();
 
     if (db_door_state < 0) {
-        // Preserve the existing effective state if the database
-        // cannot be read.
-        return;
-    } else if (db_door_state == 2) {
-		// last door update was based on the physical button
-		//	therfore ignore that
-		return;
-	}
-	bool did_state_changed = door.update_door_DB(db_door_state != 0); 
-	if (did_state_changed && door.is_initialized()) {
-		if (door.is_using_DB_door()) {
-			can_link.cc_send_door_update(false, true, db_door_state != 0);
-		} else {
-			can_link.cc_send_door_update(false, false, false);
-		}
-	}
+        return; // DB error
+    }
 
-	
+    if (db_door_state == 2) {
+        return; // Value was mirrored from CAN, not commanded by DB
+    }
+
+    bool command_changed =
+        door.update_door_DB(db_door_state != 0);
+
+    if (command_changed && door.is_initialized()) {
+        can_link.cc_send_door_update(
+            false,
+            true,                   // use virtual/DB door
+            db_door_state != 0
+        );
+    }
 }
 
 
