@@ -547,7 +547,7 @@ Contributors to this page:
 		<section class="week-entry-box" id="week-11">
 			<div class="week-header">
 				<p class="section-label">Week 11</p>
-				<h2>Phase 2 integration and mechanical recalibration</h2>
+				<h2>Phase 2 integration, PCB assembly, and Phase 3 preparation</h2>
 			</div>
 
 			<article class="entry-summary">
@@ -561,6 +561,100 @@ Contributors to this page:
 				</ul>
 			</article>
 
+			<article class="entry-summary">
+				<h3><a href="./entries_MR/MR_entry_2026-07-31.html">Entry 3 - 2026-07-31</a></h3>
+				<ul>
+					<li>Developed a collaborative procedure for populating multiple Service PCBs.</li>
+					<li>Populated and reflowed three Car Controller PCB configurations.</li>
+					<li>Documented component shortages, footprint errors, and silkscreen issues.</li>
+					<li>Evaluated the assembly process and identified improvements for future PCB projects.</li>
+				</ul>
+			</article>
+
+			<article class="entry-summary">
+				<h3><a href="./entries_MR/MR_entry_2026-08-02.html">Entry 4 - 2026-08-02</a></h3>
+				<ul>
+					<li>Cleaned up obsolete Git branches remaining from Phase 2.</li>
+					<li>Prepared the Phase 3 task list based on the system demonstration.</li>
+					<li>Began correcting the remaining Supervisory Controller issues.</li>
+					<li>Started implementing virtual door control through a dedicated door module.</li>
+					<li>Proposed improvements to the CAN-log database schema.</li>
+				</ul>
+			</article>
+		</section>
+
+
+		<!-- Week 12 -->
+		<section class="week-entry-box" id="week-12">
+			<div class="week-header">
+				<p class="section-label">Week 12</p>
+				<h2>Custom PCB assembly, virtual-door control, and system integration</h2>
+			</div>
+
+			<article class="entry-summary">
+				<h3><a href="./entries_MR/MR_entry_2026-08-04.html">Entry 1 - 2026-08-04</a></h3>
+				<ul>
+					<li>Completed the remaining manual assembly of Service PCB unit 1.</li>
+					<li>Corrected the incompatible fuse footprints using vertically mounted fuses and a solder bridge.</li>
+					<li>Validated the programming USB and system power OR-ing circuits.</li>
+					<li>Measured and confirmed the operation of the 3.3 V regulator.</li>
+					<li>Flashed a UART test program and confirmed that the ESP32-S3 operated correctly.</li>
+					<li>Verified CAN-power prioritization in the auxiliary power OR-ing circuit.</li>
+				</ul>
+			</article>
+
+			<article class="entry-summary">
+				<h3><a href="./entries_MR/MR_entry_2026-08-05.html">Entry 2 - 2026-08-05</a></h3>
+				<ul>
+					<li>Established remote UART access to the Elevator Controller through the Supervisory Controller.</li>
+					<li>Improved the readability of the Supervisory Controller diagnostic output.</li>
+					<li>Implemented virtual-door support in the Supervisory and Car Controllers.</li>
+					<li>Defined the CAN message used to request and update the door state.</li>
+					<li>Tested Nick’s WebSocket server and resolved missing configuration and Git changes.</li>
+				</ul>
+			</article>
+
+			<article class="entry-summary">
+				<h3><a href="./entries_MR/MR_entry_2026-08-06.html">Entry 3 - 2026-08-06</a></h3>
+				<ul>
+					<li>Prepared a team update covering PCB assembly and testing progress.</li>
+					<li>Documented fuse-footprint, BOM, and regulator-supply issues.</li>
+					<li>Summarized the remaining Service and I/O PCB assembly work.</li>
+					<li>Proposed a revised plan for the final project demonstration.</li>
+					<li>Calculated and shared the PCB manufacturing and component costs.</li>
+				</ul>
+			</article>
+
+			<article class="entry-summary">
+				<h3><a href="./entries_MR/MR_entry_2026-08-07.html">Entry 4 - 2026-08-07</a></h3>
+				<ul>
+					<li>Soldered the first I/O PCB and deferred the headers until both boards could be aligned.</li>
+					<li>Performed integrated WebSocket and door-control testing with Nick.</li>
+					<li>Identified an infinite update loop caused by ambiguous database door states.</li>
+					<li>Added source information to distinguish website and CAN door-state updates.</li>
+					<li>Recorded a final demonstration of the integrated elevator system.</li>
+				</ul>
+			</article>
+		</section>
+
+
+		<!-- Week 13 -->
+		<section class="week-entry-box" id="week-13">
+			<div class="week-header">
+				<p class="section-label">Week 13</p>
+				<h2>Unit 1 PCB completion and I2C troubleshooting</h2>
+			</div>
+
+			<article class="entry-summary">
+				<h3><a href="./entries_MR/MR_entry_2026-08-10.html">Entry 1 - 2026-08-10</a></h3>
+				<ul>
+					<li>Completed the soldering and stacking of the Unit 1 Service and I/O PCBs.</li>
+					<li>Tested the I2C bus using the programming USB and CAN power inputs.</li>
+					<li>Confirmed that the 3.3 V rail and ESP32-S3 remained operational.</li>
+					<li>Identified a short circuit between the SDA line and ground.</li>
+					<li>Investigated the LGA accelerometer as the suspected source of the I2C fault.</li>
+				</ul>
+			</article>
 		</section>
 
 

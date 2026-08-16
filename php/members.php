@@ -41,7 +41,7 @@ $safeUsername = htmlspecialchars($_SESSION['username'] ?? 'User', ENT_QUOTES, 'U
                 <h1>Welcome, <?php echo $safeUsername; ?></h1>
 
                 <p class="intro-description">
-                    This page is only visible after logging in. Just like your mother said, you're special :3
+                    This page is only visible after logging in. Welcome to the cool club.
                 </p>
 
                 <div class="button-row">

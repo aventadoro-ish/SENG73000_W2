@@ -19,8 +19,13 @@ public:
      * @return 
      */
     bool update_door_DB(bool new_DB_door_state);
-
-    void update_door_CAN(bool new_CAN_door_state);
+    
+    /**
+     * @brief Returns true if state changed
+     * @param new_CAN_door_state 
+     * @return 
+     */
+    bool update_door_CAN(bool new_CAN_door_state);
 
     void initialize(bool DB_state, bool CAN_state);
 
