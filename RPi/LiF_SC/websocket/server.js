@@ -11,7 +11,7 @@ const server = new WebSocket.Server({
 });
 
 // send a JS object to every connected webpage
-function broadcast (messageObject) {
+function broadcast(messageObject) {
   // websockets cannot directly send a JS object so convert to string
   // use stringify
   const messageText = JSON.stringify(messageObject);
@@ -34,11 +34,11 @@ function broadcast (messageObject) {
 
 // when a webpage connects, run this event
 // ----------------------- CHANGED CODE HERE; MUST ADD COMMENTS -----------------------------
-server.on("connection", function(socket) {
+server.on("connection", function (socket) {
   console.log("webpage connected");
 
   // send the latest door state to a newly connected webpage
-  if(lastDoorState !== null) {
+  if (lastDoorState !== null) {
     socket.send(JSON.stringify({
       type: "elevator_state",
       doors_open: (lastDoorState & 1) === 1
@@ -51,18 +51,18 @@ server.on("connection", function(socket) {
     message: "connected to the LiF websocket server"
   }));
 
-  socket.on("message", async function(message) {
+  socket.on("message", async function (message) {
     let receivedMessage;
 
     try {
       receivedMessage = JSON.parse(message.toString());
 
-    } catch(error) {
+    } catch (error) {
       console.error("Invalid webpage message");
       return;
     }
 
-    if(receivedMessage.type !== "door_state_changed") {
+    if (receivedMessage.type !== "door_state_changed") {
       return;
     }
 
@@ -70,11 +70,11 @@ server.on("connection", function(socket) {
     await checkDoorState();
   });
 
-    // print web page disconnected
-    socket.on("close", function() {
-      console.log("webpage disconnected");
-    });
+  // print web page disconnected
+  socket.on("close", function () {
+    console.log("webpage disconnected");
   });
+});
 
 // debug/status print:
 console.log("websocket server running on  port 8080");
@@ -87,7 +87,7 @@ let lastDoorState = null;
 
 
 // this function connects Node to MariaDB
-async function connectToDB () {
+async function connectToDB() {
   try {
     // wait for mariaDB to accept the connection using the variables within the .env file
     database = await mysql.createConnection({
@@ -101,7 +101,7 @@ async function connectToDB () {
     console.log("Connected to Lif_Elevator database");
 
     // read only the latest CAN entry from DB
-        // Read only the newest CAN-log entry.
+    // Read only the newest CAN-log entry.
     const query = `
       SELECT
         log_id,
@@ -117,7 +117,7 @@ async function connectToDB () {
 
     // execute the SQL query and wait for MariaDB to return the result
     // mysql2 returns [rows, extraInfo] so [rows] keeps only the row pulled from DB
-    const [rows] =  await database.execute(query);
+    const [rows] = await database.execute(query);
 
     if (rows.length === 0) {
       console.log("CAN message log is emppty");
@@ -133,16 +133,19 @@ async function connectToDB () {
 
     console.log(`watching for entries after log#${lastLoggedID}`);
 
+    await checkDoorState();
+
     // check every 500 ms
     setInterval(checkNewCAN, 500);
+    setInterval(checkDoorState, 500);
 
   } catch (error) {
-      // if the login or query fails, print the caught error:
-      console.error("Database connection error: ", error.message);
+    // if the login or query fails, print the caught error:
+    console.error("Database connection error: ", error.message);
   }
-} 
+}
 
-async function checkNewCAN () {
+async function checkNewCAN() {
   try {
     const query = `
       SELECT
@@ -161,7 +164,7 @@ async function checkNewCAN () {
     const [rows] = await database.execute(query, [lastLoggedID]);
 
     // if query found nothing new, end the check
-    if(rows.length === 0) {
+    if (rows.length === 0) {
       return;
     }
 
@@ -196,7 +199,7 @@ async function checkNewCAN () {
     console.log(`next check will begin after log #${lastLoggedID}`);
 
   } catch (error) {
-      console.error("CAN-log failed: ", error.message);
+    console.error("CAN-log failed: ", error.message);
   }
 }
 
@@ -212,7 +215,7 @@ async function checkDoorState() {
 
     const [rows] = await database.execute(query);
 
-    if(rows.length === 0) {
+    if (rows.length === 0) {
       console.warn("elevator_state row #1 does not exist");
       return;
     }
@@ -220,13 +223,13 @@ async function checkDoorState() {
     const doorState = Number(rows[0].doors_open);
 
     // First check initializes the cache without broadcasting.
-    if(lastDoorState === null) {
+    if (lastDoorState === null) {
       lastDoorState = doorState;
       return;
     }
 
     // Nothing changed, so do not broadcast or print anything.
-    if(doorState === lastDoorState) {
+    if (doorState === lastDoorState) {
       return;
     }
 
@@ -247,7 +250,7 @@ async function checkDoorState() {
       `${recipients} webpage(s)`
     );
 
-  } catch(error) {
+  } catch (error) {
     console.error("Door-state check failed:", error.message);
   }
 }

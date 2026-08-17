@@ -108,7 +108,7 @@ public:
 
     /**
      * @brief get the current door state from DB
-     * @returns 1 for doors open, 0 for doors clsoed, -1 for DB error
+     * @returns 1 for doors open, 0 for doors closed, -1 for DB error, 2 for using CAN-based door state (therefore ignore database door state)
      */
     int get_doors_open();
 };

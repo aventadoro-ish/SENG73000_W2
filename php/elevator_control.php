@@ -193,7 +193,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if($requestAction === 'sabbath') {
-        // JS replies with enable or disabled
+        // JS sends either enabled or disabled
         $submittedSabbathState = $_POST['sabbath_state'] ?? '';
 
         $allowedSabbathStates = ['enabled', 'disabled'];
@@ -205,14 +205,47 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
             ]);
             exit;
         }
-        // convert submitted Sabbath state into an elevator operation mode
-        $operationMode = 'normal';
-
-        if($submittedSabbathState === 'enabled') {
-            $operationMode = 'sabbath';
-        }
 
         try {
+            // Lock the shared state row so Maintenance cannot change halfway
+            // through the Sabbath-mode validation and update.
+            $pdo->beginTransaction();
+
+            $query = "
+                SELECT operation_mode
+                FROM elevator_state
+                WHERE state_id = 1
+                LIMIT 1
+                FOR UPDATE
+            ";
+
+            $statement = $pdo->prepare($query);
+            $result = $statement->execute();
+            $elevatorState = $statement->fetch();
+
+            if(!$result || !$elevatorState) {
+                throw new RuntimeException('Elevator operation mode could not be received');
+            }
+
+            // Maintenance owns the shared operation mode. A Sabbath request
+            // must never enable Sabbath or accidentally turn Maintenance off.
+            if($elevatorState['operation_mode'] === 'maintenance') {
+                $pdo->rollBack();
+
+                echo json_encode([
+                    'success' => false,
+                    'message' => 'Sabbath mode is unavailable while Maintenance mode is active',
+                    'sabbath_state' => 'disabled',
+                    'operation_mode' => 'maintenance'
+                ]);
+
+                exit;
+            }
+
+            $operationMode = $submittedSabbathState === 'enabled'
+                ? 'sabbath'
+                : 'normal';
+
             $query = "
                 UPDATE elevator_state
                 SET operation_mode = :operation_mode
@@ -220,37 +253,49 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
             ";
 
             $statement = $pdo->prepare($query);
+            $result = $statement->execute([
+                'operation_mode' => $operationMode
+            ]);
 
-            $params = ['operation_mode' => $operationMode];
-
-            $result = $statement->execute($params);
-
-            if($result) {
-                // sucessful
-                echo json_encode([
-                    'success' => true,
-                    'message' => 'sabbath mode updated',
-                    'sabbath_state' => $submittedSabbathState,
-                    'operation_mode' => $operationMode
-                ]);
-            } else {
-                echo json_encode([
-                    'success' => false,
-                    'message' => 'sabbath mode could not be enabled'
-                ]);
+            if(!$result) {
+                throw new RuntimeException('Sabbath mode could not be updated');
             }
-        } catch (PDOException $e) {
+
+            $pdo->commit();
+
+            echo json_encode([
+                'success' => true,
+                'message' => 'sabbath mode updated',
+                'sabbath_state' => $submittedSabbathState,
+                'operation_mode' => $operationMode
+            ]);
+        } catch (Throwable $e) {
+            if($pdo->inTransaction()) {
+                $pdo->rollBack();
+            }
+
             error_log($e->getMessage());
+
             echo json_encode([
                 'success' => false,
-                'message' => 'a database error prevented sabbath toggle',
+                'message' => 'A database error prevented the Sabbath toggle'
             ]);
         }
+
         exit;
     }
 
     // handle the maintenance-mode toggle separately from elevator movement requests
     if($requestAction === 'maintenance') {
+        // the button is admin-only in the HTML, so enforce the same rule in PHP
+        if(($_SESSION['user_role'] ?? '') !== 'admin') {
+            echo json_encode([
+                'success' => false,
+                'message' => 'Administrator access is required to change Maintenance mode'
+            ]);
+            exit;
+        }
+
         // JS sends either enabled or disabled
         $submittedMaintenanceState = $_POST['maintenance_state'] ?? '';
 
@@ -315,6 +360,141 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
+    // save or remove one per-floor maintenance lockout
+    if($requestAction === 'floor_lockout') {
+        // lockout controls are available only to administrators
+        if(($_SESSION['user_role'] ?? '') !== 'admin') {
+            echo json_encode([
+                'success' => false,
+                'message' => 'Administrator access is required to change floor lockouts'
+            ]);
+            exit;
+        }
+
+        $submittedLockoutFloor = $_POST['floor_number'] ?? '';
+        $submittedLockoutState = $_POST['lockout_state'] ?? '';
+
+        $lockoutFloor = filter_var($submittedLockoutFloor, FILTER_VALIDATE_INT);
+        $allowedLockoutFloors = [1, 2, 3, 4, 5, 6];
+        $allowedLockoutStates = ['locked', 'unlocked'];
+
+        if($lockoutFloor === false || !in_array($lockoutFloor, $allowedLockoutFloors, true)) {
+            echo json_encode([
+                'success' => false,
+                'message' => 'Lockout floor must be between 1 and 6'
+            ]);
+            exit;
+        }
+
+        if(!in_array($submittedLockoutState, $allowedLockoutStates, true)) {
+            echo json_encode([
+                'success' => false,
+                'message' => 'Invalid floor lockout state'
+            ]);
+            exit;
+        }
+
+        $updatedByUserID = $_SESSION['user_id'] ?? null;
+
+        if($updatedByUserID === null) {
+            echo json_encode([
+                'success' => false,
+                'message' => 'The logged in user could not be identified'
+            ]);
+            exit;
+        }
+
+        try {
+            // lockout changes are allowed only while the elevator is in maintenance mode
+            $query = "
+                SELECT operation_mode
+                FROM elevator_state
+                WHERE state_id = 1
+                LIMIT 1
+            ";
+
+            $statement = $pdo->prepare($query);
+            $result = $statement->execute();
+            $elevatorState = $statement->fetch();
+
+            if(!$result || !$elevatorState) {
+                throw new CommunicationException("Elevator operation mode could not be received");
+            }
+
+            if($elevatorState['operation_mode'] !== 'maintenance') {
+                echo json_encode([
+                    'success' => false,
+                    'message' => 'Floor lockouts can only be changed while Maintenance mode is enabled',
+                    'operation_mode' => $elevatorState['operation_mode']
+                ]);
+                exit;
+            }
+
+            $floorIsLocked = $submittedLockoutState === 'locked';
+            $lockoutReason = $floorIsLocked ? 'Locked from elevator control webpage' : null;
+
+            // INSERT creates a missing floor row; the duplicate-key branch updates an existing row
+            $query = "
+                INSERT INTO elevator_floor_lockouts (
+                    floor_number,
+                    is_locked,
+                    lockout_reason,
+                    updated_by_user_id
+                )
+                VALUES (
+                    :floor_number,
+                    :is_locked,
+                    :lockout_reason,
+                    :updated_by_user_id
+                )
+                ON DUPLICATE KEY UPDATE
+                    is_locked = VALUES(is_locked),
+                    lockout_reason = VALUES(lockout_reason),
+                    updated_by_user_id = VALUES(updated_by_user_id)
+            ";
+
+            $statement = $pdo->prepare($query);
+            $params = [
+                'floor_number' => $lockoutFloor,
+                'is_locked' => $floorIsLocked ? 1 : 0,
+                'lockout_reason' => $lockoutReason,
+                'updated_by_user_id' => $updatedByUserID
+            ];
+
+            $result = $statement->execute($params);
+
+            if(!$result) {
+                throw new CommunicationException("Floor lockout could not be updated");
+            }
+
+            echo json_encode([
+                'success' => true,
+                'message' => $floorIsLocked ? 'Floor locked successfully' : 'Floor restored successfully',
+                'floor_number' => $lockoutFloor,
+                'is_locked' => $floorIsLocked,
+                'lockout_reason' => $lockoutReason,
+                'updated_by_user_id' => (int) $updatedByUserID,
+                'operation_mode' => 'maintenance'
+            ]);
+        } catch (CommunicationException $e) {
+            error_log($e->getMessage());
+
+            echo json_encode([
+                'success' => false,
+                'message' => $e->getMessage()
+            ]);
+        } catch (PDOException $e) {
+            error_log($e->getMessage());
+
+            echo json_encode([
+                'success' => false,
+                'message' => 'A database error prevented the floor lockout update'
+            ]);
+        }
+
+        exit;
+    }
+
     try {
         // receive JS values to move the elevator
         $submittedFloor = $_POST['requested_floor'] ?? '';
@@ -356,28 +536,24 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
         $selectedFloorNode = $floorNodes[$requestedFloor];
         
 
-        // methods throw CommunicationException if a node is offline
-        $elevatorCar->verifyConnection();
-        $selectedFloorNode->verifyConnection();
-
-        $selectedFloorNode->requestElevator();
-
-        // movement is unsafe if state cannot be found
-        $doorsOpen = true;
-        // OOP change - set doors to open
-        $elevatorCar->openDoors();
-
-        // command
+        // load the current door state, operation mode, and selected-floor lockout
         $query = "
-            SELECT doors_open
-            FROM elevator_state
-            WHERE state_id = 1
+            SELECT
+                es.doors_open,
+                es.operation_mode,
+                COALESCE(efl.is_locked, 0) AS floor_locked
+            FROM elevator_state AS es
+            LEFT JOIN elevator_floor_lockouts AS efl
+                ON efl.floor_number = :lockout_floor
+            WHERE es.state_id = 1
             LIMIT 1
         ";
 
         // prep and execute
         $statement = $pdo->prepare($query);
-        $result = $statement->execute();
+        $result = $statement->execute([
+            'lockout_floor' => $requestedFloor
+        ]);
 
         // fetch from DB
         $elevatorState = $statement->fetch();
@@ -386,6 +562,43 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
         if(!$result || !$elevatorState){
             throw new CommunicationException("Elevator state could not be received");
         }
+
+        // maintenance mode must not add anything to the elevator request queue
+        if($elevatorState['operation_mode'] === 'maintenance') {
+            echo json_encode([
+                'success' => false,
+                'message' => 'Floor requests are disabled while Maintenance mode is enabled',
+                'operation_mode' => 'maintenance',
+                'requested_floor' => $requestedFloor,
+                'source_controller' => $sourceController
+            ]);
+
+            exit;
+        }
+
+        // a saved floor lockout remains active after maintenance mode is disabled
+        if((int) $elevatorState['floor_locked'] === 1) {
+            echo json_encode([
+                'success' => false,
+                'message' => 'Floor ' . $requestedFloor . ' is locked out of service',
+                'operation_mode' => $elevatorState['operation_mode'],
+                'requested_floor' => $requestedFloor,
+                'source_controller' => $sourceController,
+                'floor_locked' => true
+            ]);
+
+            exit;
+        }
+
+        // only contact and update the node objects after both DB checks pass
+        $elevatorCar->verifyConnection();
+        $selectedFloorNode->verifyConnection();
+
+        $selectedFloorNode->requestElevator();
+
+        // movement is unsafe if the saved door state cannot be read
+        $doorsOpen = true;
+        $elevatorCar->openDoors();
 
         if($result && $elevatorState) {
             // OOP change
@@ -406,8 +619,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
         $movementAllowed = $elevatorCar->canMove();
 
 
-        // code below will still run and log buttons into DB - queuing will handle it
-        // movement will be prevented in the JS
+        // requests with open doors can still be queued; maintenance and locked floors cannot
 
         
         // insert into DB
@@ -419,12 +631,18 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
                 source_controller
             )
         
-            VALUES (
+            SELECT
                 :request_type,
                 :requested_floor,
                 :requested_by_user_id,
                 :source_controller
-            )
+
+            FROM elevator_state AS es
+            LEFT JOIN elevator_floor_lockouts AS efl
+                ON efl.floor_number = :lockout_floor
+            WHERE es.state_id = 1
+            AND es.operation_mode <> 'maintenance'
+            AND COALESCE(efl.is_locked, 0) = 0
         ";
 
         $statement = $pdo->prepare($query);
@@ -434,12 +652,14 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
             'request_type' => 'remote',
             'requested_floor' => $selectedFloorNode->getFloorNumber(),
             'requested_by_user_id' => $requestedByUserID,
-            'source_controller' => $sourceController
+            'source_controller' => $sourceController,
+            'lockout_floor' => $selectedFloorNode->getFloorNumber()
         ];
 
         $result = $statement->execute($params);
 
-        if($result) {
+        // rowCount is zero if maintenance was enabled after the earlier state check
+        if($result && $statement->rowCount() === 1) {
             // retrieve the auto-generated elevator_request_id
             // type-cast to int since we need it to be int for sending it back to JS
             $elevatorRequestID = (int) $pdo->lastInsertId();
@@ -456,6 +676,15 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'doors_open' => $doorsOpen,
                 'movement_allowed' => $movementAllowed
             ]);
+        // the query ran but maintenance or a floor lockout prevented the INSERT
+        } elseif($result) {
+            echo json_encode([
+                'success' => false,
+                'message' => 'Request blocked because Maintenance mode or a floor lockout became active',
+                'requested_floor' => $selectedFloorNode->getFloorNumber(),
+                'source_controller' => $sourceController
+            ]);
+
         // query failed/request not logged
         } else {
             throw new CommunicationException("the elevator request could not be sent");
@@ -567,6 +796,34 @@ try {
     error_log($e->getMessage());
 }
 
+// load every saved per-floor lockout for the initial webpage display
+$initialFloorLockouts = [];
+
+for($floorNumber = 1; $floorNumber <= 6; $floorNumber++) {
+    $initialFloorLockouts[$floorNumber] = false;
+}
+
+try {
+    $query = "
+        SELECT floor_number, is_locked
+        FROM elevator_floor_lockouts
+        ORDER BY floor_number
+    ";
+
+    $statement = $pdo->query($query);
+
+    while($floorLockout = $statement->fetch()) {
+        $floorNumber = (int) $floorLockout['floor_number'];
+
+        if($floorNumber >= 1 && $floorNumber <= 6) {
+            $initialFloorLockouts[$floorNumber] = ((int) $floorLockout['is_locked']) === 1;
+        }
+    }
+} catch (PDOException $e) {
+    // keep the unlocked defaults if the lockout table cannot be loaded
+    error_log($e->getMessage());
+}
+
 $safeUsername = htmlspecialchars($_SESSION['username'] ?? 'Member', ENT_QUOTES, 'UTF-8');
 ?>
 
@@ -576,6 +833,7 @@ $safeUsername = htmlspecialchars($_SESSION['username'] ?? 'Member', ENT_QUOTES, 
 <head>
     <title>LiF Team - Elevator Control</title>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="../media/icons/LiF_icon.ico" type="image/x-icon">
 
     <meta name="author" content="Nick Kapuka">
@@ -592,9 +850,11 @@ $safeUsername = htmlspecialchars($_SESSION['username'] ?? 'Member', ENT_QUOTES, 
     <div id="navbar-placeholder" data-root="../"></div>
     <script src="../js/navbar.js"></script>
 
-    <main class="page-wrapper" id="elevatorControlPage" data-initial-floor="<?php echo $initialFloor; ?>"
+    <main class="page-wrapper <?php echo $initialOperationMode === 'maintenance' ? 'maintenance-active' : ''; ?>"
+        id="elevatorControlPage" data-initial-floor="<?php echo $initialFloor; ?>"
         data-initial-request-id="<?php echo $initialRequestID; ?>" data-initial-source="<?php echo $initialSource; ?>"
-        data-operation-mode="<?php echo htmlspecialchars($initialOperationMode, ENT_QUOTES, 'UTF-8'); ?>">
+        data-operation-mode="<?php echo htmlspecialchars($initialOperationMode, ENT_QUOTES, 'UTF-8'); ?>"
+        data-floor-lockouts="<?php echo htmlspecialchars(json_encode($initialFloorLockouts), ENT_QUOTES, 'UTF-8'); ?>">
         <section class="intro-section elevator-control-intro" id="page_top">
 
             <div class="intro-text">
@@ -620,7 +880,7 @@ $safeUsername = htmlspecialchars($_SESSION['username'] ?? 'Member', ENT_QUOTES, 
             <aside class="summary-card">
                 <h2>Control Status</h2>
                 <p><strong>Mode:</strong> Elevator control</p>
-                <p><strong>Floors:</strong> 3</p>
+                <p><strong>Floors:</strong> 3 active / 6 displayed</p>
                 <p><strong>System:</strong> Floor calls + car controller</p>
                 <p><strong>PHP Model:</strong> <?php echo Node::getNodeCount(); ?> node objects</p>
                 <p>
@@ -632,7 +892,7 @@ $safeUsername = htmlspecialchars($_SESSION['username'] ?? 'Member', ENT_QUOTES, 
                     <strong>CAN Devices:</strong>
                     <?php echo htmlspecialchars(implode(", ", $canDeviceDetails), ENT_QUOTES, "UTF-8"); ?>
                 </p>
-                <p>Doors State: <?php echo $doorsState; ?></p>
+                <p><strong>Doors:</strong> <?php echo $initialDoorsOpen ? 'Open' : 'Closed'; ?></p>
             </aside>
         </section>
 
@@ -663,56 +923,49 @@ $safeUsername = htmlspecialchars($_SESSION['username'] ?? 'Member', ENT_QUOTES, 
                 </div>
             </div>
 
+            <aside class="maintenance-status-rail" id="maintenanceStatusRail" role="status" aria-live="polite"
+                aria-atomic="true" <?php echo $initialOperationMode === 'maintenance' ? '' : 'hidden'; ?>>
+                <span class="maintenance-status-light" aria-hidden="true"></span>
+
+                <div class="maintenance-status-copy">
+                    <span>Restricted operation</span>
+                    <strong>Maintenance Mode Active</strong>
+                    <small>Passenger requests are paused while authorized personnel configure floor access.</small>
+                </div>
+            </aside>
+
             <div class="elevator-layout">
                 <section class="building-tower">
-                    <div class="floor-row" data-floor="3">
+                    <?php for($floorNumber = 6; $floorNumber >= 1; $floorNumber--): ?>
+                    <div class="floor-row <?php echo $floorNumber === $initialFloor ? 'active-floor' : ''; ?>"
+                        data-floor="<?php echo $floorNumber; ?>">
                         <div class="floor-label">
-                            <span>Floor 3</span>
-                            <small>Station F3</small>
+                            <span>Floor <?php echo $floorNumber; ?></span>
+                            <small>
+                                <?php echo $floorNumber <= 3 ? 'Station F' . $floorNumber : 'Future station'; ?>
+                            </small>
                         </div>
 
-                        <div class="shaft">
+                        <div class="shaft" aria-hidden="true">
                             <div class="floor-line"></div>
+
+                            <?php if($floorNumber === 6): ?>
                             <div class="elevator-car" id="elevatorCar">
-                                <span class="car-screen">1</span>
+                                <span class="car-screen"><?php echo $initialFloor; ?></span>
                                 <span class="car-door"></span>
                             </div>
+                            <?php endif; ?>
                         </div>
 
-                        <button class="floor-request-button" data-floor="3">
+                        <button type="button"
+                            class="floor-request-button <?php echo $floorNumber > 3 ? 'interface-preview' : ''; ?>"
+                            data-floor="<?php echo $floorNumber; ?>"
+                            data-interface-only="<?php echo $floorNumber > 3 ? 'true' : 'false'; ?>"
+                            title="<?php echo $floorNumber > 3 ? 'Interface preview - floor node not configured yet' : 'Request the elevator'; ?>">
                             Request Car
                         </button>
                     </div>
-
-                    <div class="floor-row" data-floor="2">
-                        <div class="floor-label">
-                            <span>Floor 2</span>
-                            <small>Station F2</small>
-                        </div>
-
-                        <div class="shaft">
-                            <div class="floor-line"></div>
-                        </div>
-
-                        <button class="floor-request-button" data-floor="2">
-                            Request Car
-                        </button>
-                    </div>
-
-                    <div class="floor-row active-floor" data-floor="1">
-                        <div class="floor-label">
-                            <span>Floor 1</span>
-                            <small>Station F1</small>
-                        </div>
-
-                        <div class="shaft">
-                            <div class="floor-line"></div>
-                        </div>
-
-                        <button class="floor-request-button" data-floor="1">
-                            Request Car
-                        </button>
-                    </div>
+                    <?php endfor; ?>
                 </section>
 
                 <aside class="car-controller">
@@ -724,14 +977,22 @@ $safeUsername = htmlspecialchars($_SESSION['username'] ?? 'Member', ENT_QUOTES, 
                         floor to move the car in the visual demo.
                     </p>
 
-                    <div class="car-button-stack">
-                        <button class="car-floor-button" data-floor="3">Go to Floor 3</button>
-                        <button class="car-floor-button" data-floor="2">Go to Floor 2</button>
-                        <button class="car-floor-button active-car-button" data-floor="1">Go to Floor 1</button>
+                    <div class="car-button-stack" aria-label="Cab floor buttons">
+                        <?php for($floorNumber = 6; $floorNumber >= 1; $floorNumber--): ?>
+                        <button type="button"
+                            class="car-floor-button <?php echo $floorNumber === $initialFloor ? 'active-car-button' : ''; ?> <?php echo $floorNumber > 3 ? 'interface-preview' : ''; ?>"
+                            data-floor="<?php echo $floorNumber; ?>"
+                            data-interface-only="<?php echo $floorNumber > 3 ? 'true' : 'false'; ?>"
+                            title="<?php echo $floorNumber > 3 ? 'Interface preview - floor node not configured yet' : 'Go to Floor ' . $floorNumber; ?>">
+                            <?php echo $floorNumber; ?>
+                        </button>
+                        <?php endfor; ?>
+                    </div>
 
+                    <div class="mode-control-stack">
                         <div class="door-control-panel"
                             data-door-state="<?php echo $initialDoorsOpen ? 'open' : 'closed';?>">
-                            <p class="section-label"><b>Status</b>
+                            <p class="section-label"><b>Door Status</b>
                                 <span id="doorStatusDisplay">Closed</span>
                             </p>
 
@@ -740,7 +1001,6 @@ $safeUsername = htmlspecialchars($_SESSION['username'] ?? 'Member', ENT_QUOTES, 
 
                         <div class="sabbath-toggle"
                             data-operation-mode="<?php echo htmlspecialchars($initialOperationMode, ENT_QUOTES, 'UTF-8'); ?>">
-
                             <p class="section-label"><b>Sabbath Toggle</b></p>
 
                             <button type="button" id="sabbathToggle" class="sabbath-toggle-button">
@@ -748,9 +1008,8 @@ $safeUsername = htmlspecialchars($_SESSION['username'] ?? 'Member', ENT_QUOTES, 
                             </button>
                         </div>
 
-                        <?php if ($_SESSION['user_role'] === 'admin'): ?>
+                        <?php if(($_SESSION['user_role'] ?? '') === 'admin'): ?>
                         <div class="sabbath-toggle maintenance-toggle">
-
                             <p class="section-label"><b>Maintenance Toggle</b></p>
 
                             <button type="button" id="maintenanceToggle"
@@ -758,11 +1017,42 @@ $safeUsername = htmlspecialchars($_SESSION['username'] ?? 'Member', ENT_QUOTES, 
                                 Maintenance Mode
                             </button>
                         </div>
-                        <?php endif ?>
-
+                        <?php endif; ?>
                     </div>
                 </aside>
             </div>
+
+            <?php if(($_SESSION['user_role'] ?? '') === 'admin'): ?>
+            <section class="floor-lockout-panel" id="floorLockoutPanel"
+                <?php echo $initialOperationMode === 'maintenance' ? '' : 'hidden'; ?>>
+                <div class="lockout-heading">
+                    <div>
+                        <p class="section-label">Maintenance Mode</p>
+                        <h2>Single-Floor Lockout</h2>
+                    </div>
+                    <span class="preview-flag">Database Synced</span>
+                </div>
+
+                <p class="lockout-help">
+                    Select individual floors to mark them out of service. Saved lockouts remain active until restored.
+                </p>
+
+                <div class="floor-lockout-grid">
+                    <?php for($floorNumber = 1; $floorNumber <= 6; $floorNumber++): ?>
+                    <div class="lockout-floor" data-floor="<?php echo $floorNumber; ?>">
+                        <span class="lockout-number"><?php echo $floorNumber; ?></span>
+                        <span class="lockout-copy">
+                            <strong>Floor <?php echo $floorNumber; ?></strong>
+                            <small>Available</small>
+                        </span>
+                        <button type="button" class="floor-lockout-button" data-floor="<?php echo $floorNumber; ?>">
+                            Lock Floor
+                        </button>
+                    </div>
+                    <?php endfor; ?>
+                </div>
+            </section>
+            <?php endif; ?>
         </section>
 
         <p class="top-link">

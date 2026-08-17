@@ -71,12 +71,16 @@
   border-top-color: var(--ember);
 }
 
+.pcb-card {
+  border-top-color: #a9544e;
+}
+
 .elevator-card {
   border-top-color: var(--deep-blue);
 }
 
 .manage-req {
-  border-top-color: rgb(115, 0, 255);
+  border-top-color: #3c4b4f;
 }
 
 .elevator-diagnostics {

@@ -1,0 +1,350 @@
+<!doctype html>
+<!--
+Author: Nick Kapuka
+-->
+
+<html lang="en">
+  <head>
+    <title>Logbook Entry, 2026-08-05 by Nick Kapuka</title>
+    <meta charset="UTF-8" />
+    <meta name="author" content="Nick Kapuka" />
+    <meta
+      name="description"
+      content="Applied PHP object-oriented programming to the elevator project by creating a shared Node hierarchy, CAN-related interfaces and traits, hardware-specific child classes, and exception classes. I also documented the related elevator request and CAN log tables used for the database portion of the assignment."
+    />
+    <meta name="robots" content="index, follow" />
+    <meta http-equiv="Pragma" content="no-cache" />
+
+    <link
+      rel="icon"
+      href="../../media/icons/LiF_icon.ico"
+      type="image/x-icon"
+    />
+    <link rel="stylesheet" href="../../css/base.css" />
+    <link rel="stylesheet" href="../../css/logbook_entry.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css"
+    />
+    <link rel="stylesheet" href="../../css/code_formatting.css" />
+  </head>
+
+  <body>
+    <div id="navbar-placeholder" data-root="../../"></div>
+    <script src="../../js/navbar.js"></script>
+
+    <main class="page-wrapper">
+      <section class="intro-section logbook-entry-intro" id="page_top">
+        <div class="intro-text">
+          <p class="section-label">Daily Logbook Entry</p>
+          <h1>Logbook Entry, 2026-08-05 by Nick Kapuka</h1>
+          <p class="intro-description">
+            Applied PHP object-oriented programming to the elevator project by
+            creating a shared Node hierarchy, CAN-related interfaces and traits,
+            hardware-specific child classes, and exception classes. I also
+            documented the related elevator request and CAN log tables used for
+            the database portion of the assignment.
+          </p>
+
+          <div class="button-row">
+            <a href="../logbook_NK.html" class="button secondary-button"
+              >My Logbook Cover Page</a
+            >
+            <a href="#log" class="button primary-button">Jump to Entry</a>
+          </div>
+        </div>
+
+        <aside class="summary-card">
+          <h2>Entry Snapshot</h2>
+          <p><b>Date:</b> 2026-08-05</p>
+          <p><b>Author:</b> Nick Kapuka</p>
+          <p>
+            <b>Focus:</b> PHP OOP, inheritance, interfaces, traits, exceptions,
+            MariaDB
+          </p>
+          <p><b>Tags:</b> #logbook #project-vi #php #oop #mariadb #can-bus</p>
+        </aside>
+      </section>
+
+      <section class="logbook-entry-content" id="log">
+        <h2 id="php-oop">PHP OOP:</h2>
+        <p>
+          The main goal was to apply the object-oriented programming topics from
+          Assignment 2 to the real elevator project. Instead of leaving the
+          elevator car, floor stations, and sensor as unrelated variables, I
+          created PHP classes that represent the physical parts of the system.
+        </p>
+        <p>The final relationship was:</p>
+        <pre
+          class="code-block language-text"
+        ><code class="language-text">Node (abstract parent)
+├── ElevatorCar
+├── FloorNode
+└── DistanceSensor
+
+CANDevice (interface)
+├── ElevatorCar
+└── FloorNode
+
+CANIdentifierTrait
+├── ElevatorCar
+└── FloorNode</code></pre>
+        <h2 id="abstract-node-parent-class">
+          Abstract <code>Node</code> parent class
+        </h2>
+        <p>
+          I created <code>Node.php</code> as the parent for all of the hardware
+          objects. It is abstract because the project should create a specific
+          elevator car, floor node, or sensor rather than a generic node with no
+          purpose.
+        </p>
+        <p>The shared properties are private:</p>
+        <pre
+          class="code-block language-php"
+        ><code class="language-php">private static $nodeCount = 0;
+private $nodeName;
+private $online;</code></pre>
+        <p>
+          This demonstrates encapsulation. Code outside the class cannot
+          directly overwrite the properties and must instead use methods such as
+          <code>getNodeName()</code>, <code>isOnline()</code>, and
+          <code>setOnline()</code>.
+        </p>
+        <p>
+          <code>$nodeCount</code> is static, so it belongs to the class rather
+          than one object. Every time a child calls the parent constructor, the
+          counter increases:
+        </p>
+        <pre
+          class="code-block language-php"
+        ><code class="language-php">self::$nodeCount++;</code></pre>
+        <p>The total can then be read without a particular object:</p>
+        <pre
+          class="code-block language-php"
+        ><code class="language-php">Node::getNodeCount();</code></pre>
+        <p>The parent also declares:</p>
+        <pre
+          class="code-block language-php"
+        ><code class="language-php">abstract public function getNodeType(): string;</code></pre>
+        <p>This forces every child class to identify its own node type.</p>
+        <h2 id="elevator-floor-and-sensor-classes">
+          Elevator, floor, and sensor classes
+        </h2>
+        <p>
+          <code>ElevatorCar</code> stores the current floor and door state. Its
+          main methods are:
+        </p>
+        <ul class="clean-list">
+          <li>
+            <code>confirmCurrentFloor()</code> to store an EC-confirmed floor.
+          </li>
+          <li>
+            <code>openDoors()</code> and <code>closeDoors()</code> to change the
+            object state.
+          </li>
+          <li><code>areDoorsOpen()</code> to return the current door state.</li>
+          <li>
+            <code>canMove()</code> to permit movement only when the node is
+            online and the doors are closed.
+          </li>
+        </ul>
+        <p>
+          The floor is validated before it is accepted. A value outside Floors 1
+          to 3 throws a <code>NodeInputException</code> rather than allowing an
+          invalid state into the object.
+        </p>
+        <p>
+          <code>FloorNode</code> stores its floor number and whether it
+          currently has an active request. Its methods include
+          <code>requestElevator()</code>, <code>clearRequest()</code>, and
+          <code>hasActiveRequest()</code>.
+        </p>
+        <p>
+          <code>DistanceSensor</code> stores a distance measurement in
+          millimetres. <code>setDistanceMm()</code> rejects negative values
+          because a negative physical distance would not be valid for this
+          sensor.
+        </p>
+        <h2 id="interface-and-trait">Interface and trait</h2>
+        <p>
+          The elevator car and floor nodes communicate on CAN, so both implement
+          the <code>CANDevice</code> interface:
+        </p>
+        <pre
+          class="code-block language-php"
+        ><code class="language-php">interface CANDevice {
+    public function getCANID(): string;
+}</code></pre>
+        <p>
+          The interface is a promise that every CAN device has a
+          <code>getCANID()</code> method. This lets the control page loop over
+          several different object types while treating all of them as CAN
+          devices.
+        </p>
+        <p>
+          The actual CAN ID property and getter are shared through
+          <code>CANIdentifierTrait</code>:
+        </p>
+        <pre
+          class="code-block language-php"
+        ><code class="language-php">trait CANIdentifierTrait {
+    private $canID;
+
+    public function getCANID(): string {
+        return $this-&gt;canID;
+    }
+}</code></pre>
+        <p>
+          Using the trait avoids copying the same property and getter into both
+          classes.
+        </p>
+        <h2 id="object-instantiation-and-test">
+          Object instantiation and test
+        </h2>
+        <p>
+          The PHP control page creates objects that match the project network:
+        </p>
+        <pre
+          class="code-block language-php"
+        ><code class="language-php">$elevatorCar = new ElevatorCar(&quot;EC&quot;, &quot;0x101&quot;, 1);
+
+$floorNodes = [
+    1 =&gt; new FloorNode(&quot;F1&quot;, &quot;0x201&quot;, 1),
+    2 =&gt; new FloorNode(&quot;F2&quot;, &quot;0x202&quot;, 2),
+    3 =&gt; new FloorNode(&quot;F3&quot;, &quot;0x203&quot;, 3)
+];
+
+$distanceSensor = new DistanceSensor(&quot;DS&quot;);</code></pre>
+        <p>
+          The floor-node array makes it possible to select an object by
+          requested floor:
+        </p>
+        <pre
+          class="code-block language-php"
+        ><code class="language-php">$selectedFloorNode = $floorNodes[$requestedFloor];
+$selectedFloorNode-&gt;requestElevator();</code></pre>
+        <p>
+          The selected object's validated floor number is then used by the
+          existing prepared SQL statement:
+        </p>
+        <pre
+          class="code-block language-php"
+        ><code class="language-php">&#39;requested_floor&#39; =&gt; $selectedFloorNode-&gt;getFloorNumber()</code></pre>
+        <p>
+          Door and movement handling now use the elevator object instead of
+          loose Boolean checks:
+        </p>
+        <pre
+          class="code-block language-php"
+        ><code class="language-php">$doorsOpen = $elevatorCar-&gt;areDoorsOpen();
+$movementAllowed = $elevatorCar-&gt;canMove();</code></pre>
+        <h2 id="exception-handling">Exception handling</h2>
+        <p>
+          I added <code>NodeInputException</code> and
+          <code>CommunicationException</code>, both extending PHP's base
+          <code>Exception</code> class.
+        </p>
+        <ul class="clean-list">
+          <li>
+            <code>NodeInputException</code> represents invalid floors, invalid
+            controller names, negative sensor distances, or other bad node
+            input.
+          </li>
+          <li>
+            <code>CommunicationException</code> represents a node or database
+            state that could not be reached.
+          </li>
+          <li>
+            <code>PDOException</code> remains responsible for failures reported
+            directly by PDO/MariaDB.
+          </li>
+        </ul>
+        <p>
+          The control page catches these separately so it can return a useful
+          JSON error type to JavaScript.
+        </p>
+        <h2 id="related-sql-tables">Related SQL tables</h2>
+        <p>
+          For the database portion, I used the linked
+          <code>elevator_requests</code> and <code>can_message_log</code> tables
+          rather than creating unrelated test data.
+        </p>
+        <p>
+          <code>elevator_requests</code> is the parent table. Its
+          auto-incremented <code>elevator_request_id</code> uniquely identifies
+          a requested trip and stores the requested floor, source controller,
+          requesting user, status, and timestamps.
+        </p>
+        <p>
+          <code>can_message_log</code> is the child table. Each row has its own
+          auto-incremented <code>log_id</code>, and its optional
+          <code>elevator_request_id</code> points back to the request that
+          caused the CAN message:
+        </p>
+        <pre
+          class="code-block language-sql"
+        ><code class="language-sql">CONSTRAINT fk_can_log_request
+    FOREIGN KEY (elevator_request_id)
+    REFERENCES elevator_requests (elevator_request_id)
+    ON DELETE SET NULL
+    ON UPDATE CASCADE</code></pre>
+        <p>
+          <code>ON DELETE SET NULL</code> keeps the CAN history even if the
+          related request is removed. Indexes on fields such as
+          <code>can_id</code> and <code>logged_at</code> make later diagnostics
+          queries faster.
+        </p>
+        <h2 id="result">Result</h2>
+        <p>
+          The object model is now connected to the real elevator request path
+          instead of existing only as a demonstration. PHP still queues requests
+          through the existing database, while the hardware and WebSocket paths
+          remain responsible for confirming actual movement.
+        </p>
+        <figure class="logbook-figure">
+          <img
+            class="img_med"
+            src="../../media/images/PHP_OOP_CANInterfaceDefault.png"
+            alt="PHP_OOP_CANInterfaceDefault.png"
+          />
+        </figure>
+
+        <h2 id="breaking-it">Breaking it:</h2>
+        <p>
+          I purposefully set the elevatorCar offline to test if messages can
+          still be queued:
+        </p>
+        <pre
+          class="code-block language-php"
+        ><code class="language-php">// methods throw CommunicationException if a node is offline
+        $elevatorCar-&gt;setOnline(false);
+        $elevatorCar-&gt;verifyConnection();
+        $selectedFloorNode-&gt;verifyConnection();</code></pre>
+        <p>
+          Then, when clicking any floor/car request button, an exception gets
+          thrown:
+        </p>
+        <figure class="logbook-figure">
+          <img
+            class="img_med"
+            src="../../media/images/PHP_OOP_CANInterfaceCCFailureTest.png"
+            alt="PHP_OOP_CANInterfaceCCFailureTest.png"
+          />
+        </figure>
+
+        <p>The same can be done for any floor node within the array.</p>
+      </section>
+
+      <p class="top-link">
+        <a href="#page_top">Go to the top of this page</a>
+      </p>
+    </main>
+
+    <footer class="site-footer">
+      <p>Copyright &copy; Nick Kapuka</p>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+  </body>
+</html>

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<!--
+Author: Matvey Regentov
+-->
+
+<html lang="en">
+
+<head>
+	<title>MR Logbook Entry - 2026-08-07</title>
+	<meta charset="UTF-8">
+	<meta name="author" content="Matvey Regentov">
+	<meta name="description" content="MR Logbook Entry for 2026-08-07">
+	<meta name="robots" content="index, follow">
+	<meta http-equiv="Pragma" content="no-cache">
+
+	<link rel="icon" href="../../media/icons/LiF_icon.ico" type="image/x-icon">
+	<link rel="stylesheet" href="../../css/base.css">
+	<link rel="stylesheet" href="../../css/logbook_entry.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css">
+	<link rel="stylesheet" href="../../css/code_formatting.css">
+	<script>
+		window.MathJax = {
+			tex: {
+				inlineMath: [['\\(', '\\)'], ['$', '$']],
+				displayMath: [['\\[', '\\]'], ['$$', '$$']]
+			},
+			svg: { fontCache: 'global' }
+		};
+	</script>
+	<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+</head>
+
+<body>
+	<div id="navbar-placeholder" data-root="../../"></div>
+	<script src="../../js/navbar.js"></script>
+
+	<main class="page-wrapper">
+		<section class="intro-section logbook-entry-intro" id="page_top">
+			<div class="intro-text">
+				<p class="section-label">Daily Logbook Entry</p>
+				<h1>Logbook Entry, 2026-08-07 by Matvey Regentov</h1>
+				<p class="intro-description">I/O PCB soldering and integrated WebSocket and door-control testing</p>
+				<div class="button-row">
+					<a href="../logbook_MR.html" class="button secondary-button">My Logbook Cover Page</a>
+					<a href="#log" class="button primary-button">Jump to Entry</a>
+					<a href="MR_entry_2026-08-06.html" class="button secondary-button">Previous Entry</a>
+					<a href="MR_entry_2026-08-10.html" class="button secondary-button">Next Entry</a>
+				</div>
+			</div>
+			<aside class="summary-card">
+				<h2>Entry Snapshot</h2>
+				<p><b>Date:</b> 2026-08-07</p>
+				<p><b>Author:</b> Matvey Regentov</p>
+				<p><b>Focus:</b> I/O PCB soldering and integrated WebSocket and door-control testing</p>
+			</aside>
+		</section>
+
+		<section class="logbook-entry-content" id="log">
+			<h2 id="io-pcb-soldering">I/O PCB Soldering</h2>
+			<p>I soldered one I/O PCB. I did not install the pin headers because female headers were unavailable. Based on my prior experience, it is preferable to solder the stack-up headers while both boards are connected so that the pins remain properly aligned.</p>
+			<figure class="logbook-figure">
+				<img src="../../media/images/Lif_IO_PCB_soldered_Top_side.png" alt="Top side of the soldered LiF I/O PCB" class="logbook-image centered-image" style="max-width: 100%; height: auto;">
+				<figcaption>Top side of the soldered LiF I/O PCB</figcaption>
+			</figure>
+			<figure class="logbook-figure">
+				<img src="../../media/images/Lif_IO_PCB_soldered_Bottom_side.png" alt="Bottom side of the soldered LiF I/O PCB" class="logbook-image centered-image" style="max-width: 100%; height: auto;">
+				<figcaption>Bottom side of the soldered LiF I/O PCB</figcaption>
+			</figure>
+			<p>The laboratory conditions were also extremely uncomfortable while I was completing this work.</p>
+			<figure class="logbook-figure">
+				<img src="../../media/images/LiF_Lab_thermostat_snapshot.png" alt="Laboratory thermostat during I/O PCB soldering" class="logbook-image centered-image" style="max-width: 100%; height: auto;">
+				<figcaption>Laboratory thermostat reading during I/O PCB soldering</figcaption>
+			</figure>
+
+			<h2 id="integrated-testing-with-nick">Integrated Testing with Nick</h2>
+			<p>Nick and I met in the laboratory to perform integrated testing of his WebSocket implementation and my cleaned-up SC code. We discovered a critical flaw in the virtual-door implementation: the database did not distinguish between a CAN door-state update and a website door-state update. As a result, the SC could repeatedly process its own database changes in an infinite loop.</p>
+			<p>Because an integer was already used to represent the door state, we corrected the issue by using an additional bit to identify which source had last updated the database. The following values were defined:</p>
+			<ul>
+				<li><b>0:</b> The website last updated the database, and the door is closed.</li>
+				<li><b>1:</b> The website last updated the database, and the door is open.</li>
+				<li><b>2:</b> CAN, through the CC, last updated the database, and the door is closed.</li>
+				<li><b>3:</b> CAN, through the CC, last updated the database, and the door is open.</li>
+			</ul>
+			<p>After I corrected this issue and Nick troubleshot the WebSocket door-update code, we recorded a final demonstration of the complete project.</p>
+			<figure class="logbook-figure">
+				<video controls class="logbook-image centered-image"
+					style="max-width: 100%; height: auto;">
+					<source
+						src="../../media/video/Virt_Phy_Doors.mp4"
+						type="video/mp4">
+				</video>
+				<figcaption>
+					Integrated system demonstration showing WebSocket updates, virtual and
+					physical door control, Sabbath mode, and audio announcements
+				</figcaption>
+			</figure>
+
+			<figure class="logbook-figure">
+				<video controls class="logbook-image centered-image"
+					style="max-width: 100%; height: auto;">
+					<source
+						src="../../media/video/Sabbath_Mode_P3.mp4"
+						type="video/mp4">
+				</video>
+				<figcaption>
+					Demonstration of the elevator system operating in sabbath mode
+				</figcaption>
+			</figure>
+
+			<figure class="logbook-figure">
+				<video controls class="logbook-image centered-image"
+					style="max-width: 100%; height: auto;">
+					<source
+						src="../../media/video/Maintenance_Mode_P3.mp4"
+						type="video/mp4">
+				</video>
+				<figcaption>
+					Demonstration of the elevator system operating in maintenance mode
+				</figcaption>
+			</figure>
+		</section>
+
+		<section class="logbook-entry-content sources-section" id="sources">
+			<h2>Sources</h2>
+			<p>No external sources were cited in this entry.</p>
+		</section>
+
+		<nav class="entry-date-nav" aria-label="Logbook date navigation">
+			<a href="MR_entry_2026-08-06.html" class="button secondary-button">Previous Entry</a>
+			<a href="MR_entry_2026-08-10.html" class="button secondary-button">Next Entry</a>
+		</nav>
+		<p class="top-link"><a href="#page_top">Go to the top of this page</a></p>
+	</main>
+
+	<footer class="site-footer"><p>Copyright &copy; Matvey Regentov</p></footer>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+</body>
+
+</html>

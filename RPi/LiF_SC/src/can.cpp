@@ -124,7 +124,7 @@ int CAN::pcanTx(int id, int data) {
 	Txmsg.LEN = 1; 
 	Txmsg.DATA[0] = data; 
 
-    std::cout << "Tx CAN ID 0x" << std::hex << id << " data 0x" << data << std::dec << std::endl;
+    std::cout << "Transmitting CAN message with ID 0x" << std::hex << id << " data 0x" << data << std::dec << std::endl;
 
     // not sure why the delay was here. trying to remove it
 	// sleep(1);  
@@ -158,11 +158,7 @@ void CAN::ec_go_to_floor(unsigned int floor, bool ec_enable) {
 }
 
 void CAN::cc_set_doors(bool is_open) {
-    if (is_open) {
-        pcanTx(ID::SC_CC_VIRT_DOOR, 1);    
-    } else {
-        pcanTx(ID::SC_CC_VIRT_DOOR, 0);    
-    }
+    cc_send_door_update(false, true, is_open);
 }
 
 int CAN::rx_can_frame(RxFrame *rx_buffer, TPCANMsg* raw_msg) {
@@ -233,6 +229,14 @@ int CAN::rx_can_frame(RxFrame *rx_buffer, TPCANMsg* raw_msg) {
     }
     
     return res;
+}
+
+void CAN::cc_send_door_update(bool do_reply, bool do_use_virt_door, bool is_virt_door_open) {
+    pcanTx(ID::SC_CC_VIRT_DOOR,
+        (((int)do_reply) << 2) | 
+        (((int)do_use_virt_door) << 1) |
+        ((int)is_virt_door_open)
+    );
 }
 
 unsigned int CAN::get_status() {
