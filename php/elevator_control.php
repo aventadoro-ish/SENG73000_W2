@@ -140,19 +140,63 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit;
         } 
 
-        // OOP change - open/closeDoors function
-        if($submittedDoorState === 'open') {
-            $elevatorCar->openDoors();
-        } else {
-            $elevatorCar->closeDoors();
-        }
-
-        // convert the object state into the DB boolean
-        $doorsOpen = ($elevatorCar->areDoorsOpen()) ? 1 : 0;
-
-
-        // query DB
         try {
+            // Lock the shared state row while permission is checked and the
+            // door state is updated. This prevents Maintenance from changing
+            // halfway through a non-admin door-open request.
+            $pdo->beginTransaction();
+
+            $query = "
+                SELECT doors_open, operation_mode
+                FROM elevator_state
+                WHERE state_id = 1
+                LIMIT 1
+                FOR UPDATE
+            ";
+
+            $statement = $pdo->prepare($query);
+            $result = $statement->execute();
+            $elevatorState = $statement->fetch();
+
+            if(!$result || !$elevatorState) {
+                throw new RuntimeException('Elevator state could not be received');
+            }
+
+            $userIsAdmin = ($_SESSION['user_role'] ?? '') === 'admin';
+
+            // During Maintenance, only administrators may operate the doors.
+            // This blocks both opening and closing while personnel may be
+            // servicing the doorway, actuator, or safety sensors.
+            if(
+                $elevatorState['operation_mode'] === 'maintenance' &&
+                !$userIsAdmin
+            ) {
+                $currentDoorState = ((int) $elevatorState['doors_open'] & 1) === 1
+                    ? 'open'
+                    : 'closed';
+
+                $pdo->rollBack();
+
+                echo json_encode([
+                    'success' => false,
+                    'message' => 'Only administrators can operate the doors while Maintenance mode is active',
+                    'door_state' => $currentDoorState,
+                    'operation_mode' => 'maintenance'
+                ]);
+
+                exit;
+            }
+
+            // OOP change - open/closeDoors function
+            if($submittedDoorState === 'open') {
+                $elevatorCar->openDoors();
+            } else {
+                $elevatorCar->closeDoors();
+            }
+
+            // convert the object state into the DB boolean
+            $doorsOpen = $elevatorCar->areDoorsOpen() ? 1 : 0;
+
             // update the row that represents door state
             $query = "
                 UPDATE elevator_state
@@ -166,24 +210,28 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $result = $statement->execute($params);
 
-            if($result) {
-                echo json_encode([
-                    'success' => true,
-                    'message' => 'door state updated',
-                    'door_state' => $submittedDoorState
-                ]);
-            } else {
-                echo json_encode([
-                    'success' => false,
-                    'message' => 'door state failed to update; its joever'
-                ]);
+            if(!$result) {
+                throw new RuntimeException('Door state could not be updated');
             }
-        } catch (PDOException $e) {
+
+            $pdo->commit();
+
+            echo json_encode([
+                'success' => true,
+                'message' => 'door state updated',
+                'door_state' => $submittedDoorState,
+                'operation_mode' => $elevatorState['operation_mode']
+            ]);
+        } catch (Throwable $e) {
+            if($pdo->inTransaction()) {
+                $pdo->rollBack();
+            }
+
             error_log($e->getMessage());
 
             echo json_encode([
                 'success' => false,
-                'message' => 'query for door state failed, its joever'
+                'message' => 'A database error prevented the door update'
             ]);
         }
 
@@ -854,6 +902,7 @@ $safeUsername = htmlspecialchars($_SESSION['username'] ?? 'Member', ENT_QUOTES, 
         id="elevatorControlPage" data-initial-floor="<?php echo $initialFloor; ?>"
         data-initial-request-id="<?php echo $initialRequestID; ?>" data-initial-source="<?php echo $initialSource; ?>"
         data-operation-mode="<?php echo htmlspecialchars($initialOperationMode, ENT_QUOTES, 'UTF-8'); ?>"
+        data-is-admin="<?php echo (($_SESSION['user_role'] ?? '') === 'admin') ? 'true' : 'false'; ?>"
         data-floor-lockouts="<?php echo htmlspecialchars(json_encode($initialFloorLockouts), ENT_QUOTES, 'UTF-8'); ?>">
         <section class="intro-section elevator-control-intro" id="page_top">
 

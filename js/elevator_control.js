@@ -18,6 +18,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const initialRequestID = elevatorControlPage.dataset.initialRequestId;
     const initialSource = elevatorControlPage.dataset.initialSource;
     const initialOperationMode = elevatorControlPage.dataset.operationMode;
+    const currentUserIsAdmin = elevatorControlPage.dataset.isAdmin === "true";
 
     // PHP places the six saved database lockout states in this data attribute
     let initialFloorLockouts = {};
@@ -235,6 +236,9 @@ document.addEventListener("DOMContentLoaded", function () {
         if (responseData.success === true) {
             const confirmedDoorsOpen = responseData.door_state === "open";
 
+            if (responseData.operation_mode) {
+                updateOperationModeDisplay(responseData.operation_mode);
+            }
 
             // update the webpage when door state was changed
             updateDoorDisplay(confirmedDoorsOpen);
@@ -250,9 +254,19 @@ document.addEventListener("DOMContentLoaded", function () {
             }
 
         } else {
+            // Synchronize stale pages when PHP reports that Maintenance is
+            // currently controlling door permissions.
+            if (responseData.operation_mode) {
+                updateOperationModeDisplay(responseData.operation_mode);
+            }
+
+            if (responseData.door_state) {
+                updateDoorDisplay(responseData.door_state === "open");
+            }
+
             // PHP responded but SQL failed
             // update the last command text
-            lastCommandDisplay.textContent = "Door update rejected " + responseData.message;
+            lastCommandDisplay.textContent = "Door update rejected: " + responseData.message;
         }
     }
 
@@ -532,6 +546,32 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
+    // Only administrators may operate the doors during Maintenance.
+    function updateDoorControlAccess() {
+        const doorControlIsRestricted =
+            maintenanceEnabled === true &&
+            currentUserIsAdmin !== true;
+
+        doorToggleButton.disabled = doorControlIsRestricted;
+        doorToggleButton.setAttribute(
+            "aria-disabled",
+            String(doorControlIsRestricted)
+        );
+        doorControlPanel.classList.toggle(
+            "maintenance-door-locked",
+            doorControlIsRestricted
+        );
+
+        if (doorControlIsRestricted) {
+            doorToggleButton.textContent = "Door Controls Restricted to Admins";
+            doorToggleButton.title =
+                "Only administrators can operate the doors during Maintenance mode";
+        } else {
+            doorToggleButton.textContent = doorsOpen ? "Close Doors" : "Open Doors";
+            doorToggleButton.removeAttribute("title");
+        }
+    }
+
     // update the appearance of the maintenance button
     function updateMaintenanceDisplay(newMaintenanceState) {
 
@@ -568,6 +608,8 @@ document.addEventListener("DOMContentLoaded", function () {
             sabbathToggle.removeAttribute("title");
             updateSabbathDisplay(sabbathEnabled);
         }
+
+        updateDoorControlAccess();
 
         if (!maintenanceToggle) {
             return;
@@ -619,6 +661,8 @@ document.addEventListener("DOMContentLoaded", function () {
             // Remove the open-door class.
             elevatorCar.classList.remove("doors-open");
         }
+
+        updateDoorControlAccess();
     }
 
     // synchronize both buttons with operation_mode from the DB
@@ -655,6 +699,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // decide which door state should be requested
     function toggleDoors() {
+        if (
+            maintenanceEnabled === true &&
+            currentUserIsAdmin !== true
+        ) {
+            lastCommandDisplay.textContent =
+                "Only administrators can operate the doors while Maintenance mode is active";
+            return;
+        }
+
         let requestedDoorState = "open";
 
         // if the doors are already open, request that they close.
