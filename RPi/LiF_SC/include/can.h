@@ -115,6 +115,7 @@ public:
      */
     int rx_can_frame(RxFrame* rx_buffer, TPCANMsg* raw_msg = nullptr);
 
+    void cc_send_door_update(bool do_reply, bool do_use_virt_door, bool is_virt_door_open);
 
     unsigned int get_status();
 };

@@ -368,7 +368,7 @@ void Scheduler::print_state(std::ostream &outs) const {
          << "    floor | up | down | car\n"
          << "    ------+----+------+----\n";
 
-    for (unsigned int i = 0; i < NUM_FLOORS; ++i) {
+    for (int i = (int)NUM_FLOORS - 1; i >= 0; --i) {
         outs << "    " << (i + 1) << "     | "
              << (this->floor_requests[i][0] ? "X " : ". ")
              << " | " << (this->floor_requests[i][1] ? "X   " : ".   ")
