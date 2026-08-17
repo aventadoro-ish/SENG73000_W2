@@ -1,157 +1,285 @@
 /* CAN protocol page styling */
 .CANprotocol-intro {
-    grid-template-columns: 2fr 0.9fr;
+  grid-template-columns: 2fr 0.9fr;
 }
 
 .CANprotocol-card-list {
-    display: grid;
-    gap: 24px;
-    margin-top: 28px;
+  display: grid;
+  gap: 24px;
+  margin-top: 28px;
 }
 
 .CANprotocol-card,
 .CANprotocol-table-section,
 .CANprotocol-legend-section {
-    padding: 28px;
-    background-color: var(--card-bg);
-    border-radius: 14px;
-    box-shadow: 0 4px 14px var(--shadow);
+  padding: 28px;
+  background-color: var(--card-bg);
+  border-radius: 14px;
+  box-shadow: 0 4px 14px var(--shadow);
 }
 
 .CANprotocol-card {
-    border-left: 5px solid var(--aqua);
+  border-left: 5px solid var(--aqua);
 }
 
 .CANprotocol-table-section {
-    margin-top: 28px;
-    border-top: 5px solid var(--orange);
+  margin-top: 28px;
+  border-top: 5px solid var(--orange);
 }
 
 .CANprotocol-legend-section {
-    margin-top: 28px;
-    border-left: 5px solid var(--palm);
+  margin-top: 28px;
+  border-left: 5px solid var(--palm);
 }
 
 .CANprotocol-card-text h2,
 .CANprotocol-section-heading h2,
 .CANprotocol-legend-section h2 {
-    margin-top: 0;
-    color: var(--deep-blue);
+  margin-top: 0;
+  color: var(--deep-blue);
 }
 
 .CANprotocol-card-text p,
 .CANprotocol-section-heading p,
 .CANprotocol-legend-section p {
-    text-align: left;
-    text-indent: 0;
-    line-height: 1.55;
+  text-align: left;
+  text-indent: 0;
+  line-height: 1.55;
 }
 
 .CANprotocol-table-wrapper {
-    margin-top: 18px;
-    overflow-x: auto;
-    border-radius: 12px;
-    border: 1px solid rgba(9, 124, 135, 0.24);
-    box-shadow: 0 4px 14px var(--shadow);
+  margin-top: 18px;
+  overflow-x: auto;
+  scrollbar-gutter: stable;
+  border-radius: 12px;
+  border: 1px solid rgba(9, 124, 135, 0.24);
+  box-shadow: 0 4px 14px var(--shadow);
+  background-color: #fffdf4;
 }
 
 .CANprotocol-table {
-    width: 100%;
-    min-width: 980px;
-    border-collapse: collapse;
-    background-color: #fffdf4;
-    font-size: 0.96rem;
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #fffdf4;
+  font-size: 0.96rem;
+}
+
+.CANprotocol-table caption {
+  padding: 13px 16px;
+  color: var(--deep-blue);
+  background-color: #fff8df;
+  border-bottom: 1px solid rgba(9, 124, 135, 0.18);
+  font-weight: bold;
+  text-align: left;
 }
 
 .CANprotocol-table th,
 .CANprotocol-table td {
-    padding: 11px 12px;
-    border: 1px solid rgba(9, 124, 135, 0.22);
-    text-align: center;
-    vertical-align: middle;
+  padding: 11px 12px;
+  border: 1px solid rgba(9, 124, 135, 0.22);
+  text-align: center;
+  vertical-align: middle;
 }
 
 .CANprotocol-table thead th {
-    color: var(--ink);
-    background-color: #d7d7d7;
-    font-weight: bold;
-    text-align: center;
-    vertical-align: middle;
+  color: var(--ink);
+  background-color: #d7d7d7;
+  font-weight: bold;
+  text-align: center;
+  vertical-align: middle;
 }
 
 .CANprotocol-table .CANprotocol-byte-header {
-    color: white;
-    background-color: var(--deep-blue);
+  color: white;
+  background-color: var(--deep-blue);
 }
 
-.CANprotocol-table thead tr:nth-child(2) th {
-    color: white;
-    background-color: var(--deep-blue);
+.CANprotocol-message-table thead th:last-child {
+  color: white;
+  background-color: var(--deep-blue);
+  font-size: 1.05rem;
 }
 
-.CANprotocol-table thead tr:first-child th:last-child {
-    color: white;
-    background-color: var(--deep-blue);
-    font-size: 1.05rem;
+.CANprotocol-byte-header span {
+  display: block;
+  margin-top: 2px;
+  font-size: 0.7rem;
+  font-weight: normal;
+  letter-spacing: 0.06em;
+  opacity: 0.78;
 }
 
-.CANprotocol-table thead tr:nth-child(2) th {
-    color: white;
-    background-color: var(--deep-blue);
+.CANprotocol-table tbody tr:nth-child(even) > td,
+.CANprotocol-table tbody tr:nth-child(even) > th {
+  background-color: rgba(9, 124, 135, 0.035);
 }
 
-.CANprotocol-table thead th[rowspan="2"] {
-    background-color: #d0d0d0;
-    color: var(--ink);
+.CANprotocol-table tbody tr:hover > td,
+.CANprotocol-table tbody tr:hover > th {
+  background-color: #eb41035b;
+  /* same as --ember but a bit more transparent) */
 }
 
-.CANprotocol-table tbody tr:hover td {
-    background-color: #eb41035b;
-    /* same as --ember but a bit more transparent) */
+.CANprotocol-table tbody th[scope="row"] {
+  font-weight: bold;
+  color: var(--deep-blue);
 }
 
-.CANprotocol-table tbody td:first-child {
-    font-weight: bold;
-    color: var(--deep-blue);
+.CANprotocol-table code,
+.CANprotocol-bit-cell {
+  font-family: "Cascadia Code", "SFMono-Regular", Consolas, monospace;
 }
 
-.CANprotocol-bit {
-    font-weight: bold;
-    color: var(--ink);
+.CANprotocol-message-table {
+  min-width: 1120px;
+  table-layout: fixed;
+}
+
+.CANprotocol-col-id {
+  width: 8%;
+}
+
+.CANprotocol-col-description {
+  width: 20%;
+}
+
+.CANprotocol-col-node {
+  width: 7%;
+}
+
+.CANprotocol-col-dlc {
+  width: 5%;
+}
+
+.CANprotocol-col-byte {
+  width: 53%;
+}
+
+.CANprotocol-message-table tbody td:nth-child(2) {
+  text-align: left;
+}
+
+.CANprotocol-message-table tbody th,
+.CANprotocol-message-table tbody td:nth-child(3),
+.CANprotocol-message-table tbody td:nth-child(4),
+.CANprotocol-message-table tbody td:nth-child(5) {
+  white-space: nowrap;
+}
+
+.CANprotocol-message-table tbody td:last-child {
+  padding: 8px;
+}
+
+.CANprotocol-byte-map {
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  gap: 5px;
+  min-width: 520px;
+}
+
+.CANprotocol-bit-cell {
+  position: relative;
+  display: flex;
+  min-height: 58px;
+  padding: 23px 6px 7px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(23, 56, 59, 0.2);
+  border-radius: 7px;
+  color: var(--ink);
+  font-size: 0.72rem;
+  font-weight: bold;
+  line-height: 1.15;
+  overflow-wrap: anywhere;
+}
+
+.CANprotocol-bit-cell::before {
+  content: attr(data-bit);
+  position: absolute;
+  top: 4px;
+  left: 6px;
+  color: var(--deep-blue);
+  font-family: inherit;
+  font-size: 0.64rem;
+  font-weight: normal;
+  opacity: 0.7;
+}
+
+.CANprotocol-span-2 {
+  grid-column: span 2;
+}
+
+.CANprotocol-unused {
+  color: rgba(23, 56, 59, 0.36);
+  background-color: rgba(23, 56, 59, 0.055);
 }
 
 .CANprotocol-enable {
-    background-color: var(--aqua);
+  background-color: var(--aqua);
 }
 
 .CANprotocol-position {
-    background-color: var(--palm);
+  background-color: var(--palm);
 }
 
 .CANprotocol-request {
-    background-color: var(--yellow);
+  background-color: var(--yellow);
+}
+
+.CANprotocol-field-table {
+  min-width: 760px;
+}
+
+.CANprotocol-field-table th:first-child,
+.CANprotocol-field-table td:first-child {
+  width: 22%;
+}
+
+.CANprotocol-field-table td:first-child {
+  font-family: "Cascadia Code", "SFMono-Regular", Consolas, monospace;
+  font-weight: bold;
+  color: var(--deep-blue);
+}
+
+.CANprotocol-field-table th:nth-child(2),
+.CANprotocol-field-table td:nth-child(2),
+.CANprotocol-field-table th:nth-child(3),
+.CANprotocol-field-table td:nth-child(3) {
+  text-align: left;
 }
 
 .CANprotocol-legend-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 14px;
-    margin-top: 18px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 18px;
 }
 
 .CANprotocol-legend-item {
-    display: flex;
-    align-items: center;
-    gap: 9px;
-    padding: 10px 14px;
-    background-color: #fff8df;
-    border-radius: 25px;
-    font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 10px 14px;
+  background-color: #fff8df;
+  border-radius: 25px;
+  font-weight: bold;
 }
 
 .CANprotocol-legend-box {
-    display: inline-block;
-    width: 20px;
-    height: 20px;
-    border-radius: 5px;
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border-radius: 5px;
+}
+
+@media (max-width: 760px) {
+  .CANprotocol-card,
+  .CANprotocol-table-section,
+  .CANprotocol-legend-section {
+    padding: 20px;
+  }
+
+  .CANprotocol-table-wrapper {
+    margin-right: -8px;
+  }
 }

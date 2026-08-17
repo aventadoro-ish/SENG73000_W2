@@ -1,0 +1,489 @@
+<!doctype html>
+<!--
+Author: Nick Kapuka
+-->
+
+<html lang="en">
+  <head>
+    <title>Logbook Entry, 2026-08-17 by Nick Kapuka</title>
+    <meta charset="UTF-8" />
+    <meta name="author" content="Nick Kapuka" />
+    <meta
+      name="description"
+      content="Completed the database-backed
+Maintenance workflow for the elevator control website. The update
+prevents passenger requests from entering the queue during Maintenance,
+adds administrator-only per-floor lockouts, interlocks the Sabbath and
+door controls, and reorganizes the CAN protocol table into a clearer
+Byte 0 bit map."
+    />
+    <meta name="robots" content="index, follow" />
+    <meta http-equiv="Pragma" content="no-cache" />
+
+    <link
+      rel="icon"
+      href="../../media/icons/LiF_icon.ico"
+      type="image/x-icon"
+    />
+    <link rel="stylesheet" href="../../css/base.css" />
+    <link rel="stylesheet" href="../../css/logbook_entry.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css"
+    />
+    <link rel="stylesheet" href="../../css/code_formatting.css" />
+  </head>
+
+  <body>
+    <div id="navbar-placeholder" data-root="../../"></div>
+    <script src="../../js/navbar.js"></script>
+
+    <main class="page-wrapper">
+      <section class="intro-section logbook-entry-intro" id="page_top">
+        <div class="intro-text">
+          <p class="section-label">Daily Logbook Entry</p>
+          <h1>Logbook Entry, 2026-08-17 by Nick Kapuka</h1>
+          <p class="intro-description">
+            Completed the database-backed Maintenance workflow for the elevator
+            control website. The update prevents passenger requests from
+            entering the queue during Maintenance, adds administrator-only
+            per-floor lockouts, interlocks the Sabbath and door controls, and
+            reorganizes the CAN protocol table into a clearer Byte 0 bit map.
+          </p>
+
+          <div class="button-row">
+            <a href="../logbook_NK.html" class="button secondary-button"
+              >My Logbook Cover Page</a
+            >
+            <a href="#log" class="button primary-button">Jump to Entry</a>
+          </div>
+        </div>
+
+        <aside class="summary-card">
+          <h2>Entry Snapshot</h2>
+          <p><b>Date:</b> 2026-08-17</p>
+          <p><b>Author:</b> Nick Kapuka</p>
+          <p>
+            <b>Focus:</b> PHP authorization, JavaScript state synchronization,
+            MariaDB lockouts, safety interlocks, CAN protocol documentation
+          </p>
+          <p>
+            <b>Tags:</b> #logbook #project-vi #php #javascript #mariadb #can-bus
+            #safety-interlocks
+          </p>
+        </aside>
+      </section>
+
+      <section class="logbook-entry-content" id="log">
+        <h2 id="main-task-or-topic">Main task or topic</h2>
+        <p>
+          Since the previous interface update, I completed the functional
+          Maintenance workflow behind the elevator control page. Maintenance is
+          now treated as a shared database state instead of only a visual button
+          state. PHP authorizes each action, JavaScript keeps the page
+          synchronized, and MariaDB stores any floors that an administrator
+          marks out of service.
+        </p>
+        <p>The work had three main parts:</p>
+        <ul class="clean-list">
+          <li>
+            Prevent passenger requests and incompatible controls while
+            Maintenance is active.
+          </li>
+          <li>Store persistent per-floor lockouts in a dedicated SQL table.</li>
+          <li>
+            Reformat the CAN protocol table so the routing information and Byte
+            0 fields are easier to read.
+          </li>
+        </ul>
+        <h2 id="maintenance-as-a-shared-operating-mode">
+          Maintenance as a shared operating mode
+        </h2>
+        <p>
+          The existing <code>elevator_state.operation_mode</code> field remains
+          the source of truth. The Maintenance button is generated only for
+          administrators:
+        </p>
+        <pre
+          class="code-block language-php"
+        ><code class="language-php">&lt;?php if(($_SESSION[&#39;user_role&#39;] ?? &#39;&#39;) === &#39;admin&#39;): ?&gt;
+  &lt;button type=&quot;button&quot; id=&quot;maintenanceToggle&quot;&gt;
+    Maintenance Mode
+  &lt;/button&gt;
+&lt;?php endif; ?&gt;</code></pre>
+        <p>
+          Hiding the button is useful for the interface, but it is not enough
+          for security. The PHP endpoint repeats the administrator check before
+          changing the database:
+        </p>
+        <pre
+          class="code-block language-php"
+        ><code class="language-php">if(($_SESSION[&#39;user_role&#39;] ?? &#39;&#39;) !== &#39;admin&#39;) {
+    echo json_encode([
+        &#39;success&#39; =&gt; false,
+        &#39;message&#39; =&gt; &#39;Administrator access is required&#39;
+    ]);
+    exit;
+}</code></pre>
+        <p>
+          This prevents a regular user from bypassing the missing button by
+          manually sending a POST request.
+        </p>
+        <h2 id="preventing-requests-from-entering-the-queue">
+          Preventing requests from entering the queue
+        </h2>
+        <p>
+          The original page could still display
+          <code>Sending request for Floor X...</code> while Maintenance was
+          active. JavaScript now checks the synchronized mode before displaying
+          that message or sending AJAX:
+        </p>
+        <pre
+          class="code-block language-js"
+        ><code class="language-js">function maintenanceBlocksFloorRequest() {
+    if (maintenanceEnabled !== true) {
+        return false;
+    }
+
+    lastCommandDisplay.textContent =
+        &quot;Floor requests are disabled while Maintenance mode is enabled&quot;;
+
+    return true;
+}</code></pre>
+        <p>
+          Both the floor-station buttons and cab buttons call this function
+          before <code>sendElevatorRequest()</code>.
+        </p>
+        <p>
+          The important protection is still on the server. PHP reads the current
+          mode and returns before performing the request <code>INSERT</code>:
+        </p>
+        <pre
+          class="code-block language-php"
+        ><code class="language-php">if($elevatorState[&#39;operation_mode&#39;] === &#39;maintenance&#39;) {
+    echo json_encode([
+        &#39;success&#39; =&gt; false,
+        &#39;message&#39; =&gt; &#39;Floor requests are disabled while Maintenance mode is enabled&#39;,
+        &#39;operation_mode&#39; =&gt; &#39;maintenance&#39;
+    ]);
+
+    exit;
+}</code></pre>
+        <p>
+          I also changed the final insert into a conditional
+          <code>INSERT ... SELECT</code>. This protects against another user
+          enabling Maintenance between the first state check and the database
+          write:
+        </p>
+        <pre
+          class="code-block language-sql"
+        ><code class="language-sql">INSERT INTO elevator_requests (
+    request_type,
+    requested_floor,
+    requested_by_user_id,
+    source_controller
+)
+SELECT
+    :request_type,
+    :requested_floor,
+    :requested_by_user_id,
+    :source_controller
+FROM elevator_state AS es
+LEFT JOIN elevator_floor_lockouts AS efl
+    ON efl.floor_number = :lockout_floor
+WHERE es.state_id = 1
+  AND es.operation_mode &lt;&gt; &#39;maintenance&#39;
+  AND COALESCE(efl.is_locked, 0) = 0;</code></pre>
+        <p>
+          If Maintenance or a floor lockout becomes active at the last moment,
+          the query inserts zero rows. No passenger request is added to
+          <code>elevator_requests</code>.
+        </p>
+        <h2 id="sabbath-and-door-safety-interlocks">
+          Sabbath and door safety interlocks
+        </h2>
+        <p>
+          Maintenance and Sabbath share the same
+          <code>operation_mode</code> column, so Sabbath must not overwrite
+          Maintenance. PHP locks the shared row while checking the current mode:
+        </p>
+        <pre
+          class="code-block language-sql"
+        ><code class="language-sql">SELECT operation_mode
+FROM elevator_state
+WHERE state_id = 1
+LIMIT 1
+FOR UPDATE;</code></pre>
+        <p>
+          If the mode is already <code>maintenance</code>, the Sabbath request
+          is rejected. JavaScript also disables the Sabbath button, changes its
+          label to <code>Unavailable during Maintenance</code>, and applies an
+          interlocked visual state.
+        </p>
+        <p>
+          Door operation received a similar restriction. During Maintenance,
+          regular users cannot open or close the doors, while administrators
+          retain control for authorized testing. PHP performs this check inside
+          a transaction:
+        </p>
+        <pre class="code-block language-php"><code class="language-php">if(
+    $elevatorState[&#39;operation_mode&#39;] === &#39;maintenance&#39; &amp;&amp;
+    !$userIsAdmin
+) {
+    $pdo-&gt;rollBack();
+
+    echo json_encode([
+        &#39;success&#39; =&gt; false,
+        &#39;message&#39; =&gt; &#39;Only administrators can operate the doors while Maintenance mode is active&#39;,
+        &#39;operation_mode&#39; =&gt; &#39;maintenance&#39;
+    ]);
+
+    exit;
+}</code></pre>
+        <p>
+          The <code>FOR UPDATE</code> read prevents Maintenance from changing
+          halfway through the permission check and door-state update.
+        </p>
+        <h2 id="maintenance-status-indicator">Maintenance status indicator</h2>
+        <p>
+          The Maintenance state is visible to all logged-in users even though
+          only administrators receive the toggle. PHP outputs a status rail when
+          the database mode is Maintenance:
+        </p>
+        <pre
+          class="code-block language-html"
+        ><code class="language-html">&lt;aside class=&quot;maintenance-status-rail&quot; id=&quot;maintenanceStatusRail&quot;
+  role=&quot;status&quot; aria-live=&quot;polite&quot;&gt;
+  &lt;span class=&quot;maintenance-status-light&quot; aria-hidden=&quot;true&quot;&gt;&lt;/span&gt;
+
+  &lt;div class=&quot;maintenance-status-copy&quot;&gt;
+    &lt;span&gt;Restricted operation&lt;/span&gt;
+    &lt;strong&gt;Maintenance Mode Active&lt;/strong&gt;
+    &lt;small&gt;Passenger requests are paused while authorized personnel configure floor access.&lt;/small&gt;
+  &lt;/div&gt;
+&lt;/aside&gt;</code></pre>
+        <p>
+          The final design uses a static amber status light, a dark notification
+          rail, and a hazard stripe. It is noticeable without behaving like an
+          emergency alarm. JavaScript toggles <code>maintenance-active</code> on
+          the complete control page, which also changes the elevator panel
+          perimeter.
+        </p>
+        <h2 id="persistent-floor-lockout-table">
+          Persistent floor-lockout table
+        </h2>
+        <p>
+          I added <code>elevator_floor_lockouts</code> to store the service
+          state of every displayed floor:
+        </p>
+        <pre
+          class="code-block language-sql"
+        ><code class="language-sql">CREATE TABLE IF NOT EXISTS elevator_floor_lockouts (
+    floor_number TINYINT(3) UNSIGNED NOT NULL,
+    is_locked TINYINT(1) NOT NULL DEFAULT 0,
+    lockout_reason VARCHAR(255) DEFAULT NULL,
+    updated_by_user_id INT(10) UNSIGNED DEFAULT NULL,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP()
+        ON UPDATE CURRENT_TIMESTAMP(),
+
+    PRIMARY KEY (floor_number),
+
+    CONSTRAINT chk_floor_lockout_number
+        CHECK (floor_number BETWEEN 1 AND 6),
+
+    CONSTRAINT chk_floor_lockout_state
+        CHECK (is_locked IN (0, 1)),
+
+    CONSTRAINT fk_floor_lockout_user
+        FOREIGN KEY (updated_by_user_id)
+        REFERENCES users (user_id)
+        ON DELETE SET NULL
+        ON UPDATE CASCADE
+);</code></pre>
+        <p>One unlocked row is inserted for each floor:</p>
+        <pre
+          class="code-block language-sql"
+        ><code class="language-sql">INSERT IGNORE INTO elevator_floor_lockouts (floor_number)
+VALUES (1), (2), (3), (4), (5), (6);</code></pre>
+        <p>
+          Using <code>INSERT IGNORE</code> means rerunning the setup file does
+          not overwrite saved lockout states. The primary key also guarantees
+          that each floor has at most one current record.
+        </p>
+        <h2 id="updating-a-floor-lockout">Updating a floor lockout</h2>
+        <p>
+          Floor-lockout changes are accepted only when the user is an
+          administrator and Maintenance is currently active. PHP validates the
+          floor range and the requested <code>locked</code> or
+          <code>unlocked</code> state before writing.
+        </p>
+        <p>The update uses an upsert:</p>
+        <pre
+          class="code-block language-sql"
+        ><code class="language-sql">INSERT INTO elevator_floor_lockouts (
+    floor_number,
+    is_locked,
+    lockout_reason,
+    updated_by_user_id
+)
+VALUES (
+    :floor_number,
+    :is_locked,
+    :lockout_reason,
+    :updated_by_user_id
+)
+ON DUPLICATE KEY UPDATE
+    is_locked = VALUES(is_locked),
+    lockout_reason = VALUES(lockout_reason),
+    updated_by_user_id = VALUES(updated_by_user_id);</code></pre>
+        <p>
+          This creates a missing floor record or updates the existing record
+          without requiring separate <code>INSERT</code> and
+          <code>UPDATE</code> branches.
+        </p>
+        <p>
+          Saved lockouts remain active after Maintenance is disabled.
+          Maintenance controls when administrators may configure the lockouts;
+          the lockout row controls whether that floor is available for service.
+        </p>
+        <h2 id="synchronizing-lockouts-in-javascript">
+          Synchronizing lockouts in JavaScript
+        </h2>
+        <p>PHP places the initial lockout map into the page as JSON:</p>
+        <pre
+          class="code-block language-php"
+        ><code class="language-php">data-floor-lockouts=&quot;&lt;?php
+  echo htmlspecialchars(
+      json_encode($initialFloorLockouts),
+      ENT_QUOTES,
+      &#39;UTF-8&#39;
+  );
+?&gt;&quot;</code></pre>
+        <p>
+          JavaScript decodes it and applies each state to three related
+          elements:
+        </p>
+        <ul class="clean-list">
+          <li>The building floor row.</li>
+          <li>The matching cab button.</li>
+          <li>The administrator's lockout card.</li>
+        </ul>
+        <pre
+          class="code-block language-js"
+        ><code class="language-js">floorLockoutStates[floor] = floorIsLocked;
+floorRow.classList.toggle(&quot;floor-locked&quot;, floorIsLocked);
+carButton.classList.toggle(&quot;floor-locked&quot;, floorIsLocked);
+lockoutCard.classList.toggle(&quot;is-locked&quot;, floorIsLocked);</code></pre>
+        <p>
+          The visual classes help the user understand the saved state, but PHP
+          still checks the database before every movement request.
+        </p>
+        <h2 id="can-protocol-table-update">CAN protocol table update</h2>
+        <p>
+          The original CAN layout combined message information with eight
+          separate bit columns. This produced a thirteen-column table that
+          became cramped and difficult to scan.
+        </p>
+        <p>I reduced the outer table to six columns:</p>
+        <ul class="clean-list">
+          <li>CAN ID</li>
+          <li>Message</li>
+          <li>From</li>
+          <li>To</li>
+          <li>DLC</li>
+          <li>Byte 0</li>
+        </ul>
+        <p>
+          Byte 0 is now an eight-column CSS Grid inside the final cell. For
+          example, the SC command byte is written as:
+        </p>
+        <pre
+          class="code-block language-html"
+        ><code class="language-html">&lt;div class=&quot;CANprotocol-byte-map&quot;&gt;
+  &lt;span class=&quot;CANprotocol-bit-cell CANprotocol-unused&quot; data-bit=&quot;7&quot;&gt;—&lt;/span&gt;
+  &lt;span class=&quot;CANprotocol-bit-cell CANprotocol-unused&quot; data-bit=&quot;6&quot;&gt;—&lt;/span&gt;
+  &lt;span class=&quot;CANprotocol-bit-cell CANprotocol-unused&quot; data-bit=&quot;5&quot;&gt;—&lt;/span&gt;
+  &lt;span class=&quot;CANprotocol-bit-cell CANprotocol-unused&quot; data-bit=&quot;4&quot;&gt;—&lt;/span&gt;
+  &lt;span class=&quot;CANprotocol-bit-cell CANprotocol-unused&quot; data-bit=&quot;3&quot;&gt;—&lt;/span&gt;
+  &lt;span class=&quot;CANprotocol-bit-cell CANprotocol-enable&quot; data-bit=&quot;2&quot;&gt;SC_EN&lt;/span&gt;
+  &lt;span class=&quot;CANprotocol-bit-cell CANprotocol-request CANprotocol-span-2&quot;
+    data-bit=&quot;1–0&quot;&gt;SC_FloorReq&lt;/span&gt;
+&lt;/div&gt;</code></pre>
+        <p>The grid rule is:</p>
+        <pre
+          class="code-block language-css"
+        ><code class="language-css">.CANprotocol-byte-map {
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  gap: 5px;
+  min-width: 520px;
+}
+
+.CANprotocol-span-2 {
+  grid-column: span 2;
+}</code></pre>
+        <p>
+          Each cell displays its bit number, unused bits use a muted dash, and
+          multi-bit fields span the correct number of columns. The existing
+          enable/status, position, and floor-request colours remain connected to
+          the legend. The outer wrapper still provides horizontal scrolling on
+          narrow screens.
+        </p>
+        <p>
+          I also corrected the Floor 2 and Floor 3 row descriptions and replaced
+          the invalid <code>rowspawn</code> attributes in the field-definition
+          table with proper scoped headers.
+        </p>
+        <h2 id="result">Result</h2>
+        <p>
+          Maintenance is now enforced through the entire request path instead of
+          only through page text. Regular users cannot queue floor requests,
+          operate the doors, or enable Sabbath while Maintenance is active.
+          Administrators can configure persistent per-floor lockouts, and every
+          request is validated against both the current operation mode and the
+          selected floor's database record.
+        </p>
+        <p>
+          The CAN documentation now presents the same byte definitions in a much
+          more readable format. Message routing can be scanned from left to
+          right, while the nested bit strip still shows the exact Byte 0
+          allocation from bit 7 to bit 0.
+        </p>
+        <h3 id="proof-of-functionality">Proof of Functionality</h3>
+        <ul class="clean-list">
+          <li>
+            Maintenance mode shows the restricted-operation status rail to every
+            user.
+          </li>
+          <li>
+            Regular users receive disabled door and Sabbath controls during
+            Maintenance.
+          </li>
+          <li>
+            Floor and cab requests are rejected without adding rows to
+            <code>elevator_requests</code>.
+          </li>
+          <li>
+            Administrator floor lockouts remain saved after the page is
+            refreshed or Maintenance is disabled.
+          </li>
+          <li>
+            The CAN protocol page displays all seven message definitions with
+            complete eight-bit maps.
+          </li>
+        </ul>
+      </section>
+
+      <p class="top-link">
+        <a href="#page_top">Go to the top of this page</a>
+      </p>
+    </main>
+
+    <footer class="site-footer">
+      <p>Copyright &copy; Nick Kapuka</p>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+  </body>
+</html>
