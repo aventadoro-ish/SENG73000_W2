@@ -19,6 +19,18 @@ document.addEventListener("DOMContentLoaded", function () {
     const initialSource = elevatorControlPage.dataset.initialSource;
     const initialOperationMode = elevatorControlPage.dataset.operationMode;
 
+    // PHP places the six saved database lockout states in this data attribute
+    let initialFloorLockouts = {};
+    const floorLockoutStates = {};
+
+    try {
+        initialFloorLockouts = JSON.parse(
+            elevatorControlPage.dataset.floorLockouts || "{}"
+        );
+    } catch (error) {
+        console.error("Initial floor lockouts could not be decoded", error);
+    }
+
     // for handling the doors status and label of said status
     const doorToggleButton = document.getElementById("doorToggleButton");
     const doorStatusDisplay = document.getElementById("doorStatusDisplay");
@@ -32,7 +44,10 @@ document.addEventListener("DOMContentLoaded", function () {
     // retrieve the maintenance button from the HTML
     const maintenanceToggle = document.getElementById("maintenanceToggle");
 
-    // visual-only maintenance lockout controls
+    // this public indicator is visible to every user while maintenance is active
+    const maintenanceStatusRail = document.getElementById("maintenanceStatusRail");
+
+    // database-backed maintenance lockout controls
     const floorLockoutPanel = document.getElementById("floorLockoutPanel");
     const floorLockoutButtons = document.querySelectorAll(".floor-lockout-button");
 
@@ -153,6 +168,27 @@ document.addEventListener("DOMContentLoaded", function () {
             });
     }
 
+    // save one floor's lockout state through the PHP maintenance endpoint
+    function sendFloorLockoutState(floor, floorIsLocked) {
+        const requestData = new URLSearchParams();
+
+        requestData.append("request_action", "floor_lockout");
+        requestData.append("floor_number", floor);
+        requestData.append(
+            "lockout_state",
+            floorIsLocked ? "locked" : "unlocked"
+        );
+
+        return fetch("elevator_control.php", {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: requestData.toString()
+        })
+            .then(function (response) {
+                return response.json();
+            });
+    }
+
     // handle PHP's response after an elevator request is submitted
     function handleResponse(responseData) {
 
@@ -177,6 +213,19 @@ document.addEventListener("DOMContentLoaded", function () {
             lastCommandDisplay.textContent = "Request #" + responseData.elevator_request_id + " logged for floor " + floor + " - waiting for elevator";
 
         } else {
+            // another browser may have enabled maintenance after this page loaded
+            if (responseData.operation_mode === "maintenance") {
+                updateOperationModeDisplay("maintenance");
+            }
+
+            // synchronize a lockout discovered by PHP during request validation
+            if (responseData.floor_locked === true) {
+                applyFloorLockoutDisplay(
+                    String(responseData.requested_floor),
+                    true
+                );
+            }
+
             lastCommandDisplay.textContent = "Request rejected: " + responseData.message;
         }
     }
@@ -210,8 +259,9 @@ document.addEventListener("DOMContentLoaded", function () {
     // handle sabbath mode
     function handleSabbathResponse(responseData) {
         if (responseData.success === true) {
-            // change operation mode as needed
-            const operationMode = responseData.sabbath_state === "enabled" ? "sabbath" : "normal";
+            // PHP is the source of truth for the shared operation mode.
+            const operationMode = responseData.operation_mode ||
+                (responseData.sabbath_state === "enabled" ? "sabbath" : "normal");
 
             // update the webpage display
             updateOperationModeDisplay(operationMode);
@@ -220,6 +270,12 @@ document.addEventListener("DOMContentLoaded", function () {
             lastCommandDisplay.textContent = "Sabbath mode " + responseData.sabbath_state;
 
         } else {
+            // A stale page may attempt Sabbath after another user enabled
+            // Maintenance. Synchronize the visual state with PHP's response.
+            if (responseData.operation_mode) {
+                updateOperationModeDisplay(responseData.operation_mode);
+            }
+
             // print last command
             lastCommandDisplay.textContent = "Sabbath update rejected: " + responseData.message;
         }
@@ -243,6 +299,36 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
+    // handle PHP's response after locking or restoring one floor
+    function handleFloorLockoutResponse(responseData) {
+        if (responseData.success === true) {
+            const floor = String(responseData.floor_number);
+            const floorIsLocked = responseData.is_locked === true;
+
+            applyFloorLockoutDisplay(floor, floorIsLocked);
+
+            lastCommandDisplay.textContent =
+                "Floor " + floor +
+                (floorIsLocked ? " locked out of service" : " restored to service");
+
+            return;
+        }
+
+        // another page may have disabled maintenance before this request arrived
+        if (responseData.operation_mode) {
+            updateOperationModeDisplay(responseData.operation_mode);
+        }
+
+        lastCommandDisplay.textContent =
+            "Floor lockout update rejected: " + responseData.message;
+    }
+
+    function handleFloorLockoutFailure(error) {
+        lastCommandDisplay.textContent = "The floor lockout update could not be sent";
+
+        console.error("Floor lockout update failed", error);
+    }
+
     function handleSabbathFailure(error) {
         lastCommandDisplay.textContent = "The Sabbath request could not be sent";
 
@@ -254,6 +340,59 @@ document.addEventListener("DOMContentLoaded", function () {
         lastCommandDisplay.textContent = "the elevator request could not be sent";
 
         console.error("elevator request failed due to: ", error);
+    }
+
+    // stop floor requests before the "Sending request" message or AJAX call
+    // return true when maintenance mode is blocking the request
+    function maintenanceBlocksFloorRequest() {
+        if (maintenanceEnabled !== true) {
+            return false;
+        }
+
+        lastCommandDisplay.textContent =
+            "Floor requests are disabled while Maintenance mode is enabled";
+
+        return true;
+    }
+
+    // apply one saved lockout to the floor row, cab button, and admin lockout card
+    function applyFloorLockoutDisplay(floor, newLockoutState) {
+        const floorIsLocked = newLockoutState === true;
+        const floorRow = document.querySelector(
+            '.floor-row[data-floor="' + floor + '"]'
+        );
+        const carButton = document.querySelector(
+            '.car-floor-button[data-floor="' + floor + '"]'
+        );
+        const lockoutCard = document.querySelector(
+            '.lockout-floor[data-floor="' + floor + '"]'
+        );
+
+        floorLockoutStates[floor] = floorIsLocked;
+
+        if (floorRow) {
+            floorRow.classList.toggle("floor-locked", floorIsLocked);
+        }
+
+        if (carButton) {
+            carButton.classList.toggle("floor-locked", floorIsLocked);
+        }
+
+        // only administrators receive the lockout cards from PHP
+        if (lockoutCard) {
+            const statusText = lockoutCard.querySelector("small");
+            const lockoutButton = lockoutCard.querySelector(".floor-lockout-button");
+
+            lockoutCard.classList.toggle("is-locked", floorIsLocked);
+
+            if (statusText) {
+                statusText.textContent = floorIsLocked ? "Out of service" : "Available";
+            }
+
+            if (lockoutButton) {
+                lockoutButton.textContent = floorIsLocked ? "Restore Floor" : "Lock Floor";
+            }
+        }
     }
 
     // handle a network failure or invalid JSON response
@@ -312,10 +451,15 @@ document.addEventListener("DOMContentLoaded", function () {
                 return;
             }
 
-            // visual lockouts apply only in this browser for now
+            // saved database lockouts prevent requests to this floor
             if (button.closest(".floor-row").classList.contains("floor-locked")) {
                 lastCommandDisplay.textContent =
                     "Floor " + floor + " is marked out of service";
+                return;
+            }
+
+            // maintenance mode does not allow floor requests to be queued
+            if (maintenanceBlocksFloorRequest()) {
                 return;
             }
 
@@ -347,12 +491,17 @@ document.addEventListener("DOMContentLoaded", function () {
                 return;
             }
 
-            // prevent the visual prototype from requesting a locally locked floor
+            // prevent a request to a floor locked in the database
             const floorRow = document.querySelector('.floor-row[data-floor="' + floor + '"]');
 
             if (floorRow && floorRow.classList.contains("floor-locked")) {
                 lastCommandDisplay.textContent =
                     "Floor " + floor + " is marked out of service";
+                return;
+            }
+
+            // maintenance mode does not allow car-controller requests either
+            if (maintenanceBlocksFloorRequest()) {
                 return;
             }
 
@@ -386,12 +535,43 @@ document.addEventListener("DOMContentLoaded", function () {
     // update the appearance of the maintenance button
     function updateMaintenanceDisplay(newMaintenanceState) {
 
+        // every user needs the current mode for request blocking, even though
+        // only admins receive the maintenance toggle in the PHP-generated HTML
+        maintenanceEnabled = newMaintenanceState;
+
+        // change the overall control-room appearance for admins and regular users
+        elevatorControlPage.classList.toggle(
+            "maintenance-active",
+            maintenanceEnabled
+        );
+
+        if (maintenanceStatusRail) {
+            maintenanceStatusRail.hidden = !maintenanceEnabled;
+        }
+
+        // Sabbath and Maintenance share elevator_state.operation_mode.
+        // Make the interlock visible to every user, not only administrators.
+        const sabbathPanel = sabbathToggle.closest(".sabbath-toggle");
+
+        sabbathToggle.disabled = maintenanceEnabled;
+        sabbathToggle.setAttribute("aria-disabled", String(maintenanceEnabled));
+
+        if (sabbathPanel) {
+            sabbathPanel.classList.toggle("mode-locked", maintenanceEnabled);
+        }
+
+        if (maintenanceEnabled) {
+            sabbathToggle.textContent = "Unavailable during Maintenance";
+            sabbathToggle.classList.remove("active");
+            sabbathToggle.title = "Disable Maintenance mode before enabling Sabbath mode";
+        } else {
+            sabbathToggle.removeAttribute("title");
+            updateSabbathDisplay(sabbathEnabled);
+        }
+
         if (!maintenanceToggle) {
             return;
         }
-
-        // save the current maintenance state
-        maintenanceEnabled = newMaintenanceState;
 
         // check whether maintenance mode is active
         if (maintenanceEnabled === true) {
@@ -463,6 +643,15 @@ document.addEventListener("DOMContentLoaded", function () {
     // initialize both buttons using the current database mode
     updateOperationModeDisplay(initialOperationMode || "normal");
 
+    // restore the saved per-floor lockouts when the webpage first loads
+    Object.keys(initialFloorLockouts).forEach(function (floor) {
+        const savedState = initialFloorLockouts[floor];
+        const floorIsLocked =
+            savedState === true || savedState === 1 || savedState === "1";
+
+        applyFloorLockoutDisplay(floor, floorIsLocked);
+    });
+
 
     // decide which door state should be requested
     function toggleDoors() {
@@ -490,6 +679,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // handle the sabbath mode and call the respective functions based on sucess/failure
     function toggleSabbathMode() {
+        // The disabled button blocks normal clicks, and this guard also blocks
+        // programmatic calls or a stale page state.
+        if (maintenanceEnabled === true) {
+            lastCommandDisplay.textContent =
+                "Sabbath mode is unavailable while Maintenance mode is active";
+            return;
+        }
+
         let requestedState = "enabled";
 
         if (sabbathEnabled === true) {
@@ -534,34 +731,30 @@ document.addEventListener("DOMContentLoaded", function () {
         maintenanceToggle.addEventListener("click", toggleMaintenanceMode);
     }
 
-    // visual prototype only: no PHP, database, or WebSocket request is sent
+    // save each per-floor maintenance lockout through PHP
     floorLockoutButtons.forEach(function (button) {
         button.addEventListener("click", function () {
             if (maintenanceEnabled !== true) {
+                lastCommandDisplay.textContent =
+                    "Floor lockouts can only be changed while Maintenance mode is enabled";
                 return;
             }
 
             const floor = button.dataset.floor;
-            const lockoutCard = button.closest(".lockout-floor");
-            const floorRow = document.querySelector('.floor-row[data-floor="' + floor + '"]');
-            const carButton = document.querySelector('.car-floor-button[data-floor="' + floor + '"]');
-            const statusText = lockoutCard.querySelector("small");
-            const floorIsLocked = lockoutCard.classList.toggle("is-locked");
+            const requestedLockoutState = floorLockoutStates[floor] !== true;
 
-            if (floorRow) {
-                floorRow.classList.toggle("floor-locked", floorIsLocked);
-            }
-
-            if (carButton) {
-                carButton.classList.toggle("floor-locked", floorIsLocked);
-            }
-
-            statusText.textContent = floorIsLocked ? "Out of service" : "Available";
-            button.textContent = floorIsLocked ? "Restore Floor" : "Lock Floor";
+            button.disabled = true;
 
             lastCommandDisplay.textContent =
-                "Visual preview: Floor " + floor +
-                (floorIsLocked ? " locked" : " restored");
+                (requestedLockoutState ? "Locking Floor " : "Restoring Floor ") +
+                floor + "...";
+
+            sendFloorLockoutState(floor, requestedLockoutState)
+                .then(handleFloorLockoutResponse)
+                .catch(handleFloorLockoutFailure)
+                .finally(function () {
+                    button.disabled = false;
+                });
         });
     });
 
