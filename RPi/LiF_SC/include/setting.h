@@ -30,7 +30,7 @@ constexpr unsigned long int MOVE_FINISH_TIMEOUT_MS = 45000;
 /**
  * @brief Period of EC heartbeats in milliseconds
  */
-constexpr unsigned long int EC_HEARTBEAT_PERIOD_MS = 500;
+constexpr unsigned long int EC_HEARTBEAT_PERIOD_MS = 5000;
 
 /**
  * @brief Used to find max amount of time without receiving EC heartbeat before 
@@ -38,7 +38,7 @@ constexpr unsigned long int EC_HEARTBEAT_PERIOD_MS = 500;
  * 
  * MAX_PERIOD = EC_HEARTBEAT_PERIOD_MS * EC_MAX_HEARTBEAT_PERIOD_MULTIPLIER
  */
-constexpr int EC_MAX_HEARTBEAT_PERIOD_MULTIPLIER = 3;
+constexpr int EC_MAX_HEARTBEAT_PERIOD_MULTIPLIER = 2;
 
 /**
  * @brief Where to send the cabin during initialization
