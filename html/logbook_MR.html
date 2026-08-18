@@ -637,26 +637,120 @@ Contributors to this page:
 			</article>
 		</section>
 
-
 		<!-- Week 13 -->
 		<section class="week-entry-box" id="week-13">
 			<div class="week-header">
 				<p class="section-label">Week 13</p>
-				<h2>Unit 1 PCB completion and I2C troubleshooting</h2>
+				<h2>Controller PCB assembly, testing, and firmware development</h2>
 			</div>
 
 			<article class="entry-summary">
-				<h3><a href="./entries_MR/MR_entry_2026-08-10.html">Entry 1 - 2026-08-10</a></h3>
+				<h3>
+					<a href="./entries_MR/MR_entry_2026-08-10.html">
+						Entry 1 - 2026-08-10
+					</a>
+				</h3>
 				<ul>
 					<li>Completed the soldering and stacking of the Unit 1 Service and I/O PCBs.</li>
 					<li>Tested the I2C bus using the programming USB and CAN power inputs.</li>
 					<li>Confirmed that the 3.3 V rail and ESP32-S3 remained operational.</li>
-					<li>Identified a short circuit between the SDA line and ground.</li>
-					<li>Investigated the LGA accelerometer as the suspected source of the I2C fault.</li>
+					<li>Investigated an apparent fault affecting the SDA line.</li>
+				</ul>
+			</article>
+
+			<article class="entry-summary">
+				<h3>
+					<a href="./entries_MR/MR_entry_2026-08-11.html">
+						Entry 2 - 2026-08-11
+					</a>
+				</h3>
+				<ul>
+					<li>Identified incorrect SDA and SCL pin definitions as the cause of the I2C failure.</li>
+					<li>Restored I2C communication and detected two devices on the bus.</li>
+					<li>Identified the accelerometer as a potentially damaged component.</li>
+					<li>Developed demonstration firmware for the buttons, LEDs, and dual 7-segment display.</li>
+				</ul>
+			</article>
+
+			<article class="entry-summary">
+				<h3>
+					<a href="./entries_MR/MR_entry_2026-08-12.html">
+						Entry 3 - 2026-08-12
+					</a>
+				</h3>
+				<ul>
+					<li>Worked with Nick and Rita to assemble four Floor Controller PCBs.</li>
+					<li>Organized and placed the required PCB components.</li>
+					<li>Reflowed the populated boards using the established assembly procedure.</li>
+					<li>Prepared the boards for inspection and manual corrections.</li>
+				</ul>
+			</article>
+
+			<article class="entry-summary">
+				<h3>
+					<a href="./entries_MR/MR_entry_2026-08-14.html">
+						Entry 4 - 2026-08-14
+					</a>
+				</h3>
+				<ul>
+					<li>Collaborated with Nick and Rita on manually correcting the newly reflowed PCBs.</li>
+					<li>Repaired solder bridges and continued assembling Car Controller unit 3.</li>
+					<li>Performed partial testing of the completed Car Controller hardware.</li>
+					<li>Prepared demonstration firmware for daisy-chained CAN communication and power delivery over USB-C.</li>
+					<li>Corrected virtual-door toggle behaviour when interacting with physical door updates.</li>
+				</ul>
+			</article>
+
+			<article class="entry-summary">
+				<h3>
+					<a href="./entries_MR/MR_entry_2026-08-15.html">
+						Entry 5 - 2026-08-15
+					</a>
+				</h3>
+				<ul>
+					<li>Assembled the I/O PCBs for Car Controller units 2 and 3.</li>
+					<li>Documented the remaining push-button and encoder-resistor installations.</li>
+					<li>Identified incorrectly installed encoder capacitor values on IO CC #2.</li>
+					<li>Thoroughly cleaned both boards using isopropyl alcohol and soap.</li>
+				</ul>
+			</article>
+
+			<article class="entry-summary">
+				<h3>
+					<a href="./entries_MR/MR_entry_2026-08-16.html">
+						Entry 6 - 2026-08-16
+					</a>
+				</h3>
+				<ul>
+					<li>Corrected the 7-segment display resistor arrays on IO CC #2.</li>
+					<li>Installed the required 0-ohm configuration resistors on IO CC #2 and IO CC #3.</li>
+					<li>Completed the passive configuration paths for the displays and push buttons.</li>
 				</ul>
 			</article>
 		</section>
 
+
+		<!-- Week 14 -->
+		<section class="week-entry-box" id="week-14">
+			<div class="week-header">
+				<p class="section-label">Week 14</p>
+				<h2>Supervisory Controller CAN and heartbeat fault correction</h2>
+			</div>
+
+			<article class="entry-summary">
+				<h3>
+					<a href="./entries_MR/MR_entry_2026-08-17.html">
+						Entry 1 - 2026-08-17
+					</a>
+				</h3>
+				<ul>
+					<li>Identified the blocking CAN receive operation as the cause of stalled controller execution.</li>
+					<li>Changed CAN reception so that an empty receive queue no longer blocks the main loop.</li>
+					<li>Restored periodic Elevator Controller heartbeat-timeout checks.</li>
+					<li>Ensured that missing heartbeat messages can reliably trigger fault mode.</li>
+				</ul>
+			</article>
+		</section>
 
 
 
