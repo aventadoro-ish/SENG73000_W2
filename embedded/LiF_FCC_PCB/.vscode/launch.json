@@ -12,9 +12,9 @@
             "type": "platformio-debug",
             "request": "launch",
             "name": "PIO Debug",
-            "executable": "C:/xampp/htdocs/SENG73000_W2/embedded/LiF_FCC_PCB/.pio/build/esp32-s3-devkitc-1/firmware.elf",
+            "executable": "C:/Users/Matve/Projects/LithiumFirefly/SENG73000_W2/embedded/LiF_FCC_PCB/.pio/build/esp32-s3-devkitc-1/firmware.elf",
             "projectEnvName": "esp32-s3-devkitc-1",
-            "toolchainBinDir": "C:/Users/nicol/.platformio/packages/toolchain-xtensa-esp32s3/bin",
+            "toolchainBinDir": "C:/Users/Matve/.platformio/packages/toolchain-xtensa-esp32s3/bin",
             "internalConsoleOptions": "openOnSessionStart",
             "preLaunchTask": {
                 "type": "PlatformIO",
@@ -25,18 +25,18 @@
             "type": "platformio-debug",
             "request": "launch",
             "name": "PIO Debug (skip Pre-Debug)",
-            "executable": "C:/xampp/htdocs/SENG73000_W2/embedded/LiF_FCC_PCB/.pio/build/esp32-s3-devkitc-1/firmware.elf",
+            "executable": "C:/Users/Matve/Projects/LithiumFirefly/SENG73000_W2/embedded/LiF_FCC_PCB/.pio/build/esp32-s3-devkitc-1/firmware.elf",
             "projectEnvName": "esp32-s3-devkitc-1",
-            "toolchainBinDir": "C:/Users/nicol/.platformio/packages/toolchain-xtensa-esp32s3/bin",
+            "toolchainBinDir": "C:/Users/Matve/.platformio/packages/toolchain-xtensa-esp32s3/bin",
             "internalConsoleOptions": "openOnSessionStart"
         },
         {
             "type": "platformio-debug",
             "request": "launch",
             "name": "PIO Debug (without uploading)",
-            "executable": "C:/xampp/htdocs/SENG73000_W2/embedded/LiF_FCC_PCB/.pio/build/esp32-s3-devkitc-1/firmware.elf",
+            "executable": "C:/Users/Matve/Projects/LithiumFirefly/SENG73000_W2/embedded/LiF_FCC_PCB/.pio/build/esp32-s3-devkitc-1/firmware.elf",
             "projectEnvName": "esp32-s3-devkitc-1",
-            "toolchainBinDir": "C:/Users/nicol/.platformio/packages/toolchain-xtensa-esp32s3/bin",
+            "toolchainBinDir": "C:/Users/Matve/.platformio/packages/toolchain-xtensa-esp32s3/bin",
             "internalConsoleOptions": "openOnSessionStart",
             "loadMode": "manual"
         }
