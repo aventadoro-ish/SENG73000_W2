@@ -9,6 +9,8 @@ embedded/LiF_EC/.settings/language.settings.xml
 embedded/LiF_EC/.vscode/c_cpp_properties.json
 embedded/LiF_EC/.vscode/c_cpp_properties.json
 embedded/LiF_EC/.vscode/launch.json
+embedded/LiF_FCC/.pio
+embedded/LiF_FCC/.vscode
 
 **/.settings/language.settings.xml
 RPi/LiF_SC/obj/*
