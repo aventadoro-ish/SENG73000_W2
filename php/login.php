@@ -1,40 +1,40 @@
 <?php
+// start session
 session_start();
 
+// include DB
 require_once __DIR__ . '/db.php';
 
-
+// get form submission
 $submitted = $_SERVER['REQUEST_METHOD'] === 'POST';
+// variables
 $errors = [];
 $username = '';
 $password = '';
 
+// if form submitted
 if ($submitted) {
 
-	//NOT implementing a trim function. Group decision for the user to be smart 
-	// and choose a good username and password :)
-	//Trimming whitespace for more inputs and assigning username and password... ie. " admin " and "admin"= VALID
-	//$username = trim($_POST['username']?? '');
-	//$password = trim($_POST['password']?? '');
 
-	//Assigning username and password
+	// getting the username and password entered
 	$username = $_POST['username'] ?? '';
 	$password = $_POST['password'] ?? '';
 
-	//Validating username with at least 4 characters long and password is at least 6...
+	// validating username with at least 4 characters long and password is at least 6...
 	if (empty($username)) {
 		$errors[] = "Username is required.";
 	} elseif (strlen($username) < 4) {
 		$errors[] = "Username must be at least 4 characters."; // for professionalism
 	}
 
+	// repeat for password
 	if (empty($password)) {
 		$errors[] = "Required Password.";
 	} elseif (strlen($password) < 6) {
 		$errors[] = "Password must be at least 6 characters.";
 	}
 
-	
+	// if no errors from above, safe to query the DB
 	if (empty($errors)) {
 		try {
 			// query the DB for one user matching submitted username
@@ -83,7 +83,9 @@ if ($submitted) {
 
 				$result = $statement->execute();
 
-				
+				// replace the session ID after a successful login
+				session_regenerate_id(true);
+
 				// store information needed by protected PHP pages
 				$_SESSION['logged_in'] = true;
 				$_SESSION['user_id'] = $user['user_id'];

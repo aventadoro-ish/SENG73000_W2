@@ -1,0 +1,324 @@
+<!doctype html>
+<!--
+Author: Nick Kapuka
+-->
+
+<html lang="en">
+  <head>
+    <title>Logbook Entry, 2026-08-06 by Nick Kapuka</title>
+    <meta charset="UTF-8" />
+    <meta name="author" content="Nick Kapuka" />
+    <meta
+      name="description"
+      content="Expanded manage_requests.php with reusable field-update logic, permanent deletion, and an administrator form for modifying pending access requests. The new branches use validated actions, prepared statements, transactions, exceptions, and Post/Redirect/Get redirects."
+    />
+    <meta name="robots" content="index, follow" />
+    <meta http-equiv="Pragma" content="no-cache" />
+
+    <link
+      rel="icon"
+      href="../../media/icons/LiF_icon.ico"
+      type="image/x-icon"
+    />
+    <link rel="stylesheet" href="../../css/base.css" />
+    <link rel="stylesheet" href="../../css/logbook_entry.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css"
+    />
+    <link rel="stylesheet" href="../../css/code_formatting.css" />
+  </head>
+
+  <body>
+    <div id="navbar-placeholder" data-root="../../"></div>
+    <script src="../../js/navbar.js"></script>
+
+    <main class="page-wrapper">
+      <section class="intro-section logbook-entry-intro" id="page_top">
+        <div class="intro-text">
+          <p class="section-label">Daily Logbook Entry</p>
+          <h1>Logbook Entry, 2026-08-06 by Nick Kapuka</h1>
+          <p class="intro-description">
+            Expanded manage_requests.php with reusable field-update logic,
+            permanent deletion, and an administrator form for modifying pending
+            access requests. The new branches use validated actions, prepared
+            statements, transactions, exceptions, and Post/Redirect/Get
+            redirects.
+          </p>
+
+          <div class="button-row">
+            <a href="../logbook_NK.html" class="button secondary-button"
+              >My Logbook Cover Page</a
+            >
+            <a href="#log" class="button primary-button">Jump to Entry</a>
+          </div>
+        </div>
+
+        <aside class="summary-card">
+          <h2>Entry Snapshot</h2>
+          <p><b>Date:</b> 2026-08-06</p>
+          <p><b>Author:</b> Nick Kapuka</p>
+          <p>
+            <b>Focus:</b> PHP, PDO, CRUD, transactions, validation,
+            administrator tools
+          </p>
+          <p>
+            <b>Tags:</b> #logbook #project-vi #php #mariadb #crud #transactions
+          </p>
+        </aside>
+      </section>
+
+      <section class="logbook-entry-content" id="log">
+        <h2 id="manage-requests-updated">Manage Requests Updated</h2>
+        <p>
+          I continued the database portion of Assignment 2 by expanding
+          <code>manage_requests.php</code>. The page could already list pending
+          access requests and approve one by creating a user account. I added
+          the remaining CRUD operations needed by the assignment: updating
+          fields in an existing request and deleting a request.
+        </p>
+        <p>The page remains restricted to a logged-in administrator:</p>
+        <pre
+          class="code-block language-php"
+        ><code class="language-php">if(($_SESSION[&#39;user_role&#39;] ?? &#39;&#39;) !== &#39;admin&#39;) {
+    http_response_code(403);
+    exit(&quot;Access denied; Admin perms required for entry to this page.&quot;);
+}</code></pre>
+        <h2 id="reusable-update-function">Reusable update function</h2>
+        <p>
+          I created <code>updateAccessRequests()</code> so one function can
+          update any permitted non-primary-key field in
+          <code>access_requests</code>:
+        </p>
+        <pre
+          class="code-block language-php"
+        ><code class="language-php">function updateAccessRequests(
+    PDO $pdo,
+    int $requestID,
+    string $field,
+    $newValue
+): bool {
+    // validation and UPDATE query
+}</code></pre>
+        <p>
+          The function receives the PDO connection, row ID, field name, and
+          replacement value. The primary key is not included in the allowed
+          list, so the function cannot change <code>request_id</code>.
+        </p>
+        <p>
+          The allowed field list is important because PDO placeholders can
+          safely bind values, but they cannot bind a column name. The field
+          therefore has to be checked before it is placed into the SQL string:
+        </p>
+        <pre
+          class="code-block language-php"
+        ><code class="language-php">$allowedFields = [
+    &#39;first_name&#39;,
+    &#39;last_name&#39;,
+    &#39;email&#39;,
+    &#39;birthday&#39;,
+    &#39;person_type&#39;,
+    &#39;involvement&#39;,
+    &#39;drives_car&#39;,
+    &#39;details&#39;,
+    &#39;request_status&#39;,
+    &#39;submitted_at&#39;,
+    &#39;reviewed_at&#39;
+];
+
+if(!in_array($field, $allowedFields, true)) {
+    throw new InvalidArgumentException(
+        &quot;The field $field cannot be updated&quot;
+    );
+}</code></pre>
+        <p>
+          After validation, the actual value and request ID are bound normally:
+        </p>
+        <pre
+          class="code-block language-php"
+        ><code class="language-php">UPDATE access_requests
+SET `$field` = :new_value
+WHERE request_id = :request_id</code></pre>
+        <p>
+          The function throws an exception if execution fails or if
+          <code>rowCount()</code> does not report exactly one changed row. This
+          makes failures visible to the calling transaction.
+        </p>
+        <h2 id="action-routing">Action routing</h2>
+        <p>
+          Each form sends a hidden <code>action</code> and
+          <code>request_id</code>. The PHP handler accepts only known actions:
+        </p>
+        <pre
+          class="code-block language-php"
+        ><code class="language-php">if(!in_array($action, [&#39;approve&#39;, &#39;delete&#39;, &#39;modify&#39;], true)) {
+    $errors[] = &quot;Invalid action request&quot;;
+}</code></pre>
+        <p>
+          The request ID is also passed through
+          <code>FILTER_VALIDATE_INT</code> and must be positive. This prevents
+          the delete or modification branches from receiving an arbitrary row
+          identifier.
+        </p>
+        <h2 id="delete-handling">Delete handling</h2>
+        <p>
+          Each pending row now has a separate delete form. The browser asks for
+          confirmation before sending it:
+        </p>
+        <pre
+          class="code-block language-markup"
+        ><code class="language-markup">&lt;form action=&quot;manage_requests.php&quot; method=&quot;POST&quot;
+    onsubmit=&quot;return confirm(&#39;Permanently delete this request?&#39;);&quot;&gt;</code></pre>
+        <p>The PHP branch uses a prepared statement:</p>
+        <pre
+          class="code-block language-php"
+        ><code class="language-php">DELETE FROM access_requests
+WHERE request_id = :request_id</code></pre>
+        <p>
+          <code>request_id</code> is bound as <code>PDO::PARAM_INT</code>, and
+          <code>rowCount()</code> must equal one. If the row does not exist or
+          was already handled, a <code>RuntimeException</code> is thrown instead
+          of displaying a false success message.
+        </p>
+        <p>After a successful delete, the page redirects:</p>
+        <pre
+          class="code-block language-php"
+        ><code class="language-php">header(&quot;Location: manage_requests.php?deleted=1&quot;);
+exit;</code></pre>
+        <p>
+          This is the Post/Redirect/Get pattern. Refreshing the result page does
+          not submit the delete request a second time.
+        </p>
+        <h2 id="modify-form">Modify form</h2>
+        <p>
+          I added a second table row containing a
+          <code>&lt;details&gt;</code> element for each access request. Opening
+          it displays a form with the current values already loaded into the
+          inputs.
+        </p>
+        <p>The editable fields are:</p>
+        <ul class="clean-list">
+          <li>First name</li>
+          <li>Last name</li>
+          <li>Email</li>
+          <li>Person type/occupation</li>
+          <li>Project involvement</li>
+        </ul>
+        <p>
+          Each value is escaped with <code>htmlspecialchars()</code> when
+          printed back into the HTML. This prevents a stored value from being
+          interpreted as HTML.
+        </p>
+        <p>
+          The server collects and validates the submitted values before starting
+          any database update. The modification branch then loads the existing
+          pending row, compares the old values with the submitted values, and
+          calls <code>updateAccessRequests()</code> only for fields that
+          changed.
+        </p>
+        <p>The intended comparison is:</p>
+        <pre
+          class="code-block language-php"
+        ><code class="language-php">foreach($modifiedValues as $field =&gt; $newValue) {
+    if($newValue !== $currentRequest[$field]) {
+        updateAccessRequests($pdo, $requestID, $field, $newValue);
+        $changedFields++;
+    }
+}</code></pre>
+        <h2 id="transactions">Transactions</h2>
+        <p>
+          The modification and approval paths use a transaction because several
+          related queries can be involved:
+        </p>
+        <pre
+          class="code-block language-php"
+        ><code class="language-php">$pdo-&gt;beginTransaction();
+
+// SELECT current row and perform required updates
+
+$pdo-&gt;commit();</code></pre>
+        <p>
+          If any validation, query, or row-count check throws an exception, the
+          catch block reverses the incomplete operation:
+        </p>
+        <pre
+          class="code-block language-php"
+        ><code class="language-php">if($pdo-&gt;inTransaction()) {
+    $pdo-&gt;rollBack();
+}</code></pre>
+        <p>This prevents a request from being only partly updated.</p>
+        <h2 id="testing-notes">Testing notes</h2>
+        <p>The most important checks for this feature are:</p>
+        <ol type="1">
+          <li>A normal user receives HTTP 403 and cannot load the page.</li>
+          <li>An invalid action or request ID is rejected.</li>
+          <li>Delete removes exactly the selected pending request.</li>
+          <li>Refreshing after deletion does not repeat the POST.</li>
+          <li>
+            Modify displays the current values and updates only changed fields.
+          </li>
+          <li>A failed modification rolls back all changes.</li>
+          <li>
+            Field names use the exact SQL names, especially
+            <code>person_type</code>.
+          </li>
+          <li>
+            The changed-field counter increases only inside the branch that
+            performs an update.
+          </li>
+        </ol>
+        <p>
+          The last two checks are especially important because dynamic update
+          forms are sensitive to spelling and comparison mistakes.
+        </p>
+        <figure class="logbook-figure">
+          <img
+            class="img_med"
+            src="../../media/images/PHP_ManageReq_NewPage.png"
+            alt="PHP_ManageReq_NewPage.png"
+          />
+        </figure>
+
+        <p>Internally, values can be edited:</p>
+        <figure class="logbook-figure">
+          <img
+            class="img_med"
+            src="../../media/images/PHP_ManageReq_ModifyReq.png"
+            alt="PHP_ManageReq_ModifyReq.png"
+          />
+        </figure>
+
+        <p>Changing these values:</p>
+        <figure class="logbook-figure">
+          <img
+            class="img_med"
+            src="../../media/images/PHP_ManageReq_Modified.png"
+            alt="PHP_ManageReq_Modified.png"
+          />
+        </figure>
+
+        <p>Clicking submit:</p>
+        <figure class="logbook-figure">
+          <img
+            class="img_med"
+            src="../../media/images/PHP_ManageReq_Updated.png"
+            alt="PHP_ManageReq_Updated.png"
+          />
+        </figure>
+
+        <p>Entry changed!</p>
+      </section>
+
+      <p class="top-link">
+        <a href="#page_top">Go to the top of this page</a>
+      </p>
+    </main>
+
+    <footer class="site-footer">
+      <p>Copyright &copy; Nick Kapuka</p>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+  </body>
+</html>

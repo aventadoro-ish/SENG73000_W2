@@ -1,0 +1,317 @@
+<!doctype html>
+<!--
+Author: Nick Kapuka
+-->
+
+<html lang="en">
+  <head>
+    <title>Logbook Entry, 2026-08-07 by Nick Kapuka</title>
+    <meta charset="UTF-8" />
+    <meta name="author" content="Nick Kapuka" />
+    <meta
+      name="description"
+      content="Expanded door-state synchronization so website actions and Raspberry Pi/CAN door-switch changes share one MariaDB state. Node.js now detects independent database changes, converts the packed door value into an open/closed Boolean, and broadcasts updates to every connected control page."
+    />
+    <meta name="robots" content="index, follow" />
+    <meta http-equiv="Pragma" content="no-cache" />
+
+    <link
+      rel="icon"
+      href="../../media/icons/LiF_icon.ico"
+      type="image/x-icon"
+    />
+    <link rel="stylesheet" href="../../css/base.css" />
+    <link rel="stylesheet" href="../../css/logbook_entry.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css"
+    />
+    <link rel="stylesheet" href="../../css/code_formatting.css" />
+  </head>
+
+  <body>
+    <div id="navbar-placeholder" data-root="../../"></div>
+    <script src="../../js/navbar.js"></script>
+
+    <main class="page-wrapper">
+      <section class="intro-section logbook-entry-intro" id="page_top">
+        <div class="intro-text">
+          <p class="section-label">Daily Logbook Entry</p>
+          <h1>Logbook Entry, 2026-08-07 by Nick Kapuka</h1>
+          <p class="intro-description">
+            Expanded door-state synchronization so website actions and Raspberry
+            Pi/CAN door-switch changes share one MariaDB state. Node.js now
+            detects independent database changes, converts the packed door value
+            into an open/closed Boolean, and broadcasts updates to every
+            connected control page.
+          </p>
+
+          <div class="button-row">
+            <a href="../logbook_NK.html" class="button secondary-button"
+              >My Logbook Cover Page</a
+            >
+            <a href="#log" class="button primary-button">Jump to Entry</a>
+          </div>
+        </div>
+
+        <aside class="summary-card">
+          <h2>Entry Snapshot</h2>
+          <p><b>Date:</b> 2026-08-07</p>
+          <p><b>Author:</b> Nick Kapuka</p>
+          <p>
+            <b>Focus:</b> WebSockets, Node.js, MariaDB, door switch, bit
+            masking, JavaScript, PHP
+          </p>
+          <p>
+            <b>Tags:</b> #logbook #project-vi #websocket #nodejs #mariadb
+            #bitmask #door-control
+          </p>
+        </aside>
+      </section>
+
+      <section class="logbook-entry-content" id="log">
+        <h2 id="door-status-changed">Door Status Changed</h2>
+        <p>
+          The door status originally behaved like a simple SQL Boolean. That was
+          not enough once both the website and the physical door switch could
+          change the state. I expanded the <code>doors_open</code> value into a
+          packed two-bit state and updated the website path so all open control
+          pages can follow changes made by either source.
+        </p>
+        <p>
+          The value can now use the range <code>0b00</code> through
+          <code>0b11</code>. The low bit is still the normalized door position
+          used by the website:
+        </p>
+        <pre
+          class="code-block language-text"
+        ><code class="language-text">even value -&gt; doors closed
+odd value  -&gt; doors open</code></pre>
+        <p>
+          Bit 1 is used by the Raspberry Pi side to record who made the latest
+          change. The remaining hardware-side bit can be retained without
+          changing the website display. This allows the database to store more
+          information than a normal Boolean while the browser still receives a
+          simple <code>true</code> or <code>false</code>.
+        </p>
+        <h2 id="why-exact-comparisons-stopped-working">
+          Why exact comparisons stopped working
+        </h2>
+        <p>The old code used a comparison similar to:</p>
+        <pre
+          class="code-block language-javascript"
+        ><code class="language-javascript">Number(rows[0].doors_open) === 1</code></pre>
+        <p>
+          That only recognizes raw value <code>1</code>. With two bits, an open
+          state can also have other metadata bits set. The correct test masks
+          everything except bit 0:
+        </p>
+        <pre
+          class="code-block language-javascript"
+        ><code class="language-javascript">const doorsOpen = (doorState &amp; 1) === 1;</code></pre>
+        <p>The same rule is used in PHP:</p>
+        <pre
+          class="code-block language-php"
+        ><code class="language-php">$doorState = (int) $elevatorState[&#39;doors_open&#39;];
+$initialDoorsOpen = ($doorState &amp; 1) === 1;</code></pre>
+        <p>This produces the following website interpretation:</p>
+        <table class="logbook-table">
+          <thead>
+            <tr class="header">
+              <th style="text-align: right">Raw value</th>
+              <th style="text-align: right">Binary</th>
+              <th>Website state</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="odd">
+              <td style="text-align: right">0</td>
+              <td style="text-align: right"><code>000</code></td>
+              <td>Closed</td>
+            </tr>
+            <tr class="even">
+              <td style="text-align: right">1</td>
+              <td style="text-align: right"><code>001</code></td>
+              <td>Open</td>
+            </tr>
+            <tr class="odd">
+              <td style="text-align: right">2</td>
+              <td style="text-align: right"><code>010</code></td>
+              <td>Closed</td>
+            </tr>
+            <tr class="even">
+              <td style="text-align: right">3</td>
+              <td style="text-align: right"><code>011</code></td>
+              <td>Open</td>
+            </tr>
+          </tbody>
+        </table>
+        <p>
+          This also means expanding from <code>0b11</code> to
+          <code>0b111</code> does not require the UI to understand every raw
+          combination. It only needs the low position bit.
+        </p>
+        <p>
+          The existing MariaDB <code>TINYINT</code> column is already large
+          enough to store values 0 to 7. The number in a definition such as
+          <code>TINYINT(1)</code> is not a one-bit storage limit, so the
+          important change was the meaning of the value and the code that
+          decodes it rather than changing to a larger SQL integer type.
+        </p>
+        <h2 id="website-originated-door-changes">
+          Website-originated door changes
+        </h2>
+        <p>
+          When the user presses the door button,
+          <code>elevator_control.js</code> calls
+          <code>sendDoorState()</code> and sends a normal form-style POST to
+          <code>elevator_control.php</code>:
+        </p>
+        <pre
+          class="code-block language-text"
+        ><code class="language-text">request_action = door
+door_state = open or closed</code></pre>
+        <p>
+          PHP validates that only <code>open</code> or <code>closed</code> was
+          submitted. It updates the <code>ElevatorCar</code> object using
+          <code>openDoors()</code> or <code>closeDoors()</code>, converts the
+          object state into the website-originated database value, and updates
+          <code>elevator_state.state_id = 1</code> with a prepared statement.
+        </p>
+        <p>
+          After PHP confirms success, <code>handleDoorResponse()</code> updates
+          the local display and sends a small WebSocket notification to Node:
+        </p>
+        <pre
+          class="code-block language-javascript"
+        ><code class="language-javascript">elevatorSocket.send(JSON.stringify({
+    type: &quot;door_state_changed&quot;
+}));</code></pre>
+        <p>
+          The browser does not send the final raw database state to Node. It
+          only announces that something changed. Node then queries MariaDB for
+          the authoritative value.
+        </p>
+        <h2 id="raspberry-pi-and-physical-switch-changes">
+          Raspberry Pi and physical-switch changes
+        </h2>
+        <p>
+          A website message cannot help when the Raspberry Pi changes the
+          database after reading the physical door switch. To support these
+          independent changes, I added a lightweight
+          <code>checkDoorState()</code> database watcher in
+          <code>server.js</code>.
+        </p>
+        <p>Node stores the last complete raw value:</p>
+        <pre
+          class="code-block language-javascript"
+        ><code class="language-javascript">let lastDoorState = null;</code></pre>
+        <p>Every 500 ms, the function reads the single elevator-state row:</p>
+        <pre
+          class="code-block language-sql"
+        ><code class="language-sql">SELECT doors_open
+FROM elevator_state
+WHERE state_id = 1
+LIMIT 1</code></pre>
+        <p>
+          The first successful check initializes the cache. Later checks
+          immediately return if the raw value has not changed:
+        </p>
+        <pre
+          class="code-block language-javascript"
+        ><code class="language-javascript">if(doorState === lastDoorState) {
+    return;
+}</code></pre>
+        <p>
+          Because the complete packed number is cached, Node can detect a
+          metadata/source change as well as an open/closed change. It then
+          normalizes bit 0 and broadcasts one message:
+        </p>
+        <pre
+          class="code-block language-javascript"
+        ><code class="language-javascript">broadcast({
+    type: &quot;elevator_state&quot;,
+    doors_open: (doorState &amp; 1) === 1
+});</code></pre>
+        <p>The browser only has to handle a Boolean:</p>
+        <pre
+          class="code-block language-javascript"
+        ><code class="language-javascript">if(message.type === &quot;elevator_state&quot;) {
+    updateDoorDisplay(message.doors_open === true);
+    return;
+}</code></pre>
+        <h2 id="new-webpage-connections">New webpage connections</h2>
+        <p>
+          <code>lastDoorState</code> is also used when another browser connects.
+          If Node already has a cached state, it immediately sends that state to
+          the new socket:
+        </p>
+        <pre
+          class="code-block language-javascript"
+        ><code class="language-javascript">if(lastDoorState !== null) {
+    socket.send(JSON.stringify({
+        type: &quot;elevator_state&quot;,
+        doors_open: (lastDoorState &amp; 1) === 1
+    }));
+}</code></pre>
+        <p>
+          This stops a newly opened control page from waiting for the next
+          physical change before it displays the correct doors.
+        </p>
+        <h2 id="final-flow">Final flow</h2>
+        <pre
+          class="code-block language-text"
+        ><code class="language-text">Website button
+    -&gt; PHP validates and updates elevator_state
+    -&gt; browser notifies Node
+    -&gt; Node immediately re-reads MariaDB
+    -&gt; Node broadcasts confirmed door position
+
+Physical door switch / CAN
+    -&gt; Raspberry Pi updates the packed SQL value
+    -&gt; Node detects the raw-value change within 500 ms
+    -&gt; Node broadcasts confirmed door position
+
+All browsers
+    -&gt; receive elevator_state
+    -&gt; run updateDoorDisplay(true/false)</code></pre>
+        <p>
+          The database is polled twice per second, but unchanged checks do not
+          print messages or create WebSocket traffic. A broadcast is only
+          produced when the stored raw door state actually changes.
+        </p>
+        <p>Latest Node entry:</p>
+        <figure class="logbook-figure">
+          <img
+            class="img_med"
+            src="../../media/images/NodeJS_NewCANEntry.png"
+            alt="NodeJS_NewCANEntry.png"
+          />
+        </figure>
+
+        <p>
+          When I click the door on the website, Node updates it in its terminal
+          and displays the transition:
+        </p>
+        <figure class="logbook-figure">
+          <img
+            class="img_med"
+            src="../../media/images/NodeJS_DoorUpdating.png"
+            alt="NodeJS_DoorUpdating.png"
+          />
+        </figure>
+      </section>
+
+      <p class="top-link">
+        <a href="#page_top">Go to the top of this page</a>
+      </p>
+    </main>
+
+    <footer class="site-footer">
+      <p>Copyright &copy; Nick Kapuka</p>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+  </body>
+</html>

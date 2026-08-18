@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<!--
+Author: Matvey Regentov
+-->
+
+<html lang="en">
+
+<head>
+	<title>MR Logbook Entry - 2026-08-10</title>
+	<meta charset="UTF-8">
+	<meta name="author" content="Matvey Regentov">
+	<meta name="description" content="MR Logbook Entry for 2026-08-10">
+	<meta name="robots" content="index, follow">
+	<meta http-equiv="Pragma" content="no-cache">
+
+	<link rel="icon" href="../../media/icons/LiF_icon.ico" type="image/x-icon">
+	<link rel="stylesheet" href="../../css/base.css">
+	<link rel="stylesheet" href="../../css/logbook_entry.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css">
+	<link rel="stylesheet" href="../../css/code_formatting.css">
+	<script>
+		window.MathJax = {
+			tex: {
+				inlineMath: [['\\(', '\\)'], ['$', '$']],
+				displayMath: [['\\[', '\\]'], ['$$', '$$']]
+			},
+			svg: { fontCache: 'global' }
+		};
+	</script>
+	<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+</head>
+
+<body>
+	<div id="navbar-placeholder" data-root="../../"></div>
+	<script src="../../js/navbar.js"></script>
+
+	<main class="page-wrapper">
+		<section class="intro-section logbook-entry-intro" id="page_top">
+			<div class="intro-text">
+				<p class="section-label">Daily Logbook Entry</p>
+				<h1>Logbook Entry, 2026-08-10 by Matvey Regentov</h1>
+				<p class="intro-description">Unit 1 PCB completion and I2C fault investigation</p>
+				<div class="button-row">
+					<a href="../logbook_MR.html" class="button secondary-button">My Logbook Cover Page</a>
+					<a href="#log" class="button primary-button">Jump to Entry</a>
+					<a href="MR_entry_2026-08-07.html" class="button secondary-button">Previous Entry</a>
+				</div>
+			</div>
+			<aside class="summary-card">
+				<h2>Entry Snapshot</h2>
+				<p><b>Date:</b> 2026-08-10</p>
+				<p><b>Author:</b> Matvey Regentov</p>
+				<p><b>Focus:</b> Unit 1 PCB completion and I2C fault investigation</p>
+			</aside>
+		</section>
+
+		<section class="logbook-entry-content" id="log">
+			<h2 id="final-soldering-for-unit-1-pcbs">Final Soldering for Unit 1 PCBs</h2>
+			<p>When I arrived to continue working on the project, the laboratory thermostat showed 29.67 &deg;C.</p>
+			<figure class="logbook-figure">
+				<img src="../../media/images/LiF_Thermostat_Snapshot_2.png" alt="Laboratory thermostat showing 29.67 degrees Celsius" class="logbook-image centered-image" style="max-width: 100%; height: auto;">
+				<figcaption>Laboratory thermostat showing 29.67 &deg;C</figcaption>
+			</figure>
+			<figure class="logbook-figure">
+				<img src="../../media/images/LiF_Soldered_Unit_1_PCBs_inner_side.png" alt="Inner sides of the soldered Unit 1 PCBs" class="logbook-image centered-image" style="max-width: 100%; height: auto;">
+				<figcaption>Inner sides of the soldered Unit 1 PCBs</figcaption>
+			</figure>
+			<figure class="logbook-figure">
+				<img src="../../media/images/LiF_Soldered_Unit_1_PCBs_outer_sides.png" alt="Outer sides of the soldered Unit 1 PCBs" class="logbook-image centered-image" style="max-width: 100%; height: auto;">
+				<figcaption>Outer sides of the soldered Unit 1 PCBs</figcaption>
+			</figure>
+			<figure class="logbook-figure">
+				<img src="../../media/images/LiF_Soldered_Unit_1_PCBs_stacked_up_top.png" alt="Top view of the stacked Unit 1 PCBs" class="logbook-image centered-image" style="max-width: 100%; height: auto;">
+				<figcaption>Top view of the stacked Unit 1 PCBs</figcaption>
+			</figure>
+			<figure class="logbook-figure">
+				<img src="../../media/images/LiF_Soldered_Unit_1_PCBs_bottom_side.png" alt="Bottom side of the soldered Unit 1 PCBs" class="logbook-image centered-image" style="max-width: 100%; height: auto;">
+				<figcaption>Bottom side of the soldered Unit 1 PCB assembly</figcaption>
+			</figure>
+
+			<h2 id="i2c-testing">I2C Testing</h2>
+			<p>During I2C testing, the SDA line measured 0 V while the SCL line measured 2.76 V. The same behaviour occurred when the PCB was powered through either the programming USB or CAN power input.</p>
+			<p>The 3.3 V bus still measured 3.35 V, and the ESP32-S3 continued to function correctly.</p>
+			<p>I identified a short circuit between SDA and ground. The resistance between SDA and SCL measured 5.38 k&ohm;. I suspected that the short was caused by poor soldering beneath the LGA accelerometer IC; however, without access to X-ray inspection equipment, I could not confirm the cause.</p>
+		</section>
+
+		<section class="logbook-entry-content sources-section" id="sources">
+			<h2>Sources</h2>
+			<p>No external sources were cited in this entry.</p>
+		</section>
+
+		<nav class="entry-date-nav" aria-label="Logbook date navigation">
+			<a href="MR_entry_2026-08-07.html" class="button secondary-button">Previous Entry</a>
+		</nav>
+		<p class="top-link"><a href="#page_top">Go to the top of this page</a></p>
+	</main>
+
+	<footer class="site-footer"><p>Copyright &copy; Matvey Regentov</p></footer>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+</body>
+
+</html>

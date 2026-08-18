@@ -56,31 +56,34 @@ int CAN::pcanClose() {
     return CAN_Close(h2);
 }
 
-int CAN::pcanRxState(TPCANMsg *msg) {
-    // Clear the channel - new - Must clear the channel before Tx/Rx
-	status = CAN_Status(h2);
-    if ((status != CAN_ERR_OK) && (status != CAN_ERR_QRCVEMPTY)) {
-        std::cerr << "CAN: error occurred while receiving the message. " \
-        "Status: " << std::hex << status << std::dec << std::endl;
-        return -1;
-    }
+int CAN::pcanRxState(TPCANMsg* msg) {
+    // LINUX_CAN_Read_Timeout() returns a message with timestamp data.
+    TPCANRdMsg received_msg{};
 
-    // attempt to read the message
-    status = CAN_Read(h2, msg);
-    
-    // No message received
+    // 0 microseconds means polling/non-blocking operation.
+    status = LINUX_CAN_Read_Timeout(
+        h2,
+        &received_msg,
+        0
+    );
+
     if (status == CAN_ERR_QRCVEMPTY) {
-        return 0;   // nothing was received
+        return 0;  // no frame currently available
     }
 
-	//Message received and valid
     if (status != CAN_ERR_OK) {
-        std::cerr << "CAN: received message is invalid. " \
-        "Status: " << std::hex << status << std::dec << std::endl;
+        std::cerr
+            << "CAN: error occurred while receiving a message. "
+            << "Status: 0x"
+            << std::hex << status
+            << std::dec << std::endl;
+
         return -1;
     }
 
-    // at this point, message is received and checked to be valid
+    // Extract the ordinary CAN message from the timestamped result.
+    *msg = received_msg.Msg;
+
     return 1;
 }
 

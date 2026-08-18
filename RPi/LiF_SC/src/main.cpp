@@ -102,13 +102,15 @@ void process_CAN_EC_msg(CAN::RxFrame rxMsg);
 uint64_t current_time();
 
 
-void initialize_door_monitor();
-
 void process_DB_door_command();
 
-void update_door_state_from_CAN(bool can_door_open);
-
 void announceFloor(int floor);
+
+/**
+ * @brief Checks if EC heartbeat has not been received in time.
+ * May transition mode to fault.
+ */
+void check_EC_heartbeat_timeout();
 
 
 // -----------------------------------------------------------------------------
@@ -132,10 +134,12 @@ int main() {
 	printf(" - initial floor: %u\n", INITIAL_FLOOR);
 
 	can_link.cc_send_door_update(true, false, false);
+	time_last_EC_heartbeat = current_time(); // init to avoid fault at startup
 
 	while(is_running) { // FSM infinite loop start
 		process_DB_door_command();
 		process_CAN_msg();
+		check_EC_heartbeat_timeout();
 		
 		switch (state) {
 			case SC_State::INITIALIZE:
@@ -152,6 +156,9 @@ int main() {
 			case SC_State::MAINTENANCE:
 			case SC_State::MAINTENANCE_MOVING:
 				FSM_maintenance_mode();
+				break;
+			case SC_State::FAULT:
+				FSM_fault_mode();
 				break;
 			default:
 				break;
@@ -481,6 +488,7 @@ void FSM_initialize() {
 	}
 
 	// TODO: add node status checks when new CAN bus protocol is implemented
+	std::cout << "Initializing DONE." << std::endl;
 
 	// atp both db is connected and EC is enabled -> init finished
 	state = SC_State::IDLE;
@@ -490,16 +498,22 @@ void FSM_fault_mode(std::string fault_reason) {
 	// used to check if this is the first time processing a new FAULT state
 	static bool is_new_fault = true;
 	static uint64_t time_last_print = 0;
+	static std::string active_fault_reason = "";
+
+	if (is_new_fault && !fault_reason.empty()) {
+		active_fault_reason = fault_reason;
+	}
 
 	if (is_new_fault) {
 		// for a new fault that has not been processed before, we need to inform 
 		// 	other nodes of a FAULT condition
 		can_link.ec_go_to_floor(0, false);	// disable EC
+		is_new_fault = false;
 	}
 
-	if (current_time() - time_last_print > 2000) {
+	if (is_new_fault || ((current_time() - time_last_print) >= 1000)) {
 		time_last_print = current_time();
-		std::cout << "FAULT MODE. Reason: " << fault_reason << std::endl;
+		std::cout << "FAULT MODE. Reason: " << active_fault_reason << std::endl;
 	}
 
 	// used to exit FAULT mode into MAINTENANCE.
@@ -516,11 +530,14 @@ void FSM_fault_mode(std::string fault_reason) {
 		// DB has not been informed of a fault yet
 		database.set_operation_mode(DB::OperationMode::FAULT);
 		last_db_op_mode = DB::OperationMode::FAULT;
+		std::cout << "Updated DB mode of operation to FAULT" << std::endl;
 		return;
 	} else if (last_db_op_mode == DB::OperationMode::FAULT && cur_db_mode == DB::OperationMode::MAINTENANCE) {
 		state = SC_State::MAINTENANCE;
 		can_link.ec_go_to_floor(0, true);	// enable EC
 		is_new_fault = true;	// update static variable for next FAULT condition
+		time_last_print = 0;
+		std::cout << "Mode transition: Fault -> Maintenance" << std::endl;
 	}
 
 
@@ -593,8 +610,18 @@ void process_CAN_CC_msg(CAN::RxFrame rxMsg) {
 		}
 	}
 	
-	door.update_door_CAN(rxMsg.data.cc_request.is_door_open);
-	database.set_doors_open(rxMsg.data.cc_request.is_door_open);
+	bool did_change =
+		door.update_door_CAN(rxMsg.data.cc_request.is_door_open);
+
+	if (!door.is_using_DB_door()) {
+		// Only mirror CAN into the DB when CAN is actually authoritative.
+		database.set_doors_open(rxMsg.data.cc_request.is_door_open);
+
+		if (did_change) {
+			// Disable the virtual door override.
+			can_link.cc_send_door_update(false, false, false);
+		}
+	}
 
 	// Filter state to only be normal operations mode
 	//	Ignore floor requests in maintenance and sabbath mode
@@ -614,7 +641,9 @@ void process_CAN_CC_msg(CAN::RxFrame rxMsg) {
 			database.log_elevator_request(rq.floor, (int)rxMsg.id);
         }
     } else {
-		std::cout << "Ignored Car Request from floor " << rxMsg.data.cc_request.floor_request << " in non-NORMAL mode of operation" << std::endl;
+		if (rxMsg.data.cc_request.floor_request != 0) {
+			std::cout << "Ignored Car Request from floor " << rxMsg.data.cc_request.floor_request << " in non-NORMAL mode of operation" << std::endl;
+		}
 	}
 }
 
@@ -713,24 +742,23 @@ void process_DB_door_command() {
     int db_door_state = database.get_doors_open();
 
     if (db_door_state < 0) {
-        // Preserve the existing effective state if the database
-        // cannot be read.
-        return;
-    } else if (db_door_state == 2) {
-		// last door update was based on the physical button
-		//	therfore ignore that
-		return;
-	}
-	bool did_state_changed = door.update_door_DB(db_door_state != 0); 
-	if (did_state_changed && door.is_initialized()) {
-		if (door.is_using_DB_door()) {
-			can_link.cc_send_door_update(false, true, db_door_state != 0);
-		} else {
-			can_link.cc_send_door_update(false, false, false);
-		}
-	}
+        return; // DB error
+    }
 
-	
+    if (db_door_state == 2) {
+        return; // Value was mirrored from CAN, not commanded by DB
+    }
+
+    bool command_changed =
+        door.update_door_DB(db_door_state != 0);
+
+    if (command_changed && door.is_initialized()) {
+        can_link.cc_send_door_update(
+            false,
+            true,                   // use virtual/DB door
+            db_door_state != 0
+        );
+    }
 }
 
 
@@ -744,4 +772,25 @@ void announceFloor(int floor) {
     system(cmd.c_str());
 
 }
+
+void check_EC_heartbeat_timeout() {
+	if (state == SC_State::FAULT || state == SC_State::INITIALIZE) {
+		return;	// ignore heartbeat checks in fault mode or during initialization
+	}
+
+	const uint64_t timeout_ms =
+        static_cast<uint64_t>(EC_HEARTBEAT_PERIOD_MS) *
+        static_cast<uint64_t>(EC_MAX_HEARTBEAT_PERIOD_MULTIPLIER);
+
+	if ((current_time() - time_last_EC_heartbeat) >= timeout_ms) {
+		// timeout occurred
+		std::cerr << "EC Heartbeat Timeout. Not received in " << timeout_ms / 1000.0 << 
+			"s" << std::endl; 
+		state = SC_State::FAULT;
+		char c_str_reason[1000];
+		sprintf(c_str_reason, "EC Heartbeat Timeout");	
+		FSM_fault_mode(std::string(c_str_reason));
+	}
+}
+
 
