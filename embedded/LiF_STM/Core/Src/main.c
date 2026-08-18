@@ -308,6 +308,9 @@ void CAN_ProcessReceive(void){
 
     } else {
       is_virt_door_used = false;
+      LED_FlashingStop(&F1_Req_LED);
+      LED_FlashingStop(&F2_Req_LED);
+      LED_FlashingStop(&F3_Req_LED);
     }
 
     if (do_send_reply) {
