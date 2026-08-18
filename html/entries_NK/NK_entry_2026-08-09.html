@@ -1,0 +1,474 @@
+<!doctype html>
+<!--
+Author: Nick Kapuka
+-->
+
+<html lang="en">
+  <head>
+    <title>Logbook Entry, 2026-08-09 by Nick Kapuka</title>
+    <meta charset="UTF-8" />
+    <meta name="author" content="Nick Kapuka" />
+    <meta
+      name="description"
+      content="Wrote the CSS for the revised elevator control room, using a restrained teal, sage, amber, charcoal, and light-grey palette. The stylesheet keeps the original two-column page structure while adding a six-floor grid, metal cab buttons, animated elevator doors, maintenance lockout states, and responsive layouts."
+    />
+    <meta name="robots" content="index, follow" />
+    <meta http-equiv="Pragma" content="no-cache" />
+
+    <link
+      rel="icon"
+      href="../../media/icons/LiF_icon.ico"
+      type="image/x-icon"
+    />
+    <link rel="stylesheet" href="../../css/base.css" />
+    <link rel="stylesheet" href="../../css/logbook_entry.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css"
+    />
+    <link rel="stylesheet" href="../../css/code_formatting.css" />
+  </head>
+
+  <body>
+    <div id="navbar-placeholder" data-root="../../"></div>
+    <script src="../../js/navbar.js"></script>
+
+    <main class="page-wrapper">
+      <section class="intro-section logbook-entry-intro" id="page_top">
+        <div class="intro-text">
+          <p class="section-label">Daily Logbook Entry</p>
+          <h1>Logbook Entry, 2026-08-09 by Nick Kapuka</h1>
+          <p class="intro-description">
+            Wrote the CSS for the revised elevator control room, using a
+            restrained teal, sage, amber, charcoal, and light-grey palette. The
+            stylesheet keeps the original two-column page structure while adding
+            a six-floor grid, metal cab buttons, animated elevator doors,
+            maintenance lockout states, and responsive layouts.
+          </p>
+
+          <div class="button-row">
+            <a href="../logbook_NK.html" class="button secondary-button"
+              >My Logbook Cover Page</a
+            >
+            <a href="#log" class="button primary-button">Jump to Entry</a>
+          </div>
+        </div>
+
+        <aside class="summary-card">
+          <h2>Entry Snapshot</h2>
+          <p><b>Date:</b> 2026-08-09</p>
+          <p><b>Author:</b> Nick Kapuka</p>
+          <p>
+            <b>Focus:</b> CSS Grid, responsive design, pseudo-elements,
+            transitions, colour variables
+          </p>
+          <p>
+            <b>Tags:</b> #logbook #project-vi #css #responsive-design
+            #user-interface
+          </p>
+        </aside>
+      </section>
+
+      <section class="logbook-entry-content" id="log">
+        <h2 id="main-task-or-topic">Main task or topic</h2>
+        <p>
+          After updating the PHP/HTML structure, I wrote the associated
+          <code>elevator_control.css</code>. The goal was to improve the
+          existing page without making it look like a completely different
+          website. I kept the original floor-card tower and right-side
+          controller, then used a darker elevator shaft, neutral surfaces, and a
+          small number of accent colours.
+        </p>
+        <h2 id="central-colour-variables">Central colour variables</h2>
+        <p>The main colours are defined once at the top of the stylesheet:</p>
+        <pre class="code-block language-css"><code class="language-css">:root {
+  --control-page-bg: #dce8e5;
+  --control-surface: #f4f6f3;
+  --control-panel: #e7eeea;
+  --control-row: #f9faf8;
+  --control-border: #b8c8c3;
+  --control-dark: #273438;
+  --control-slate: #3c4b4f;
+  --control-teal: #16727a;
+  --control-green: #557c68;
+  --control-amber: #d89a45;
+  --control-red: #a9544e;
+}</code></pre>
+        <p>A CSS custom property is reused with <code>var()</code>:</p>
+        <pre
+          class="code-block language-css"
+        ><code class="language-css">background-color: var(--control-dark);</code></pre>
+        <p>
+          This makes later colour changes easier. For example, changing
+          <code>--control-teal</code> updates the floor buttons, controller
+          accent, and several hover states without searching through the entire
+          file.
+        </p>
+        <p>The page background uses a restrained gradient:</p>
+        <pre class="code-block language-css"><code class="language-css">body {
+  background: linear-gradient(
+    135deg,
+    var(--control-page-bg),
+    #edf2ef 60%,
+    #f3ead8
+  );
+}</code></pre>
+        <p>
+          <code>135deg</code> controls the direction. The <code>60%</code> means
+          the second colour is reached around 60 percent of the way across the
+          gradient.
+        </p>
+        <h2 id="main-two-column-grid">Main two-column grid</h2>
+        <p>The elevator tower and car controller use CSS Grid:</p>
+        <pre
+          class="code-block language-css"
+        ><code class="language-css">.elevator-layout {
+  display: grid;
+  grid-template-columns:
+    minmax(0, 1.25fr)
+    minmax(280px, 0.75fr);
+  gap: 22px;
+}</code></pre>
+        <p>Important terms:</p>
+        <ul class="clean-list">
+          <li>
+            <code>display: grid</code> turns the element into a grid container.
+          </li>
+          <li><code>grid-template-columns</code> defines the column sizes.</li>
+          <li>
+            <code>fr</code> means a fraction of the available space. The tower
+            receives more space than the controller.
+          </li>
+          <li>
+            <code>minmax(minimum, maximum)</code> gives a track a permitted size
+            range.
+          </li>
+          <li>
+            <code>minmax(280px, 0.75fr)</code> prevents the controller from
+            becoming narrower than 280 pixels.
+          </li>
+          <li>
+            <code>gap</code> creates spacing between grid cells without adding
+            margins to each child.
+          </li>
+        </ul>
+        <h2 id="six-floor-tower">Six-floor tower</h2>
+        <p>The tower is another grid:</p>
+        <pre
+          class="code-block language-css"
+        ><code class="language-css">.building-tower {
+  display: grid;
+  grid-template-rows: repeat(6, 108px);
+  gap: 10px;
+}</code></pre>
+        <p>
+          <code>repeat(6, 108px)</code> is shorthand for six rows that are each
+          108 pixels high. This fixed height is also why the JavaScript elevator
+          positions are separated by 118 pixels: 108 pixels for one row plus the
+          10-pixel gap.
+        </p>
+        <p>Each <code>.floor-row</code> has three columns:</p>
+        <pre
+          class="code-block language-css"
+        ><code class="language-css">grid-template-columns:
+  minmax(84px, 0.72fr)
+  minmax(145px, 200px)
+  minmax(98px, 0.78fr);</code></pre>
+        <p>
+          These columns hold the floor label, shaft, and request button. The
+          shaft is limited to between 145 and 200 pixels so the elevator car no
+          longer floats inside an unnecessarily wide black rectangle.
+        </p>
+        <p>The active floor receives an additional class from JavaScript:</p>
+        <pre
+          class="code-block language-css"
+        ><code class="language-css">.floor-row.active-floor {
+  background-color: #edf6f2;
+  border-color: var(--control-green);
+  box-shadow: inset 4px 0 var(--control-green);
+}</code></pre>
+        <p>
+          <code>inset</code> draws the shadow inside the element, making it look
+          like a coloured status stripe.
+        </p>
+        <h2 id="shaft-and-elevator-car">Shaft and elevator car</h2>
+        <p>
+          The shaft is <code>position: relative</code>, which establishes the
+          positioning area for the absolute elevator car:
+        </p>
+        <pre class="code-block language-css"><code class="language-css">.shaft {
+  position: relative;
+  max-width: 200px;
+  height: 78px;
+}
+
+.elevator-car {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}</code></pre>
+        <p>
+          <code>left: 50%</code> moves the car's left edge to the centre.
+          <code>translateX(-50%)</code> then moves it left by half of its own
+          width, producing true horizontal centring.
+        </p>
+        <p>
+          The car's <code>bottom</code> value is changed by JavaScript. This CSS
+          rule smooths the movement:
+        </p>
+        <pre
+          class="code-block language-css"
+        ><code class="language-css">transition: bottom 0.55s ease-in-out;</code></pre>
+        <p>
+          <code>ease-in-out</code> makes the animation begin and end more slowly
+          than the middle.
+        </p>
+        <h2 id="sliding-elevator-doors">Sliding elevator doors</h2>
+        <p>
+          The HTML contains one <code>.car-door</code> span, but CSS creates two
+          visible panels using <code>::before</code> and <code>::after</code>:
+        </p>
+        <pre
+          class="code-block language-css"
+        ><code class="language-css">.car-door::before,
+.car-door::after {
+  content: &quot;&quot;;
+  position: absolute;
+  width: 50%;
+  transition: transform 0.25s ease;
+}</code></pre>
+        <p>
+          Pseudo-elements are CSS-generated pieces that do not require
+          additional HTML. <code>::before</code> is the left panel and
+          <code>::after</code> is the right panel.
+        </p>
+        <p>
+          When JavaScript adds <code>doors-open</code> to the elevator car, the
+          two pieces move in opposite directions:
+        </p>
+        <pre
+          class="code-block language-css"
+        ><code class="language-css">.elevator-car.doors-open .car-door::before {
+  transform: translateX(-82%);
+}
+
+.elevator-car.doors-open .car-door::after {
+  transform: translateX(82%);
+}</code></pre>
+        <p>
+          The <code>0.25s</code> transition prevents the doors from snapping
+          instantly between states.
+        </p>
+        <h2 id="cab-button-grid">Cab-button grid</h2>
+        <p>The cab controls use a compact three-column grid:</p>
+        <pre
+          class="code-block language-css"
+        ><code class="language-css">.car-button-stack {
+  display: grid;
+  grid-template-columns: repeat(3, 56px);
+  gap: 14px 17px;
+  justify-content: center;
+}</code></pre>
+        <p>
+          There are six buttons, so CSS automatically creates a second row. In a
+          two-value <code>gap</code>, the first number is vertical spacing and
+          the second is horizontal spacing.
+        </p>
+        <p>
+          Each button is made circular with <code>border-radius: 50%</code>. The
+          thick grey border, multiple inset shadows, and dark centre make it
+          resemble a physical elevator button. The active floor changes the ring
+          to amber, while future Floors 4 to 6 use reduced opacity.
+        </p>
+        <h2 id="door-and-operating-mode-controls">
+          Door and operating-mode controls
+        </h2>
+        <p>The door, Sabbath, and maintenance sections remain stacked:</p>
+        <pre
+          class="code-block language-css"
+        ><code class="language-css">.mode-control-stack {
+  display: grid;
+  gap: 12px;
+}</code></pre>
+        <p>
+          All three use the same basic spacing and border shape. Their colours
+          communicate different meanings:
+        </p>
+        <ul class="clean-list">
+          <li>Teal for normal interactive controls.</li>
+          <li>Sage green for ordinary/available state accents.</li>
+          <li>Amber for an active or attention state.</li>
+          <li>Muted red for active maintenance or locked floors.</li>
+          <li>
+            Charcoal and slate for the elevator hardware and secondary controls.
+          </li>
+        </ul>
+        <p>
+          The shared button transition animates background, colour, and a
+          one-pixel upward hover movement.
+        </p>
+        <h2 id="maintenance-lockout-states">Maintenance lockout states</h2>
+        <p>The lockout section uses an attribute selector:</p>
+        <pre
+          class="code-block language-css"
+        ><code class="language-css">.floor-lockout-panel[hidden] {
+  display: none;
+}</code></pre>
+        <p>
+          <code>[hidden]</code> means "only select this class when the HTML
+          element also has the hidden attribute." JavaScript can therefore show
+          or hide the entire panel by changing
+          <code>floorLockoutPanel.hidden</code>.
+        </p>
+        <p>The floor cards use another grid:</p>
+        <pre
+          class="code-block language-css"
+        ><code class="language-css">.floor-lockout-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}</code></pre>
+        <p>
+          This creates three equal flexible columns.
+          <code>minmax(0, 1fr)</code> allows each column to shrink below the
+          width of its content instead of forcing the page to overflow.
+        </p>
+        <p>
+          When JavaScript adds <code>is-locked</code>, CSS changes the
+          background, border, number circle, button, and status text to muted
+          red. The related tower row and cab button receive
+          <code>floor-locked</code>, which reduces opacity and applies
+          <code>grayscale()</code>.
+        </p>
+        <h2 id="responsive-layouts">Responsive layouts</h2>
+        <p>Media queries change the layout at smaller screen widths.</p>
+        <p>At 1000 pixels or below:</p>
+        <pre
+          class="code-block language-css"
+        ><code class="language-css">@media screen and (max-width: 1000px) {
+  .elevator-layout {
+    grid-template-columns: 1fr;
+  }
+}</code></pre>
+        <p>
+          The tower and controller become one vertical column. The cab buttons
+          can temporarily fit into one row.
+        </p>
+        <p>
+          At 760 pixels, padding and floor columns become smaller, and the
+          cab/lockout controls return to three columns. At 540 pixels, secondary
+          floor labels and the preview badge are hidden, while the lockout cards
+          become one column.
+        </p>
+        <h2 id="reduced-motion-support">Reduced-motion support</h2>
+        <p>
+          The final media query respects the operating system's accessibility
+          setting:
+        </p>
+        <pre
+          class="code-block language-css"
+        ><code class="language-css">@media (prefers-reduced-motion: reduce) {
+  .elevator-car,
+  .car-door::before,
+  .car-door::after {
+    transition: none;
+  }
+}</code></pre>
+        <p>
+          If a user has requested reduced motion, the car and doors change state
+          immediately.
+        </p>
+        <h2 id="result">Result</h2>
+        <p>
+          The CSS supplies nearly all of the new appearance while PHP continues
+          to generate the content and JavaScript continues to control state. The
+          most important CSS/JavaScript connection is class-based: JavaScript
+          adds classes such as <code>active-floor</code>,
+          <code>doors-open</code>, <code>active</code>, <code>is-locked</code>,
+          and <code>floor-locked</code>, and CSS decides how each state should
+          look.
+        </p>
+        <figure class="logbook-figure">
+          <img
+            class="img_med"
+            src="../../media/images/ElevatorControl_FullyNewLayout.png"
+            alt="ElevatorControl_FullyNewLayout.png"
+          />
+        </figure>
+
+        <h3 id="proof-of-functionality">Proof of Functionality</h3>
+        <p>Attempting to go to a floor that's not yet implemented:</p>
+        <figure class="logbook-figure">
+          <img
+            class="img_med"
+            src="../../media/images/ElevatorControl_FloorUnavailable.png"
+            alt="ElevatorControl_FloorUnavailable.png"
+          />
+        </figure>
+
+        <p>Open doors:</p>
+        <figure class="logbook-figure">
+          <img
+            class="img_med"
+            src="../../media/images/ElevatorControl_OpeningDoors.png"
+            alt="ElevatorControl_OpeningDoors.png"
+          />
+        </figure>
+
+        <p>Floor request:</p>
+        <figure class="logbook-figure">
+          <img
+            class="img_med"
+            src="../../media/images/ElevatorControl_FloorRequest.png"
+            alt="ElevatorControl_FloorRequest.png"
+          />
+        </figure>
+
+        <p>EC Confirming it:</p>
+        <figure class="logbook-figure">
+          <img
+            class="img_med"
+            src="../../media/images/ElevatorControl_ECMessageConfirm.png"
+            alt="ElevatorControl_ECMessageConfirm.png"
+          />
+        </figure>
+
+        <p>Maintenance panel:</p>
+        <figure class="logbook-figure">
+          <img
+            class="img_med"
+            src="../../media/images/ElevatorControl_MaintenancePanel.png"
+            alt="ElevatorControl_MaintenancePanel.png"
+          />
+        </figure>
+
+        <p>Locking out floors:</p>
+        <figure class="logbook-figure">
+          <img
+            class="img_med"
+            src="../../media/images/ElevatorControl_FloorLockout.png"
+            alt="ElevatorControl_FloorLockout.png"
+          />
+        </figure>
+
+        <p>When locked out, requests to that floor denied:</p>
+        <figure class="logbook-figure">
+          <img
+            class="img_med"
+            src="../../media/images/ElevatorControl_FloorOutOfService.png"
+            alt="ElevatorControl_FloorOutOfService.png"
+          />
+        </figure>
+      </section>
+
+      <p class="top-link">
+        <a href="#page_top">Go to the top of this page</a>
+      </p>
+    </main>
+
+    <footer class="site-footer">
+      <p>Copyright &copy; Nick Kapuka</p>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+  </body>
+</html>

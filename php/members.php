@@ -82,10 +82,11 @@ $safeUsername = htmlspecialchars($_SESSION['username'] ?? 'User', ENT_QUOTES, 'U
                     <p>Click here to see ALL of our source code and copy our ENTIRE project!!! Source: trust me bro</p>
                 </a>
 
-                <a href="logout.php" class="member-action-card logout-card">
-                    <h3>Log Out</h3>
-                    <p>End the current login session.</p>
+                <a href="LiF_BOM.php" class="member-action-card pcb-card">
+                    <h3>LiF Custom PCBs Assembly and Related Documents</h3>
+                    <p>Click here to see the BoM for our custom PCBs and see the progress on it!</p>
                 </a>
+
                 <?php if ($_SESSION['user_role'] === 'admin'): ?>
                 <a href="manage_requests.php" class="member-action-card manage-req">
                     <h3>Manage Incoming Requests</h3>

@@ -1,0 +1,310 @@
+<!doctype html>
+<!--
+Author: Nick Kapuka
+-->
+
+<html lang="en">
+  <head>
+    <title>Logbook Entry, 2026-08-08 by Nick Kapuka</title>
+    <meta charset="UTF-8" />
+    <meta name="author" content="Nick Kapuka" />
+    <meta
+      name="description"
+      content="Revamped the elevator control-page markup while keeping the original page structure and existing PHP/JavaScript hooks. PHP now generates six floor rows, six cab buttons, and six maintenance lockout controls, while JavaScript handles preview floors and the visual lockout state."
+    />
+    <meta name="robots" content="index, follow" />
+    <meta http-equiv="Pragma" content="no-cache" />
+
+    <link
+      rel="icon"
+      href="../../media/icons/LiF_icon.ico"
+      type="image/x-icon"
+    />
+    <link rel="stylesheet" href="../../css/base.css" />
+    <link rel="stylesheet" href="../../css/logbook_entry.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css"
+    />
+    <link rel="stylesheet" href="../../css/code_formatting.css" />
+  </head>
+
+  <body>
+    <div id="navbar-placeholder" data-root="../../"></div>
+    <script src="../../js/navbar.js"></script>
+
+    <main class="page-wrapper">
+      <section class="intro-section logbook-entry-intro" id="page_top">
+        <div class="intro-text">
+          <p class="section-label">Daily Logbook Entry</p>
+          <h1>Logbook Entry, 2026-08-08 by Nick Kapuka</h1>
+          <p class="intro-description">
+            Revamped the elevator control-page markup while keeping the original
+            page structure and existing PHP/JavaScript hooks. PHP now generates
+            six floor rows, six cab buttons, and six maintenance lockout
+            controls, while JavaScript handles preview floors and the visual
+            lockout state.
+          </p>
+
+          <div class="button-row">
+            <a href="../logbook_NK.html" class="button secondary-button"
+              >My Logbook Cover Page</a
+            >
+            <a href="#log" class="button primary-button">Jump to Entry</a>
+          </div>
+        </div>
+
+        <aside class="summary-card">
+          <h2>Entry Snapshot</h2>
+          <p><b>Date:</b> 2026-08-08</p>
+          <p><b>Author:</b> Nick Kapuka</p>
+          <p>
+            <b>Focus:</b> PHP-generated HTML, JavaScript, six-floor interface,
+            maintenance UI
+          </p>
+          <p>
+            <b>Tags:</b> #logbook #project-vi #php #html #javascript
+            #user-interface
+          </p>
+        </aside>
+      </section>
+
+      <section class="logbook-entry-content" id="log">
+        <h2 id="main-task-or-topic">Main task or topic</h2>
+        <p>
+          I updated the elevator control-room interface so it can display six
+          floors while remaining recognizable as the original page. I kept the
+          intro card, control-status summary, dark status HUD, floor tower on
+          the left, controller on the right, and the existing
+          door/Sabbath/maintenance layout.
+        </p>
+        <p>The main structural changes were:</p>
+        <ul class="clean-list">
+          <li>
+            Six floor-station rows instead of three manually repeated rows.
+          </li>
+          <li>Six cab buttons in a 3 by 2 grid.</li>
+          <li>
+            Floors 4 to 6 displayed as interface previews until their controller
+            nodes exist.
+          </li>
+          <li>A maintenance-only single-floor lockout panel.</li>
+          <li>A darker elevator car with separate sliding doors.</li>
+          <li>
+            Existing element IDs and <code>data-*</code> attributes preserved
+            for JavaScript.
+          </li>
+        </ul>
+        <h2 id="generating-floor-rows-with-php">
+          Generating floor rows with PHP
+        </h2>
+        <p>
+          The floor rows are now generated using a PHP <code>for</code> loop:
+        </p>
+        <pre
+          class="code-block language-php"
+        ><code class="language-php">&lt;?php for($floorNumber = 6; $floorNumber &gt;= 1; $floorNumber--): ?&gt;
+    &lt;!-- one floor row --&gt;
+&lt;?php endfor; ?&gt;</code></pre>
+        <p>
+          This is the same general idea as using <code>foreach</code>, but
+          <code>for</code> is more direct here because the required values are
+          the known numerical range 6 down to 1. <code>--</code> generates them
+          in reverse.
+        </p>
+        <p>
+          Each pass uses <code>$floorNumber</code> to generate the label and
+          JavaScript data:
+        </p>
+        <pre
+          class="code-block language-php"
+        ><code class="language-php">data-floor=&quot;&lt;?php echo $floorNumber; ?&gt;&quot;</code></pre>
+        <p>
+          The current floor receives <code>active-floor</code>, and Floors 4 to
+          6 receive an interface-preview marker:
+        </p>
+        <pre
+          class="code-block language-php"
+        ><code class="language-php">data-interface-only=&quot;&lt;?php echo $floorNumber &gt; 3 ? &#39;true&#39; : &#39;false&#39;; ?&gt;&quot;</code></pre>
+        <p>
+          The page therefore shows the future six-floor layout without sending
+          unsupported requests to the current three-floor PHP/CAN system.
+        </p>
+        <h2 id="elevator-car-placement">Elevator car placement</h2>
+        <p>
+          Only one elevator-car element should exist. It is created while PHP is
+          generating Floor 6:
+        </p>
+        <pre
+          class="code-block language-php"
+        ><code class="language-php">&lt;?php if($floorNumber === 6): ?&gt;
+    &lt;div class=&quot;elevator-car&quot; id=&quot;elevatorCar&quot;&gt;
+        &lt;span class=&quot;car-screen&quot;&gt;&lt;?php echo $initialFloor; ?&gt;&lt;/span&gt;
+        &lt;span class=&quot;car-door&quot;&gt;&lt;/span&gt;
+    &lt;/div&gt;
+&lt;?php endif; ?&gt;</code></pre>
+        <p>
+          JavaScript moves this one element vertically across the full tower.
+          The <code>&lt;span class="car-door"&gt;</code> is later split into
+          left and right panels using CSS pseudo-elements.
+        </p>
+        <h2 id="cab-controller-loop">Cab controller loop</h2>
+        <p>The six car buttons are generated by another descending loop:</p>
+        <pre
+          class="code-block language-php"
+        ><code class="language-php">&lt;?php for($floorNumber = 6; $floorNumber &gt;= 1; $floorNumber--): ?&gt;
+    &lt;button type=&quot;button&quot;
+        class=&quot;car-floor-button&quot;
+        data-floor=&quot;&lt;?php echo $floorNumber; ?&gt;&quot;&gt;
+        &lt;?php echo $floorNumber; ?&gt;
+    &lt;/button&gt;
+&lt;?php endfor; ?&gt;</code></pre>
+        <p>
+          The HTML only defines the six buttons. CSS is responsible for placing
+          them into the final 3 by 2 arrangement.
+        </p>
+        <h2 id="preserving-working-controls">Preserving working controls</h2>
+        <p>
+          The door, Sabbath, and maintenance controls were grouped inside
+          <code>mode-control-stack</code>. Their important IDs were not changed:
+        </p>
+        <pre
+          class="code-block language-text"
+        ><code class="language-text">doorToggleButton
+doorStatusDisplay
+sabbathToggle
+maintenanceToggle</code></pre>
+        <p>
+          Keeping these IDs meant the existing event listeners and AJAX
+          functions could continue working without rewriting the control logic.
+        </p>
+        <p>The maintenance toggle remains administrator-only:</p>
+        <pre
+          class="code-block language-php"
+        ><code class="language-php">&lt;?php if(($_SESSION[&#39;user_role&#39;] ?? &#39;&#39;) === &#39;admin&#39;): ?&gt;</code></pre>
+        <h2 id="maintenance-lockout-markup">Maintenance lockout markup</h2>
+        <p>
+          The new <code>floorLockoutPanel</code> is also only printed for an
+          administrator. It begins hidden unless the database already reports
+          maintenance mode:
+        </p>
+        <pre
+          class="code-block language-php"
+        ><code class="language-php">&lt;section class=&quot;floor-lockout-panel&quot; id=&quot;floorLockoutPanel&quot;
+    &lt;?php echo $initialOperationMode === &#39;maintenance&#39; ? &#39;&#39; : &#39;hidden&#39;; ?&gt;&gt;</code></pre>
+        <p>
+          Its six floor controls use an ascending loop from 1 to 6. Each card
+          contains a floor number, status text, and a
+          <code>floor-lockout-button</code> with a matching
+          <code>data-floor</code> value.
+        </p>
+        <p>
+          This version is a visual prototype. It does not yet write floor
+          lockouts to MariaDB or notify the Raspberry Pi.
+        </p>
+        <h2 id="javascript-six-floor-positions">
+          JavaScript: six floor positions
+        </h2>
+        <p>
+          <code>carPositions</code> was expanded so the car can visually move
+          through every displayed row:
+        </p>
+        <pre
+          class="code-block language-javascript"
+        ><code class="language-javascript">const carPositions = {
+    &quot;1&quot;: &quot;-580px&quot;,
+    &quot;2&quot;: &quot;-462px&quot;,
+    &quot;3&quot;: &quot;-344px&quot;,
+    &quot;4&quot;: &quot;-226px&quot;,
+    &quot;5&quot;: &quot;-108px&quot;,
+    &quot;6&quot;: &quot;10px&quot;
+};</code></pre>
+        <p>
+          <code>moveCarToFloor()</code> uses the selected value to change
+          <code>elevatorCar.style.bottom</code>. It also updates the
+          current-floor readout, car screen, active floor row, and active car
+          button.
+        </p>
+        <h2 id="javascript-preview-floor-protection">
+          JavaScript: preview-floor protection
+        </h2>
+        <p>
+          Both floor-station and cab-button handlers check the generated data
+          attribute:
+        </p>
+        <pre
+          class="code-block language-javascript"
+        ><code class="language-javascript">if(button.dataset.interfaceOnly === &quot;true&quot;) {
+    lastCommandDisplay.textContent =
+        &quot;Floor &quot; + floor +
+        &quot; interface ready - controller node not configured yet&quot;;
+
+    return;
+}</code></pre>
+        <p>
+          <code>return</code> ends the click handler before
+          <code>sendElevatorRequest()</code> can run. This is a client-side
+          convenience; PHP still validates the accepted floors independently.
+        </p>
+        <h2 id="javascript-maintenance-display">
+          JavaScript: maintenance display
+        </h2>
+        <p>
+          <code>updateMaintenanceDisplay()</code> now controls the lockout panel
+          as well as the maintenance button:
+        </p>
+        <pre
+          class="code-block language-javascript"
+        ><code class="language-javascript">if(maintenanceEnabled === true) {
+    floorLockoutPanel.hidden = false;
+} else {
+    floorLockoutPanel.hidden = true;
+}</code></pre>
+        <p>
+          When a lockout button is clicked, JavaScript toggles
+          <code>is-locked</code> on the maintenance card and
+          <code>floor-locked</code> on the matching floor row and cab button. It
+          also changes the visible status between <code>Available</code> and
+          <code>Out of service</code>.
+        </p>
+        <p>
+          The request handlers check for <code>floor-locked</code> before
+          continuing, so the visual prototype blocks that floor on the current
+          browser. Refreshing the page clears the lock because no database
+          handling exists yet.
+        </p>
+        <h2 id="result">Result</h2>
+        <p>
+          The page is now an updated version of the original interface rather
+          than a completely new page... For now. Floors 1 to 3 keep their real
+          request behavior, Floors 4 to 6 clearly show the planned expansion,
+          and the maintenance panel establishes the HTML/JavaScript structure
+          needed for persistent single-floor lockout later.
+        </p>
+        <p>
+          The new layout can be seen below. Next, I'd like to alter some of the
+          CSS and tweak JS a bit for functionality as this upgrade broke the JS
+          logic (due to data-xxx values and id changing).
+        </p>
+        <figure class="logbook-figure">
+          <img
+            class="img_med"
+            src="../../media/images/ElevatorControl_NewHTML_Layout.png"
+            alt="ElevatorControl_NewHTML_Layout.png"
+          />
+        </figure>
+      </section>
+
+      <p class="top-link">
+        <a href="#page_top">Go to the top of this page</a>
+      </p>
+    </main>
+
+    <footer class="site-footer">
+      <p>Copyright &copy; Nick Kapuka</p>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+  </body>
+</html>
